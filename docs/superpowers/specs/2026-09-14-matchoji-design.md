@@ -1,4 +1,4 @@
-# Chavino — Hojicha & Matcha Discovery/Marketplace Platform
+# Matchoji — Hojicha & Matcha Discovery/Marketplace Platform
 
 Status: Draft for review
 Date: 2026-09-14
@@ -156,7 +156,6 @@ personal Discord bot).
 
 ## 7. Open Questions
 
-- Final project name (branding) — "Chavino" is a working placeholder.
 - Legal review needed before Phase 3 (cross-border agricultural sales) and
   before automating Phase 4 scraping (retailer ToS).
 - e-Stat data licensing/attribution requirements for public display — check
