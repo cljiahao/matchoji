@@ -31,6 +31,7 @@
 - `public/`
 - `scripts/`
 - `src/`
+- `supabase/`
 - `test/`
 - `tsconfig.json`
 - `vitest.config.ts`
