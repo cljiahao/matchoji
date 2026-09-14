@@ -41,6 +41,12 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-destructive: var(--destructive);
 
+  /* Category identity — fixed brand colors, same in light and dark */
+  --color-matcha: var(--matcha);
+  --color-matcha-foreground: var(--matcha-foreground);
+  --color-hojicha: var(--hojicha);
+  --color-hojicha-foreground: var(--hojicha-foreground);
+
   /* Form */
   --color-border: var(--border);
   --color-input: var(--input);
@@ -76,6 +82,13 @@
   --border: var(--color-neutral-300);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+
+  /* Category identity (see .impeccable/surfaces/phase1.md OWN-WORLD) — fixed, not theme-adaptive.
+     Both darkened from the initial logo hex until white text clears WCAG AA (4.5:1). */
+  --matcha: #5c7a4f;
+  --matcha-foreground: #ffffff;
+  --hojicha: #8f6224;
+  --hojicha-foreground: #ffffff;
 }
 
 .dark {

@@ -28,6 +28,7 @@
 - `pnpm-workspace.yaml`
 - `postcss.config.mjs`
 - `PRODUCT.md`
+- `proxy.ts`
 - `public/`
 - `scripts/`
 - `src/`
