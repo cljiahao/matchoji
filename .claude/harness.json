@@ -1,0 +1,101 @@
+{
+  "templatecentral_version": "5.15.0",
+  "stack": "nextjs",
+  "seeded_at": "2026-09-14",
+  "seeded_files": {
+    "AGENTS.md": {
+      "origin_hash": "6395fa494c1b0c7d6160d0a79cd1b7c43a207bb22aaebcb83996a3c0641813dc",
+      "path": "AGENTS.md"
+    },
+    ".claude/settings.json": {
+      "origin_hash": "30e71a57d743f3d4b6fb1f1e928ecd614b8635acbac25312aa052d23c6541f00",
+      "path": ".claude/settings.json"
+    },
+    ".claude/skills/next-verify/SKILL.md": {
+      "origin_hash": "6a34b8d1287b7ea4e1c51f0e7dc16a671e4f678dd980fc0681436dc0406073f5",
+      "path": ".claude/skills/next-verify/SKILL.md"
+    },
+    ".claude/skills/next-migrate/SKILL.md": {
+      "origin_hash": "1b14ad6ef54edfb3096e056a0dc82a51f8b6f6149e7c354bcfe5cb538911c89f",
+      "path": ".claude/skills/next-migrate/SKILL.md"
+    },
+    ".claude/skills/skill-audit/SKILL.md": {
+      "origin_hash": "de500da1818c1726c4276be0911b1f1ffc5b7132926c82f4f46ba9d47d74d254",
+      "path": ".claude/skills/skill-audit/SKILL.md"
+    },
+    ".claude/hooks/protect-files.sh": {
+      "origin_hash": "93f961581015867a7e56bb5214ade2ad06d3abad0070441c38973bc523340cd6",
+      "path": ".claude/hooks/protect-files.sh"
+    },
+    ".claude/hooks/block-no-verify.sh": {
+      "origin_hash": "8fec6cef9a52e15dbae1eaf616a69acfff2f3cdde9918e001dc6490a33a5c80f",
+      "path": ".claude/hooks/block-no-verify.sh"
+    },
+    ".claude/hooks/user-prompt-guard.cjs": {
+      "origin_hash": "430c7fd52a6f53e1ed3c3e57ecf95054ade848ccb07c6134e77177185cd21551",
+      "path": ".claude/hooks/user-prompt-guard.cjs"
+    },
+    ".claude/hooks/post-edit-typecheck.sh": {
+      "origin_hash": "f17a4f6cb67b023f1058acb542b43ccf294de612e5d15352776ffbb50366b509",
+      "path": ".claude/hooks/post-edit-typecheck.sh"
+    },
+    ".claude/hooks/post-tool-failure.sh": {
+      "origin_hash": "31af87da10f31b5ead1d5fa455ffeb8903956ed2dacb5ef7319b1e8a2822efcd",
+      "path": ".claude/hooks/post-tool-failure.sh"
+    },
+    ".claude/hooks/stop-checks.sh": {
+      "origin_hash": "2cecfc7c749601cc81fb51a4a107afbdbfae66cd953bb73c73e9f38ffa3b7b19",
+      "path": ".claude/hooks/stop-checks.sh"
+    },
+    ".claude/hooks/subagent-stop.sh": {
+      "origin_hash": "8107bdb11b7dbe71121d24e1e585284f430503f96713b5bcc646308a9c777da5",
+      "path": ".claude/hooks/subagent-stop.sh"
+    },
+    ".claude/hooks/session-context.sh": {
+      "origin_hash": "e84f7d243ebd799dc3cfea0413d167bb9fcab7635e0a593ae0f1112259813e44",
+      "path": ".claude/hooks/session-context.sh"
+    },
+    ".claude/hooks/skill-usage-log.sh": {
+      "origin_hash": "dcc1c23a04e7cbbff10e9d2acc6342193756f0383612a64b88e9603d322eb4d8",
+      "path": ".claude/hooks/skill-usage-log.sh"
+    },
+    ".claude/hooks/post-edit-comment-check.sh": {
+      "origin_hash": "f7e5f610135ea114b401b6ca22ce01af3a64729eb753645f21460810ff749fee",
+      "path": ".claude/hooks/post-edit-comment-check.sh"
+    },
+    "lefthook.yml": {
+      "origin_hash": "8895b5ec1a5c7cbd3898d237ee010b65b704f63f5d7b3865de6f89cd6db7ab5d",
+      "path": "lefthook.yml"
+    },
+    ".lefthook/commit-msg.sh": {
+      "origin_hash": "5c3a34a0368e546962eaa49fd72d9f1df86eff038683f046379b8de5e3e1752f",
+      "path": ".lefthook/commit-msg.sh"
+    },
+    ".gitleaks.toml": {
+      "origin_hash": "f9cd4aac35f474f9a48c691b4fd46642388389fa650481342fc4d5ad6216de4e",
+      "path": ".gitleaks.toml"
+    },
+    ".claude/comment-hygiene-patterns.txt": {
+      "origin_hash": "61e448dd1b798c211ec37f4efc9667275a0eaea0ba3be2217d4d187d15cbf078",
+      "path": ".claude/comment-hygiene-patterns.txt"
+    },
+    ".github/workflows/ci.yml": {
+      "origin_hash": "45f2ac762c31289bd5391b234c24279db2e2893efa25116ffc46227b0333e09a",
+      "path": ".github/workflows/ci.yml"
+    },
+    ".claude/verify-harness.sh": {
+      "origin_hash": "d4f796f1b0ade8f97d9f8facf0e3059475350d20a3047c9142169941547e6afd",
+      "path": ".claude/verify-harness.sh"
+    },
+    ".claude/regen-harness.sh": {
+      "origin_hash": "c7aa1c2a6fc572bfc4b75c1e030e88bd1579f1651793c2aed319e917147ae8de",
+      "path": ".claude/regen-harness.sh"
+    },
+    "CLAUDE.md": {
+      "origin_hash": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "path": "CLAUDE.md"
+    }
+  },
+  "adoWiki": false,
+  "richReadme": false
+}

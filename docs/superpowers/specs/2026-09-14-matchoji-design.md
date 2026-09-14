@@ -60,15 +60,15 @@ like a wine on Vivino, that exists independently of who sells it. Every later
 subsystem attaches to `Product` by foreign key, additively, so Phase 1 tables
 never require reworking.
 
-| Entity | Fields | Phase built | Notes |
-|---|---|---|---|
-| `User` | id, email, role (`consumer` \| `vendor`), created_at | 1 | Supabase Auth. Role added now — cheap now, expensive to retrofit. |
-| `Region` | id, name, prefecture, municipality, e_stat_area_ha, scarcity_note | 1 | Seeded thin at first (name/prefecture only); e-Stat cultivation-area and scarcity fields filled in as Phase 4 data work lands. |
-| `Product` | id, name, brand, category (`hojicha`\|`matcha`), grade, region_id, image_url | 1 | Core catalog entity. |
-| `Review` | id, user_id, product_id, stars (1-5), notes, photo_url, created_at | 1 | One user's rating of one product. |
-| `Vendor` | id, user_id (role=vendor), farm/roaster name, profile info | 3 | Schema defined now; no UI/flow until Phase 3. |
-| `Listing` | id, vendor_id, product_id, price, stock | 3 | Many-to-many: one product, many vendors. Schema now, no UI/flow until Phase 3. |
-| `Order` | id, buyer_user_id, listing_id, qty, status, payment_ref | 3 | Schema stub only. `payment_ref` is an opaque string until Stripe Connect is actually integrated. |
+| Entity    | Fields                                                                       | Phase built | Notes                                                                                                                          |
+| --------- | ---------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `User`    | id, email, role (`consumer` \| `vendor`), created_at                         | 1           | Supabase Auth. Role added now — cheap now, expensive to retrofit.                                                              |
+| `Region`  | id, name, prefecture, municipality, e_stat_area_ha, scarcity_note            | 1           | Seeded thin at first (name/prefecture only); e-Stat cultivation-area and scarcity fields filled in as Phase 4 data work lands. |
+| `Product` | id, name, brand, category (`hojicha`\|`matcha`), grade, region_id, image_url | 1           | Core catalog entity.                                                                                                           |
+| `Review`  | id, user_id, product_id, stars (1-5), notes, photo_url, created_at           | 1           | One user's rating of one product.                                                                                              |
+| `Vendor`  | id, user_id (role=vendor), farm/roaster name, profile info                   | 3           | Schema defined now; no UI/flow until Phase 3.                                                                                  |
+| `Listing` | id, vendor_id, product_id, price, stock                                      | 3           | Many-to-many: one product, many vendors. Schema now, no UI/flow until Phase 3.                                                 |
+| `Order`   | id, buyer_user_id, listing_id, qty, status, payment_ref                      | 3           | Schema stub only. `payment_ref` is an opaque string until Stripe Connect is actually integrated.                               |
 
 Search/discovery (Phase 2) is not a separate entity — it is queries over
 `Product` + `Review` + `Region` (filter by region, grade, rating, scarcity_note),
@@ -79,6 +79,7 @@ so it falls out of the Phase 1 schema almost for free.
 ### Phase 1 — Rating & Discovery (build now)
 
 Consumer-facing MVP. Features:
+
 - Google OAuth sign-in (Supabase Auth).
 - Add/browse `Product` entries (name, brand, category, grade, region, photo).
 - Rate + review a product (stars, notes, photo).
@@ -103,6 +104,7 @@ real usage).
 ### Phase 2 — Search/Discovery Enhancements
 
 Once Phase 1 has real data:
+
 - Filter discover feed by region, category, grade, rating threshold.
 - Region browse view — list/group products by `Region`.
 - Sort by scarcity_note where populated (surfaces the "matcha scarce here,

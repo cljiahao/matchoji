@@ -1,0 +1,70 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(.env)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(./secrets/**)",
+      "Read(./.secrets/**)",
+      "Read(./**/node_modules/**)",
+      "Read(./**/.next/**)",
+      "Read(./**/dist/**)",
+      "Read(./**/coverage/**)",
+      "Read(./**/.turbo/**)",
+      "Read(./**/*.tsbuildinfo)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/protect-files.sh"] }]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/block-no-verify.sh"] }]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [{ "type": "command", "command": ["node", ".claude/hooks/user-prompt-guard.cjs"] }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/post-edit-typecheck.sh"] }]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/post-edit-comment-check.sh"] }]
+      },
+      {
+        "matcher": "Skill__.*",
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/skill-usage-log.sh"] }]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/post-tool-failure.sh"] }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/stop-checks.sh"] }]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/subagent-stop.sh"] }]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [{ "type": "command", "command": ["bash", ".claude/hooks/session-context.sh"] }]
+      }
+    ]
+  },
+  "skillListingBudgetFraction": 0.02
+}
