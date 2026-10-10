@@ -1,10 +1,10 @@
 {
-  "templatecentral_version": "6.0.2",
+  "templatecentral_version": "6.0.3",
   "stack": "nextjs",
   "seeded_at": "2026-09-14",
   "seeded_files": {
     "AGENTS.md": {
-      "origin_hash": "af90f26982b1ea9d9cf634d407a2fefb636e20daae983f692cc124aaa46e5fc5",
+      "origin_hash": "1320354563600fc916997bf6167d9cb1279d94ee906f04a00c8ff0acc66ffe64",
       "path": "AGENTS.md"
     },
     ".claude/settings.json": {
