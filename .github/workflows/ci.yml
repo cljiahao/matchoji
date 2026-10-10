@@ -23,23 +23,10 @@ jobs:
       - run: pnpm exec vitest --run --coverage    # writes coverage/cobertura-coverage.xml
       - name: Changed-line coverage (>= 80%)
         run: pipx run diff-cover coverage/cobertura-coverage.xml --compare-branch=origin/${{ github.base_ref || 'main' }} --fail-under=80
-      - name: Install gitleaks (MIT CLI, checksum-verified)
-        env:
-          GITLEAKS_VERSION: "8.30.1"   # bump VERSION and SHA256 together, from the release's gitleaks_<version>_checksums.txt
-          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"   # gitleaks_<version>_linux_x64.tar.gz
-        run: |
-          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
-          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum -c -
-          sudo tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C /usr/local/bin gitleaks
-      - name: Secret scan (gitleaks)   # PR: the PR's commits; push: full history
+      - name: Secret scan (gitleaks CLI, checksum-verified)   # PR: the PR's commits; push: full history
         env:
           BASE_REF: ${{ github.base_ref }}
-        run: |
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            gitleaks git --redact --no-banner --log-opts="origin/${BASE_REF}..HEAD"
-          else
-            gitleaks git --redact --no-banner
-          fi
+        run: bash .claude/ci-gates.sh secrets "$BASE_REF"
   changelog:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -48,15 +35,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
       - name: Require CHANGELOG for src changes (apply 'skip-changelog' label to bypass)
-        env: { LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}" }
-        run: |
-          base="origin/${{ github.base_ref }}"
-          changed=$(git diff --name-only "$base"...HEAD)
-          if echo "$changed" | grep -qE '^src/' && ! echo "$changed" | grep -qx 'CHANGELOG.md'; then
-            echo " $LABELS " | grep -q ' skip-changelog ' && { echo "skip-changelog label present — OK"; exit 0; }
-            echo "::error::src/ changed but CHANGELOG.md was not updated. Add an entry or apply the 'skip-changelog' label."
-            exit 1
-          fi
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+        run: bash .claude/ci-gates.sh changelog "$BASE_REF"
   readme-freshness:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -65,30 +47,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
       - name: Require README.md update for changed folders (apply 'skip-readme-check' label to bypass)
-        env: { LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}" }
-        run: |
-          base="origin/${{ github.base_ref }}"
-          tmp=$(mktemp)
-          git diff --name-only "$base"...HEAD > "$tmp"
-          missing=""
-          while IFS= read -r f; do
-            case "$f" in */README.md|README.md) continue ;; esac
-            # documentation-kit.md never writes a README into these folders, so never demand one
-            case "$f" in .github/*|.claude/*|*/.claude/*|secrets/*|*/secrets/*|.secrets/*|*/.secrets/*) continue ;; esac
-            d=$(dirname "$f")
-            rm_path="README.md"
-            [ "$d" != "." ] && rm_path="$d/README.md"
-            grep -qxF "$rm_path" "$tmp" || missing="$missing\n  - $d/"
-          done < "$tmp"
-          rm -f "$tmp"
-          missing=$(printf '%b' "$missing" | sort -u)
-          if [ -n "$missing" ]; then
-            echo " $LABELS " | grep -q ' skip-readme-check ' && { echo "skip-readme-check label present — OK"; exit 0; }
-            echo "::error::Folders changed without updating their README.md (see list below)"
-            printf '%s\n' "$missing"
-            echo "Update the listed README.md files, or apply the 'skip-readme-check' label to bypass."
-            exit 1
-          fi
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+        run: bash .claude/ci-gates.sh readme "$BASE_REF"
   comment-hygiene:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -97,30 +59,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
       - name: Require no change-narration comments (apply 'skip-comment-check' label to bypass)
-        env: { LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}" }
-        run: |
-          patterns=".claude/comment-hygiene-patterns.txt"
-          base="origin/${{ github.base_ref }}"
-          [ -f "$patterns" ] || { echo "::error::comment-hygiene pattern list missing (.claude/comment-hygiene-patterns.txt)"; exit 1; }
-          strict_patterns=$(mktemp)
-          head -n 10 "$patterns" > "$strict_patterns"
-          nl=$(printf '\nx'); nl=${nl%x}
-          flagged=""
-          while IFS= read -r -d '' f; do
-            case "$f" in *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs|*.py) ;; *) continue ;; esac
-            [ -f "$f" ] || continue
-            while IFS= read -r content; do
-              stripped=$(printf '%s' "$content" | sed -E 's@^[[:space:]]*(#|//|\*|"""|/\*\*?)[[:space:]]?@@')
-              if [ -n "$stripped" ] && printf '%s' "$stripped" | grep -qEf "$strict_patterns"; then
-                flagged="$flagged$nl  - $f: $stripped"
-              fi
-            done < <(git diff -U0 "$base"...HEAD -- "$f" | grep '^+' | grep -vE '^\+\+\+' | sed 's/^+//' | grep -E '^[[:space:]]*(#|//|\*|"""|/\*\*?)')
-          done < <(git diff -z --name-only "$base"...HEAD)
-          rm -f "$strict_patterns"
-          if [ -n "$flagged" ]; then
-            echo " $LABELS " | grep -q ' skip-comment-check ' && { echo "skip-comment-check label present — OK"; exit 0; }
-            echo "::error::Change-narration comments found (see list below)"
-            printf '%s\n' "$flagged"
-            echo "State WHAT the code does now, not what changed, or apply the 'skip-comment-check' label to bypass."
-            exit 1
-          fi
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+        run: bash .claude/ci-gates.sh comments "$BASE_REF"
