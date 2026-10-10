@@ -10,4 +10,3 @@ elif command -v python3 >/dev/null 2>&1; then
 else
   echo "regen-harness: need node or python3" >&2; exit 3
 fi
-chmod +x .claude/verify-harness.sh .claude/regen-harness.sh
