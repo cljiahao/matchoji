@@ -1,4 +1,4 @@
-<!-- templateCentral: nextjs@5.0.0 -->
+<!-- templateCentral: nextjs@6.0.1 -->
 
 # AGENTS.md — Matchoji
 
@@ -75,12 +75,13 @@ Add new project skills here whenever you repeat a workflow more than once.
 
 ## AI Harness
 
-PreToolUse: blocks secrets and CI pipeline files only (exit 2): `.env*` (except `.env.example`), CI/CD definitions (`.github/workflows/`, `.github/actions/`, `.azuredevops/`, `azure-pipelines*.y[a]ml`, `.gitlab-ci.yml`, `Jenkinsfile`), cert files (`.pem`/`.key`/`.secret`), `credentials.json`/`.netrc`; a second Bash guard blocks `--no-verify`, hook-layer bypasses (`LEFTHOOK=0`, `git -c core.hooksPath=…`), and force-pushes to protected branches. Skills, specs, and all app code are unrestricted. SessionStart (startup/resume/clear/compact): re-injects AGENTS.md routing context + universal invariants so they survive compaction (PostCompact stdout is also injected as context and fires after compaction, but SessionStart additionally covers resume/startup, so it's the seeded mechanism here).
+PreToolUse (Edit/Write/NotebookEdit): blocks secrets and CI pipeline files only (exit 2): `.env*` (except `.env.example`), CI/CD definitions (`.github/workflows/`, `.github/actions/`, `.azuredevops/`, `azure-pipelines*.y[a]ml`, `.gitlab-ci.yml`, `Jenkinsfile`), cert files (`.pem`/`.key`/`.secret`), `credentials.json`/`.netrc`; a second Bash guard blocks `--no-verify`, hook-layer bypasses (`LEFTHOOK=0`, `git -c core.hooksPath=…`, `git config core.hooksPath`), commits to protected branches, and force-pushes to them (incl. `--force-with-lease`, `HEAD:main`). Skills, specs, and all app code are unrestricted. SessionStart (startup/resume/clear/compact): re-injects AGENTS.md routing context + universal invariants so they survive compaction (PostCompact stdout is also injected as context and fires after compaction, but SessionStart additionally covers resume/startup, so it's the seeded mechanism here).
 UserPromptSubmit: pattern-checks incoming prompts for injection phrases; exit 2 blocks the prompt.
-PostToolUse: incremental type-check (`pnpm exec tsc --noEmit --incremental`) and a comment-hygiene scan (change-narration comments, oversized comment blocks — patterns from `.claude/comment-hygiene-patterns.txt`) after every Edit/Write. Both feedback-only.
-Stop hook: runs full test suite; exit 2 feeds failures to Claude via stderr; exit 0 on pass.
+PostToolUse: incremental type-check (`pnpm exec tsc --noEmit --incremental`) and a comment-hygiene scan (change-narration comments, oversized comment blocks — patterns from `.claude/comment-hygiene-patterns.txt`) after every Edit/Write. Both feedback-only — findings reach Claude as `additionalContext`, never a block.
+Stop hook: runs the full test suite when there are uncommitted changes; exit 2 feeds failures to Claude via stderr; exit 0 on pass (Claude Code caps consecutive Stop continuations — 8 by default). SubagentStop: type-gates a subagent's uncommitted changes (read-only Explore/Plan agents skipped).
+Hook wiring: every `settings.json` hook is `"command": "<bin>", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/<script>"]` — an array-valued `command` is silently ignored by Claude Code.
 Git hooks (lefthook): pre-commit runs format/lint/typecheck + gitleaks secret-scan on staged files, plus a readme-coupling staleness warning and a comment-hygiene warning; commit-msg enforces Conventional Commits; pre-push runs the quality gate. Hard-local; coverage/changed-line/comment-hygiene gates run in CI.
-CI (GitHub Actions): hard gate on changed-line coverage (`diff-cover` ≥80%), lockfile-in-sync (`--frozen-lockfile`), a changelog-touched check, a readme-freshness check, a comment-hygiene check on added lines (bypassable via `skip-comment-check` label), and a full-history gitleaks scan.
+CI (GitHub Actions): hard gate on changed-line coverage (`diff-cover` ≥80%), lockfile-in-sync (`--frozen-lockfile`), a changelog-touched check, a readme-freshness check, a comment-hygiene check on added lines (bypassable via `skip-comment-check` label), and a gitleaks secret scan (the PR's commits; full history on push to `main`) via the checksum-verified MIT CLI.
 Project skills: `.claude/skills/` | Manifest: `.claude/harness.json`
 Context load order (context only — not enforcement, broad → specific): managed policy → `~/.claude/CLAUDE.md` → `CLAUDE.md` `@AGENTS.md` (optional, Claude Code) → this file → `.claude/rules/*.md` (lazy per-directory). Hard enforcement: PreToolUse hooks in `settings.json` only.
 

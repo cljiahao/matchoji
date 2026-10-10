@@ -6,7 +6,7 @@ Scripts invoked by the git-hook layer defined in `lefthook.yml` that are too lon
 
 ## Contents
 
-- `commit-msg.sh`
+- `commit-msg.sh` — Conventional Commits gate (`<type>(<scope>)!: <description>`); lets git-generated merge/revert/autosquash subjects through
 
 ## Parent
 

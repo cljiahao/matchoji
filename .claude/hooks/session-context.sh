@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SessionStart(startup|resume|clear|compact) — re-inject routing context + universal invariants.
 # Plain stdout is added to Claude's context (per Claude Code hooks docs); this is what survives compaction.
+cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 echo "=== templateCentral routing context ==="
 head -30 AGENTS.md 2>/dev/null
 

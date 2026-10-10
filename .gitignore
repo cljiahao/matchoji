@@ -54,3 +54,6 @@ next-env.d.ts
 # Personal/local Claude Code overrides (impeccable's local hook wiring lives here,
 # with a machine-specific absolute path) — never shared, per Claude Code convention.
 .claude/settings.local.json
+
+# Per-developer skill-usage telemetry (feeds /skill-audit)
+.claude/skill-usage.log

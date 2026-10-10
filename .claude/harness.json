@@ -1,14 +1,14 @@
 {
-  "templatecentral_version": "5.15.0",
+  "templatecentral_version": "6.0.1",
   "stack": "nextjs",
   "seeded_at": "2026-09-14",
   "seeded_files": {
     "AGENTS.md": {
-      "origin_hash": "6395fa494c1b0c7d6160d0a79cd1b7c43a207bb22aaebcb83996a3c0641813dc",
+      "origin_hash": "c10a3b827a7188a31385dc8a6aadd6525bf36437d93425be8db651fc01704bae",
       "path": "AGENTS.md"
     },
     ".claude/settings.json": {
-      "origin_hash": "30e71a57d743f3d4b6fb1f1e928ecd614b8635acbac25312aa052d23c6541f00",
+      "origin_hash": "d393f56c24f9897bfbc5d463cf58b062698fb00812123c19e5e55506c770482f",
       "path": ".claude/settings.json"
     },
     ".claude/skills/next-verify/SKILL.md": {
@@ -24,55 +24,51 @@
       "path": ".claude/skills/skill-audit/SKILL.md"
     },
     ".claude/hooks/protect-files.sh": {
-      "origin_hash": "93f961581015867a7e56bb5214ade2ad06d3abad0070441c38973bc523340cd6",
+      "origin_hash": "4f8e42454db8ce202f97211f680fc62597fe7eda958176bcfc29546c21dd0f12",
       "path": ".claude/hooks/protect-files.sh"
     },
     ".claude/hooks/block-no-verify.sh": {
-      "origin_hash": "8fec6cef9a52e15dbae1eaf616a69acfff2f3cdde9918e001dc6490a33a5c80f",
+      "origin_hash": "68b6537bedce4edc925e4f00c78691dc776133d22a5ca44cb8aa26f244097035",
       "path": ".claude/hooks/block-no-verify.sh"
     },
     ".claude/hooks/user-prompt-guard.cjs": {
-      "origin_hash": "430c7fd52a6f53e1ed3c3e57ecf95054ade848ccb07c6134e77177185cd21551",
+      "origin_hash": "2e6b3e41ba479851ec6b6f3d295f6a60dab8ece65c2898fab5b6f7a46f51b235",
       "path": ".claude/hooks/user-prompt-guard.cjs"
     },
     ".claude/hooks/post-edit-typecheck.sh": {
-      "origin_hash": "f17a4f6cb67b023f1058acb542b43ccf294de612e5d15352776ffbb50366b509",
+      "origin_hash": "c69f6097a629aa85f321c8c08b61d6dee62d75b82f8647e7034fd0cc08a8172e",
       "path": ".claude/hooks/post-edit-typecheck.sh"
     },
-    ".claude/hooks/post-tool-failure.sh": {
-      "origin_hash": "31af87da10f31b5ead1d5fa455ffeb8903956ed2dacb5ef7319b1e8a2822efcd",
-      "path": ".claude/hooks/post-tool-failure.sh"
-    },
     ".claude/hooks/stop-checks.sh": {
-      "origin_hash": "2cecfc7c749601cc81fb51a4a107afbdbfae66cd953bb73c73e9f38ffa3b7b19",
+      "origin_hash": "f45ed1afb1581f5af473003f2b249d480b6c574dd488afc44d1676a64c627b08",
       "path": ".claude/hooks/stop-checks.sh"
     },
     ".claude/hooks/subagent-stop.sh": {
-      "origin_hash": "8107bdb11b7dbe71121d24e1e585284f430503f96713b5bcc646308a9c777da5",
+      "origin_hash": "48d0784d1cca1174cb9877d7b9d8579f3585ca53dc927d3e463ca1fdde24922d",
       "path": ".claude/hooks/subagent-stop.sh"
     },
     ".claude/hooks/session-context.sh": {
-      "origin_hash": "e84f7d243ebd799dc3cfea0413d167bb9fcab7635e0a593ae0f1112259813e44",
+      "origin_hash": "f8223ed5503c82b2dbc3fea2a87e855674f4a228d94decb4299a5ffc87b444d3",
       "path": ".claude/hooks/session-context.sh"
     },
     ".claude/hooks/skill-usage-log.sh": {
-      "origin_hash": "dcc1c23a04e7cbbff10e9d2acc6342193756f0383612a64b88e9603d322eb4d8",
+      "origin_hash": "b4c2f0331bf7455428225a3768971d4f5f7b8d82e1653bc3aa38522fdf0a12d6",
       "path": ".claude/hooks/skill-usage-log.sh"
     },
     ".claude/hooks/post-edit-comment-check.sh": {
-      "origin_hash": "f7e5f610135ea114b401b6ca22ce01af3a64729eb753645f21460810ff749fee",
+      "origin_hash": "506aa92359903beb7bf7c8d35636f0150d4f4939c25b680821ae662ab5324275",
       "path": ".claude/hooks/post-edit-comment-check.sh"
     },
     "lefthook.yml": {
-      "origin_hash": "8895b5ec1a5c7cbd3898d237ee010b65b704f63f5d7b3865de6f89cd6db7ab5d",
+      "origin_hash": "e06b20795c4cfcfad2f09dfffc0db5f7d09a127464e07fd3722ca3cdcc65d27a",
       "path": "lefthook.yml"
     },
     ".lefthook/commit-msg.sh": {
-      "origin_hash": "5c3a34a0368e546962eaa49fd72d9f1df86eff038683f046379b8de5e3e1752f",
+      "origin_hash": "c66dad01d734dacc5092b980035b9901ec518e1ecbfb5db270a35d39750a27f0",
       "path": ".lefthook/commit-msg.sh"
     },
     ".gitleaks.toml": {
-      "origin_hash": "f9cd4aac35f474f9a48c691b4fd46642388389fa650481342fc4d5ad6216de4e",
+      "origin_hash": "a1978b7a1e366072692ed55ab372a83b62908ccf6eaa5e2e261906c92c704e43",
       "path": ".gitleaks.toml"
     },
     ".claude/comment-hygiene-patterns.txt": {
@@ -80,15 +76,15 @@
       "path": ".claude/comment-hygiene-patterns.txt"
     },
     ".github/workflows/ci.yml": {
-      "origin_hash": "45f2ac762c31289bd5391b234c24279db2e2893efa25116ffc46227b0333e09a",
+      "origin_hash": "9adec37f969707434002a8dc433f01d497744dabe198a85e2c98217274198621",
       "path": ".github/workflows/ci.yml"
     },
     ".claude/verify-harness.sh": {
-      "origin_hash": "d4f796f1b0ade8f97d9f8facf0e3059475350d20a3047c9142169941547e6afd",
+      "origin_hash": "2bcdf7ce12b62b73c1480d5f9953d504e6aee6cba47c4652c3e8ccc7a79931d4",
       "path": ".claude/verify-harness.sh"
     },
     ".claude/regen-harness.sh": {
-      "origin_hash": "c7aa1c2a6fc572bfc4b75c1e030e88bd1579f1651793c2aed319e917147ae8de",
+      "origin_hash": "d1eaab5f71b0952ba54dffdb89c4aca278bc83d974c47458480d5e7e8623701a",
       "path": ".claude/regen-harness.sh"
     },
     "CLAUDE.md": {

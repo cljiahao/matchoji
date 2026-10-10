@@ -9,12 +9,12 @@ concurrency:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1 — SHA-pinned per Skills Security; re-verify/bump via the review utility, don't hand-edit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 — SHA-pinned per Skills Security; re-verify/bump via the review utility, don't hand-edit
         with: { fetch-depth: 0 }    # diff-cover needs full history
-      - uses: pnpm/action-setup@a15d269cd4658e1107c09f1fabf4cbd7bd1f308a # v4.4.0
-        with: { version: "11" }
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0 — no `version:`; reads packageManager from package.json
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: "24", cache: pnpm }
       - run: pnpm install --frozen-lockfile     # lockfile-in-sync gate
       - name: Harness integrity
@@ -23,13 +23,29 @@ jobs:
       - run: pnpm exec vitest --run --coverage    # writes coverage/cobertura-coverage.xml
       - name: Changed-line coverage (>= 80%)
         run: pipx run diff-cover coverage/cobertura-coverage.xml --compare-branch=origin/${{ github.base_ref || 'main' }} --fail-under=80
-      - name: Secret scan (full history)
-        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+      - name: Install gitleaks (MIT CLI, checksum-verified)
+        env:
+          GITLEAKS_VERSION: "8.30.1"   # bump VERSION and SHA256 together, from the release's gitleaks_<version>_checksums.txt
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"   # gitleaks_<version>_linux_x64.tar.gz
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum -c -
+          sudo tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C /usr/local/bin gitleaks
+      - name: Secret scan (gitleaks)   # PR: the PR's commits; push: full history
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            gitleaks git --redact --no-banner --log-opts="origin/${BASE_REF}..HEAD"
+          else
+            gitleaks git --redact --no-banner
+          fi
   changelog:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
       - name: Require CHANGELOG for src changes (apply 'skip-changelog' label to bypass)
         env: { LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}" }
@@ -44,8 +60,9 @@ jobs:
   readme-freshness:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
       - name: Require README.md update for changed folders (apply 'skip-readme-check' label to bypass)
         env: { LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}" }
@@ -56,6 +73,8 @@ jobs:
           missing=""
           while IFS= read -r f; do
             case "$f" in */README.md|README.md) continue ;; esac
+            # documentation-kit.md never writes a README into these folders, so never demand one
+            case "$f" in .github/*|.claude/*|*/.claude/*|secrets/*|*/secrets/*|.secrets/*|*/.secrets/*) continue ;; esac
             d=$(dirname "$f")
             rm_path="README.md"
             [ "$d" != "." ] && rm_path="$d/README.md"
@@ -73,8 +92,9 @@ jobs:
   comment-hygiene:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
       - name: Require no change-narration comments (apply 'skip-comment-check' label to bypass)
         env: { LABELS: "${{ join(github.event.pull_request.labels.*.name, ' ') }}" }
@@ -86,7 +106,7 @@ jobs:
           head -n 10 "$patterns" > "$strict_patterns"
           nl=$(printf '\nx'); nl=${nl%x}
           flagged=""
-          for f in $(git diff --name-only "$base"...HEAD); do
+          while IFS= read -r -d '' f; do
             case "$f" in *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs|*.py) ;; *) continue ;; esac
             [ -f "$f" ] || continue
             while IFS= read -r content; do
@@ -95,7 +115,7 @@ jobs:
                 flagged="$flagged$nl  - $f: $stripped"
               fi
             done < <(git diff -U0 "$base"...HEAD -- "$f" | grep '^+' | grep -vE '^\+\+\+' | sed 's/^+//' | grep -E '^[[:space:]]*(#|//|\*|"""|/\*\*?)')
-          done
+          done < <(git diff -z --name-only "$base"...HEAD)
           rm -f "$strict_patterns"
           if [ -n "$flagged" ]; then
             echo " $LABELS " | grep -q ' skip-comment-check ' && { echo "skip-comment-check label present — OK"; exit 0; }
