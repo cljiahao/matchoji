@@ -22,7 +22,9 @@ jobs:
       - run: pnpm run check                      # format:check + lint + typecheck
       - run: pnpm exec vitest --run --coverage    # writes coverage/cobertura-coverage.xml
       - name: Changed-line coverage (>= 80%)
-        run: pipx run diff-cover coverage/cobertura-coverage.xml --compare-branch=origin/${{ github.base_ref || 'main' }} --fail-under=80
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: pipx run diff-cover coverage/cobertura-coverage.xml --compare-branch="origin/${BASE_REF:-main}" --fail-under=80
       - name: Secret scan (gitleaks CLI, checksum-verified)   # PR: the PR's commits; push: full history
         env:
           BASE_REF: ${{ github.base_ref }}

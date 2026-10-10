@@ -4,7 +4,7 @@
   "seeded_at": "2026-09-14",
   "seeded_files": {
     "AGENTS.md": {
-      "origin_hash": "574aa95801d536d08d3b167494a512c3bd7510fa6ecfc7dc95524633ce3dcecc",
+      "origin_hash": "af90f26982b1ea9d9cf634d407a2fefb636e20daae983f692cc124aaa46e5fc5",
       "path": "AGENTS.md"
     },
     ".claude/settings.json": {
@@ -60,7 +60,7 @@
       "path": ".claude/hooks/post-edit-comment-check.sh"
     },
     "lefthook.yml": {
-      "origin_hash": "860c545f38cdd6c165fc14ec00c5e26986fd9572c6ec2ca8ab4cf39562d0fb65",
+      "origin_hash": "5bebaa15c87f63a90097490fe4d53fa21aa0f41beacf0b1ee1fa66101035396a",
       "path": "lefthook.yml"
     },
     ".lefthook/commit-msg.sh": {
@@ -76,15 +76,15 @@
       "path": ".claude/comment-hygiene-patterns.txt"
     },
     ".github/workflows/ci.yml": {
-      "origin_hash": "9dc9d7e22d9d06cabdcc1980d9481ed23b6f4a9c195b576e9b2eee77b72bd94b",
+      "origin_hash": "ad10f53148178de5f492e75f778006202dde34dbbc37a1ff1b430aea4ac92360",
       "path": ".github/workflows/ci.yml"
     },
     ".claude/ci-gates.sh": {
-      "origin_hash": "ef52734e26ba900b1b5efc424e1ce0a698f8d257adb133afed267be96bd482fb",
+      "origin_hash": "ef95e0a7b0f5eab0569e897be75648e5985347799071c14b633eb391f1e09f4d",
       "path": ".claude/ci-gates.sh"
     },
     ".claude/verify-harness.sh": {
-      "origin_hash": "2bcdf7ce12b62b73c1480d5f9953d504e6aee6cba47c4652c3e8ccc7a79931d4",
+      "origin_hash": "baa2e52f283b0400bc96ea494ea0d088493372184975bc5a955b5e4a5b5ab7c4",
       "path": ".claude/verify-harness.sh"
     },
     ".claude/regen-harness.sh": {

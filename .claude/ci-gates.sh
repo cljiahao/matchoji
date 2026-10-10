@@ -19,6 +19,7 @@ bypassed() {
 }
 pr_only() {
   [ -n "$branch" ] || { echo "$gate: not a pull request — skipped"; exit 0; }
+  git rev-parse --verify -q "$base^{commit}" >/dev/null || fail "$base not found — check out with full history (fetch-depth 0)"
 }
 
 case "$gate" in
@@ -26,10 +27,11 @@ case "$gate" in
     GITLEAKS_VERSION="8.30.1"   # bump VERSION and SHA256 together, from the release's gitleaks_<version>_checksums.txt
     GITLEAKS_SHA256="551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"   # gitleaks_<version>_linux_x64.tar.gz
     if ! command -v gitleaks >/dev/null 2>&1; then
-      tmp=${RUNNER_TEMP:-${AGENT_TEMPDIRECTORY:-$(mktemp -d)}}
+      tmp=$(mktemp -d "${RUNNER_TEMP:-${AGENT_TEMPDIRECTORY:-${TMPDIR:-/tmp}}}/gitleaks.XXXXXX")
       curl -fsSL -o "$tmp/gitleaks.tar.gz" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" || fail "gitleaks download failed"
       echo "${GITLEAKS_SHA256}  $tmp/gitleaks.tar.gz" | sha256sum -c - || fail "gitleaks checksum mismatch"
-      sudo tar -xzf "$tmp/gitleaks.tar.gz" -C /usr/local/bin gitleaks || fail "gitleaks install failed"
+      tar -xzf "$tmp/gitleaks.tar.gz" -C "$tmp" gitleaks || fail "gitleaks install failed"
+      PATH="$tmp:$PATH"   # no sudo: works on hosted and self-hosted Linux x64 agents
     fi
     if [ -n "$branch" ]; then
       gitleaks git --redact --no-banner --log-opts="$base..HEAD" || fail "gitleaks found secrets in this PR's commits"
@@ -39,8 +41,9 @@ case "$gate" in
     ;;
   changelog)
     pr_only
-    changed=$(git diff --name-only "$base"...HEAD)
-    if printf '%s\n' "$changed" | grep -qE '^src/' && ! printf '%s\n' "$changed" | grep -qx 'CHANGELOG.md'; then
+    changed=$(git diff --name-only "$base"...HEAD) || fail "cannot diff against $base"
+    # Here-strings, not pipes: under pipefail, grep -q exiting early would SIGPIPE printf and flip the result.
+    if grep -qE '^src/' <<< "$changed" && ! grep -qx 'CHANGELOG.md' <<< "$changed"; then
       bypassed skip-changelog && exit 0
       fail "src/ changed but CHANGELOG.md was not updated. Add an entry or apply the 'skip-changelog' label."
     fi
@@ -48,12 +51,12 @@ case "$gate" in
   readme)
     pr_only
     tmp=$(mktemp)
-    git diff --name-only "$base"...HEAD > "$tmp"
+    git diff --name-only "$base"...HEAD > "$tmp" || fail "cannot diff against $base"
     missing=""
     while IFS= read -r f; do
       case "$f" in */README.md|README.md) continue ;; esac
       # documentation-kit.md never writes a README into these folders, so never demand one
-      case "$f" in .github/*|.azuredevops/*|azure-pipelines/*|.claude/*|*/.claude/*|secrets/*|*/secrets/*|.secrets/*|*/.secrets/*) continue ;; esac
+      case "$f" in .github/*|.azuredevops/*|azure-pipelines/*|*/azure-pipelines/*|.claude/*|*/.claude/*|secrets/*|*/secrets/*|.secrets/*|*/.secrets/*) continue ;; esac
       d=$(dirname "$f")
       rm_path="README.md"
       [ "$d" != "." ] && rm_path="$d/README.md"
