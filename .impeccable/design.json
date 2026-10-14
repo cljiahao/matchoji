@@ -1,0 +1,425 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T05:02:35.993106+00:00",
+  "title": "Design System: Matchoji",
+  "extensions": {
+    "colorMeta": {
+      "matcha-jade": {
+        "role": "primary",
+        "displayName": "Matcha Jade",
+        "canonical": "#5c7a4f",
+        "tonalRamp": [
+          "oklch(15% 0.06 135)",
+          "oklch(25% 0.06 135)",
+          "oklch(35% 0.06 135)",
+          "oklch(47% 0.06 135)",
+          "oklch(60% 0.06 135)",
+          "oklch(72% 0.06 135)",
+          "oklch(84% 0.06 135)",
+          "oklch(95% 0.06 135)"
+        ]
+      },
+      "hojicha-amber": {
+        "role": "primary",
+        "displayName": "Hojicha Amber",
+        "canonical": "#8f6224",
+        "tonalRamp": [
+          "oklch(15% 0.09 70)",
+          "oklch(25% 0.09 70)",
+          "oklch(35% 0.09 70)",
+          "oklch(47% 0.09 70)",
+          "oklch(60% 0.09 70)",
+          "oklch(72% 0.09 70)",
+          "oklch(84% 0.09 70)",
+          "oklch(95% 0.09 70)"
+        ]
+      },
+      "category-foreground": {
+        "role": "neutral",
+        "displayName": "Category White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#101010",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "off-white-ground": {
+        "role": "neutral",
+        "displayName": "Off-White Ground",
+        "canonical": "#f9f9f9",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "primary-charcoal": {
+        "role": "neutral",
+        "displayName": "Primary Charcoal",
+        "canonical": "var(--color-neutral-900)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "primary-charcoal-hover": {
+        "role": "neutral",
+        "displayName": "Primary Charcoal Hover",
+        "canonical": "var(--color-neutral-800)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "soft-grey": {
+        "role": "neutral",
+        "displayName": "Soft Grey",
+        "canonical": "var(--color-neutral-100)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "soft-grey-hover": {
+        "role": "neutral",
+        "displayName": "Soft Grey Hover",
+        "canonical": "var(--color-neutral-200)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "muted-text": {
+        "role": "neutral",
+        "displayName": "Muted Text",
+        "canonical": "oklch(0.556 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "var(--color-neutral-300)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "input-stroke": {
+        "role": "neutral",
+        "displayName": "Input Stroke",
+        "canonical": "oklch(0.922 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "focus-ring": {
+        "role": "neutral",
+        "displayName": "Focus Ring",
+        "canonical": "oklch(0.708 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(47% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "destructive": {
+        "role": "neutral",
+        "displayName": "Destructive",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": [
+          "oklch(15% 0.2 27)",
+          "oklch(25% 0.2 27)",
+          "oklch(35% 0.2 27)",
+          "oklch(47% 0.2 27)",
+          "oklch(60% 0.2 27)",
+          "oklch(72% 0.2 27)",
+          "oklch(84% 0.2 27)",
+          "oklch(95% 0.2 27)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles: Discover and product name."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Navbar wordmark only."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings (Rate it, Reviews)."
+      },
+      "card-title": {
+        "displayName": "Card Title",
+        "purpose": "Product names in cards and combobox rows."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Subtitles and brand line."
+      },
+      "body-sm": {
+        "displayName": "Body Sm",
+        "purpose": "Review notes, meta, rating counts, buttons, tabs."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Category badges."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-rest",
+        "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        "purpose": "Product cards at rest."
+      },
+      {
+        "name": "card-hover",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        "purpose": "Product card hover lift."
+      },
+      {
+        "name": "dialog",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Log-a-tasting dialog."
+      },
+      {
+        "name": "field",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Inputs and outline buttons."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Colour and shadow transitions on tabs, cards, stars, buttons."
+      },
+      {
+        "name": "dialog",
+        "value": "200ms fade + zoom-95",
+        "purpose": "Dialog open/close."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "site-max",
+        "value": "1184px"
+      }
+    ],
+    "selection": {
+      "value": "color-mix(in oklab, var(--matcha) 25%, transparent)",
+      "purpose": "Text selection tint; the one ambient jade use."
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action: sign in, log a tasting, submit a rating.",
+      "html": "<button class=\"ds-btn-primary\">Log a tasting</button>",
+      "css": ".ds-btn-primary { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; justify-content:center; height:36px; padding:8px 16px; border:none; border-radius:8px; background:var(--primary, #171717); color:var(--primary-foreground, #f9f9f9); font-size:14px; font-weight:500; cursor:pointer; transition:all .15s; } .ds-btn-primary:hover { opacity:.9; } .ds-btn-primary:focus-visible { outline:none; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, #a1a1a1) 50%, transparent); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action, e.g. Load more reviews.",
+      "html": "<button class=\"ds-btn-outline\">Load more (12 left)</button>",
+      "css": ".ds-btn-outline { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; height:36px; padding:8px 16px; border:1px solid var(--border, #d4d4d4); border-radius:8px; background:var(--background, #f9f9f9); color:var(--foreground, #101010); font-size:14px; font-weight:500; box-shadow:0 1px 2px 0 rgb(0 0 0 / .05); cursor:pointer; transition:all .15s; } .ds-btn-outline:hover { background:var(--accent, #f5f5f5); } .ds-btn-outline:focus-visible { outline:none; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, #a1a1a1) 50%, transparent); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form field and combobox search input.",
+      "html": "<input class=\"ds-input\" placeholder=\"Search by name or brand\" />",
+      "css": ".ds-input { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; height:36px; width:100%; max-width:320px; padding:4px 12px; border:1px solid var(--input, #e5e5e5); border-radius:8px; background:transparent; color:var(--foreground, #101010); font-size:14px; box-shadow:0 1px 2px 0 rgb(0 0 0 / .05); transition:border-color .15s, box-shadow .15s; } .ds-input::placeholder { color:var(--muted-foreground, #737373); } .ds-input:focus-visible { outline:none; border-color:var(--ring, #a1a1a1); box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, #a1a1a1) 50%, transparent); }"
+    },
+    {
+      "name": "Category Badge",
+      "kind": "chip",
+      "refersTo": "badge-matcha",
+      "description": "Pill marking a product's category in its data colour.",
+      "html": "<span class=\"ds-badge ds-badge-matcha\">Matcha</span> <span class=\"ds-badge ds-badge-hojicha\">Hojicha</span>",
+      "css": ".ds-badge { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; padding:2px 10px; border-radius:9999px; font-size:12px; line-height:16px; font-weight:600; } .ds-badge-matcha { background:var(--matcha, #5c7a4f); color:var(--matcha-foreground, #fff); } .ds-badge-hojicha { background:var(--hojicha, #8f6224); color:var(--hojicha-foreground, #fff); }"
+    },
+    {
+      "name": "Category Tabs",
+      "kind": "nav",
+      "refersTo": "category-tab",
+      "description": "Segmented All / Matcha / Hojicha filter; active tab fills with its category colour.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Category\"><a class=\"ds-tab\" href=\"#\">All</a><a class=\"ds-tab ds-tab-matcha\" aria-current=\"page\" href=\"#\">Matcha</a><a class=\"ds-tab\" href=\"#\">Hojicha</a></nav>",
+      "css": ".ds-tabs { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; gap:4px; padding:4px; border:1px solid var(--border, #d4d4d4); border-radius:10px; } .ds-tab { padding:6px 12px; border-radius:8px; font-size:14px; font-weight:500; color:var(--muted-foreground, #737373); text-decoration:none; transition:color .15s, background .15s; } .ds-tab:hover { color:var(--foreground, #101010); } .ds-tab:focus-visible { outline:2px solid var(--ring, #a1a1a1); outline-offset:2px; } .ds-tab-matcha[aria-current] { background:var(--matcha, #5c7a4f); color:var(--matcha-foreground, #fff); }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "product-card",
+      "description": "Whole-card link with 4px category spine, badge, meta and star rating.",
+      "html": "<a class=\"ds-card ds-card-hojicha\" href=\"#\"><div class=\"ds-card-head\"><div><h2 class=\"ds-card-title\">Kyoto Roast Hojicha</h2><p class=\"ds-muted\">Ippodo</p></div><span class=\"ds-badge-h\">Hojicha</span></div><p class=\"ds-meta\">Premium · Kyoto</p><div class=\"ds-stars\"><span class=\"ds-on\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span><span class=\"ds-off\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span><span class=\"ds-muted\">4.2 (8 reviews)</span></div></a>",
+      "css": ".ds-card { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:block; max-width:340px; padding:16px; border:1px solid var(--border, #d4d4d4); border-left:4px solid var(--hojicha, #8f6224); border-radius:10px; background:var(--card, #f9f9f9); color:var(--foreground, #101010); text-decoration:none; box-shadow:0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1); transition:box-shadow .15s; } .ds-card:hover { box-shadow:0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1); } .ds-card:focus-visible { outline:none; box-shadow:0 0 0 2px var(--background, #f9f9f9), 0 0 0 4px var(--ring, #a1a1a1); } .ds-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; } .ds-card-title { margin:0; font-size:16px; font-weight:600; line-height:1.25; } .ds-muted { margin:0; color:var(--muted-foreground, #737373); font-size:14px; } .ds-meta { margin:8px 0 0; color:var(--muted-foreground, #737373); font-size:12px; } .ds-badge-h { padding:2px 10px; border-radius:9999px; background:var(--hojicha, #8f6224); color:#fff; font-size:12px; font-weight:600; } .ds-stars { display:flex; align-items:center; gap:6px; margin-top:12px; } .ds-on { display:flex; color:var(--hojicha, #8f6224); } .ds-off { display:flex; color:var(--muted-foreground, #737373); } .ds-stars .ds-muted { font-variant-numeric:tabular-nums; }"
+    },
+    {
+      "name": "Navbar",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Sticky top bar: wordmark left, auth control right, bottom hairline.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-wordmark\" href=\"#\">Matchoji</a><button class=\"ds-nav-btn\">Sign in with Google</button></nav>",
+      "css": ".ds-nav { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:flex; align-items:center; justify-content:space-between; min-height:64px; padding:12px 24px; background:var(--card, #f9f9f9); border-bottom:1px solid var(--border, #d4d4d4); } .ds-wordmark { font-size:20px; font-weight:700; letter-spacing:-0.025em; color:var(--foreground, #101010); text-decoration:none; } .ds-wordmark:focus-visible { outline:2px solid var(--ring, #a1a1a1); outline-offset:2px; } .ds-nav-btn { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; height:36px; padding:8px 16px; border:none; border-radius:8px; background:var(--primary, #171717); color:var(--primary-foreground, #f9f9f9); font-size:14px; font-weight:500; cursor:pointer; } .ds-nav-btn:hover { opacity:.9; } .ds-nav-btn:focus-visible { outline:none; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, #a1a1a1) 50%, transparent); }"
+    },
+    {
+      "name": "Star Rating Input",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Five 28px star radio buttons, filled in the product's category colour.",
+      "html": "<div class=\"ds-rate\" role=\"radiogroup\" aria-label=\"Rating out of 5 stars\"><button class=\"ds-star ds-star-on\" role=\"radio\" aria-checked=\"false\" aria-label=\"1 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star ds-star-on\" role=\"radio\" aria-checked=\"false\" aria-label=\"2 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star ds-star-on\" role=\"radio\" aria-checked=\"true\" aria-label=\"3 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star\" role=\"radio\" aria-checked=\"false\" aria-label=\"4 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star\" role=\"radio\" aria-checked=\"false\" aria-label=\"5 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button></div>",
+      "css": ".ds-rate { display:flex; gap:4px; } .ds-star { padding:2px; border:none; background:none; color:var(--muted-foreground, #737373); cursor:pointer; transition:color .15s; } .ds-star-on, .ds-star:hover { color:var(--matcha, #5c7a4f); } .ds-star:focus-visible { outline:2px solid var(--ring, #a1a1a1); outline-offset:2px; border-radius:4px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Tasting Ledger",
+    "overview": "Matchoji is a working logbook, not a showcase. The ground is a neutral off-white, text is near-black, chrome is greyscale, and one workhorse sans (Lato) carries every word. Against that quiet ledger, exactly two colours do real work: jade marks matcha, amber marks hojicha. Category colour is data. It appears wherever a product or rating appears, so the scarce-matcha, abundant-hojicha contrast reads at a glance across a whole feed.\n\nThe system runs in Operate mode: dense enough to scan a grid of products, calm enough to read reviews. Components are shadcn primitives with the category layer applied on top; there is no bespoke component language beyond the category badge, the category-spined product card, and the star rating. Depth is minimal: product cards sit on a faint shadow and lift slightly on hover, and everything else is flat with hairline borders.\n\nThe confirmed rejection is the neutral-grayscale rating-app look where category is only a text label (the Vivino and Untappd clone pattern). Here, category is never a label alone.",
+    "keyCharacteristics": [
+      "Neutral off-white ground (#f9f9f9), near-black ink (#101010), greyscale chrome.",
+      "Two functional category colours, jade and amber, both carrying white text at WCAG AA.",
+      "One typeface, Lato, for everything. No display face.",
+      "Flat surfaces with hairline borders; only product cards carry a resting shadow.",
+      "Centred 1184px column with 24px gutters on every page."
+    ],
+    "rules": [
+      {
+        "name": "The Category-Is-Data Rule",
+        "body": "Jade and amber appear only where a product's category is being expressed: badge, card spine, star fill, active category tab. They always come from `CATEGORY_STYLES`; no component hard-codes them. The one ambient use is the text-selection tint (jade at 25%), which is native to the world.",
+        "section": "colors"
+      },
+      {
+        "name": "The Charcoal Action Rule",
+        "body": "Buttons and other neutral actions are charcoal or outline. A jade \"Submit\" button would claim every rating is matcha.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Voice Rule",
+        "body": "Lato only. No display face, no serif accent, no mono in shipped UI. This is Operate, not Persuade.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline-First Rule",
+        "body": "Separate with 1px hairline borders before reaching for shadow. Only a clickable product card earns a lift.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Pinned Spine Rule",
+        "body": "Product cards carry a 4px left border in their category colour, with 1px hairlines on the other three sides. This side stripe was pinned by the brief as the card's category signal and overrides the usual ban on side-tab borders. It belongs to the product card only; do not put coloured side stripes on alerts, list rows or other containers.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** pull every jade and amber use from `CATEGORY_STYLES`, so badge, spine, star and tab can never disagree.",
+      "**Do** keep white text on both category fills; both were darkened specifically to clear 4.5:1.",
+      "**Do** keep neutral actions charcoal or outline, whatever the surrounding category.",
+      "**Do** use the 1184px column with 24px gutters and 48px vertical padding on every page.",
+      "**Do** make loading skeletons match the final layout's grid and spacing.",
+      "**Do** stack the detail page's \"Rate it\" column above reviews below `lg`."
+    ],
+    "donts": [
+      "**Don't** use jade or amber decoratively, for status, or for anything other than a product's category (the 25% jade selection tint is the only ambient exception).",
+      "**Don't** add a display face, second family or mono to shipped UI; Lato carries everything.",
+      "**Don't** reduce category to a text label alone; any product or rating shown must carry its colour.",
+      "**Don't** add coloured side stripes outside the product card.",
+      "**Don't** add resting shadows to non-clickable containers; separate them with hairlines.",
+      "**Don't** describe or tint the ground as warm; it is neutral off-white (#f9f9f9)."
+    ]
+  }
+}

@@ -7,6 +7,7 @@ Workflow config and surface briefs for the `impeccable` design skill — records
 ## Contents
 
 - `config.json`
+- `design.json`
 - `surfaces/`
 
 ## Connectivity

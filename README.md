@@ -16,6 +16,7 @@
 - `AGENTS.md`
 - `CLAUDE.md`
 - `components.json`
+- `DESIGN.md`
 - `docker-entrypoint.sh`
 - `Dockerfile`
 - `docs/`
