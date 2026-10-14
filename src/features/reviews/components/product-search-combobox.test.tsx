@@ -67,6 +67,29 @@ describe('ProductSearchCombobox', () => {
     expect(input).not.toHaveAttribute('aria-activedescendant');
   });
 
+  it('waits for typing to pause before searching', async () => {
+    const fake = createFakeBrowserClient({ results: { products: { data: HITS, error: null } } });
+    supabase.current = fake.client;
+    renderWithQuery(<Harness onSelect={vi.fn()} onAddNew={vi.fn()} />);
+
+    await userEvent.type(screen.getByRole('combobox', { name: 'Search products' }), 'uji');
+    await screen.findByRole('option', { name: /Uji Ceremonial/ });
+
+    expect(fake.calls.filter((c) => c.method === 'or')).toEqual([
+      { table: 'products', method: 'or', args: ['name.ilike.%uji%,brand.ilike.%uji%'] },
+    ]);
+  });
+
+  // While the debounce is pending there are no results yet; that must read as
+  // "searching", not flash "No match" and the add-new affordance.
+  it('shows searching, not "no match", while waiting to search', async () => {
+    const { input } = setup({ data: HITS, error: null });
+
+    await userEvent.type(input, 'uji');
+    expect(screen.getByText('Searching…')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Add as new product' })).not.toBeInTheDocument();
+  });
+
   it('selects a match on click', async () => {
     const { onSelect, input } = setup({ data: HITS, error: null });
 

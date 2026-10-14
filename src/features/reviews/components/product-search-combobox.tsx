@@ -26,10 +26,10 @@ export function ProductSearchCombobox({
 }: ProductSearchComboboxProps) {
   const listboxId = useId();
   const [activeIndex, setActiveIndex] = useState(-1);
-  const { data: results, isFetching, isError } = useProductSearch(query);
+  const { data: results, isSearching, isError } = useProductSearch(query);
 
   const searchable = query.trim().length >= 2;
-  const options = !isFetching && results ? results : [];
+  const options = !isSearching && results ? results : [];
   const expanded = options.length > 0;
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -68,7 +68,7 @@ export function ProductSearchCombobox({
         onKeyDown={handleKeyDown}
       />
 
-      {isFetching && (
+      {isSearching && (
         <p className="text-muted-foreground text-sm" aria-live="polite">
           Searching…
         </p>
@@ -104,7 +104,7 @@ export function ProductSearchCombobox({
         ))}
       </ul>
 
-      {!isFetching && searchable && options.length === 0 && (
+      {!isSearching && searchable && options.length === 0 && (
         <div className="flex items-center justify-between gap-2 rounded-md border border-dashed p-3">
           <span className="text-muted-foreground text-sm">
             {isError ? 'Search is unavailable right now.' : <>No match for &ldquo;{query}&rdquo;</>}

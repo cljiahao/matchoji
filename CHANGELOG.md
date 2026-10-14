@@ -17,6 +17,8 @@ All notable changes to this project are documented here. Format follows
   on return.
 - Long review notes collapse behind "Read more"; reviews page 10 at a time.
 - Loading skeletons for the feed and product pages.
+- Product search waits 250ms after typing stops before querying, instead of sending a
+  request per keystroke.
 - `DESIGN.md` and `.impeccable/design.json` recording the Phase 1 design system.
 - Component, page and route tests (React Testing Library + jsdom) with a recording fake
   Supabase client; changed-line coverage is above the CI gate's 80%.
