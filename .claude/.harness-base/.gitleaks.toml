@@ -1,7 +1,7 @@
 [extend]
 useDefault = true
 
-[allowlist]
+[[allowlists]]
 description = "Known non-secrets"
 paths = [
   '''\.env\.example$''',
