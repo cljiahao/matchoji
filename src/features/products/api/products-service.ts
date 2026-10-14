@@ -4,6 +4,9 @@ import type { Database, ProductCategory } from '@/integrations/supabase/database
 
 import type { Product, ProductSummary } from '../types';
 
+import { applyRating, sortByRating } from './product-ratings';
+import { buildSearchFilter } from './search-filter';
+
 type Client = SupabaseClient<Database>;
 
 interface ProductRow {
@@ -36,29 +39,23 @@ async function hydrateProducts(supabase: Client, rows: ProductRow[]): Promise<Pr
   const regionNameById = new Map(regions?.map((r) => [r.id, r.name]));
   const ratingByProductId = new Map(ratings?.map((r) => [r.product_id, r]));
 
-  const products: Product[] = rows.map((row) => {
-    const rating = ratingByProductId.get(row.id);
-    return {
-      id: row.id,
-      name: row.name,
-      brand: row.brand,
-      category: row.category,
-      grade: row.grade,
-      regionName: row.region_id ? (regionNameById.get(row.region_id) ?? null) : null,
-      imageUrl: row.image_url,
-      createdAt: row.created_at,
-      avgStars: rating?.avg_stars ?? null,
-      reviewCount: rating?.review_count ?? 0,
-    };
-  });
+  const products = rows.map((row) =>
+    applyRating(
+      {
+        id: row.id,
+        name: row.name,
+        brand: row.brand,
+        category: row.category,
+        grade: row.grade,
+        regionName: row.region_id ? (regionNameById.get(row.region_id) ?? null) : null,
+        imageUrl: row.image_url,
+        createdAt: row.created_at,
+      },
+      ratingByProductId.get(row.id)
+    )
+  );
 
-  // Rated products first (highest average first), then unrated products by recency.
-  return products.sort((a, b) => {
-    if (a.avgStars === null && b.avgStars === null) return 0;
-    if (a.avgStars === null) return 1;
-    if (b.avgStars === null) return -1;
-    return b.avgStars - a.avgStars;
-  });
+  return sortByRating(products);
 }
 
 export async function listProducts(
@@ -99,12 +96,13 @@ export async function listRegions(supabase: Client): Promise<{ id: string; name:
 }
 
 export async function searchProducts(supabase: Client, query: string): Promise<ProductSummary[]> {
-  if (!query.trim()) return [];
+  const filter = buildSearchFilter(query);
+  if (!filter) return [];
 
   const { data, error } = await supabase
     .from('products')
     .select('id, name, brand, category')
-    .or(`name.ilike.%${query}%,brand.ilike.%${query}%`)
+    .or(filter)
     .limit(10);
 
   if (error) throw error;
