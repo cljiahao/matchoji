@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Environment-derived and route-path constants shared across the app.
+Environment-derived and route-path constants shared across the app. `routes.ts` lists only
+routes that exist; dynamic product pages are built inline as `/products/<id>`.
 
 ## Contents
 

@@ -5,10 +5,5 @@ interface BrandTextProps {
 }
 
 export function BrandText({ className }: BrandTextProps) {
-  return (
-    <>
-      <span className="text-brand-gradient">Match</span>
-      <span className={cn('text-foreground', className)}>oji</span>
-    </>
-  );
+  return <span className={cn('text-foreground', className)}>Matchoji</span>;
 }

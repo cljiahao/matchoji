@@ -14,8 +14,10 @@
 - `.prettierignore`
 - `.prettierrc`
 - `AGENTS.md`
+- `CHANGELOG.md`
 - `CLAUDE.md`
 - `components.json`
+- `DESIGN.md`
 - `docker-entrypoint.sh`
 - `Dockerfile`
 - `docs/`
@@ -28,9 +30,11 @@
 - `pnpm-workspace.yaml`
 - `postcss.config.mjs`
 - `PRODUCT.md`
+- `proxy.ts`
 - `public/`
 - `scripts/`
 - `src/`
+- `supabase/`
 - `test/`
 - `tsconfig.json`
 - `vitest.config.ts`

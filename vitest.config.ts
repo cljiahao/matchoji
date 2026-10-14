@@ -14,12 +14,18 @@ export default defineConfig({
     globals: false,
     environment: 'node',
     passWithNoTests: true,
+    // Component tests opt into jsdom per file with a `@vitest-environment jsdom` docblock.
+    setupFiles: ['test/support/setup.ts'],
     include: ['test/**/*.{test,spec}.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    env: {
+      NEXT_PUBLIC_SUPABASE_URL: 'http://supabase.test',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'cobertura'],
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['**/*.test.ts', '**/*.d.ts', '**/index.ts'],
+      exclude: ['**/*.test.ts', '**/*.test.tsx', '**/*.d.ts', '**/index.ts'],
     },
   },
 });

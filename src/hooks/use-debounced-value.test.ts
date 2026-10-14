@@ -1,0 +1,35 @@
+// @vitest-environment jsdom
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { useDebouncedValue } from './use-debounced-value';
+
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+describe('useDebouncedValue', () => {
+  it('starts at the initial value', () => {
+    const { result } = renderHook(() => useDebouncedValue('a', 300));
+    expect(result.current).toBe('a');
+  });
+
+  it('only settles on the latest value once input pauses for the delay', () => {
+    const { result, rerender } = renderHook(({ value }) => useDebouncedValue(value, 300), {
+      initialProps: { value: 'u' },
+    });
+
+    rerender({ value: 'uj' });
+    act(() => vi.advanceTimersByTime(200));
+    rerender({ value: 'uji' });
+    act(() => vi.advanceTimersByTime(200));
+    expect(result.current).toBe('u');
+
+    act(() => vi.advanceTimersByTime(100));
+    expect(result.current).toBe('uji');
+  });
+});

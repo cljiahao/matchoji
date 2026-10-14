@@ -1,21 +1,15 @@
 import { LinkList, type LinkItem } from '@/components/widgets';
 
 interface SiteFooterProps {
-  creditText?: string;
   links?: LinkItem[];
 }
 
-const defaultLinks: LinkItem[] = [{ label: 'Contact Us', href: '#' }];
-
-export function SiteFooter({
-  creditText = 'Built with Matchoji',
-  links = defaultLinks,
-}: SiteFooterProps) {
+export function SiteFooter({ links = [] }: SiteFooterProps) {
   return (
-    <footer className="bg-foreground w-full">
-      <div className="flex-between px-6 py-6">
-        <p className="text-background text-sm">{creditText}</p>
-        <LinkList links={links} className="text-background text-sm" />
+    <footer className="border-border w-full border-t">
+      <div className="flex-between max-w-site mx-auto px-6 py-6">
+        <p className="text-muted-foreground text-sm">Matchoji</p>
+        {links.length > 0 && <LinkList links={links} className="text-muted-foreground text-sm" />}
       </div>
     </footer>
   );
