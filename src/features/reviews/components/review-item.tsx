@@ -33,7 +33,7 @@ export function ReviewItem({ review }: ReviewItemProps) {
             />
           ))}
         </div>
-        <span className="text-muted-foreground text-xs">{review.reviewerEmail}</span>
+        <span className="text-muted-foreground text-xs">{review.reviewerName}</span>
       </div>
       {review.notes && preview && (
         <p className="mt-2 max-w-prose text-sm whitespace-pre-line">

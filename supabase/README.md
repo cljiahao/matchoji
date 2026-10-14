@@ -10,7 +10,7 @@ Supabase Postgres schema, RLS policies, and Storage bucket setup as versioned SQ
 
 ## Connectivity
 
-`migrations/` holds the numbered SQL files, one per concern (Phase 1 tables, Phase 1 storage), applied in filename order.
+`migrations/` holds the numbered SQL files, one per concern (Phase 1 tables, Phase 1 storage, public reviewer names + region seed), applied in filename order.
 
 ## Parent
 

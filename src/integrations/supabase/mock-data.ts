@@ -59,7 +59,7 @@ export const MOCK_REVIEWS: Record<string, Review[]> = {
     {
       id: 'mock-review-1',
       productId: 'mock-1',
-      reviewerEmail: 'taster@example.com',
+      reviewerName: 'taster',
       stars: 5,
       notes: 'Umami-forward, smooth finish, no bitterness even whisked thin.',
       photoUrl: null,
@@ -68,7 +68,7 @@ export const MOCK_REVIEWS: Record<string, Review[]> = {
     {
       id: 'mock-review-2',
       productId: 'mock-1',
-      reviewerEmail: 'greentea.fan@example.com',
+      reviewerName: 'greentea.fan',
       stars: 4,
       notes:
         'Great everyday ceremonial grade, a step below the top-tier single-cultivar picks. ' +
@@ -84,7 +84,7 @@ export const MOCK_REVIEWS: Record<string, Review[]> = {
     {
       id: 'mock-review-3',
       productId: 'mock-2',
-      reviewerEmail: 'roastfan@example.com',
+      reviewerName: 'roastfan',
       stars: 4,
       notes: 'Nutty and toasty, good as a bedtime cup — low caffeine.',
       photoUrl: null,
@@ -95,7 +95,7 @@ export const MOCK_REVIEWS: Record<string, Review[]> = {
     {
       id: 'mock-review-4',
       productId: 'mock-3',
-      reviewerEmail: 'newbie@example.com',
+      reviewerName: 'newbie',
       stars: 4,
       notes: 'Solid, slightly grassy.',
       photoUrl: null,

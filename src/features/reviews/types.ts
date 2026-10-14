@@ -1,7 +1,7 @@
 export interface Review {
   id: string;
   productId: string;
-  reviewerEmail: string;
+  reviewerName: string;
   stars: number;
   notes: string | null;
   photoUrl: string | null;

@@ -17,18 +17,21 @@ export interface Database {
         Row: {
           id: string;
           email: string;
+          display_name: string;
           role: ProfileRole;
           created_at: string;
         };
         Insert: {
           id: string;
           email: string;
+          display_name: string;
           role?: ProfileRole;
           created_at?: string;
         };
         Update: {
           id?: string;
           email?: string;
+          display_name?: string;
           role?: ProfileRole;
           created_at?: string;
         };
@@ -134,6 +137,13 @@ export interface Database {
           product_id: string;
           review_count: number;
           avg_stars: number;
+        };
+        Relationships: [];
+      };
+      public_profiles: {
+        Row: {
+          id: string;
+          display_name: string;
         };
         Relationships: [];
       };
