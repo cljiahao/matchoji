@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { safeNextPath } from '@/features/auth/lib/safe-next-path';
 import { createClient } from '@/integrations/supabase/server';
 import { withLogging } from '@/lib/utils/with-logging';
 
@@ -7,7 +8,7 @@ import { withLogging } from '@/lib/utils/with-logging';
 export const GET = withLogging(async (req: NextRequest): Promise<NextResponse> => {
   const { searchParams, origin } = new URL(req.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/';
+  const next = safeNextPath(searchParams.get('next'));
 
   if (code) {
     const supabase = await createClient();

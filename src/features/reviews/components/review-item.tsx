@@ -3,6 +3,7 @@
 import { Star } from 'lucide-react';
 import { useState } from 'react';
 
+import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
 import { truncateNotes } from '../lib';
@@ -13,9 +14,10 @@ const NOTES_PREVIEW_CHARS = 280;
 
 interface ReviewItemProps {
   review: Review;
+  category: ProductCategory;
 }
 
-export function ReviewItem({ review }: ReviewItemProps) {
+export function ReviewItem({ review, category }: ReviewItemProps) {
   const [expanded, setExpanded] = useState(false);
   const preview = review.notes ? truncateNotes(review.notes, NOTES_PREVIEW_CHARS) : null;
 
@@ -28,7 +30,7 @@ export function ReviewItem({ review }: ReviewItemProps) {
               key={i}
               className={cn(
                 'h-4 w-4',
-                i < review.stars ? 'fill-foreground text-foreground' : 'text-muted-foreground'
+                i < review.stars ? CATEGORY_STYLES[category].star : 'text-muted-foreground'
               )}
             />
           ))}

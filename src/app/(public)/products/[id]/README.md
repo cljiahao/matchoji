@@ -2,11 +2,12 @@
 
 ## Purpose
 
-One product's detail page — info, aggregate rating, reviews, and the log-a-tasting entry
-point pre-filled to this product.
+One product's detail page: info, aggregate rating, reviews, and the inline "Rate it" form
+(the `#rate` anchor the sign-in round-trip returns to).
 
 ## Contents
 
+- `loading.tsx`
 - `page.tsx`
 
 ## Parent

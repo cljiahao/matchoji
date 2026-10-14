@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import type { ProductCategory } from '@/features/products';
 
 import type { Review } from '../types';
 import { ReviewItem } from './review-item';
@@ -13,9 +14,10 @@ const PAGE_SIZE = 10;
 
 interface ReviewListProps {
   reviews: Review[];
+  category: ProductCategory;
 }
 
-export function ReviewList({ reviews }: ReviewListProps) {
+export function ReviewList({ reviews, category }: ReviewListProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   if (reviews.length === 0) {
@@ -27,7 +29,7 @@ export function ReviewList({ reviews }: ReviewListProps) {
   return (
     <div>
       {reviews.slice(0, visibleCount).map((review) => (
-        <ReviewItem key={review.id} review={review} />
+        <ReviewItem key={review.id} review={review} category={category} />
       ))}
       {remaining > 0 && (
         <Button

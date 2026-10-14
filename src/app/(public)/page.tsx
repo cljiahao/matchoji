@@ -1,6 +1,6 @@
 import { CategoryTabs, EmptyState, ProductGrid, listProducts } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
-import { isSupabaseConfigured } from '@/integrations/supabase/is-configured';
+import { shouldUseMockData } from '@/integrations/supabase/is-configured';
 import { getMockProducts } from '@/integrations/supabase/mock-data';
 import { createClient } from '@/integrations/supabase/server';
 
@@ -12,9 +12,9 @@ export default async function Home({ searchParams }: HomePageProps) {
   const { category } = await searchParams;
   const activeCategory = category === 'matcha' || category === 'hojicha' ? category : undefined;
 
-  const products = isSupabaseConfigured()
-    ? await listProducts(await createClient(), activeCategory)
-    : getMockProducts(activeCategory);
+  const products = shouldUseMockData()
+    ? getMockProducts(activeCategory)
+    : await listProducts(await createClient(), activeCategory);
 
   return (
     <div className="max-w-site mx-auto w-full px-6 py-12">
@@ -34,7 +34,7 @@ export default async function Home({ searchParams }: HomePageProps) {
 
       <div className="mt-8">
         {products.length === 0 ? (
-          <EmptyState>
+          <EmptyState category={activeCategory}>
             <LogTastingDialog />
           </EmptyState>
         ) : (

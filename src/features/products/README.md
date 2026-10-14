@@ -10,6 +10,7 @@ discover-feed UI (cards, category tabs, empty state).
 - `api/`
 - `components/`
 - `index.ts`
+- `lib/`
 - `schemas/`
 - `types.ts`
 
@@ -19,6 +20,7 @@ discover-feed UI (cards, category tabs, empty state).
 writes it via Supabase; `components/` renders it. `reviews` depends on this module (through
 its public `index.ts`) for search and product creation — this module never depends back on
 `reviews`.
+`lib/` holds `CATEGORY_STYLES`, the single source for jade/amber category classes.
 
 ## Parent
 

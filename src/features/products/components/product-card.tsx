@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 
+import { CATEGORY_STYLES } from '../lib';
 import type { Product } from '../types';
 import { CategoryBadge } from './category-badge';
 import { StarRatingDisplay } from './star-rating-display';
@@ -15,8 +16,8 @@ export function ProductCard({ product }: ProductCardProps) {
     <Link
       href={`/products/${product.id}`}
       className={cn(
-        'bg-card block rounded-lg border-y border-r border-l-4 p-4 shadow-sm transition-shadow hover:shadow-md',
-        product.category === 'matcha' ? 'border-l-matcha' : 'border-l-hojicha'
+        'bg-card focus-visible:ring-ring block rounded-lg border-y border-r border-l-4 p-4 shadow-sm transition-shadow outline-none hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2',
+        CATEGORY_STYLES[product.category].border
       )}
     >
       <div className="flex items-start justify-between gap-2">
@@ -36,6 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <StarRatingDisplay
         avgStars={product.avgStars}
         reviewCount={product.reviewCount}
+        category={product.category}
         className="mt-3"
       />
     </Link>

@@ -8,9 +8,11 @@ dialog that combines all of it into one flow. The review list pages 10 at a time
 
 ## Contents
 
+- `form-selects.tsx`
 - `index.ts`
 - `log-tasting-dialog.tsx`
 - `product-search-combobox.tsx`
+- `rate-product-form.tsx`
 - `review-item.tsx`
 - `review-list.tsx`
 - `star-rating-input.tsx`

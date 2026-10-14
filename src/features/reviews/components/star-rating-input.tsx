@@ -3,16 +3,18 @@
 import { Star } from 'lucide-react';
 import { forwardRef, useState } from 'react';
 
+import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
 interface StarRatingInputProps {
   value?: number;
   onChange?: (value: number) => void;
   id?: string;
+  category: ProductCategory;
 }
 
 export const StarRatingInput = forwardRef<HTMLDivElement, StarRatingInputProps>(
-  function StarRatingInput({ value = 0, onChange, id }, ref) {
+  function StarRatingInput({ value = 0, onChange, id, category }, ref) {
     const [hovered, setHovered] = useState<number | null>(null);
     const display = hovered ?? value;
 
@@ -41,7 +43,7 @@ export const StarRatingInput = forwardRef<HTMLDivElement, StarRatingInputProps>(
               <Star
                 className={cn(
                   'h-7 w-7 transition-colors',
-                  starValue <= display ? 'fill-foreground text-foreground' : 'text-muted-foreground'
+                  starValue <= display ? CATEGORY_STYLES[category].star : 'text-muted-foreground'
                 )}
               />
             </button>

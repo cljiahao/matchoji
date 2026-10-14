@@ -8,6 +8,7 @@ without signing in.
 ## Contents
 
 - `layout.tsx`
+- `loading.tsx`
 - `page.tsx`
 - `products/`
 

@@ -47,6 +47,8 @@ next-env.d.ts
 
 # impeccable — per-session override, never shared
 .impeccable/config.local.json
+# impeccable finish-review screenshots — regenerated each review, not source
+.impeccable/review/
 
 # Cursor IDE hook wiring — contains a machine-specific absolute path, per-machine only
 .cursor/
