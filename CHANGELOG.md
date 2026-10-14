@@ -23,6 +23,11 @@ All notable changes to this project are documented here. Format follows
 - Component, page and route tests (React Testing Library + jsdom) with a recording fake
   Supabase client; changed-line coverage is above the CI gate's 80%.
 
+### Changed
+
+- Supabase clients use the publishable key (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
+  instead of the legacy anon key, ahead of Supabase retiring legacy keys at the end of 2026. The unused `SUPABASE_SERVICE_ROLE_KEY` is dropped from `.env.example`.
+
 ### Security
 
 - The OAuth callback only redirects to same-origin paths (open-redirect fix).
