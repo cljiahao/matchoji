@@ -3,7 +3,7 @@
 export function isSupabaseConfigured(): boolean {
   return (
     Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)
   );
 }
 
@@ -13,7 +13,7 @@ export function shouldUseMockData(): boolean {
   if (isSupabaseConfigured()) return false;
   if (process.env.NODE_ENV === 'production') {
     throw new Error(
-      'Supabase is not configured: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+      'Supabase is not configured: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.'
     );
   }
   return true;
