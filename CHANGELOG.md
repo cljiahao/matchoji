@@ -27,6 +27,9 @@ All notable changes to this project are documented here. Format follows
 
 - Supabase clients use the publishable key (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
   instead of the legacy anon key, ahead of Supabase retiring legacy keys at the end of 2026. The unused `SUPABASE_SERVICE_ROLE_KEY` is dropped from `.env.example`.
+- Harness upgraded to templateCentral 6.0.4: `block-no-verify.sh` judges a bare
+  `git commit`/`git push` by the directory the command runs in, so worktree commits are no
+  longer blocked by the main checkout's branch.
 - Dependencies updated within their semver ranges (Next.js 16.4, React 19.3,
   supabase-js 2.117, Radix 1.8, TanStack Query 5.104, Zod 4.6.7, and tooling).
 

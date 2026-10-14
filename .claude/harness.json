@@ -1,10 +1,10 @@
 {
-  "templatecentral_version": "6.0.3",
+  "templatecentral_version": "6.0.4",
   "stack": "nextjs",
   "seeded_at": "2026-09-14",
   "seeded_files": {
     "AGENTS.md": {
-      "origin_hash": "1320354563600fc916997bf6167d9cb1279d94ee906f04a00c8ff0acc66ffe64",
+      "origin_hash": "cd3b4e7329d9af61c2f60166c461a870c035615649c631cb0e653593c4e16434",
       "path": "AGENTS.md"
     },
     ".claude/settings.json": {
@@ -28,7 +28,7 @@
       "path": ".claude/hooks/protect-files.sh"
     },
     ".claude/hooks/block-no-verify.sh": {
-      "origin_hash": "68b6537bedce4edc925e4f00c78691dc776133d22a5ca44cb8aa26f244097035",
+      "origin_hash": "fd913d8fab413365cf74839ee09ac5db482d112bd1f8c14676d82eae2341ff71",
       "path": ".claude/hooks/block-no-verify.sh"
     },
     ".claude/hooks/user-prompt-guard.cjs": {
