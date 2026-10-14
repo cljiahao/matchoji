@@ -36,7 +36,10 @@ beforeEach(() => {
 describe('browser client', () => {
   it('is created from the public env vars', () => {
     createBrowser();
-    expect(ssr.createBrowserClient).toHaveBeenCalledWith('http://supabase.test', 'test-anon-key');
+    expect(ssr.createBrowserClient).toHaveBeenCalledWith(
+      'http://supabase.test',
+      'sb_publishable_test'
+    );
   });
 });
 

@@ -19,7 +19,7 @@ export default defineConfig({
     include: ['test/**/*.{test,spec}.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
     env: {
       NEXT_PUBLIC_SUPABASE_URL: 'http://supabase.test',
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test',
     },
     coverage: {
       provider: 'v8',
