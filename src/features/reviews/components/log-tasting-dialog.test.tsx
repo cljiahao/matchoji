@@ -20,9 +20,12 @@ import { LogTastingDialog } from './log-tasting-dialog';
 
 const REGION_ID = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
 
-function setup(results: NonNullable<Parameters<typeof createFakeBrowserClient>[0]>['results']) {
+function setup(
+  results: NonNullable<Parameters<typeof createFakeBrowserClient>[0]>['results'],
+  session: ReturnType<typeof makeSession> | null = makeSession()
+) {
   const fake = createFakeBrowserClient({
-    session: makeSession(),
+    session,
     results: {
       regions: { data: [{ id: REGION_ID, name: 'Uji, Kyoto' }], error: null },
       ...results,
@@ -42,6 +45,7 @@ async function openAndSearch(text: string) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  sessionStorage.clear();
 });
 
 describe('LogTastingDialog', () => {
@@ -125,5 +129,74 @@ describe('LogTastingDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Log a tasting' }));
 
     expect(screen.getByRole('combobox', { name: 'Search products' })).toHaveValue('');
+  });
+
+  // Products are insertable only by authenticated users (RLS), so a signed-out Continue
+  // must go through sign-in instead of failing the insert.
+  it('sends signed-out visitors through Google sign-in with the new product parked', async () => {
+    const { auth, calls } = setup({ products: { data: [], error: null } }, null);
+
+    await openAndSearch('Kagoshima Gold');
+    await userEvent.click(await screen.findByRole('button', { name: 'Add as new product' }));
+    expect(screen.getByText(/sign in with Google first/)).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Grade (optional)'), 'First flush');
+    await userEvent.click(screen.getByRole('button', { name: 'Sign in with Google to continue' }));
+
+    await waitFor(() => expect(auth.signInWithOAuth).toHaveBeenCalled());
+    expect(calls.some((c) => c.method === 'insert')).toBe(false);
+    expect(JSON.parse(sessionStorage.getItem('matchoji:product-draft')!)).toMatchObject({
+      name: 'Kagoshima Gold',
+      grade: 'First flush',
+    });
+    const next = new URL(auth.signInWithOAuth.mock.calls[0][0].options.redirectTo).searchParams;
+    expect(next.get('next')).toBe('/');
+  });
+
+  it('stays on the add step and toasts when Google sign-in cannot start', async () => {
+    const { auth } = setup({ products: { data: [], error: null } }, null);
+    auth.signInWithOAuth.mockResolvedValueOnce({ data: {}, error: new Error('offline') });
+
+    await openAndSearch('Kagoshima Gold');
+    await userEvent.click(await screen.findByRole('button', { name: 'Add as new product' }));
+    const submit = screen.getByRole('button', { name: 'Sign in with Google to continue' });
+    await userEvent.click(submit);
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'Could not reach Google sign-in. Check your connection and try again.'
+      )
+    );
+    expect(submit).toBeEnabled();
+  });
+
+  it('reopens on the add step with the parked product after sign-in', async () => {
+    sessionStorage.setItem(
+      'matchoji:product-draft',
+      JSON.stringify({ name: 'Kagoshima Gold', category: 'hojicha', grade: 'First flush' })
+    );
+    setup({});
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByLabelText('Name')).toHaveValue('Kagoshima Gold');
+    expect(screen.getByLabelText('Grade (optional)')).toHaveValue('First flush');
+    expect(screen.getByRole('combobox', { name: 'Category' })).toHaveTextContent('Hojicha');
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument();
+    expect(sessionStorage.getItem('matchoji:product-draft')).toBeNull();
+    expect(toast.info).toHaveBeenCalled();
+  });
+
+  it('only the dialog marked to restore drafts reopens', async () => {
+    sessionStorage.setItem(
+      'matchoji:product-draft',
+      JSON.stringify({ name: 'Kagoshima Gold', category: 'hojicha' })
+    );
+    supabase.current = createFakeBrowserClient({ session: makeSession() }).client;
+    renderWithQuery(<LogTastingDialog restoresDraft={false} />);
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument()
+    );
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(sessionStorage.getItem('matchoji:product-draft')).not.toBeNull();
   });
 });

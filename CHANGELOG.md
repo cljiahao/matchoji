@@ -33,6 +33,11 @@ All notable changes to this project are documented here. Format follows
 - Dependencies updated within their semver ranges (Next.js 16.4, React 19.3,
   supabase-js 2.117, Radix 1.8, TanStack Query 5.104, Zod 4.6.7, and tooling).
 
+### Fixed
+
+- Signed-out visitors adding a new product no longer hit "Could not add that product":
+  the dialog sends them through Google sign-in first and reopens with the product filled in.
+
 ### Security
 
 - The OAuth callback only redirects to same-origin paths (open-redirect fix).
