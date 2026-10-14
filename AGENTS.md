@@ -1,4 +1,4 @@
-<!-- templateCentral: nextjs@6.0.3 -->
+<!-- templateCentral: nextjs@6.0.4 -->
 
 # AGENTS.md — Matchoji
 
