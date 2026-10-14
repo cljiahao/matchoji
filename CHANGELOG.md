@@ -23,6 +23,12 @@ All notable changes to this project are documented here. Format follows
 - Component, page and route tests (React Testing Library + jsdom) with a recording fake
   Supabase client; changed-line coverage is above the CI gate's 80%.
 
+### Changed
+
+- Harness upgraded to templateCentral 6.0.4: `block-no-verify.sh` judges a bare
+  `git commit`/`git push` by the directory the command runs in, so worktree commits are no
+  longer blocked by the main checkout's branch.
+
 ### Security
 
 - The OAuth callback only redirects to same-origin paths (open-redirect fix).
