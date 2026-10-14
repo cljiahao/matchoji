@@ -23,6 +23,11 @@ All notable changes to this project are documented here. Format follows
 - Component, page and route tests (React Testing Library + jsdom) with a recording fake
   Supabase client; changed-line coverage is above the CI gate's 80%.
 
+### Changed
+
+- Dependencies updated within their semver ranges (Next.js 16.4, React 19.3,
+  supabase-js 2.117, Radix 1.8, TanStack Query 5.104, Zod 4.6.7, and tooling).
+
 ### Security
 
 - The OAuth callback only redirects to same-origin paths (open-redirect fix).
