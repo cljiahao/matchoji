@@ -1,14 +1,24 @@
+'use client';
+
 import { Star } from 'lucide-react';
+import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { truncateNotes } from '../lib';
 import type { Review } from '../types';
+
+// Roughly four lines at the max-w-prose width.
+const NOTES_PREVIEW_CHARS = 280;
 
 interface ReviewItemProps {
   review: Review;
 }
 
 export function ReviewItem({ review }: ReviewItemProps) {
+  const [expanded, setExpanded] = useState(false);
+  const preview = review.notes ? truncateNotes(review.notes, NOTES_PREVIEW_CHARS) : null;
+
   return (
     <div className="border-border border-b py-4 last:border-b-0">
       <div className="flex items-center justify-between gap-2">
@@ -25,7 +35,24 @@ export function ReviewItem({ review }: ReviewItemProps) {
         </div>
         <span className="text-muted-foreground text-xs">{review.reviewerEmail}</span>
       </div>
-      {review.notes && <p className="mt-2 max-w-prose text-sm">{review.notes}</p>}
+      {review.notes && preview && (
+        <p className="mt-2 max-w-prose text-sm whitespace-pre-line">
+          {expanded ? review.notes : preview.text}
+          {preview.truncated && (
+            <>
+              {' '}
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                aria-expanded={expanded}
+                className="text-foreground font-medium underline underline-offset-2"
+              >
+                {expanded ? 'Show less' : 'Read more'}
+              </button>
+            </>
+          )}
+        </p>
+      )}
       {review.photoUrl && (
         // Supabase Storage host isn't known until a real project exists, so next/image's
         // remotePatterns can't be configured yet — plain img until then.

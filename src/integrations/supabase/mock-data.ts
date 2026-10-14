@@ -70,7 +70,12 @@ export const MOCK_REVIEWS: Record<string, Review[]> = {
       productId: 'mock-1',
       reviewerEmail: 'greentea.fan@example.com',
       stars: 4,
-      notes: 'Great everyday ceremonial grade, a step below the top-tier single-cultivar picks.',
+      notes:
+        'Great everyday ceremonial grade, a step below the top-tier single-cultivar picks. ' +
+        'Whisked at 70°C with 2g to 70ml it foams easily and holds a fine, stable crema. ' +
+        'The front palate is sweet and creamy, then a gentle vegetal note comes through, ' +
+        'closer to steamed spinach than cut grass. Finish is clean and lingers a while. ' +
+        'As a latte it gets lost behind oat milk, so I would keep it for usucha.',
       photoUrl: null,
       createdAt: '2026-09-06T00:00:00.000Z',
     },
