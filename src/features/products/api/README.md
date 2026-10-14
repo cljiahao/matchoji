@@ -4,17 +4,20 @@
 
 Supabase reads (server-safe, take a client instance) and the one client-side mutation for
 creating a product. Pure helpers (rating merge/sort, search-filter building) are split out
-so they can be unit-tested without a client.
+so they can be unit-tested without a client. Services are tested against a recording
+fake Supabase client (`test/support/fake-supabase.ts`).
 
 ## Contents
 
 - `index.ts`
-- `products-mutations.ts`
-- `product-ratings.ts`
 - `product-ratings.test.ts`
+- `product-ratings.ts`
+- `products-mutations.test.ts`
+- `products-mutations.ts`
+- `products-service.test.ts`
 - `products-service.ts`
-- `search-filter.ts`
 - `search-filter.test.ts`
+- `search-filter.ts`
 
 ## Parent
 

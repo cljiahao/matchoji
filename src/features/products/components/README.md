@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Discover-feed UI: product cards and grid, category badge/tabs, star display, empty state.
+Discover-feed UI: product cards and grid, category badge/tabs, star display, empty state. `products-components.test.tsx` covers them
+in jsdom.
 
 ## Contents
 
@@ -12,6 +13,7 @@ Discover-feed UI: product cards and grid, category badge/tabs, star display, emp
 - `index.ts`
 - `product-card.tsx`
 - `product-grid.tsx`
+- `products-components.test.tsx`
 - `star-rating-display.tsx`
 
 ## Parent
