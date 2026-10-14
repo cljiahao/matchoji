@@ -25,6 +25,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- Supabase clients use the publishable key (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
+  instead of the legacy anon key, ahead of Supabase retiring legacy keys at the end of 2026. The unused `SUPABASE_SERVICE_ROLE_KEY` is dropped from `.env.example`.
 - Dependencies updated within their semver ranges (Next.js 16.4, React 19.3,
   supabase-js 2.117, Radix 1.8, TanStack Query 5.104, Zod 4.6.7, and tooling).
 

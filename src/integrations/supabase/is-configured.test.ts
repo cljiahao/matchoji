@@ -8,13 +8,13 @@ afterEach(() => {
 
 function unconfigure() {
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
-  vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', '');
+  vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', '');
 }
 
 describe('isSupabaseConfigured', () => {
-  it('is true only when both URL and anon key are set', () => {
+  it('is true only when both URL and publishable key are set', () => {
     expect(isSupabaseConfigured()).toBe(true);
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', '');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', '');
     expect(isSupabaseConfigured()).toBe(false);
   });
 });
