@@ -35,7 +35,7 @@ export default async function Home({ searchParams }: HomePageProps) {
       <div className="mt-8">
         {products.length === 0 ? (
           <EmptyState category={activeCategory}>
-            <LogTastingDialog />
+            <LogTastingDialog restoresDraft={false} />
           </EmptyState>
         ) : (
           <ProductGrid products={products} />

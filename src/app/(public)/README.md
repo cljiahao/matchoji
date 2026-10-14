@@ -3,7 +3,8 @@
 ## Purpose
 
 The public route group — the discover feed (home) and product detail pages, all readable
-without signing in.
+without signing in. The feed has two "Log a tasting" dialogs (header and empty state);
+only the header one reopens a new product parked across Google sign-in.
 
 ## Contents
 
