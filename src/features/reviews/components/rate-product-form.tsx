@@ -121,8 +121,10 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
           <Input type="date" max={localToday()} className="w-44" />
         </CustomFormField>
 
-        <fieldset className="border-border space-y-4 rounded-lg border px-4 pt-2 pb-4">
-          <legend className="px-1 text-sm font-medium">What did you taste? (optional)</legend>
+        <fieldset className="border-border space-y-4 border-t pt-4">
+          <legend className="float-left mb-3 w-full text-sm font-medium">
+            What did you taste? (optional)
+          </legend>
           <CustomFormField name="flavorNotes" label="Flavour notes">
             <FlavorNotePicker category={product.category} />
           </CustomFormField>

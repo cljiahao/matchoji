@@ -26,7 +26,7 @@ export function Navbar() {
 
   return (
     <nav className="bg-card border-border sticky top-0 z-50 w-full border-b">
-      <div className="max-w-site mx-auto flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3">
+      <div className="max-w-site mx-auto flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3 sm:gap-x-8">
         <div className="flex items-center gap-8">
           <Link href={PAGE_ROUTES.HOME} className="text-xl font-bold tracking-tight">
             Matchoji
