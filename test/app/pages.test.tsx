@@ -20,6 +20,8 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
+import JournalLoading from '@/app/(public)/journal/loading';
+import JournalPage from '@/app/(public)/journal/page';
 import DiscoverLoading from '@/app/(public)/loading';
 import Home from '@/app/(public)/page';
 import ProductLoading from '@/app/(public)/products/[id]/loading';
@@ -38,9 +40,15 @@ const productRow = {
   created_at: '2026-09-01T00:00:00Z',
 };
 
-function useServer(results: Record<string, QueryResult | QueryResult[]>) {
+function useServer(
+  results: Record<string, QueryResult | QueryResult[]>,
+  user: { id: string } | null = null
+) {
   const fake = createFakeSupabase(results);
-  server.current = fake.client;
+  server.current = {
+    from: fake.client.from,
+    auth: { getUser: async () => ({ data: { user }, error: null }) },
+  };
   return fake;
 }
 
@@ -183,15 +191,90 @@ describe('Product page', () => {
   });
 });
 
+const reviewRow = (id: string, productId: string, tastedOn: string, stars: number) => ({
+  id,
+  product_id: productId,
+  user_id: 'u1',
+  stars,
+  notes: null,
+  photo_url: null,
+  created_at: `${tastedOn}T00:00:00Z`,
+  flavor_notes: ['roasty'],
+  sweetness: null,
+  umami: null,
+  bitterness: null,
+  body: null,
+  prep_method: 'steeped',
+  dose_g: 5,
+  water_ml: 300,
+  water_temp_c: 95,
+  tasted_on: tastedOn,
+});
+
+describe('Journal page', () => {
+  it('journal signed out shows sign-in', async () => {
+    useServer({});
+    renderWithQuery(await JournalPage());
+
+    expect(screen.getByRole('heading', { name: 'Your journal' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign in with Google' })).toBeInTheDocument();
+  });
+
+  it('invites a first tasting when the journal is empty', async () => {
+    useServer(
+      { reviews: { data: [], error: null }, wishlist: { data: [], error: null } },
+      { id: 'u1' }
+    );
+    renderWithQuery(await JournalPage());
+
+    expect(screen.getByText(/No tastings yet/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
+  });
+
+  it('journal lists tastings by month and the want-to-try list', async () => {
+    useServer(
+      {
+        reviews: {
+          data: [reviewRow('r2', 'p1', '2026-10-05', 5), reviewRow('r1', 'p1', '2026-09-12', 3)],
+          error: null,
+        },
+        products: [
+          {
+            data: [{ id: 'p1', name: 'Kyoto Bancha', brand: 'Ippodo', category: 'hojicha' }],
+            error: null,
+          },
+          { data: [{ id: 'p9', name: 'Uji Gold', brand: null, category: 'matcha' }], error: null },
+        ],
+        wishlist: { data: [{ product_id: 'p9' }], error: null },
+      },
+      { id: 'u1' }
+    );
+    renderWithQuery(await JournalPage());
+
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('4.0')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'October 2026' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'September 2026' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: /Kyoto Bancha/ })[0]).toHaveAttribute(
+      'href',
+      '/products/p1'
+    );
+    expect(screen.getAllByText('Steeped · 5g · 300ml · 95°C')).toHaveLength(2);
+    expect(screen.getByRole('link', { name: 'Uji Gold' })).toHaveAttribute('href', '/products/p9');
+    expect(screen.getByRole('button', { name: 'Remove Uji Gold' })).toBeInTheDocument();
+  });
+});
+
 describe('static routes', () => {
   it('render loading skeletons as busy regions', () => {
     render(
       <>
         <DiscoverLoading />
         <ProductLoading />
+        <JournalLoading />
       </>
     );
-    expect(screen.getAllByLabelText('Loading')).toHaveLength(2);
+    expect(screen.getAllByLabelText('Loading')).toHaveLength(3);
   });
 
   it('auth error page links back home', () => {

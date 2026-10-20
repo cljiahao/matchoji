@@ -1,2 +1,2 @@
 export { createReview, uploadReviewPhoto } from './reviews-mutations';
-export { listReviews } from './reviews-service';
+export { REVIEW_COLUMNS, listReviews, mapReviewRow } from './reviews-service';

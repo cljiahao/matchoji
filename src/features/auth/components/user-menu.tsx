@@ -48,6 +48,9 @@ export function UserMenu() {
         <DropdownMenuItem asChild className="sm:hidden">
           <Link href={PAGE_ROUTES.HOME}>Discover</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild className="sm:hidden">
+          <Link href={PAGE_ROUTES.JOURNAL}>Journal</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />
           Sign out
