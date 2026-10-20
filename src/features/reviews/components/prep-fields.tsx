@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,10 @@ import { CustomFormField } from '@/components/widgets';
 import type { ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
+import { localToday } from '../lib/local-date';
 import { PREP_METHODS, PREP_METHOD_LABELS } from '../lib/tasting-vocab';
+
+const PREP_FIELDS = ['prepMethod', 'doseG', 'waterMl', 'waterTempC', 'tastedOn'] as const;
 
 interface PrepFieldsProps {
   category: ProductCategory;
@@ -15,10 +19,17 @@ interface PrepFieldsProps {
 
 // Coffee-tracker style brew log. Collapsed by default so a quick rating stays quick.
 export function PrepFields({ category }: PrepFieldsProps) {
-  const { control } = useFormContext();
+  const { control, formState } = useFormContext();
+  const [userOpen, setUserOpen] = useState(false);
+  // An invalid field inside a closed <details> can't be seen or focused, so errors force it open.
+  const hasError = PREP_FIELDS.some((f) => formState.errors[f]);
 
   return (
-    <details className="group border-border rounded-lg border">
+    <details
+      open={userOpen || hasError}
+      onToggle={(e) => setUserOpen(e.currentTarget.open)}
+      className="group border-border rounded-lg border"
+    >
       <summary className="cursor-pointer px-4 py-3 text-sm font-medium select-none">
         How you made it
       </summary>
@@ -63,7 +74,7 @@ export function PrepFields({ category }: PrepFieldsProps) {
           </CustomFormField>
         </div>
         <CustomFormField name="tastedOn" label="Tasted on">
-          <Input type="date" className="w-44" />
+          <Input type="date" max={localToday()} className="w-44" />
         </CustomFormField>
       </div>
     </details>

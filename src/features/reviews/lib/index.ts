@@ -1,5 +1,11 @@
+export { localToday } from './local-date';
 export { clearProductDraft, loadProductDraft, saveProductDraft } from './product-draft';
-export { clearReviewDraft, loadReviewDraft, saveReviewDraft } from './review-draft';
+export {
+  clearReviewDraft,
+  draftForCategory,
+  loadReviewDraft,
+  saveReviewDraft,
+} from './review-draft';
 export { summarizeReviews, type ReviewSummary, type StarCount } from './summarize-reviews';
 export {
   ALL_FLAVOR_NOTES,

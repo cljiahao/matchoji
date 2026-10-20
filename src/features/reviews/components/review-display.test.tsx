@@ -66,6 +66,14 @@ describe('ReviewItem', () => {
     expect(screen.getByText('Steeped · 5g · 300ml · 95°C')).toBeInTheDocument();
   });
 
+  it('ignores notes outside the product category', () => {
+    render(
+      <ReviewItem review={makeReview(1, { flavorNotes: ['umami', 'roasty'] })} category="hojicha" />
+    );
+    expect(screen.getByText('Roasty')).toBeInTheDocument();
+    expect(screen.queryByText('Umami')).not.toBeInTheDocument();
+  });
+
   it('renders no toggle for short notes and nothing for empty notes', () => {
     render(<ReviewItem review={makeReview(1, { notes: null })} category="matcha" />);
     expect(screen.queryByRole('button')).not.toBeInTheDocument();

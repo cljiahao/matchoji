@@ -17,7 +17,13 @@ import { signInWithGoogle, useSession } from '@/features/auth';
 import type { ProductSummary } from '@/features/products';
 
 import { useLogReview } from '../hooks/use-log-review.mutation';
-import { clearReviewDraft, loadReviewDraft, saveReviewDraft } from '../lib';
+import {
+  clearReviewDraft,
+  draftForCategory,
+  loadReviewDraft,
+  localToday,
+  saveReviewDraft,
+} from '../lib';
 import { TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
 import { reviewSchemaFor, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
 import { FlavorNotePicker } from './flavor-note-picker';
@@ -25,7 +31,19 @@ import { PrepFields } from './prep-fields';
 import { StarRatingInput } from './star-rating-input';
 import { TasteProfileInput } from './taste-profile-input';
 
-const EMPTY: ReviewInput = { stars: 0, notes: '', flavorNotes: [] };
+// Every field the form renders gets a defined value, so inputs stay controlled and a reset
+// after logging actually clears them on screen.
+function emptyReview(): ReviewInput {
+  return {
+    stars: 0,
+    notes: '',
+    flavorNotes: [],
+    doseG: '',
+    waterMl: '',
+    waterTempC: '',
+    tastedOn: localToday(),
+  };
+}
 
 interface RateProductFormProps {
   product: ProductSummary;
@@ -43,16 +61,16 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
 
   const form = useForm<ReviewInput, unknown, ReviewOutput>({
     resolver: zodResolver(reviewSchemaFor(product.category)),
-    defaultValues: EMPTY,
+    defaultValues: emptyReview(),
   });
 
   useEffect(() => {
     const draft = loadReviewDraft(product.id);
     if (!draft) return;
-    form.reset(draft);
+    form.reset({ ...emptyReview(), ...draftForCategory(draft, product.category) });
     clearReviewDraft(product.id);
     toast.info('Your rating is back. Add your photo again if you had one.');
-  }, [form, product.id]);
+  }, [form, product.id, product.category]);
 
   async function handleSubmit(values: ReviewOutput) {
     if (!session) {
@@ -74,7 +92,7 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
         photo,
       });
       toast.success('Tasting logged.');
-      form.reset(EMPTY);
+      form.reset(emptyReview());
       setPhoto(null);
       onLogged?.();
       router.refresh();
@@ -87,7 +105,7 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form noValidate onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <CustomFormField name="stars" label="Rating">
           <StarRatingInput category={product.category} />
         </CustomFormField>

@@ -14,6 +14,7 @@ notes, typical preparation and photos.
 ## Contents
 
 - `index.ts`
+- `local-date.ts`
 - `product-draft.test.ts`
 - `product-draft.ts`
 - `review-draft.test.ts`

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
-import { noteLabel, truncateNotes } from '../lib';
+import { FLAVOR_NOTES, noteLabel, truncateNotes } from '../lib';
 import type { Review } from '../types';
 import { PrepSummary } from './prep-summary';
 import { TasteProfileBars } from './taste-profile-bars';
@@ -21,6 +21,8 @@ interface ReviewItemProps {
 
 export function ReviewItem({ review, category }: ReviewItemProps) {
   const [expanded, setExpanded] = useState(false);
+  // Notes are free text in the DB; only the category's own vocabulary is shown.
+  const notes = review.flavorNotes.filter((n) => FLAVOR_NOTES[category].includes(n));
   const preview = review.notes ? truncateNotes(review.notes, NOTES_PREVIEW_CHARS) : null;
 
   return (
@@ -58,9 +60,9 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
           )}
         </p>
       )}
-      {review.flavorNotes.length > 0 && (
+      {notes.length > 0 && (
         <ul className="mt-2 flex flex-wrap gap-1.5">
-          {review.flavorNotes.map((note) => (
+          {notes.map((note) => (
             <li
               key={note}
               className={cn('rounded-full px-2.5 py-0.5 text-xs', CATEGORY_STYLES[category].tint)}

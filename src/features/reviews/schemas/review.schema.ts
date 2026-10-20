@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { ProductCategory } from '@/features/products';
 
+import { localToday } from '../lib/local-date';
 import {
   ALL_FLAVOR_NOTES,
   FLAVOR_NOTES,
@@ -9,25 +10,30 @@ import {
   PREP_METHODS,
 } from '../lib/tasting-vocab';
 
+const blankToUndefined = (v: unknown) =>
+  v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v))
+    ? undefined
+    : v;
+
 // Form number inputs hand over '' when cleared; that means "not recorded", not zero.
 function optionalNumber(min: number, max: number, { int = false } = {}) {
-  const base = int ? z.number().int() : z.number();
-  return z.preprocess(
-    (v) => (v === '' || v === null || v === undefined || Number.isNaN(v) ? undefined : Number(v)),
-    base.min(min).max(max).optional()
-  );
+  const range = `Between ${min} and ${max}`;
+  const base = (int ? z.number().int('Whole numbers only') : z.number())
+    .min(min, range)
+    .max(max, range);
+  return z.preprocess((v) => {
+    const blank = blankToUndefined(v);
+    return blank === undefined ? undefined : Number(blank);
+  }, base.optional());
 }
 
-function localToday(): string {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-}
-
+// One refine over the whole array keeps the issue on `flavorNotes`, where the form shows it;
+// per-item refines nest it at flavorNotes.N and the message never renders.
 function flavorNotes(allowed: readonly string[]) {
   return z
-    .array(z.string().refine((n) => allowed.includes(n), 'Pick notes from the list'))
+    .array(z.string())
     .max(MAX_FLAVOR_NOTES, `Pick up to ${MAX_FLAVOR_NOTES} notes`)
+    .refine((notes) => notes.every((n) => allowed.includes(n)), 'Pick notes from the list')
     .refine((notes) => new Set(notes).size === notes.length, 'Each note once')
     .optional();
 }
@@ -44,14 +50,21 @@ function buildReviewSchema(allowedNotes: readonly string[]) {
     bitterness: taste,
     body: taste,
     prepMethod: z.enum(PREP_METHODS).optional(),
-    doseG: optionalNumber(0, 50),
+    // dose_g is numeric(4,1): a second decimal would be rounded silently.
+    doseG: optionalNumber(0, 50).refine(
+      (v) => v === undefined || Math.abs(v * 10 - Math.round(v * 10)) < 1e-9,
+      'One decimal place at most'
+    ),
     waterMl: optionalNumber(0, 1000, { int: true }),
     waterTempC: optionalNumber(0, 100, { int: true }),
-    tastedOn: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a date')
-      .refine((d) => d <= localToday(), 'That date is in the future')
-      .optional(),
+    tastedOn: z.preprocess(
+      blankToUndefined,
+      z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a date')
+        .refine((d) => d <= localToday(), 'That date is in the future')
+        .optional()
+    ),
   });
 }
 

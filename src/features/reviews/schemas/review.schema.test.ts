@@ -64,3 +64,27 @@ describe('reviewSchemaFor', () => {
     ).toBe(true);
   });
 });
+
+describe('review field details', () => {
+  // A per-item refine nests the issue at flavorNotes.0, which the form can't display.
+  it('reports a wrong-category note on the flavorNotes field itself', () => {
+    const result = reviewSchemaFor('hojicha').safeParse({ stars: 4, flavorNotes: ['umami'] });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toEqual(['flavorNotes']);
+  });
+
+  it('treats a cleared date as not recorded', () => {
+    expect(reviewSchema.parse({ stars: 4, tastedOn: '' }).tastedOn).toBeUndefined();
+  });
+
+  // dose_g is numeric(4,1); a second decimal would be rounded without telling anyone.
+  it('rejects a dose with two decimals', () => {
+    expect(reviewSchema.safeParse({ stars: 4, doseG: 2.25 }).success).toBe(false);
+    expect(reviewSchema.safeParse({ stars: 4, doseG: 2.5 }).success).toBe(true);
+  });
+
+  it('explains the allowed range', () => {
+    const result = reviewSchema.safeParse({ stars: 4, doseG: 60 });
+    expect(result.error?.issues[0].message).toBe('Between 0 and 50');
+  });
+});

@@ -38,6 +38,7 @@ export function TasteProfileBars({ values, category, compact = false }: TastePro
               role="meter"
               aria-label={label}
               aria-valuenow={value}
+              aria-valuetext={`${format(value)} of 5`}
               aria-valuemin={1}
               aria-valuemax={5}
               className={cn('bg-muted overflow-hidden rounded-full', compact ? 'h-1.5' : 'h-2')}

@@ -4,7 +4,7 @@ import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
 import type { ReviewSummary } from '../lib/summarize-reviews';
-import { noteLabel } from '../lib/tasting-vocab';
+import { FLAVOR_NOTES, noteLabel } from '../lib/tasting-vocab';
 import { PrepSummary } from './prep-summary';
 import { RatingDistribution } from './rating-distribution';
 import { TasteProfileBars } from './taste-profile-bars';
@@ -38,6 +38,8 @@ function Section({
 // new product shows nothing rather than empty charts.
 export function ProductInsights({ summary, category }: ProductInsightsProps) {
   const total = Object.values(summary.distribution).reduce((a, b) => a + b, 0);
+  // Stored notes aren't constrained to the vocabulary for every write path; show only real ones.
+  const topNotes = summary.topNotes.filter(({ note }) => FLAVOR_NOTES[category].includes(note));
   if (total === 0) return null;
 
   return (
@@ -55,10 +57,10 @@ export function ProductInsights({ summary, category }: ProductInsightsProps) {
         </Section>
       )}
 
-      {summary.topNotes.length > 0 && (
+      {topNotes.length > 0 && (
         <Section title="Most noticed">
           <ul className="flex flex-wrap gap-2">
-            {summary.topNotes.map(({ note, count }) => (
+            {topNotes.map(({ note, count }) => (
               <li
                 key={note}
                 className={cn(

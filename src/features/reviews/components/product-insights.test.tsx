@@ -18,6 +18,7 @@ describe('TasteProfileBars', () => {
     expect(umami).toHaveAttribute('aria-valuemin', '1');
     expect(umami).toHaveAttribute('aria-valuemax', '5');
     expect(screen.getByRole('meter', { name: 'Body' })).toBeInTheDocument();
+    expect(umami).toHaveAttribute('aria-valuetext', '4.5 of 5');
     expect(screen.queryByRole('meter', { name: 'Sweetness' })).not.toBeInTheDocument();
   });
 });
@@ -79,6 +80,17 @@ describe('ProductInsights', () => {
     expect(screen.queryByRole('heading', { name: 'Taste profile' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'How people make it' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Photos' })).not.toBeInTheDocument();
+  });
+
+  it('ignores notes outside the product category', () => {
+    render(
+      <ProductInsights
+        summary={summarizeReviews([makeReview({ flavorNotes: ['umami', 'buy-now'] })])}
+        category="matcha"
+      />
+    );
+    expect(screen.getByText('Umami')).toBeInTheDocument();
+    expect(screen.queryByText('Buy now')).not.toBeInTheDocument();
   });
 
   it('shows profile, prep and photos when reviews carry them', () => {
