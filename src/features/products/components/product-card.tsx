@@ -28,7 +28,7 @@ export function ProductCard({ product, action }: ProductCardProps) {
     <div className="relative h-full">
       <Link
         href={`/products/${product.id}`}
-        className="group bg-card border-border focus-visible:ring-ring flex h-full flex-col overflow-hidden rounded-lg border transition-colors outline-none hover:border-neutral-400 focus-visible:ring-2 focus-visible:ring-offset-2"
+        className="group bg-card border-border flex h-full flex-col overflow-hidden rounded-lg border transition-colors hover:border-neutral-400"
       >
         <div className="relative">
           <ProductImageWell
@@ -59,7 +59,7 @@ export function ProductCard({ product, action }: ProductCardProps) {
                 <li
                   key={note}
                   className={cn(
-                    'rounded-full px-2 py-0.5 text-xs',
+                    'rounded-full px-2.5 py-0.5 text-xs',
                     CATEGORY_STYLES[product.category].tint
                   )}
                 >

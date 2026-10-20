@@ -35,7 +35,7 @@ export function PrepFields({ category }: PrepFieldsProps) {
         How you made it
         <ChevronDown
           aria-hidden="true"
-          className="text-muted-foreground h-4 w-4 transition-transform group-open:rotate-180"
+          className="text-muted-foreground h-4 w-4 group-open:rotate-180 motion-safe:transition-transform"
         />
       </summary>
       <div className="space-y-4 border-t px-4 py-4">
