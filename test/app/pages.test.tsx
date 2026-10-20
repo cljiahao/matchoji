@@ -157,6 +157,7 @@ describe('Product page', () => {
     expect(screen.getByText('1 review')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Ratings' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Most noticed' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Want to try' })).toBeInTheDocument();
     expect(screen.getByText('Toasty')).toBeInTheDocument();
     expect(screen.getByText('Aiko')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Rate it' }).closest('section')).toHaveAttribute(

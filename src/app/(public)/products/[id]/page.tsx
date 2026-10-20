@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 
+import { WantToTryButton } from '@/features/journal';
 import {
   CategoryBadge,
   ProductImageWell,
@@ -68,6 +69,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </p>
             </div>
           </div>
+          <WantToTryButton productId={product.id} className="mt-5 self-start" />
         </div>
       </div>
 
