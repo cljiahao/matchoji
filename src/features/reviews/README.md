@@ -20,7 +20,8 @@ search-or-create-then-rate dialog that drives the whole flow.
 `schemas/` and `types.ts` define review data; `api/` reads/writes it (plus Storage for
 photos); `hooks/` wraps `api/` and `products`' API in TanStack Query; `components/`
 (`LogTastingDialog` above all) composes both into the end-to-end rating flow. `lib/` holds
-pure display helpers (note truncation) used by `components/`.
+the tasting vocabulary, review summaries, sign-in drafts and display helpers. `types.ts`'s
+`Review` carries flavour notes, a taste profile, preparation and the tasting date.
 
 ## Parent
 
