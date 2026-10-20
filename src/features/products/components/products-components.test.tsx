@@ -96,7 +96,7 @@ describe('ProductImageWell', () => {
       <ProductImageWell imageUrl={null} category="hojicha" name="Bancha" />
     );
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
-    expect(container.firstChild).toHaveClass('bg-hojicha/10');
+    expect(container.firstChild).toHaveClass('bg-hojicha/15');
     expect(container.querySelector('svg')).toHaveClass('text-hojicha');
   });
 });
@@ -119,7 +119,7 @@ describe('ProductGrid', () => {
     expect(card).toHaveTextContent('(12)');
     expect(card).toHaveTextContent('Ceremonial · Uji, Kyoto');
     expect(
-      screen.getByRole('link', { name: /Kyoto Bancha/ }).querySelector('.bg-hojicha\\/10')
+      screen.getByRole('link', { name: /Kyoto Bancha/ }).querySelector('.bg-hojicha\\/15')
     ).not.toBeNull();
   });
 

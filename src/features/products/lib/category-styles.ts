@@ -9,7 +9,7 @@ export const CATEGORY_STYLES: Record<
   matcha: {
     label: 'Matcha',
     badge: 'bg-matcha text-matcha-foreground',
-    tint: 'bg-matcha/10',
+    tint: 'bg-matcha/15',
     text: 'text-matcha',
     star: 'fill-matcha text-matcha',
     activeTab: 'bg-matcha text-matcha-foreground',
@@ -17,7 +17,7 @@ export const CATEGORY_STYLES: Record<
   hojicha: {
     label: 'Hojicha',
     badge: 'bg-hojicha text-hojicha-foreground',
-    tint: 'bg-hojicha/10',
+    tint: 'bg-hojicha/15',
     text: 'text-hojicha',
     star: 'fill-hojicha text-hojicha',
     activeTab: 'bg-hojicha text-hojicha-foreground',
