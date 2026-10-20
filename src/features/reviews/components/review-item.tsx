@@ -6,8 +6,10 @@ import { useState } from 'react';
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
-import { truncateNotes } from '../lib';
+import { noteLabel, truncateNotes } from '../lib';
 import type { Review } from '../types';
+import { PrepSummary } from './prep-summary';
+import { TasteProfileBars } from './taste-profile-bars';
 
 // Roughly four lines at the max-w-prose width.
 const NOTES_PREVIEW_CHARS = 280;
@@ -37,6 +39,24 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
         </div>
         <span className="text-muted-foreground text-xs">{review.reviewerName}</span>
       </div>
+      {review.flavorNotes.length > 0 && (
+        <ul className="mt-2 flex flex-wrap gap-1.5">
+          {review.flavorNotes.map((note) => (
+            <li
+              key={note}
+              className={cn('rounded-full px-2.5 py-0.5 text-xs', CATEGORY_STYLES[category].tint)}
+            >
+              {noteLabel(note)}
+            </li>
+          ))}
+        </ul>
+      )}
+      {Object.keys(review.profile).length > 0 && (
+        <div className="mt-3 max-w-xs">
+          <TasteProfileBars values={review.profile} category={category} compact />
+        </div>
+      )}
+      <PrepSummary prep={review.prep} className="mt-2 text-xs" />
       {review.notes && preview && (
         <p className="mt-2 max-w-prose text-sm whitespace-pre-line">
           {expanded ? review.notes : preview.text}

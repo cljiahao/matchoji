@@ -1,7 +1,11 @@
 export { CategorySelect, RegionSelect } from './form-selects';
 export { LogTastingDialog } from './log-tasting-dialog';
+export { PrepSummary, formatPrep } from './prep-summary';
+export { ProductInsights } from './product-insights';
 export { ProductSearchCombobox } from './product-search-combobox';
 export { RateProductForm } from './rate-product-form';
+export { RatingDistribution } from './rating-distribution';
 export { ReviewItem } from './review-item';
 export { ReviewList } from './review-list';
 export { StarRatingInput } from './star-rating-input';
+export { TasteProfileBars } from './taste-profile-bars';

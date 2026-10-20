@@ -48,6 +48,24 @@ describe('ReviewItem', () => {
     );
   });
 
+  it('shows notes, compact profile and prep line', () => {
+    render(
+      <ReviewItem
+        review={makeReview(1, {
+          flavorNotes: ['roasty', 'toasted-rice'],
+          profile: { body: 3 },
+          prep: { method: 'steeped', doseG: 5, waterMl: 300, waterTempC: 95 },
+        })}
+        category="hojicha"
+      />
+    );
+
+    expect(screen.getByText('Roasty')).toBeInTheDocument();
+    expect(screen.getByText('Toasted rice')).toBeInTheDocument();
+    expect(screen.getByRole('meter', { name: 'Body' })).toHaveAttribute('aria-valuenow', '3');
+    expect(screen.getByText('Steeped · 5g · 300ml · 95°C')).toBeInTheDocument();
+  });
+
   it('renders no toggle for short notes and nothing for empty notes', () => {
     render(<ReviewItem review={makeReview(1, { notes: null })} category="matcha" />);
     expect(screen.queryByRole('button')).not.toBeInTheDocument();

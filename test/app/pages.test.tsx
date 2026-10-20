@@ -133,6 +133,16 @@ describe('Product page', () => {
             notes: 'Toasty',
             photo_url: null,
             created_at: '2026-09-02T00:00:00Z',
+            flavor_notes: ['roasty'],
+            sweetness: null,
+            umami: null,
+            bitterness: null,
+            body: null,
+            prep_method: null,
+            dose_g: null,
+            water_ml: null,
+            water_temp_c: null,
+            tasted_on: '2026-09-02',
           },
         ],
         error: null,
@@ -143,7 +153,10 @@ describe('Product page', () => {
     renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
 
     expect(screen.getByRole('heading', { level: 1, name: 'Kyoto Bancha' })).toBeInTheDocument();
-    expect(screen.getByText('4.0 (1 review)')).toBeInTheDocument();
+    expect(screen.getByText('4.0')).toHaveClass('text-5xl');
+    expect(screen.getByText('1 review')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Ratings' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Most noticed' })).toBeInTheDocument();
     expect(screen.getByText('Toasty')).toBeInTheDocument();
     expect(screen.getByText('Aiko')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Rate it' }).closest('section')).toHaveAttribute(
