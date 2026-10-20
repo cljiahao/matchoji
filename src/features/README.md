@@ -16,7 +16,9 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 
 `products` and `auth` have no dependency on other features. `reviews` depends on `products`
 (through its public `index.ts`, for product search/creation) and `auth` (for the current
-session) — the only cross-feature imports in this layer, and always one-directional.
+session). `journal` depends on `reviews` (row mapping, vocabulary, prep display), `products`
+and `auth`. Imports always go through a feature's `index.ts` and only point that way; where
+`products` needs another feature's control on a card it takes a render slot instead.
 
 ## Parent
 
