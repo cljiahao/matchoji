@@ -27,8 +27,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
-- Visual refresh: paper-toned page ground with white cards, a top bar with Discover and
-  Journal links and a global "Log a tasting" button, and product cards with an image well
+- Visual refresh: paper-toned page ground with white cards, a top bar with a Discover link and a global "Log a tasting" button, and product cards with an image well
   (photo or category-tinted leaf), the category badge on the image and a score numeral.
   The category side stripe is gone.
 - Supabase clients use the publishable key (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
