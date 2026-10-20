@@ -7,6 +7,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Journal (`/journal`): your tastings by month with notes and prep, stats (count,
+  average rating, matcha/hojicha split, most-used notes) and a "Want to try" list. A
+  "Want to try" toggle on every product page; signed-out visitors sign in first.
 - Richer tastings: flavour notes (per-category list, up to 6), a four-attribute taste
   profile (sweetness, umami, bitterness, body), and an optional "How you made it" log
   (method, grams, water, temperature, date tasted). Stars alone still log a tasting.
@@ -35,7 +38,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
-- Visual refresh: paper-toned page ground with white cards, a top bar with a Discover link and a global "Log a tasting" button, and product cards with an image well
+- Visual refresh: paper-toned page ground with white cards, a top bar with Discover and Journal links and a global "Log a tasting" button, and product cards with an image well
   (photo or category-tinted leaf), the category badge on the image and a score numeral.
   The category side stripe is gone.
 - Supabase clients use the publishable key (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)

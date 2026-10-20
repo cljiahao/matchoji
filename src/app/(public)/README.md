@@ -11,6 +11,7 @@ only the header one reopens a new product parked across Google sign-in.
 - `layout.tsx`
 - `loading.tsx`
 - `page.tsx`
+- `journal/`
 - `products/`
 
 ## Connectivity

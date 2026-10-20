@@ -8,6 +8,7 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 ## Contents
 
 - `auth/`
+- `journal/`
 - `products/`
 - `reviews/`
 
