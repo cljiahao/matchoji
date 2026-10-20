@@ -70,6 +70,54 @@ describe('RateProductForm, signed in', () => {
     expect(screen.getByRole('radio', { name: '4 stars' })).toHaveAttribute('aria-checked', 'false');
   });
 
+  it('submits notes, profile and prep', async () => {
+    const { calls, onLogged } = setup({
+      session: makeSession(),
+      results: { reviews: { data: null, error: null } },
+    });
+
+    await userEvent.click(await screen.findByRole('radio', { name: '5 stars' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Umami' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Creamy' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Sweetness 3 of 5' }));
+    await userEvent.click(screen.getByText('How you made it'));
+    await userEvent.click(screen.getByRole('radio', { name: 'Usucha' }));
+    await userEvent.type(screen.getByLabelText('Matcha (g)'), '2');
+    await userEvent.type(screen.getByLabelText('Water (ml)'), '70');
+    await userEvent.type(screen.getByLabelText('Water temp (°C)'), '80');
+    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+
+    await waitFor(() => expect(onLogged).toHaveBeenCalled());
+    expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
+      stars: 5,
+      flavor_notes: ['umami', 'creamy'],
+      sweetness: 3,
+      umami: null,
+      prep_method: 'usucha',
+      dose_g: 2,
+      water_ml: 70,
+      water_temp_c: 80,
+    });
+  });
+
+  it('still submits with stars only', async () => {
+    const { calls, onLogged } = setup({
+      session: makeSession(),
+      results: { reviews: { data: null, error: null } },
+    });
+
+    await userEvent.click(await screen.findByRole('radio', { name: '3 stars' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+
+    await waitFor(() => expect(onLogged).toHaveBeenCalled());
+    expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
+      stars: 3,
+      flavor_notes: [],
+      prep_method: null,
+      dose_g: null,
+    });
+  });
+
   it('keeps the rating and explains when saving fails', async () => {
     setup({
       session: makeSession(),

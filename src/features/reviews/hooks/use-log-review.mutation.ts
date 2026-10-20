@@ -22,13 +22,10 @@ export function useLogReview() {
         ? await uploadReviewPhoto(supabase, input.userId, input.photo)
         : undefined;
 
-      await createReview(supabase, {
-        productId: input.productId,
-        userId: input.userId,
-        stars: input.stars,
-        notes: input.notes,
-        photoUrl,
-      });
+      // The File itself is uploaded above; only its public URL is stored with the review.
+      const review: Omit<LogReviewInput, 'photo'> & { photo?: File | null } = { ...input };
+      delete review.photo;
+      await createReview(supabase, { ...review, photoUrl });
     },
   });
 }
