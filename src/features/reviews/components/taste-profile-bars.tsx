@@ -21,7 +21,7 @@ export function TasteProfileBars({ values, category, compact = false }: TastePro
   const shown = TASTE_ATTRIBUTES.filter((a) => values[a] !== undefined);
 
   return (
-    <ul className={cn('w-full', compact ? 'space-y-1' : 'space-y-2.5')}>
+    <ul className={cn('w-full', compact ? 'grid grid-cols-2 gap-x-6 gap-y-1' : 'space-y-2.5')}>
       {shown.map((attribute) => {
         const value = values[attribute] as number;
         const label = TASTE_ATTRIBUTE_LABELS[attribute];
@@ -30,7 +30,7 @@ export function TasteProfileBars({ values, category, compact = false }: TastePro
             key={attribute}
             className={cn(
               'grid items-center gap-3',
-              compact ? 'grid-cols-[5rem_1fr] text-xs' : 'grid-cols-[6rem_1fr_2.5rem] text-sm'
+              compact ? 'grid-cols-[4.5rem_1fr] text-xs' : 'grid-cols-[6rem_1fr_2.5rem] text-sm'
             )}
           >
             <span className={cn(compact && 'text-muted-foreground')}>{label}</span>

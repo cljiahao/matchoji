@@ -39,24 +39,7 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
         </div>
         <span className="text-muted-foreground text-xs">{review.reviewerName}</span>
       </div>
-      {review.flavorNotes.length > 0 && (
-        <ul className="mt-2 flex flex-wrap gap-1.5">
-          {review.flavorNotes.map((note) => (
-            <li
-              key={note}
-              className={cn('rounded-full px-2.5 py-0.5 text-xs', CATEGORY_STYLES[category].tint)}
-            >
-              {noteLabel(note)}
-            </li>
-          ))}
-        </ul>
-      )}
-      {Object.keys(review.profile).length > 0 && (
-        <div className="mt-3 max-w-xs">
-          <TasteProfileBars values={review.profile} category={category} compact />
-        </div>
-      )}
-      <PrepSummary prep={review.prep} className="mt-2 text-xs" />
+
       {review.notes && preview && (
         <p className="mt-2 max-w-prose text-sm whitespace-pre-line">
           {expanded ? review.notes : preview.text}
@@ -75,6 +58,24 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
           )}
         </p>
       )}
+      {review.flavorNotes.length > 0 && (
+        <ul className="mt-2 flex flex-wrap gap-1.5">
+          {review.flavorNotes.map((note) => (
+            <li
+              key={note}
+              className={cn('rounded-full px-2.5 py-0.5 text-xs', CATEGORY_STYLES[category].tint)}
+            >
+              {noteLabel(note)}
+            </li>
+          ))}
+        </ul>
+      )}
+      {Object.keys(review.profile).length > 0 && (
+        <div className="mt-3 max-w-md">
+          <TasteProfileBars values={review.profile} category={category} compact />
+        </div>
+      )}
+      <PrepSummary prep={review.prep} className="mt-2 text-xs" />
       {review.photoUrl && (
         // Supabase Storage host isn't known until a real project exists, so next/image's
         // remotePatterns can't be configured yet — plain img until then.
