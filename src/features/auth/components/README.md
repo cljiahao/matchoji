@@ -5,6 +5,8 @@
 Sign-in/sign-out UI for the `auth` feature. `auth-components.test.tsx` covers these and
 `useSession` in jsdom.
 
+`UserMenu` also carries the Discover/Journal links on narrow screens.
+
 ## Contents
 
 - `auth-components.test.tsx`
