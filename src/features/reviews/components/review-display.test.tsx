@@ -3,21 +3,18 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
+import { makeReview as baseReview } from '../../../../test/support/render';
 import type { Review } from '../types';
 import { ReviewItem } from './review-item';
 import { ReviewList } from './review-list';
 
 function makeReview(i: number, overrides: Partial<Review> = {}): Review {
-  return {
+  return baseReview({
     id: `r${i}`,
-    productId: 'p1',
     reviewerName: `taster${i}`,
-    stars: 4,
     notes: `note ${i}`,
-    photoUrl: null,
-    createdAt: '2026-09-01T00:00:00Z',
     ...overrides,
-  };
+  });
 }
 
 describe('ReviewItem', () => {
