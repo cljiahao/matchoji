@@ -3,7 +3,8 @@
 ## Purpose
 
 TanStack Query hooks wrapping the review/product-search/product-create/region-list Supabase
-calls used by `LogTastingDialog`. `useProductSearch` debounces the query (250ms) and
+calls used by `LogTastingDialog`. `useLogReview` uploads the photo, then stores every
+tasting field. `useProductSearch` debounces the query (250ms) and
 exposes `isSearching`, which is true through the debounce window as well as the fetch.
 
 ## Contents

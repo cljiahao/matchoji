@@ -3,7 +3,7 @@
 ## Purpose
 
 `CATEGORY_STYLES`: the jade (matcha) / amber (hojicha) Tailwind classes for badges, card
-borders, stars and active tabs, so category colour is applied identically everywhere. `discover-params` turns the
+fills, stars and active tabs, so category colour is applied identically everywhere. `discover-params` turns the
 Discover URL into validated filters (invalid values are dropped) and back into links via
 `discoverHref`; `sort-products` implements the three feed orders.
 
