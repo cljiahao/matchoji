@@ -10,10 +10,7 @@ import { LogTastingDialog } from '@/features/reviews';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
-const NAV_LINKS = [
-  { label: 'Discover', href: PAGE_ROUTES.HOME },
-  { label: 'Journal', href: PAGE_ROUTES.JOURNAL },
-] as const;
+const NAV_LINKS = [{ label: 'Discover', href: PAGE_ROUTES.HOME }] as const;
 
 // Product pages are reached from the feed, so they keep Discover marked as the section.
 function isActive(href: string, pathname: string): boolean {

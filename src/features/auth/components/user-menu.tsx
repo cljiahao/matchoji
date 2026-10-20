@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { createClient } from '@/integrations/supabase/client';
+import { PAGE_ROUTES } from '@/lib/constants/routes';
 
 import { useSession } from '../hooks/use-session';
 
@@ -45,10 +46,7 @@ export function UserMenu() {
         </DropdownMenuItem>
         {/* The navbar hides its section links on narrow screens; they live here instead. */}
         <DropdownMenuItem asChild className="sm:hidden">
-          <Link href="/">Discover</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="sm:hidden">
-          <Link href="/journal">Journal</Link>
+          <Link href={PAGE_ROUTES.HOME}>Discover</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />

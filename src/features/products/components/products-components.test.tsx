@@ -91,6 +91,18 @@ describe('ProductImageWell', () => {
     );
   });
 
+  it('can be decorative when the name is already on screen', () => {
+    render(
+      <ProductImageWell
+        imageUrl="https://cdn.test/tin.jpg"
+        category="matcha"
+        name="Uji"
+        decorative
+      />
+    );
+    expect(screen.queryByRole('img', { name: 'Uji' })).not.toBeInTheDocument();
+  });
+
   it('tints by category without a photo', () => {
     const { container } = render(
       <ProductImageWell imageUrl={null} category="hojicha" name="Bancha" />
@@ -117,6 +129,7 @@ describe('ProductGrid', () => {
     expect(card.className).not.toMatch(/border-l-4/);
     expect(card).toHaveTextContent('4.5');
     expect(card).toHaveTextContent('(12)');
+    expect(card).toHaveAccessibleName(/4\.5 out of 5, 12 reviews/);
     expect(card).toHaveTextContent('Ceremonial · Uji, Kyoto');
     expect(
       screen.getByRole('link', { name: /Kyoto Bancha/ }).querySelector('.bg-hojicha\\/15')

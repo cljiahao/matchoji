@@ -26,15 +26,18 @@ describe('Navbar', () => {
     renderWithQuery(<Navbar />);
 
     expect(screen.getByRole('link', { name: 'Discover' })).toHaveAttribute('href', '/');
-    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
     expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
   });
 
-  it('marks the current route', () => {
-    pathname.current = '/journal';
+  // The journal page ships in a later PR; linking to it before then would be a 404.
+  it('does not link to the journal before it exists', () => {
     renderWithQuery(<Navbar />);
+    expect(screen.queryByRole('link', { name: 'Journal' })).not.toBeInTheDocument();
+  });
 
-    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('aria-current', 'page');
+  it('marks only the current route', () => {
+    pathname.current = '/about';
+    renderWithQuery(<Navbar />);
     expect(screen.getByRole('link', { name: 'Discover' })).not.toHaveAttribute('aria-current');
   });
 

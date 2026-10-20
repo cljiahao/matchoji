@@ -25,7 +25,11 @@ export default async function Home({ searchParams }: HomePageProps) {
     ? [sortProducts(getMockProducts(filters.category), filters.sort), []]
     : await (async () => {
         const supabase = await createClient();
-        return Promise.all([listProducts(supabase, filters), listRegions(supabase)]);
+        // Regions only feed the filter; losing them hides the picker instead of the feed.
+        return Promise.all([
+          listProducts(supabase, filters),
+          listRegions(supabase).catch(() => []),
+        ]);
       })();
 
   // Search or region narrowing to nothing is "no match", not an empty catalogue.

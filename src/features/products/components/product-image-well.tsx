@@ -8,12 +8,21 @@ interface ProductImageWellProps {
   imageUrl: string | null;
   category: ProductCategory;
   name: string;
+  // Inside a card whose heading already names the product, the photo adds nothing for
+  // screen readers.
+  decorative?: boolean;
   className?: string;
 }
 
 // Without a photo the well carries the category colour as a field, so a grid still reads
 // matcha vs hojicha at a glance.
-export function ProductImageWell({ imageUrl, category, name, className }: ProductImageWellProps) {
+export function ProductImageWell({
+  imageUrl,
+  category,
+  name,
+  decorative = false,
+  className,
+}: ProductImageWellProps) {
   const style = CATEGORY_STYLES[category];
 
   if (imageUrl) {
@@ -21,7 +30,7 @@ export function ProductImageWell({ imageUrl, category, name, className }: Produc
       <div className={cn('bg-muted overflow-hidden', className)}>
         {/* Storage host is per-project, so next/image remotePatterns can't be fixed here. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imageUrl} alt={name} className="h-full w-full object-cover" />
+        <img src={imageUrl} alt={decorative ? '' : name} className="h-full w-full object-cover" />
       </div>
     );
   }

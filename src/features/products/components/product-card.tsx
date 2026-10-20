@@ -23,6 +23,7 @@ export function ProductCard({ product }: ProductCardProps) {
           imageUrl={product.imageUrl}
           category={product.category}
           name={product.name}
+          decorative
           className="aspect-square w-full sm:aspect-[4/3]"
         />
         <CategoryBadge category={product.category} className="absolute top-2.5 left-2.5" />
@@ -45,12 +46,18 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="text-muted-foreground text-sm">Not yet rated</span>
           ) : (
             <>
-              <ScoreNumeral value={product.avgStars} size="sm" />
-              <span className="hidden sm:block">
-                <Stars value={product.avgStars} category={product.category} size="sm" />
+              <span className="sr-only">
+                {product.avgStars.toFixed(1)} out of 5, {product.reviewCount}{' '}
+                {product.reviewCount === 1 ? 'review' : 'reviews'}
               </span>
-              <span className="text-muted-foreground text-sm tabular-nums">
-                ({product.reviewCount})
+              <span aria-hidden="true" className="flex items-center gap-2">
+                <ScoreNumeral value={product.avgStars} size="sm" />
+                <span className="hidden sm:block">
+                  <Stars value={product.avgStars} category={product.category} size="sm" />
+                </span>
+                <span className="text-muted-foreground text-sm tabular-nums">
+                  ({product.reviewCount})
+                </span>
               </span>
             </>
           )}

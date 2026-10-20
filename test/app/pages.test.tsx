@@ -74,6 +74,19 @@ describe('Discover page', () => {
     });
   });
 
+  it('still shows the feed when regions fail to load', async () => {
+    useServer({
+      products: { data: [productRow], error: null },
+      product_ratings: { data: [], error: null },
+      regions: { data: null, error: new Error('boom') },
+    });
+
+    renderWithQuery(await Home({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole('link', { name: /Kyoto Bancha/ })).toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: 'Region' })).not.toBeInTheDocument();
+  });
+
   it('ignores unknown categories and shows the empty state', async () => {
     const { calls } = useServer({
       products: { data: [], error: null },

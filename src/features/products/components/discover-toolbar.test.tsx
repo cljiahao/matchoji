@@ -32,6 +32,15 @@ describe('DiscoverToolbar', () => {
     expect(form.querySelector('input[name=sort]')).toHaveValue('newest');
   });
 
+  // Soft navigation keeps client state, so the box must reset when the URL's q changes.
+  it('resets the search box when the query in the URL changes', () => {
+    const { rerender } = render(
+      <DiscoverToolbar filters={{ q: 'uji', sort: 'top' }} regions={[]} />
+    );
+    rerender(<DiscoverToolbar filters={{ sort: 'top' }} regions={[]} />);
+    expect(screen.getByRole('searchbox', { name: 'Search teas' })).toHaveValue('');
+  });
+
   it('navigates when the region or sort changes', async () => {
     render(<DiscoverToolbar filters={{ q: 'uji', sort: 'top' }} regions={regions} />);
 

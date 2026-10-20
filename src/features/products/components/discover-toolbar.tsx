@@ -41,6 +41,9 @@ export function DiscoverToolbar({ filters, regions }: DiscoverToolbarProps) {
           className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
         />
         <Input
+          // Remount on a new URL query: soft navigation keeps client state, and an
+          // uncontrolled input would otherwise keep showing the previous search.
+          key={filters.q ?? ''}
           type="search"
           name="q"
           defaultValue={filters.q}
