@@ -12,7 +12,9 @@ export async function listMyReviews(supabase: Client, userId: string): Promise<J
     .from('reviews')
     .select(REVIEW_COLUMNS)
     .eq('user_id', userId)
-    .order('tasted_on', { ascending: false });
+    .order('tasted_on', { ascending: false })
+    // Same-day tastings keep a stable newest-first order.
+    .order('created_at', { ascending: false });
   if (error) throw error;
   if (rows.length === 0) return [];
 

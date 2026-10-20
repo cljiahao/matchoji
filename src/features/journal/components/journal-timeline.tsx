@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { groupByMonth } from '../lib/journal-stats';
 import type { JournalEntry } from '../types';
 
+// ids can't hold spaces ("October 2026"), so headings are keyed by the ISO month.
+const monthId = (isoDate: string) => `month-${isoDate.slice(0, 7)}`;
+
 // tasted_on is a calendar date; formatting it as UTC keeps the day from shifting.
 function dayLabel(isoDate: string): string {
   const [y, m, d] = isoDate.split('-').map(Number);
@@ -21,8 +24,8 @@ export function JournalTimeline({ entries }: { entries: JournalEntry[] }) {
   return (
     <div className="space-y-10">
       {groupByMonth(entries).map(({ month, entries: monthEntries }) => (
-        <section key={month} aria-labelledby={`month-${month}`}>
-          <h2 id={`month-${month}`} className="text-lg font-semibold">
+        <section key={month} aria-labelledby={monthId(monthEntries[0].tastedOn)}>
+          <h2 id={monthId(monthEntries[0].tastedOn)} className="text-lg font-semibold">
             {month}
           </h2>
           <ul className="bg-card mt-3 divide-y rounded-lg border">

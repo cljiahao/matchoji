@@ -100,6 +100,29 @@ describe('RateProductForm, signed in', () => {
     });
   });
 
+  it('opens with stars, notes and the date, then the taste group, then collapsed prep', async () => {
+    setup({ session: makeSession() });
+    const notes = await screen.findByLabelText('Tasting notes (optional)');
+    const date = screen.getByLabelText('Tasted on');
+    const taste = screen.getByRole('group', { name: 'What did you taste? (optional)' });
+    const prep = screen.getByText('How you made it').closest('details')!;
+
+    expect(date.closest('details')).toBeNull();
+    const follows = (a: Element, b: Element) =>
+      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(follows(notes, taste)).toBe(true);
+    expect(follows(taste, prep)).toBe(true);
+    expect(prep).not.toHaveAttribute('open');
+  });
+
+  it('suggests notes in the product’s own category', async () => {
+    setup({ session: makeSession() });
+    expect(await screen.findByLabelText('Tasting notes (optional)')).toHaveAttribute(
+      'placeholder',
+      'Creamy, grassy, sweet finish…'
+    );
+  });
+
   it('prefills the tasting date with today', async () => {
     setup({ session: makeSession() });
     const d = new Date();

@@ -78,11 +78,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <section
-          id="rate"
-          aria-labelledby="rate-heading"
-          className="scroll-mt-24 lg:order-2 lg:self-start"
-        >
+        <section aria-labelledby="reviews-heading">
+          <h2 id="reviews-heading" className="text-lg font-semibold">
+            Reviews
+          </h2>
+          <div className="mt-4">
+            <ReviewList reviews={reviews} category={product.category} />
+          </div>
+        </section>
+        <section id="rate" aria-labelledby="rate-heading" className="scroll-mt-24 lg:self-start">
           <h2 id="rate-heading" className="text-lg font-semibold">
             Rate it
           </h2>
@@ -95,14 +99,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 category: product.category,
               }}
             />
-          </div>
-        </section>
-        <section aria-labelledby="reviews-heading" className="lg:order-1">
-          <h2 id="reviews-heading" className="text-lg font-semibold">
-            Reviews
-          </h2>
-          <div className="mt-4">
-            <ReviewList reviews={reviews} category={product.category} />
           </div>
         </section>
       </div>

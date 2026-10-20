@@ -26,31 +26,32 @@ export function Navbar() {
 
   return (
     <nav className="bg-card border-border sticky top-0 z-50 w-full border-b">
-      <div className="flex-between max-w-site mx-auto min-h-16 gap-4 px-6 py-3">
+      <div className="max-w-site mx-auto flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3">
         <div className="flex items-center gap-8">
           <Link href={PAGE_ROUTES.HOME} className="text-xl font-bold tracking-tight">
             Matchoji
           </Link>
-          <ul className="hidden items-center gap-6 sm:flex">
-            {NAV_LINKS.map((link) => {
-              const active = isActive(link.href, pathname);
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn(
-                      'text-sm font-medium transition-colors',
-                      active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
         </div>
+        {/* Below sm the links wrap to their own row, so signed-out phones can still reach them. */}
+        <ul className="order-last flex w-full items-center gap-6 sm:order-none sm:mr-auto sm:w-auto">
+          {NAV_LINKS.map((link) => {
+            const active = isActive(link.href, pathname);
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'text-sm font-medium transition-colors',
+                    active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
 
         <div className="flex items-center gap-3">
           <LogTastingDialog

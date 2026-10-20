@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { WantToTryButton } from '@/features/journal';
 import {
   DiscoverToolbar,
   EmptyState,
@@ -47,7 +48,12 @@ export default async function Home({ searchParams }: HomePageProps) {
       </div>
 
       <div className="mt-8">
-        {products.length > 0 && <ProductGrid products={products} />}
+        {products.length > 0 && (
+          <ProductGrid
+            products={products}
+            renderAction={(product) => <WantToTryButton productId={product.id} compact />}
+          />
+        )}
         {products.length === 0 && narrowed && (
           <div className="flex-center bg-card flex-col gap-3 rounded-lg border py-16 text-center">
             <p className="text-muted-foreground">

@@ -6,6 +6,8 @@ import { forwardRef, useState } from 'react';
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
+import { handleRadioKeyDown, radioTabIndex } from '../lib/roving-radio';
+
 interface StarRatingInputProps {
   value?: number;
   onChange?: (value: number) => void;
@@ -34,6 +36,8 @@ export const StarRatingInput = forwardRef<HTMLDivElement, StarRatingInputProps>(
               type="button"
               role="radio"
               aria-checked={value === starValue}
+              tabIndex={radioTabIndex(i, value - 1)}
+              onKeyDown={(e) => handleRadioKeyDown(e, i, 5, (next) => onChange?.(next + 1))}
               aria-label={`${starValue} star${starValue > 1 ? 's' : ''}`}
               onClick={() => onChange?.(starValue)}
               onMouseEnter={() => setHovered(starValue)}

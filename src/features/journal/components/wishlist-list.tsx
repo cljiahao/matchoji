@@ -2,34 +2,21 @@
 
 import { X } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { CategoryBadge, type ProductSummary } from '@/features/products';
-import { createClient } from '@/integrations/supabase/client';
 
-import { removeFromWishlist } from '../api/wishlist-service';
+import { useWishlist } from '../hooks/use-wishlist';
 
 interface WishlistListProps {
-  userId: string;
   products: ProductSummary[];
 }
 
-export function WishlistList({ userId, products }: WishlistListProps) {
-  const [items, setItems] = useState(products);
-
-  async function remove(product: ProductSummary) {
-    setItems((current) => current.filter((p) => p.id !== product.id));
-    try {
-      await removeFromWishlist(createClient(), userId, product.id);
-    } catch {
-      setItems((current) =>
-        current.some((p) => p.id === product.id) ? current : [product, ...current]
-      );
-      toast.error('Could not update your list. Try again.');
-    }
-  }
+// The server sends the saved products in order; the shared id cache decides which are still
+// saved, so a failed removal returns the item to its original place.
+export function WishlistList({ products }: WishlistListProps) {
+  const { ids, loaded, toggle, pending } = useWishlist();
+  const items = loaded ? products.filter((p) => ids.includes(p.id)) : products;
 
   if (items.length === 0) {
     return (
@@ -57,7 +44,8 @@ export function WishlistList({ userId, products }: WishlistListProps) {
             variant="ghost"
             size="icon"
             aria-label={`Remove ${product.name}`}
-            onClick={() => remove(product)}
+            disabled={pending}
+            onClick={() => toggle(product.id)}
           >
             <X aria-hidden="true" />
           </Button>

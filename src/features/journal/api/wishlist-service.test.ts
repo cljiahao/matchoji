@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
-import { addToWishlist, isWishlisted, listWishlist, removeFromWishlist } from './wishlist-service';
+import {
+  addToWishlist,
+  isWishlisted,
+  listWishlist,
+  listWishlistIds,
+  removeFromWishlist,
+} from './wishlist-service';
 
 describe('wishlist service', () => {
   it('addToWishlist upserts and ignores a duplicate', async () => {
@@ -64,5 +70,21 @@ describe('wishlist service', () => {
     await expect(removeFromWishlist(client, 'u1', 'p1')).rejects.toBe(error);
     await expect(isWishlisted(client, 'u1', 'p1')).rejects.toBe(error);
     await expect(listWishlist(client, 'u1')).rejects.toBe(error);
+  });
+});
+
+describe('listWishlistIds', () => {
+  it('returns the saved product ids for the user', async () => {
+    const { client, calls } = createFakeSupabase({
+      wishlist: { data: [{ product_id: 'a' }, { product_id: 'b' }], error: null },
+    });
+    expect(await listWishlistIds(client, 'u1')).toEqual(['a', 'b']);
+    expect(calls).toContainEqual({ table: 'wishlist', method: 'eq', args: ['user_id', 'u1'] });
+  });
+
+  it('throws Supabase errors', async () => {
+    const error = new Error('rls');
+    const { client } = createFakeSupabase({ wishlist: { data: null, error } });
+    await expect(listWishlistIds(client, 'u1')).rejects.toBe(error);
   });
 });

@@ -10,6 +10,6 @@ export function AuthStatus() {
   const { session, isLoading } = useSession();
 
   if (isLoading) return <Skeleton className="h-9 w-9 rounded-full" />;
-  if (!session) return <SignInButton />;
+  if (!session) return <SignInButton variant="outline" />;
   return <UserMenu />;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { ImagePlus, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -30,6 +30,11 @@ import { FlavorNotePicker } from './flavor-note-picker';
 import { PrepFields } from './prep-fields';
 import { StarRatingInput } from './star-rating-input';
 import { TasteProfileInput } from './taste-profile-input';
+
+const NOTES_PLACEHOLDER = {
+  matcha: 'Creamy, grassy, sweet finish…',
+  hojicha: 'Toasty, nutty, smooth…',
+} as const;
 
 // Every field the form renders gets a defined value, so inputs stay controlled and a reset
 // after logging actually clears them on screen.
@@ -109,39 +114,62 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
         <CustomFormField name="stars" label="Rating">
           <StarRatingInput category={product.category} />
         </CustomFormField>
-        <CustomFormField name="flavorNotes" label="What did you taste? (optional)">
-          <FlavorNotePicker category={product.category} />
-        </CustomFormField>
-        <fieldset className="space-y-1">
-          <legend className="mb-2 text-sm font-medium">Taste profile (optional)</legend>
-          {TASTE_ATTRIBUTES.map((attribute) => (
-            <Controller
-              key={attribute}
-              name={attribute}
-              control={form.control}
-              render={({ field }) => (
-                <TasteProfileInput
-                  attribute={attribute}
-                  category={product.category}
-                  value={field.value as number | undefined}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-          ))}
-        </fieldset>
         <CustomFormField name="notes" label="Tasting notes (optional)">
-          <Textarea placeholder="Toasty, nutty, smooth…" />
+          <Textarea placeholder={NOTES_PLACEHOLDER[product.category]} />
         </CustomFormField>
+        <CustomFormField name="tastedOn" label="Tasted on">
+          <Input type="date" max={localToday()} className="w-44" />
+        </CustomFormField>
+
+        <fieldset className="border-border space-y-4 rounded-lg border px-4 pt-2 pb-4">
+          <legend className="px-1 text-sm font-medium">What did you taste? (optional)</legend>
+          <CustomFormField name="flavorNotes" label="Flavour notes">
+            <FlavorNotePicker category={product.category} />
+          </CustomFormField>
+          <div role="group" aria-labelledby="taste-profile-label" className="space-y-1">
+            <p id="taste-profile-label" className="mb-2 text-sm font-medium">
+              Taste profile
+            </p>
+            {TASTE_ATTRIBUTES.map((attribute) => (
+              <Controller
+                key={attribute}
+                name={attribute}
+                control={form.control}
+                render={({ field }) => (
+                  <TasteProfileInput
+                    attribute={attribute}
+                    category={product.category}
+                    value={field.value as number | undefined}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            ))}
+          </div>
+        </fieldset>
+
         <PrepFields category={product.category} />
+
         <div className="space-y-2">
           <Label htmlFor="photo">Photo (optional)</Label>
-          <Input
+          {/* The native control is visually hidden: its "Choose File / No file chosen" chrome
+              can't be themed, so a styled label stands in and shows the chosen name. */}
+          <input
             id="photo"
             type="file"
             accept="image/*"
+            className="peer sr-only"
             onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
           />
+          <label
+            htmlFor="photo"
+            className="border-input bg-card peer-focus-visible:ring-ring flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm peer-focus-visible:ring-2"
+          >
+            <ImagePlus aria-hidden="true" className="text-muted-foreground h-4 w-4" />
+            <span className={photo ? 'truncate' : 'text-muted-foreground'}>
+              {photo ? photo.name : 'Add a photo of your cup'}
+            </span>
+          </label>
         </div>
 
         {!sessionLoading && !session && (

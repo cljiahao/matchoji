@@ -1,1 +1,1 @@
-export { useWishlistToggle } from './use-wishlist-toggle';
+export { useWishlist, useWishlistToggle } from './use-wishlist';

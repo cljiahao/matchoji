@@ -55,3 +55,24 @@ describe('TasteProfileInput', () => {
     expect(onChange).toHaveBeenLastCalledWith(undefined);
   });
 });
+
+describe('radiogroup keyboard support', () => {
+  it('has one tab stop and moves the choice with arrow keys', async () => {
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <TasteProfileInput attribute="body" value={undefined} onChange={onChange} />
+    );
+    const radios = screen.getAllByRole('radio');
+    expect(radios.filter((r) => r.tabIndex === 0)).toHaveLength(1);
+
+    rerender(<TasteProfileInput attribute="body" value={2} onChange={onChange} />);
+    const second = screen.getByRole('radio', { name: 'Body 2 of 5' });
+    expect(second).toHaveAttribute('tabindex', '0');
+    second.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(onChange).toHaveBeenLastCalledWith(3);
+    // Focus followed the arrow to step 3, so Left goes back to 2.
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(onChange).toHaveBeenLastCalledWith(2);
+  });
+});

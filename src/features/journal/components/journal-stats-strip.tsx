@@ -28,18 +28,12 @@ export function JournalStatsStrip({ stats }: JournalStatsStripProps) {
       <Stat label="Average rating">
         <ScoreNumeral value={stats.avgStars} size="sm" className="text-3xl" />
       </Stat>
-      <Stat label="Matcha · Hojicha">
-        <div
-          className="bg-muted flex h-2 overflow-hidden rounded-full"
-          role="img"
-          aria-label={`${stats.split.matcha} matcha, ${stats.split.hojicha} hojicha`}
-        >
+      <Stat label="Category split">
+        {/* The counts below carry the numbers; the bar is their picture. */}
+        <div className="bg-muted flex h-2 overflow-hidden rounded-full" aria-hidden="true">
+          <div className={CATEGORY_STYLES.matcha.fill} style={{ width: `${matchaShare}%` }} />
           <div
-            className={`bar-grow ${CATEGORY_STYLES.matcha.fill}`}
-            style={{ width: `${matchaShare}%` }}
-          />
-          <div
-            className={`bar-grow ${CATEGORY_STYLES.hojicha.fill}`}
+            className={CATEGORY_STYLES.hojicha.fill}
             style={{ width: `${100 - matchaShare}%` }}
           />
         </div>

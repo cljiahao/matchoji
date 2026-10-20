@@ -59,14 +59,18 @@ export default async function JournalPage() {
         </div>
       )}
 
-      <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div>{entries.length > 0 && <JournalTimeline entries={entries} />}</div>
+      <div
+        className={
+          entries.length > 0 ? 'mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]' : 'mt-10'
+        }
+      >
+        {entries.length > 0 && <JournalTimeline entries={entries} />}
         <section aria-labelledby="want-heading" className="lg:self-start">
           <h2 id="want-heading" className="text-lg font-semibold">
             Want to try
           </h2>
           <div className="mt-3">
-            <WishlistList userId={user.id} products={wishlist} />
+            <WishlistList products={wishlist} />
           </div>
         </section>
       </div>

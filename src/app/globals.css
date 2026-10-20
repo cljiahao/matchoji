@@ -81,8 +81,9 @@
   --destructive: oklch(0.577 0.245 27.325);
 
   --border: var(--color-neutral-300);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* Field edges and the focus ring must read against white and paper (≥3:1 for the ring). */
+  --input: oklch(0.8 0 0);
+  --ring: oklch(0.35 0 0);
 
   /* Category identity (see .impeccable/surfaces/phase1.md OWN-WORLD) — fixed, not theme-adaptive.
      Both darkened from the initial logo hex until white text clears WCAG AA (4.5:1). */
@@ -132,6 +133,23 @@
   }
   ::selection {
     background-color: color-mix(in oklab, var(--matcha) 25%, transparent);
+  }
+  /* One visible focus treatment for every control, custom chips and radios included. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  html {
+    caret-color: var(--foreground);
+    accent-color: var(--matcha);
+    scrollbar-color: var(--color-neutral-400) transparent;
+  }
+  /* Native disclosure triangles can't be themed; summaries draw their own chevron. */
+  summary {
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
   }
   a {
     text-underline-offset: 0.2em;

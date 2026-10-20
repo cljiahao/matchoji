@@ -38,6 +38,20 @@ describe('Navbar', () => {
     expect(screen.getByRole('link', { name: 'Discover' })).not.toHaveAttribute('aria-current');
   });
 
+  // Signed-out phone users have no account menu, so the links can't hide behind it.
+  it('keeps section links visible on narrow screens', () => {
+    renderWithQuery(<Navbar />);
+    expect(screen.getByRole('link', { name: 'Journal' }).closest('ul')?.className).not.toMatch(
+      /(^|\s)hidden(\s|$)/
+    );
+  });
+
+  it('shows sign-in as a secondary button next to the primary log button', async () => {
+    renderWithQuery(<Navbar />);
+    const signIn = await screen.findByRole('button', { name: 'Sign in with Google' });
+    expect(signIn.className).toMatch(/border/);
+  });
+
   it('treats product pages as part of Discover', () => {
     pathname.current = '/products/p1';
     renderWithQuery(<Navbar />);

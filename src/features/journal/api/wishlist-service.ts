@@ -25,6 +25,16 @@ export async function removeFromWishlist(supabase: Client, userId: string, produ
   if (error) throw error;
 }
 
+// One query per user feeds every toggle on a page (feed cards, product hero, journal list).
+export async function listWishlistIds(supabase: Client, userId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('wishlist')
+    .select('product_id')
+    .eq('user_id', userId);
+  if (error) throw error;
+  return data.map((r) => r.product_id);
+}
+
 export async function isWishlisted(
   supabase: Client,
   userId: string,

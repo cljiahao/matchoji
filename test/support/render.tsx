@@ -37,6 +37,7 @@ export function makeProduct(overrides: Partial<Product> = {}): Product {
     createdAt: '2026-09-01T00:00:00Z',
     avgStars: 4.5,
     reviewCount: 12,
+    topNotes: [],
     ...overrides,
   };
 }

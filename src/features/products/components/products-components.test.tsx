@@ -136,6 +136,24 @@ describe('ProductGrid', () => {
     ).not.toBeNull();
   });
 
+  it('shows the two most-noticed notes on a rated card', () => {
+    render(<ProductGrid products={[makeProduct({ topNotes: ['umami', 'creamy'] })]} />);
+    expect(screen.getByRole('link', { name: /Uji Ceremonial/ })).toHaveTextContent('Umami');
+    expect(screen.getByRole('link', { name: /Uji Ceremonial/ })).toHaveTextContent('Creamy');
+  });
+
+  // Interactive controls can't nest inside the card link.
+  it('renders a per-card action outside the card link', () => {
+    render(
+      <ProductGrid
+        products={[makeProduct()]}
+        renderAction={(p) => <button type="button">Save {p.name}</button>}
+      />
+    );
+    const action = screen.getByRole('button', { name: 'Save Uji Ceremonial' });
+    expect(action.closest('a')).toBeNull();
+  });
+
   it('omits the grade/region line when neither is set', () => {
     render(<ProductGrid products={[makeProduct({ grade: null, regionName: null })]} />);
     expect(screen.queryByText(/·/)).not.toBeInTheDocument();

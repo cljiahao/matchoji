@@ -16,12 +16,13 @@ const base = {
 };
 
 function product(id: string, avgStars: number | null, reviewCount = 0): Product {
-  return { ...base, id, avgStars, reviewCount };
+  return { ...base, id, avgStars, reviewCount, topNotes: [] };
 }
 
 describe('applyRating', () => {
   it('copies avg and count from the rating row', () => {
     expect(applyRating(base, { avg_stars: 4.33, review_count: 3 })).toMatchObject({
+      topNotes: [],
       avgStars: 4.33,
       reviewCount: 3,
     });

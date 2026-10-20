@@ -13,6 +13,8 @@ export interface Product {
   createdAt: string;
   avgStars: number | null;
   reviewCount: number;
+  // The feed's two most-noticed flavour notes; empty where not loaded or unrated.
+  topNotes: string[];
 }
 
 export interface ProductSummary {

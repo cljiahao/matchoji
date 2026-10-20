@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createFakeBrowserClient } from '../support/fake-browser-client';
+import { createFakeBrowserClient, makeSession } from '../support/fake-browser-client';
 import { createFakeSupabase, type QueryResult } from '../support/fake-supabase';
 import { renderWithQuery } from '../support/render';
 
@@ -232,6 +232,10 @@ describe('Journal page', () => {
   });
 
   it('journal lists tastings by month and the want-to-try list', async () => {
+    browser.current = createFakeBrowserClient({
+      session: makeSession({ id: 'u1' }),
+      results: { wishlist: { data: [{ product_id: 'p9' }], error: null } },
+    }).client;
     useServer(
       {
         reviews: {
@@ -260,7 +264,10 @@ describe('Journal page', () => {
       '/products/p1'
     );
     expect(screen.getAllByText('Steeped · 5g · 300ml · 95°C')).toHaveLength(2);
-    expect(screen.getByRole('link', { name: 'Uji Gold' })).toHaveAttribute('href', '/products/p9');
+    expect(await screen.findByRole('link', { name: 'Uji Gold' })).toHaveAttribute(
+      'href',
+      '/products/p9'
+    );
     expect(screen.getByRole('button', { name: 'Remove Uji Gold' })).toBeInTheDocument();
   });
 });
