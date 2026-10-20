@@ -26,12 +26,12 @@ describe('CategoryBadge', () => {
 
 describe('CategoryTabs', () => {
   it('links each tab to its filter and marks the active one in its category colour', () => {
-    render(<CategoryTabs active="hojicha" />);
+    render(<CategoryTabs filters={{ category: 'hojicha', q: 'uji', sort: 'top' }} />);
 
-    expect(screen.getByRole('link', { name: 'All' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'All' })).toHaveAttribute('href', '/?q=uji');
     expect(screen.getByRole('link', { name: 'Matcha' })).toHaveAttribute(
       'href',
-      '/?category=matcha'
+      '/?q=uji&category=matcha'
     );
     const active = screen.getByRole('link', { name: 'Hojicha' });
     expect(active).toHaveAttribute('aria-current', 'page');
@@ -40,7 +40,7 @@ describe('CategoryTabs', () => {
   });
 
   it('uses the neutral primary colour for the active "All" tab', () => {
-    render(<CategoryTabs active={undefined} />);
+    render(<CategoryTabs filters={{ sort: 'top' }} />);
     expect(screen.getByRole('link', { name: 'All' })).toHaveClass('bg-primary');
   });
 });

@@ -4,6 +4,8 @@ import type { Database, ProductCategory } from '@/integrations/supabase/database
 
 import type { Product, ProductSummary } from '../types';
 
+import type { DiscoverFilters } from '../lib/discover-params';
+import { sortProducts } from '../lib/sort-products';
 import { applyRating, sortByRating } from './product-ratings';
 import { buildSearchFilter } from './search-filter';
 
@@ -58,21 +60,21 @@ async function hydrateProducts(supabase: Client, rows: ProductRow[]): Promise<Pr
   return sortByRating(products);
 }
 
-export async function listProducts(
-  supabase: Client,
-  category?: ProductCategory
-): Promise<Product[]> {
+export async function listProducts(supabase: Client, filters: DiscoverFilters): Promise<Product[]> {
   let query = supabase
     .from('products')
     .select('id, name, brand, category, grade, region_id, image_url, created_at')
     .order('created_at', { ascending: false });
 
-  if (category) query = query.eq('category', category);
+  const search = filters.q ? buildSearchFilter(filters.q) : null;
+  if (search) query = query.or(search);
+  if (filters.category) query = query.eq('category', filters.category);
+  if (filters.regionId) query = query.eq('region_id', filters.regionId);
 
   const { data, error } = await query;
   if (error) throw error;
 
-  return hydrateProducts(supabase, data);
+  return sortProducts(await hydrateProducts(supabase, data), filters.sort);
 }
 
 export async function getProduct(supabase: Client, id: string): Promise<Product | null> {

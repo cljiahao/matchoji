@@ -57,6 +57,7 @@ describe('Discover page', () => {
     const { calls } = useServer({
       products: { data: [productRow], error: null },
       product_ratings: { data: [], error: null },
+      regions: { data: [], error: null },
     });
 
     renderWithQuery(await Home({ searchParams: Promise.resolve({ category: 'hojicha' }) }));
@@ -74,12 +75,24 @@ describe('Discover page', () => {
   });
 
   it('ignores unknown categories and shows the empty state', async () => {
-    const { calls } = useServer({ products: { data: [], error: null } });
+    const { calls } = useServer({
+      products: { data: [], error: null },
+      regions: { data: [], error: null },
+    });
 
     renderWithQuery(await Home({ searchParams: Promise.resolve({ category: 'sencha' }) }));
 
     expect(screen.getByText(/No tastings logged yet/)).toBeInTheDocument();
     expect(calls.some((c) => c.method === 'eq')).toBe(false);
+  });
+
+  it('shows a no-results state with a clear-filters link when a search matches nothing', async () => {
+    useServer({ products: { data: [], error: null }, regions: { data: [], error: null } });
+
+    renderWithQuery(await Home({ searchParams: Promise.resolve({ q: 'gyokuro' }) }));
+
+    expect(screen.getByText('No teas match “gyokuro”.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Clear filters' })).toHaveAttribute('href', '/');
   });
 
   it('uses mock data in development without Supabase', async () => {

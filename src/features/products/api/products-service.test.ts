@@ -26,7 +26,7 @@ describe('listProducts', () => {
       },
     });
 
-    const products = await listProducts(client);
+    const products = await listProducts(client, { sort: 'top' });
 
     expect(products.map((p) => p.id)).toEqual(['b', 'a']);
     expect(products[0]).toMatchObject({ regionName: 'Uji, Kyoto', avgStars: 4.5, reviewCount: 2 });
@@ -38,12 +38,31 @@ describe('listProducts', () => {
       products: { data: [], error: null },
     });
 
-    await listProducts(client, 'hojicha');
+    await listProducts(client, { category: 'hojicha', sort: 'top' });
 
     expect(calls).toContainEqual({
       table: 'products',
       method: 'eq',
       args: ['category', 'hojicha'],
+    });
+  });
+
+  it('applies search, category and region filters', async () => {
+    const { client, calls } = createFakeSupabase({ products: { data: [], error: null } });
+    const regionId = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
+
+    await listProducts(client, { q: 'uji', category: 'matcha', regionId, sort: 'newest' });
+
+    expect(calls).toContainEqual({
+      table: 'products',
+      method: 'or',
+      args: ['name.ilike.%uji%,brand.ilike.%uji%'],
+    });
+    expect(calls).toContainEqual({ table: 'products', method: 'eq', args: ['category', 'matcha'] });
+    expect(calls).toContainEqual({
+      table: 'products',
+      method: 'eq',
+      args: ['region_id', regionId],
     });
   });
 
@@ -53,7 +72,7 @@ describe('listProducts', () => {
       product_ratings: { data: [], error: null },
     });
 
-    await listProducts(client);
+    await listProducts(client, { sort: 'top' });
 
     expect(calls.some((c) => c.table === 'regions')).toBe(false);
   });
@@ -62,7 +81,7 @@ describe('listProducts', () => {
     const error = new Error('rls denied');
     const { client } = createFakeSupabase({ products: { data: null, error } });
 
-    await expect(listProducts(client)).rejects.toBe(error);
+    await expect(listProducts(client, { sort: 'top' })).rejects.toBe(error);
   });
 });
 
