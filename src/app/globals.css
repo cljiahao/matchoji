@@ -58,11 +58,12 @@
   --white: #f9f9f9;
   --radius: 0.625rem;
 
-  --background: var(--white);
+  /* Paper ground with white surfaces: depth comes from the two tones, not from shadows. */
+  --background: #f6f4ef;
   --foreground: var(--black);
-  --card: var(--white);
+  --card: #ffffff;
   --card-foreground: var(--black);
-  --popover: var(--white);
+  --popover: #ffffff;
   --popover-foreground: var(--black);
 
   --primary: var(--color-neutral-900);
@@ -76,7 +77,7 @@
   --accent-hover: var(--color-neutral-200);
 
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.52 0 0);
   --destructive: oklch(0.577 0.245 27.325);
 
   --border: var(--color-neutral-300);

@@ -1,6 +1,7 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -41,6 +42,13 @@ export function UserMenu() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem disabled className="text-muted-foreground">
           {email}
+        </DropdownMenuItem>
+        {/* The navbar hides its section links on narrow screens; they live here instead. */}
+        <DropdownMenuItem asChild className="sm:hidden">
+          <Link href="/">Discover</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="sm:hidden">
+          <Link href="/journal">Journal</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />

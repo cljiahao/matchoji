@@ -25,7 +25,6 @@ export default async function Home({ searchParams }: HomePageProps) {
             Rate and discover hojicha and matcha, one cup at a time.
           </p>
         </div>
-        <LogTastingDialog />
       </div>
 
       <div className="mt-6">
