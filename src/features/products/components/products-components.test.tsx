@@ -7,6 +7,8 @@ import { CategoryBadge } from './category-badge';
 import { CategoryTabs } from './category-tabs';
 import { EmptyState } from './empty-state';
 import { ProductGrid } from './product-grid';
+import { ProductImageWell } from './product-image-well';
+import { ScoreNumeral } from './score-numeral';
 import { StarRatingDisplay } from './star-rating-display';
 
 describe('CategoryBadge', () => {
@@ -71,6 +73,34 @@ describe('StarRatingDisplay', () => {
   });
 });
 
+describe('ScoreNumeral', () => {
+  it('renders one decimal and a dash for null', () => {
+    const { rerender } = render(<ScoreNumeral value={4} size="lg" />);
+    expect(screen.getByText('4.0')).toHaveClass('tabular-nums');
+    rerender(<ScoreNumeral value={null} size="sm" />);
+    expect(screen.getByText('–')).toBeInTheDocument();
+  });
+});
+
+describe('ProductImageWell', () => {
+  it('shows the photo when present', () => {
+    render(<ProductImageWell imageUrl="https://cdn.test/tin.jpg" category="matcha" name="Uji" />);
+    expect(screen.getByRole('img', { name: 'Uji' })).toHaveAttribute(
+      'src',
+      'https://cdn.test/tin.jpg'
+    );
+  });
+
+  it('tints by category without a photo', () => {
+    const { container } = render(
+      <ProductImageWell imageUrl={null} category="hojicha" name="Bancha" />
+    );
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(container.firstChild).toHaveClass('bg-hojicha/10');
+    expect(container.querySelector('svg')).toHaveClass('text-hojicha');
+  });
+});
+
 describe('ProductGrid', () => {
   it('renders a card per product linking to its detail page', () => {
     render(
@@ -84,9 +114,13 @@ describe('ProductGrid', () => {
 
     const card = screen.getByRole('link', { name: /Uji Ceremonial/ });
     expect(card).toHaveAttribute('href', '/products/p1');
-    expect(card).toHaveClass('border-l-matcha');
+    expect(card.className).not.toMatch(/border-l-4/);
+    expect(card).toHaveTextContent('4.5');
+    expect(card).toHaveTextContent('(12)');
     expect(card).toHaveTextContent('Ceremonial · Uji, Kyoto');
-    expect(screen.getByRole('link', { name: /Kyoto Bancha/ })).toHaveClass('border-l-hojicha');
+    expect(
+      screen.getByRole('link', { name: /Kyoto Bancha/ }).querySelector('.bg-hojicha\\/10')
+    ).not.toBeNull();
   });
 
   it('omits the grade/region line when neither is set', () => {
