@@ -2,20 +2,23 @@
 
 ## Purpose
 
-The rating UI: star input, review list/item, product search-or-create combobox, and the
-dialog that combines all of it into one flow. The review list pages 10 at a time with a
-"load more" button, and long notes collapse behind "read more". Signed-out visitors adding a product
-are sent through Google sign-in first (products need an authenticated insert), and the
-dialog reopens with the product filled in. Component tests run the real hooks against a
-fake browser Supabase client (`test/support/fake-browser-client.ts`).
+The rating UI. `RateThisTea` is Vivino's one-tap rating: signed out, a star opens the
+sign-in dialog; signed in, it opens `RateProductForm` in a dialog with that star set.
+`LogTastingDialog` (find or add a product, then rate it) also asks for sign-in first. The
+form adds `FlavorNotePicker`, `TasteProfileInput` and the collapsed `PrepFields`; star and
+taste inputs follow the radiogroup keyboard pattern via `lib/roving-radio`.
 
-The rating form adds `FlavorNotePicker`, `TasteProfileInput` and the collapsed `PrepFields`;
-the product page shows `ProductInsights` (`RatingDistribution`, `TasteProfileBars`,
-`PrepSummary`). Star and taste-profile inputs follow the radiogroup keyboard pattern via
-`lib/roving-radio`.
+The product page shows `ProductInsights` ("What does it taste like?": `TasteStructure`
+sliders between two poles, `FlavorFamilies` cards, the typical prep) and
+`CommunityReviews` (review cards, the score with `RatingDistribution`, and "Add your
+rating"). The review list pages 10 at a time and long notes collapse behind "Read more".
+Component tests run the real hooks against a fake browser Supabase client
+(`test/support/fake-browser-client.ts`).
 
 ## Contents
 
+- `community-reviews.tsx`
+- `flavor-families.tsx`
 - `flavor-note-picker.tsx`
 - `form-selects.tsx`
 - `index.ts`
@@ -29,6 +32,8 @@ the product page shows `ProductInsights` (`RatingDistribution`, `TasteProfileBar
 - `product-search-combobox.tsx`
 - `rate-product-form.test.tsx`
 - `rate-product-form.tsx`
+- `rate-this-tea.test.tsx`
+- `rate-this-tea.tsx`
 - `rating-distribution.tsx`
 - `review-display.test.tsx`
 - `review-item.tsx`
@@ -37,6 +42,7 @@ the product page shows `ProductInsights` (`RatingDistribution`, `TasteProfileBar
 - `star-rating-input.tsx`
 - `taste-profile-bars.tsx`
 - `taste-profile-input.tsx`
+- `taste-structure.tsx`
 - `tasting-inputs.test.tsx`
 
 ## Parent

@@ -1,5 +1,6 @@
 export const PAGE_ROUTES = {
   HOME: '/',
+  EXPLORE: '/explore',
   JOURNAL: '/journal',
 } as const;
 

@@ -1,10 +1,9 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 
-import { signInWithGoogle, useSession } from '@/features/auth';
+import { useSession, useSignInPrompt } from '@/features/auth';
 import { createClient } from '@/integrations/supabase/client';
 
 import { addToWishlist, listWishlistIds, removeFromWishlist } from '../api/wishlist-service';
@@ -15,7 +14,7 @@ const EMPTY: string[] = [];
 // page, journal list) shows everywhere without a refetch.
 export function useWishlist() {
   const { session, isLoading: sessionLoading } = useSession();
-  const pathname = usePathname();
+  const promptSignIn = useSignInPrompt();
   const queryClient = useQueryClient();
   const userId = session?.user.id;
   const key = ['wishlist', userId];
@@ -48,12 +47,10 @@ export function useWishlist() {
     },
   });
 
-  async function toggle(productId: string) {
+  function toggle(productId: string) {
     if (sessionLoading) return;
     if (!userId) {
-      const { error } = await signInWithGoogle(pathname);
-      if (error)
-        toast.error('Could not reach Google sign-in. Check your connection and try again.');
+      promptSignIn({ reason: 'Sign in to save teas you want to try.' });
       return;
     }
     mutation.mutate({ productId, save: !ids.includes(productId) });

@@ -69,3 +69,41 @@ export function noteLabel(slug: string): string {
   const words = slug.replaceAll('-', ' ');
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
+
+// Vivino-style ends of each scale: the average sits between two plain-language poles.
+export const TASTE_POLES: Record<TasteAttribute, readonly [string, string]> = {
+  body: ['Light', 'Full'],
+  sweetness: ['Dry', 'Sweet'],
+  umami: ['Mild', 'Savoury'],
+  bitterness: ['Smooth', 'Bitter'],
+};
+
+// Shown in this order on the product page: body first, as Vivino leads with Light–Bold.
+export const TASTE_STRUCTURE_ORDER: readonly TasteAttribute[] = [
+  'body',
+  'sweetness',
+  'umami',
+  'bitterness',
+];
+
+export interface FlavorFamily {
+  id: string;
+  name: string;
+  notes: readonly string[];
+}
+
+// Notes grouped the way tasters talk about them, so mentions add up per family.
+export const FLAVOR_FAMILIES: Record<ProductCategory, readonly FlavorFamily[]> = {
+  matcha: [
+    { id: 'green', name: 'green', notes: ['grassy', 'vegetal', 'marine'] },
+    { id: 'savoury', name: 'savoury', notes: ['umami'] },
+    { id: 'sweet', name: 'sweet', notes: ['creamy', 'sweet', 'nutty'] },
+    { id: 'floral', name: 'floral', notes: ['floral'] },
+    { id: 'bitter', name: 'bitter', notes: ['bitter', 'astringent'] },
+  ],
+  hojicha: [
+    { id: 'roast', name: 'roasted', notes: ['roasty', 'smoky', 'toasted-rice'] },
+    { id: 'sweet', name: 'sweet', notes: ['caramel', 'chocolate', 'malty', 'sweet'] },
+    { id: 'nutty', name: 'nutty', notes: ['nutty', 'woody', 'earthy'] },
+  ],
+};

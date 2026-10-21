@@ -13,6 +13,8 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/products/p1' }));
 const toast = vi.hoisted(() => ({ error: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
+import { SignInPromptProvider } from '@/features/auth';
+
 import { WantToTryButton } from './want-to-try-button';
 
 function setup(options: Parameters<typeof createFakeBrowserClient>[0], compact = false) {
@@ -70,17 +72,28 @@ describe('WantToTryButton', () => {
     expect(button).toHaveAttribute('aria-pressed', 'false');
   });
 
-  it('signed out starts sign-in back to the product', async () => {
-    const { auth, calls } = setup({});
+  it('signed out opens the sign-in prompt, then starts sign-in back to the product', async () => {
+    const fake = createFakeBrowserClient({});
+    supabase.current = fake.client;
+    renderWithQuery(
+      <SignInPromptProvider>
+        <WantToTryButton productId="p1" />
+      </SignInPromptProvider>
+    );
 
     const button = await screen.findByRole('button', { name: 'Want to try' });
     await waitFor(() => expect(button).toBeEnabled());
     await userEvent.click(button);
 
-    await waitFor(() => expect(auth.signInWithOAuth).toHaveBeenCalled());
-    const next = new URL(auth.signInWithOAuth.mock.calls[0][0].options.redirectTo).searchParams;
+    expect(await screen.findByText('Sign in to save teas you want to try.')).toBeInTheDocument();
+    expect(fake.auth.signInWithOAuth).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Continue with Google' }));
+
+    await waitFor(() => expect(fake.auth.signInWithOAuth).toHaveBeenCalled());
+    const next = new URL(fake.auth.signInWithOAuth.mock.calls[0][0].options.redirectTo)
+      .searchParams;
     expect(next.get('next')).toBe('/products/p1');
-    expect(calls.some((c) => c.table === 'wishlist')).toBe(false);
+    expect(fake.calls.some((c) => c.table === 'wishlist')).toBe(false);
   });
 
   // A tap before the session resolves must not send a signed-in user to Google.

@@ -1,8 +1,7 @@
 import { cn } from '@/lib/utils';
 
-import { CATEGORY_STYLES } from '../lib';
 import type { ProductCategory } from '../types';
-import { LeafMark } from './leaf-mark';
+import { TeaTin } from './tea-tin';
 
 interface ProductImageWellProps {
   imageUrl: string | null;
@@ -11,33 +10,32 @@ interface ProductImageWellProps {
   // Inside a card whose heading already names the product, the photo adds nothing for
   // screen readers.
   decorative?: boolean;
+  // Passed to the drawn tin so each product without a photo looks like itself.
+  seed?: string;
+  mark?: string | null;
   className?: string;
 }
 
-// Without a photo the well carries the category colour as a field, so a grid still reads
-// matcha vs hojicha at a glance.
+// The product sits on a warm grey tile, like a tin on a shop shelf. Without a photo a tin
+// drawn in the category's colours takes its place.
 export function ProductImageWell({
   imageUrl,
   category,
   name,
   decorative = false,
+  seed,
+  mark,
   className,
 }: ProductImageWellProps) {
-  const style = CATEGORY_STYLES[category];
-
-  if (imageUrl) {
-    return (
-      <div className={cn('bg-muted overflow-hidden', className)}>
-        {/* Storage host is per-project, so next/image remotePatterns can't be fixed here. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imageUrl} alt={decorative ? '' : name} className="h-full w-full object-cover" />
-      </div>
-    );
-  }
-
   return (
-    <div className={cn('flex-center', style.tint, className)}>
-      <LeafMark className={style.text} />
+    <div className={cn('bg-tile flex-center overflow-hidden rounded-2xl', className)}>
+      {imageUrl ? (
+        // Storage host is per-project, so next/image remotePatterns can't be fixed here.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={imageUrl} alt={decorative ? '' : name} className="h-full w-full object-cover" />
+      ) : (
+        <TeaTin category={category} seed={seed} mark={mark} className="w-[46%] max-w-40" />
+      )}
     </div>
   );
 }

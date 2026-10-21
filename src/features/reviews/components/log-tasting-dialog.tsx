@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -18,7 +18,7 @@ import {
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { CustomFormField } from '@/components/widgets';
-import { signInWithGoogle, useSession } from '@/features/auth';
+import { useSession, useSignInPrompt } from '@/features/auth';
 import {
   productSchema,
   type ProductInput,
@@ -28,7 +28,6 @@ import {
 
 import { useCreateProduct } from '../hooks/use-create-product.mutation';
 import { useRegions } from '../hooks/use-regions.query';
-import { clearProductDraft, loadProductDraft, saveProductDraft } from '../lib';
 import { CategorySelect, RegionSelect } from './form-selects';
 import { ProductSearchCombobox } from './product-search-combobox';
 import { RateProductForm } from './rate-product-form';
@@ -39,20 +38,18 @@ const EMPTY_PRODUCT: ProductInput = { name: '', category: 'matcha' };
 
 interface LogTastingDialogProps {
   trigger?: ReactNode;
-  // A page with several dialogs lets exactly one reopen a product parked across sign-in.
-  restoresDraft?: boolean;
 }
 
-// The feed's entry point: find or add a product, then rate it. Product pages render
-// RateProductForm inline instead, since the product is already chosen there.
-export function LogTastingDialog({ trigger, restoresDraft = true }: LogTastingDialogProps) {
+// The app-wide entry point: find or add a product, then rate it. Like Vivino, logging needs
+// an account, so a signed-out visitor gets the sign-in dialog instead of the form.
+export function LogTastingDialog({ trigger }: LogTastingDialogProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('search');
   const [product, setProduct] = useState<ProductSummary | undefined>();
   const [query, setQuery] = useState('');
-  const [redirecting, setRedirecting] = useState(false);
 
   const { session, isLoading: sessionLoading } = useSession();
+  const promptSignIn = useSignInPrompt();
   const { data: regions } = useRegions();
   const createProductMutation = useCreateProduct();
 
@@ -61,21 +58,11 @@ export function LogTastingDialog({ trigger, restoresDraft = true }: LogTastingDi
     defaultValues: EMPTY_PRODUCT,
   });
 
-  useEffect(() => {
-    if (!restoresDraft) return;
-    const draft = loadProductDraft();
-    if (!draft) return;
-    productForm.reset({ ...EMPTY_PRODUCT, ...draft });
-    // sessionStorage exists only after hydration; reading it during render would make the
-    // client's first render disagree with the server HTML, so the one-time restore runs here.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setStep('add-product');
-    setOpen(true);
-    clearProductDraft();
-    toast.info('Your new product is back. Press Continue to add it.');
-  }, [restoresDraft, productForm]);
-
   function handleOpenChange(next: boolean) {
+    if (next && !session) {
+      if (!sessionLoading) promptSignIn({ reason: 'Sign in to log and rate the teas you try.' });
+      return;
+    }
     setOpen(next);
     if (!next) {
       setStep('search');
@@ -86,19 +73,6 @@ export function LogTastingDialog({ trigger, restoresDraft = true }: LogTastingDi
   }
 
   async function handleAddProductSubmit(values: ProductOutput) {
-    // Products are insertable only by signed-in users, so park the product and sign in
-    // first; the dialog reopens on this step with it filled in.
-    if (!session) {
-      saveProductDraft(values);
-      setRedirecting(true);
-      const { error } = await signInWithGoogle('/');
-      if (error) {
-        setRedirecting(false);
-        toast.error('Could not reach Google sign-in. Check your connection and try again.');
-      }
-      return;
-    }
-
     try {
       const created = await createProductMutation.mutateAsync(values);
       setProduct(created);
@@ -111,7 +85,7 @@ export function LogTastingDialog({ trigger, restoresDraft = true }: LogTastingDi
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger ?? <Button>Log a tasting</Button>}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-3xl sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
             {step === 'rate' && product ? `Rate ${product.name}` : 'Log a tasting'}
@@ -158,20 +132,16 @@ export function LogTastingDialog({ trigger, restoresDraft = true }: LogTastingDi
                   <RegionSelect regions={regions} />
                 </CustomFormField>
               )}
-              {!sessionLoading && !session && (
-                <p className="text-muted-foreground text-sm">
-                  You&rsquo;ll sign in with Google first. The product is kept while you do.
-                </p>
-              )}
               <Button
                 type="submit"
-                disabled={createProductMutation.isPending || redirecting || sessionLoading}
+                size="lg"
+                disabled={createProductMutation.isPending}
                 className="w-full"
               >
-                {(createProductMutation.isPending || redirecting) && (
+                {createProductMutation.isPending && (
                   <Loader2 className="animate-spin" aria-hidden="true" />
                 )}
-                {session || sessionLoading ? 'Continue' : 'Sign in with Google to continue'}
+                Continue
               </Button>
             </form>
           </Form>

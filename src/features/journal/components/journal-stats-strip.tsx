@@ -21,16 +21,16 @@ export function JournalStatsStrip({ stats }: JournalStatsStripProps) {
   const matchaShare = total ? (stats.split.matcha / total) * 100 : 0;
 
   return (
-    <dl className="bg-card grid gap-6 rounded-lg border p-6 sm:grid-cols-4">
+    <dl className="bg-muted grid gap-6 rounded-3xl p-6 sm:grid-cols-4 sm:p-8">
       <Stat label="Tastings">
-        <span className="text-3xl font-black tabular-nums">{stats.count}</span>
+        <span className="text-3xl font-extrabold tabular-nums">{stats.count}</span>
       </Stat>
       <Stat label="Average rating">
         <ScoreNumeral value={stats.avgStars} size="sm" className="text-3xl" />
       </Stat>
       <Stat label="Category split">
         {/* The counts below carry the numbers; the bar is their picture. */}
-        <div className="bg-muted flex h-2 overflow-hidden rounded-full" aria-hidden="true">
+        <div className="bg-background flex h-2 overflow-hidden rounded-full" aria-hidden="true">
           <div className={CATEGORY_STYLES.matcha.fill} style={{ width: `${matchaShare}%` }} />
           <div
             className={CATEGORY_STYLES.hojicha.fill}

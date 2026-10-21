@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { CategoryBadge, type ProductSummary } from '@/features/products';
+import { TeaTin, type ProductSummary } from '@/features/products';
 
 import { useWishlist } from '../hooks/use-wishlist';
 
@@ -27,17 +27,34 @@ export function WishlistList({ products }: WishlistListProps) {
   }
 
   return (
-    <ul className="bg-card divide-y rounded-lg border">
+    <ul className="space-y-2">
       {items.map((product) => (
-        <li key={product.id} className="flex items-center justify-between gap-3 px-4 py-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <Link
-              href={`/products/${product.id}`}
-              className="truncate font-medium hover:underline hover:underline-offset-2"
-            >
-              {product.name}
-            </Link>
-            <CategoryBadge category={product.category} className="shrink-0" />
+        <li
+          key={product.id}
+          className="border-border flex items-center justify-between gap-3 rounded-2xl border p-2 pr-3"
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="bg-tile flex-center h-12 w-12 shrink-0 rounded-xl">
+              <TeaTin
+                category={product.category}
+                seed={product.id}
+                mark={product.brand ?? product.name}
+                className="w-5"
+              />
+            </span>
+            <span className="min-w-0">
+              {product.brand && (
+                <span className="text-muted-foreground block truncate text-xs">
+                  {product.brand}
+                </span>
+              )}
+              <Link
+                href={`/products/${product.id}`}
+                className="block truncate font-semibold hover:underline"
+              >
+                {product.name}
+              </Link>
+            </span>
           </div>
           <Button
             type="button"

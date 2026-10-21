@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { CATEGORY_STYLES, CategoryBadge, Stars } from '@/features/products';
+import { CATEGORY_STYLES, Stars, TeaTin } from '@/features/products';
 import { FLAVOR_NOTES, PrepSummary, noteLabel } from '@/features/reviews';
 import { cn } from '@/lib/utils';
 
@@ -25,35 +25,45 @@ export function JournalTimeline({ entries }: { entries: JournalEntry[] }) {
     <div className="space-y-10">
       {groupByMonth(entries).map(({ month, entries: monthEntries }) => (
         <section key={month} aria-labelledby={monthId(monthEntries[0].tastedOn)}>
-          <h2 id={monthId(monthEntries[0].tastedOn)} className="text-lg font-semibold">
+          <h2 id={monthId(monthEntries[0].tastedOn)} className="text-xl font-bold tracking-tight">
             {month}
           </h2>
-          <ul className="bg-card mt-3 divide-y rounded-lg border">
+          <ul className="mt-4 space-y-3">
             {monthEntries.map((entry) => {
               const notes = entry.flavorNotes.filter((n) =>
                 FLAVOR_NOTES[entry.product.category].includes(n)
               );
               return (
-                <li key={entry.id} className="grid grid-cols-[3.5rem_1fr] gap-4 p-4">
-                  <time
-                    dateTime={entry.tastedOn}
-                    className="text-muted-foreground pt-0.5 text-sm tabular-nums"
-                  >
-                    {dayLabel(entry.tastedOn)}
-                  </time>
+                <li
+                  key={entry.id}
+                  className="border-border grid grid-cols-[4rem_1fr] gap-4 rounded-2xl border p-4"
+                >
+                  <div className="bg-tile flex-center aspect-square rounded-xl">
+                    <TeaTin
+                      category={entry.product.category}
+                      seed={entry.product.id}
+                      mark={entry.product.brand ?? entry.product.name}
+                      className="w-7"
+                    />
+                  </div>
                   <div className="min-w-0 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                       <Link
                         href={`/products/${entry.product.id}`}
-                        className="font-semibold hover:underline hover:underline-offset-2"
+                        className="font-bold hover:underline"
                       >
                         {entry.product.name}
                       </Link>
-                      <CategoryBadge category={entry.product.category} />
+                      <time
+                        dateTime={entry.tastedOn}
+                        className="text-muted-foreground text-sm tabular-nums"
+                      >
+                        {dayLabel(entry.tastedOn)}
+                      </time>
                     </div>
                     <div className="flex items-center gap-2">
                       <Stars value={entry.stars} category={entry.product.category} size="sm" />
-                      <span className="sr-only">{entry.stars} out of 5</span>
+                      <span className="sr-only">You rated it {entry.stars} out of 5</span>
                     </div>
                     {entry.notes && <p className="max-w-prose text-sm">{entry.notes}</p>}
                     {notes.length > 0 && (

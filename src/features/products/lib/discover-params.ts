@@ -37,7 +37,7 @@ export function parseDiscoverParams(params: RawParams): DiscoverFilters {
   return filters;
 }
 
-// Builds a feed URL from the current filters plus a change, so every control (tabs, region,
+// Builds an Explore URL from the current filters plus a change, so every control (tabs, region,
 // sort) keeps the others. The default sort is left out to keep URLs short.
 export function discoverHref(current: DiscoverFilters, patch: Partial<DiscoverFilters>): string {
   const next = { ...current, ...patch };
@@ -47,5 +47,5 @@ export function discoverHref(current: DiscoverFilters, patch: Partial<DiscoverFi
   if (next.regionId) params.set('region', next.regionId);
   if (next.sort && next.sort !== 'top') params.set('sort', next.sort);
   const query = params.toString();
-  return query ? `/?${query}` : '/';
+  return query ? `/explore?${query}` : '/explore';
 }

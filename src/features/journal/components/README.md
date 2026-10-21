@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Journal UI: the stats strip, the month-grouped timeline, the want-to-try list with remove, and the `WantToTryButton` used on product pages.
+Journal UI: the stats strip, the month-grouped timeline (each tasting as a card with its
+tea tile), the want-to-try list with remove, and the `WantToTryButton` used on product
+pages, shelves and Explore rows.
 
 ## Contents
 

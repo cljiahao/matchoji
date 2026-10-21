@@ -54,6 +54,18 @@ describe('summarizeReviews', () => {
     ]);
   });
 
+  // Flavour families add up every note, not just the top six.
+  it('counts every note for the flavour families', () => {
+    const s = summarizeReviews([
+      makeReview({ flavorNotes: ['nutty', 'roasty', 'caramel', 'woody', 'smoky', 'sweet'] }),
+      makeReview({ flavorNotes: ['earthy', 'roasty'] }),
+    ]);
+    expect(s.noteCounts).toHaveLength(7);
+    expect(s.noteCounts[0]).toEqual({ note: 'roasty', count: 2 });
+    expect(s.noteCounts.at(-1)).toEqual({ note: 'earthy', count: 1 });
+    expect(s.topNotes).toEqual(s.noteCounts.slice(0, 6));
+  });
+
   it('returns null prep without a method', () => {
     expect(summarizeReviews([makeReview({ prep: prep(null, 2, 70, 80) })]).prep).toBeNull();
   });
