@@ -1,3 +1,5 @@
+import { connection } from 'next/server';
+
 import { SignInButton } from '@/features/auth';
 import {
   JournalStatsStrip,
@@ -23,6 +25,10 @@ function Header({ children }: { children?: React.ReactNode }) {
 }
 
 export default async function JournalPage() {
+  // The journal is per user, so it must render per request. Without this the page reads no
+  // request data before the Supabase check, Next prerenders it at build time, and a build
+  // without Supabase env vars (local, Vercel Preview) fails on the production guard.
+  await connection();
   const supabase = shouldUseMockData() ? null : await createClient();
   const user = supabase ? (await supabase.auth.getUser()).data.user : null;
 

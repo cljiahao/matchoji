@@ -12,6 +12,12 @@ vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ser
 const browser = vi.hoisted(() => ({ current: null as unknown }));
 vi.mock('@/integrations/supabase/client', () => ({ createClient: () => browser.current }));
 
+const nextServer = vi.hoisted(() => ({ connection: vi.fn(async () => {}) }));
+vi.mock('next/server', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/server')>()),
+  connection: nextServer.connection,
+}));
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),
   usePathname: () => '/',
@@ -212,6 +218,28 @@ const reviewRow = (id: string, productId: string, tastedOn: string, stars: numbe
 });
 
 describe('Journal page', () => {
+  // Without a request-time API before the Supabase check, Next prerenders /journal at build
+  // time and a build without Supabase env vars fails (it broke the Vercel preview).
+  it('renders per request: waits for the connection before reading the user', async () => {
+    const order: string[] = [];
+    nextServer.connection.mockImplementationOnce(async () => {
+      order.push('connection');
+    });
+    server.current = {
+      from: vi.fn(),
+      auth: {
+        getUser: async () => {
+          order.push('getUser');
+          return { data: { user: null }, error: null };
+        },
+      },
+    };
+
+    await JournalPage();
+
+    expect(order).toEqual(['connection', 'getUser']);
+  });
+
   it('journal signed out shows sign-in', async () => {
     useServer({});
     renderWithQuery(await JournalPage());
