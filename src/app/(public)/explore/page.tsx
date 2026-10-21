@@ -25,7 +25,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const filters = parseDiscoverParams(await searchParams);
 
   const [products, regions] = shouldUseMockData()
-    ? [sortProducts(getMockProducts(filters.category), filters.sort), []]
+    ? [sortProducts(getMockProducts(filters.category, filters.q), filters.sort), []]
     : await (async () => {
         const supabase = await createClient();
         // Regions only feed the filter; losing them hides the rail section, not the results.

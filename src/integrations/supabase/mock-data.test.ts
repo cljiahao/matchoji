@@ -10,6 +10,20 @@ describe('mock data', () => {
     expect(getMockProducts().length).toBeGreaterThan(hojicha.length);
   });
 
+  it('searches name and brand case-insensitively, within a category', () => {
+    expect(getMockProducts(undefined, 'UJI').map((p) => p.id)).toEqual(['mock-1']);
+    expect(getMockProducts(undefined, 'ippodo').map((p) => p.name)).toEqual([
+      'Kyoto Roasted Bancha',
+    ]);
+    expect(getMockProducts('hojicha', 'uji')).toEqual([]);
+  });
+
+  it('takes score and count from the mock reviews', () => {
+    const uji = getMockProduct('mock-1');
+    expect(uji?.reviewCount).toBe(getMockReviews('mock-1').length);
+    expect(getMockProduct('mock-4')).toMatchObject({ reviewCount: 0, avgStars: null });
+  });
+
   it('looks up a product and its reviews by id', () => {
     expect(getMockProduct('mock-1')?.name).toBe('Uji Ceremonial');
     expect(getMockProduct('nope')).toBeNull();

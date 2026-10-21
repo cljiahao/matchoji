@@ -32,10 +32,15 @@ describe('Navbar', () => {
   });
 
   // Home already leads with its own big search.
-  it('hides the search pill on home and shows it elsewhere', () => {
+  it('hides the search pill on home and Explore and shows it elsewhere', () => {
     const { unmount } = renderWithQuery(<Navbar />);
     expect(screen.queryByRole('search')).not.toBeInTheDocument();
     unmount();
+
+    pathname.current = '/explore';
+    const explore = renderWithQuery(<Navbar />);
+    expect(screen.queryByRole('search')).not.toBeInTheDocument();
+    explore.unmount();
 
     pathname.current = '/journal';
     renderWithQuery(<Navbar />);

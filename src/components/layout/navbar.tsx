@@ -38,8 +38,10 @@ export function Navbar() {
           Matchoji
         </Link>
 
-        {/* Home already leads with a big search, so the bar's own only shows elsewhere. */}
-        {pathname !== PAGE_ROUTES.HOME && <SearchPill className="hidden w-64 md:block lg:w-72" />}
+        {/* Home and Explore have their own search, so the bar's only shows elsewhere. */}
+        {pathname !== PAGE_ROUTES.HOME && !pathname.startsWith(PAGE_ROUTES.EXPLORE) && (
+          <SearchPill className="hidden w-64 md:block lg:w-72" />
+        )}
 
         {/* Phones reach these through the bottom tab bar instead. */}
         <ul className="hidden items-center gap-6 sm:flex">

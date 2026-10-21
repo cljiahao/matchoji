@@ -137,9 +137,13 @@ function withReviewStats(product: Product): Product {
   };
 }
 
-export function getMockProducts(category?: 'matcha' | 'hojicha'): Product[] {
-  const products = category ? MOCK_PRODUCTS.filter((p) => p.category === category) : MOCK_PRODUCTS;
-  return products.map(withReviewStats);
+// Matches name or brand case-insensitively, like the real search, so Explore can be checked
+// against mock data too.
+export function getMockProducts(category?: 'matcha' | 'hojicha', q?: string): Product[] {
+  const term = q?.trim().toLowerCase();
+  return MOCK_PRODUCTS.filter((p) => !category || p.category === category)
+    .filter((p) => !term || `${p.name} ${p.brand ?? ''}`.toLowerCase().includes(term))
+    .map(withReviewStats);
 }
 
 export function getMockProduct(id: string): Product | null {

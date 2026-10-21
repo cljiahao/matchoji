@@ -64,6 +64,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- Explore no longer shows a second search bar in the header, and mock data honours the
+  search so Explore can be checked locally.
 - Header, tab bar, search and product-page surfaces follow the theme instead of hard-coded
   white, and dark mode keeps the green actions. Unused hover tokens, the unused Geist Mono
   font and the unused discover empty-state component are removed.
