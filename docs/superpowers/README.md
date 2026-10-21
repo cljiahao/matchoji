@@ -2,10 +2,11 @@
 
 ## Purpose
 
-Design specs written by the superpowers:brainstorming skill during feature planning.
+Design specs written during feature planning, and the implementation plans built from them.
 
 ## Contents
 
+- `plans/`
 - `specs/`
 
 ## Connectivity

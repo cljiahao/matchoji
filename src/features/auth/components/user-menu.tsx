@@ -1,6 +1,7 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { createClient } from '@/integrations/supabase/client';
+import { PAGE_ROUTES } from '@/lib/constants/routes';
 
 import { useSession } from '../hooks/use-session';
 
@@ -41,6 +43,10 @@ export function UserMenu() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem disabled className="text-muted-foreground">
           {email}
+        </DropdownMenuItem>
+        {/* The navbar hides its section links on narrow screens; they live here instead. */}
+        <DropdownMenuItem asChild className="sm:hidden">
+          <Link href={PAGE_ROUTES.HOME}>Discover</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />

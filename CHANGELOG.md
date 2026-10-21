@@ -7,6 +7,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Discover search (name or brand), region filter and sort (top rated, most reviewed,
+  newest), all kept in the URL; a distinct "no teas match" state with a clear-filters link.
 - Phase 1 rating and discovery: Google sign-in (Supabase Auth), discover feed with
   matcha/hojicha category tabs, product detail page with reviews, and an inline "Rate it"
   form. The feed's "Log a tasting" dialog searches the catalog or adds a new product.
@@ -25,6 +27,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- Visual refresh: paper-toned page ground with white cards, a top bar with a Discover link and a global "Log a tasting" button, and product cards with an image well
+  (photo or category-tinted leaf), the category badge on the image and a score numeral.
+  The category side stripe is gone.
 - Supabase clients use the publishable key (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
   instead of the legacy anon key, ahead of Supabase retiring legacy keys at the end of 2026. The unused `SUPABASE_SERVICE_ROLE_KEY` is dropped from `.env.example`.
 - Harness upgraded to templateCentral 6.0.4: `block-no-verify.sh` judges a bare

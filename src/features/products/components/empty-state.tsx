@@ -11,7 +11,7 @@ interface EmptyStateProps {
 export function EmptyState({ category, children }: EmptyStateProps) {
   const name = category ? CATEGORY_STYLES[category].label.toLowerCase() : null;
   return (
-    <div className="flex-center flex-col gap-4 rounded-lg border border-dashed py-20 text-center">
+    <div className="flex-center bg-card flex-col gap-4 rounded-lg border border-dashed py-20 text-center">
       <p className="text-muted-foreground max-w-sm">
         {name
           ? `No ${name} logged yet. Be the first to rate one.`

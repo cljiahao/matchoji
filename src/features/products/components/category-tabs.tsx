@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 
-import { CATEGORY_STYLES } from '../lib';
+import { CATEGORY_STYLES, discoverHref, type DiscoverFilters } from '../lib';
 import type { ProductCategory } from '../types';
 
 const TABS: { label: string; value: ProductCategory | undefined }[] = [
@@ -12,21 +12,24 @@ const TABS: { label: string; value: ProductCategory | undefined }[] = [
 ];
 
 interface CategoryTabsProps {
-  active: ProductCategory | undefined;
+  filters: DiscoverFilters;
 }
 
-export function CategoryTabs({ active }: CategoryTabsProps) {
+export function CategoryTabs({ filters }: CategoryTabsProps) {
   return (
-    <nav className="border-border inline-flex gap-1 rounded-lg border p-1" aria-label="Category">
+    <nav
+      className="bg-card border-border inline-flex gap-1 rounded-lg border p-1"
+      aria-label="Category"
+    >
       {TABS.map((tab) => {
-        const isActive = tab.value === active;
+        const isActive = tab.value === filters.category;
         const activeClass = tab.value
           ? CATEGORY_STYLES[tab.value].activeTab
           : 'bg-primary text-primary-foreground';
         return (
           <Link
             key={tab.label}
-            href={tab.value ? `/?category=${tab.value}` : '/'}
+            href={discoverHref(filters, { category: tab.value })}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
               'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',

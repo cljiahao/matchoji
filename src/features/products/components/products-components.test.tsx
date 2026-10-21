@@ -7,6 +7,8 @@ import { CategoryBadge } from './category-badge';
 import { CategoryTabs } from './category-tabs';
 import { EmptyState } from './empty-state';
 import { ProductGrid } from './product-grid';
+import { ProductImageWell } from './product-image-well';
+import { ScoreNumeral } from './score-numeral';
 import { StarRatingDisplay } from './star-rating-display';
 
 describe('CategoryBadge', () => {
@@ -24,12 +26,12 @@ describe('CategoryBadge', () => {
 
 describe('CategoryTabs', () => {
   it('links each tab to its filter and marks the active one in its category colour', () => {
-    render(<CategoryTabs active="hojicha" />);
+    render(<CategoryTabs filters={{ category: 'hojicha', q: 'uji', sort: 'top' }} />);
 
-    expect(screen.getByRole('link', { name: 'All' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'All' })).toHaveAttribute('href', '/?q=uji');
     expect(screen.getByRole('link', { name: 'Matcha' })).toHaveAttribute(
       'href',
-      '/?category=matcha'
+      '/?q=uji&category=matcha'
     );
     const active = screen.getByRole('link', { name: 'Hojicha' });
     expect(active).toHaveAttribute('aria-current', 'page');
@@ -38,7 +40,7 @@ describe('CategoryTabs', () => {
   });
 
   it('uses the neutral primary colour for the active "All" tab', () => {
-    render(<CategoryTabs active={undefined} />);
+    render(<CategoryTabs filters={{ sort: 'top' }} />);
     expect(screen.getByRole('link', { name: 'All' })).toHaveClass('bg-primary');
   });
 });
@@ -71,6 +73,46 @@ describe('StarRatingDisplay', () => {
   });
 });
 
+describe('ScoreNumeral', () => {
+  it('renders one decimal and a dash for null', () => {
+    const { rerender } = render(<ScoreNumeral value={4} size="lg" />);
+    expect(screen.getByText('4.0')).toHaveClass('tabular-nums');
+    rerender(<ScoreNumeral value={null} size="sm" />);
+    expect(screen.getByText('–')).toBeInTheDocument();
+  });
+});
+
+describe('ProductImageWell', () => {
+  it('shows the photo when present', () => {
+    render(<ProductImageWell imageUrl="https://cdn.test/tin.jpg" category="matcha" name="Uji" />);
+    expect(screen.getByRole('img', { name: 'Uji' })).toHaveAttribute(
+      'src',
+      'https://cdn.test/tin.jpg'
+    );
+  });
+
+  it('can be decorative when the name is already on screen', () => {
+    render(
+      <ProductImageWell
+        imageUrl="https://cdn.test/tin.jpg"
+        category="matcha"
+        name="Uji"
+        decorative
+      />
+    );
+    expect(screen.queryByRole('img', { name: 'Uji' })).not.toBeInTheDocument();
+  });
+
+  it('tints by category without a photo', () => {
+    const { container } = render(
+      <ProductImageWell imageUrl={null} category="hojicha" name="Bancha" />
+    );
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(container.firstChild).toHaveClass('bg-hojicha/15');
+    expect(container.querySelector('svg')).toHaveClass('text-hojicha');
+  });
+});
+
 describe('ProductGrid', () => {
   it('renders a card per product linking to its detail page', () => {
     render(
@@ -84,9 +126,14 @@ describe('ProductGrid', () => {
 
     const card = screen.getByRole('link', { name: /Uji Ceremonial/ });
     expect(card).toHaveAttribute('href', '/products/p1');
-    expect(card).toHaveClass('border-l-matcha');
+    expect(card.className).not.toMatch(/border-l-4/);
+    expect(card).toHaveTextContent('4.5');
+    expect(card).toHaveTextContent('(12)');
+    expect(card).toHaveAccessibleName(/4\.5 out of 5, 12 reviews/);
     expect(card).toHaveTextContent('Ceremonial · Uji, Kyoto');
-    expect(screen.getByRole('link', { name: /Kyoto Bancha/ })).toHaveClass('border-l-hojicha');
+    expect(
+      screen.getByRole('link', { name: /Kyoto Bancha/ }).querySelector('.bg-hojicha\\/15')
+    ).not.toBeNull();
   });
 
   it('omits the grade/region line when neither is set', () => {

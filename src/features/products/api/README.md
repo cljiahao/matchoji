@@ -3,7 +3,8 @@
 ## Purpose
 
 Supabase reads (server-safe, take a client instance) and the one client-side mutation for
-creating a product. Pure helpers (rating merge/sort, search-filter building) are split out
+creating a product. `listProducts` takes the Discover filters (search, category, region, sort). Pure helpers
+(rating merge/sort, search-filter building) are split out
 so they can be unit-tested without a client. Services are tested against a recording
 fake Supabase client (`test/support/fake-supabase.ts`).
 
