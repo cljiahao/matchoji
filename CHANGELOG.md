@@ -64,6 +64,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- The home page renders per request, so a build without Supabase env vars (Vercel Preview)
+  no longer fails prerendering `/`.
 - Signed-out visitors adding a new product no longer hit "Could not add that product":
   the dialog sends them through Google sign-in first and reopens with the product filled in.
 

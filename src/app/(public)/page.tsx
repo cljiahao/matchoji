@@ -1,3 +1,5 @@
+import { connection } from 'next/server';
+
 import { WantToTryButton } from '@/features/journal';
 import {
   CategoryCircles,
@@ -40,6 +42,10 @@ async function loadShelves(): Promise<Product[][]> {
 }
 
 export default async function Home() {
+  // Shelves are live ratings, so the page renders per request. Without this it reads no
+  // request data, Next prerenders it at build time, and a build without Supabase env vars
+  // (Vercel Preview) fails on the production guard.
+  await connection();
   const shelves = await loadShelves();
   const empty = shelves.every((products) => products.length === 0);
   // On a small catalogue "Newly added" would only repeat the two shelves above; it earns its

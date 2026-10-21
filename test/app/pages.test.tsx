@@ -79,6 +79,18 @@ const row = (id: string, name: string, category: 'matcha' | 'hojicha', createdAt
 });
 
 describe('Home page', () => {
+  // Like /journal: without a request-time API first, Next prerenders / at build time and a
+  // build without Supabase env vars fails.
+  it('renders per request: waits for the connection before reading products', async () => {
+    const fake = useServer({ products: { data: [], error: null } });
+    nextServer.connection.mockImplementationOnce(async () => {
+      throw new Error('prerender bail-out');
+    });
+
+    await expect(Home()).rejects.toThrow('prerender bail-out');
+    expect(fake.calls).toHaveLength(0);
+  });
+
   it('leads with search and the two teas, then shelves for each tea and the newest', async () => {
     const { calls } = useServer({
       products: [
