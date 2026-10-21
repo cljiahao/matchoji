@@ -2,12 +2,13 @@
 
 ## Purpose
 
-`useWishlistToggle`: optimistic want-to-try state for one product, sending signed-out visitors through Google sign-in back to that product.
+`useWishlist` / `useWishlistToggle`: optimistic want-to-try state shared through one cache
+entry; signed-out visitors get the sign-in dialog instead of a toggle.
 
 ## Contents
 
 - `index.ts`
-- `use-wishlist-toggle.ts`
+- `use-wishlist.ts`
 
 ## Parent
 

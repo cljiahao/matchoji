@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The `/journal` page: signed-in users see their stats, tastings by month and want-to-try list; signed-out visitors get a short explanation and Google sign-in.
+The `/journal` page: signed-in users see their stats, tastings by month and want-to-try list; signed-out visitors get a short explanation and a button that opens the sign-in dialog.
 
 ## Contents
 

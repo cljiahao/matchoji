@@ -9,10 +9,18 @@ import { cn } from '@/lib/utils';
 import { FLAVOR_NOTES, noteLabel, truncateNotes } from '../lib';
 import type { Review } from '../types';
 import { PrepSummary } from './prep-summary';
-import { TasteProfileBars } from './taste-profile-bars';
 
 // Roughly four lines at the max-w-prose width.
 const NOTES_PREVIEW_CHARS = 280;
+
+// Dates are calendar days (no time zone), so format them in UTC to keep the day as stored.
+const DAY = new Intl.DateTimeFormat('en', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const formatDay = (day: string) => DAY.format(new Date(`${day}T00:00:00Z`));
 
 interface ReviewItemProps {
   review: Review;
@@ -26,24 +34,20 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
   const preview = review.notes ? truncateNotes(review.notes, NOTES_PREVIEW_CHARS) : null;
 
   return (
-    <div className="border-border border-b py-4 last:border-b-0">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex" aria-label={`${review.stars} out of 5 stars`}>
-          {Array.from({ length: 5 }, (_, i) => (
-            <Star
-              key={i}
-              className={cn(
-                'h-4 w-4',
-                i < review.stars ? CATEGORY_STYLES[category].star : 'text-muted-foreground'
-              )}
-            />
-          ))}
-        </div>
-        <span className="text-muted-foreground text-xs">{review.reviewerName}</span>
-      </div>
+    <article className="border-border rounded-2xl border p-5">
+      <p
+        className={cn(
+          'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold tabular-nums',
+          CATEGORY_STYLES[category].tint
+        )}
+      >
+        <Star aria-hidden="true" className={cn('h-3.5 w-3.5', CATEGORY_STYLES[category].star)} />
+        {review.stars.toFixed(1)}
+        <span className="sr-only"> out of 5 stars</span>
+      </p>
 
       {review.notes && preview && (
-        <p className="mt-2 max-w-prose text-sm whitespace-pre-line">
+        <p className="mt-3 max-w-prose whitespace-pre-line">
           {expanded ? review.notes : preview.text}
           {preview.truncated && (
             <>
@@ -52,7 +56,7 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
                 type="button"
                 onClick={() => setExpanded((v) => !v)}
                 aria-expanded={expanded}
-                className="text-foreground font-medium underline underline-offset-2"
+                className="text-brand font-semibold hover:underline"
               >
                 {expanded ? 'Show less' : 'Read more'}
               </button>
@@ -61,21 +65,13 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
         </p>
       )}
       {notes.length > 0 && (
-        <ul className="mt-2 flex flex-wrap gap-1.5">
+        <ul className="mt-3 flex flex-wrap gap-1.5">
           {notes.map((note) => (
-            <li
-              key={note}
-              className={cn('rounded-full px-2.5 py-0.5 text-xs', CATEGORY_STYLES[category].tint)}
-            >
+            <li key={note} className="bg-muted rounded-full px-2.5 py-0.5 text-xs">
               {noteLabel(note)}
             </li>
           ))}
         </ul>
-      )}
-      {Object.keys(review.profile).length > 0 && (
-        <div className="mt-3 max-w-md">
-          <TasteProfileBars values={review.profile} category={category} compact />
-        </div>
       )}
       <PrepSummary prep={review.prep} className="mt-2 text-xs" />
       {review.photoUrl && (
@@ -85,9 +81,21 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
         <img
           src={review.photoUrl}
           alt="Review"
-          className="mt-3 h-40 w-40 rounded-md object-cover"
+          className="mt-3 h-40 w-40 rounded-xl object-cover"
         />
       )}
-    </div>
+      <footer className="border-border mt-4 flex items-center gap-2 border-t pt-3 text-sm">
+        <span
+          aria-hidden="true"
+          className="bg-muted flex-center h-6 w-6 rounded-full text-xs font-bold"
+        >
+          {review.reviewerName.charAt(0).toUpperCase()}
+        </span>
+        <span className="font-semibold">{review.reviewerName}</span>
+        <time dateTime={review.tastedOn} className="text-muted-foreground">
+          {formatDay(review.tastedOn)}
+        </time>
+      </footer>
+    </article>
   );
 }

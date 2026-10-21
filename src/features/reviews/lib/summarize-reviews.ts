@@ -7,6 +7,8 @@ export interface ReviewSummary {
   distribution: Record<StarCount, number>;
   profile: { averages: Partial<Record<TasteAttribute, number>>; contributors: number } | null;
   topNotes: { note: string; count: number }[];
+  // Every note with its count, for grouping into flavour families.
+  noteCounts: { note: string; count: number }[];
   prep: {
     method: PrepMethod;
     doseG: number | null;
@@ -53,16 +55,13 @@ function summarizeProfile(reviews: Review[]): ReviewSummary['profile'] {
   return { averages, contributors: withProfile.length };
 }
 
-function summarizeNotes(reviews: Review[]): ReviewSummary['topNotes'] {
+function countNotes(reviews: Review[]): ReviewSummary['noteCounts'] {
   // Map keeps insertion order, and Array.prototype.sort is stable, so ties keep first appearance.
   const counts = new Map<string, number>();
   for (const note of reviews.flatMap((r) => r.flavorNotes)) {
     counts.set(note, (counts.get(note) ?? 0) + 1);
   }
-  return [...counts]
-    .map(([note, count]) => ({ note, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, TOP_NOTES);
+  return [...counts].map(([note, count]) => ({ note, count })).sort((a, b) => b.count - a.count);
 }
 
 // Numbers are taken from reviews using the most common method, so a latte's milk volume
@@ -80,10 +79,12 @@ export function summarizeReviews(reviews: Review[]): ReviewSummary {
   const distribution: Record<StarCount, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   for (const r of reviews) distribution[r.stars as StarCount] += 1;
 
+  const noteCounts = countNotes(reviews);
   return {
     distribution,
     profile: summarizeProfile(reviews),
-    topNotes: summarizeNotes(reviews),
+    topNotes: noteCounts.slice(0, TOP_NOTES),
+    noteCounts,
     prep: summarizePrep(reviews),
     photos: reviews.flatMap((r) => (r.photoUrl ? [r.photoUrl] : [])),
   };

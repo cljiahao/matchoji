@@ -1,9 +1,16 @@
 export { CategoryBadge } from './category-badge';
-export { CategoryTabs } from './category-tabs';
-export { DiscoverToolbar } from './discover-toolbar';
+export { CategoryCircles } from './category-circles';
 export { EmptyState } from './empty-state';
+export { ExploreFilters } from './explore-filters';
+export { ExploreSort } from './explore-sort';
 export { ProductCard } from './product-card';
+export { ProductFacts } from './product-facts';
 export { ProductGrid } from './product-grid';
 export { ProductImageWell } from './product-image-well';
+export { ProductRow } from './product-row';
+export { ProductShelf } from './product-shelf';
+export { RatingInline } from './rating-inline';
 export { ScoreNumeral } from './score-numeral';
+export { SearchPill } from './search-pill';
 export { StarRatingDisplay, Stars } from './star-rating-display';
+export { TeaTin } from './tea-tin';

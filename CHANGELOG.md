@@ -7,6 +7,16 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Vivino-style home page: "Find your next matcha or hojicha", a large search, Matcha and
+  Hojicha circles, and shelves of top-rated matcha, top-rated hojicha and newly added teas.
+- Explore (`/explore`): the filtered list, with a filter rail (tea, region), sort and wide
+  result rows; search from anywhere lands here.
+- Product pages in Vivino's order: a tinted hero, "What does it taste like?" (taste sliders
+  between two plain words, flavour families with mention counts), facts about the tea, and
+  community reviews beside the score, its spread and "Add your rating".
+- One-tap rating: tap a star on a product page and the tasting form opens with it set.
+- Drawn tea tins stand in for products without a photo.
+
 - Journal (`/journal`): your tastings by month with notes and prep, stats (count,
   average rating, matcha/hojicha split, most-used notes) and a "Want to try" list. A
   "Want to try" toggle on every product page; signed-out visitors sign in first.
@@ -26,8 +36,6 @@ All notable changes to this project are documented here. Format follows
 - Supabase schema migrations: profiles, regions (seeded with the main tea regions),
   products, reviews, the `product_ratings` aggregate view, a review-photo Storage bucket,
   and a `public_profiles` view exposing reviewer display names only.
-- Signed-out visitors can fill in a rating; it is kept across Google sign-in and restored
-  on return.
 - Long review notes collapse behind "Read more"; reviews page 10 at a time.
 - Loading skeletons for the feed and product pages.
 - Product search waits 250ms after typing stops before querying, instead of sending a
@@ -38,6 +46,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- Logging a tasting, rating and saving to "Want to try" now need an account, as on Vivino:
+  signed out, each opens a "Join Matchoji" sign-in dialog first. Signed-out ratings and new
+  products are no longer kept across sign-in.
+- New look: white page, products on warm grey tiles, deep matcha green for actions, pill
+  buttons and the Figtree typeface. Reviews are cards with a star score.
 - Visual refresh: paper-toned page ground with white cards, a top bar with Discover and Journal links and a global "Log a tasting" button, and product cards with an image well
   (photo or category-tinted leaf), the category badge on the image and a score numeral.
   The category side stripe is gone.

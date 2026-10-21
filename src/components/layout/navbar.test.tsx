@@ -22,40 +22,66 @@ beforeEach(() => {
 });
 
 describe('Navbar', () => {
-  it('shows Discover and Journal links and the log button', () => {
+  it('shows the wordmark, Explore and Journal links and the log button', () => {
     renderWithQuery(<Navbar />);
 
-    expect(screen.getByRole('link', { name: 'Discover' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Matchoji' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
+    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
     expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
+  });
+
+  // Home already leads with its own big search.
+  it('hides the search pill on home and shows it elsewhere', () => {
+    const { unmount } = renderWithQuery(<Navbar />);
+    expect(screen.queryByRole('search')).not.toBeInTheDocument();
+    unmount();
+
+    pathname.current = '/journal';
+    renderWithQuery(<Navbar />);
+    expect(screen.getByRole('search')).toHaveAttribute('action', '/explore');
   });
 
   it('links to the journal and marks the current route', () => {
     pathname.current = '/journal';
     renderWithQuery(<Navbar />);
 
-    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
     expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('link', { name: 'Discover' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Explore' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('marks Explore on the explore page', () => {
+    pathname.current = '/explore';
+    renderWithQuery(<Navbar />);
+
+    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Journal' })).not.toHaveAttribute('aria-current');
   });
 
   // Signed-out phone users have no account menu, so the links can't hide behind it.
-  it('keeps section links visible on narrow screens', () => {
+  it('hands section links to the tab bar on narrow screens', () => {
     renderWithQuery(<Navbar />);
-    expect(screen.getByRole('link', { name: 'Journal' }).closest('ul')?.className).not.toMatch(
-      /(^|\s)hidden(\s|$)/
+    expect(screen.getByRole('link', { name: 'Journal' }).closest('ul')).toHaveClass(
+      'hidden',
+      'sm:flex'
     );
+  });
+
+  it('offers a search shortcut to Explore', () => {
+    renderWithQuery(<Navbar />);
+    expect(screen.getByRole('link', { name: 'Search teas' })).toHaveAttribute('href', '/explore');
   });
 
   it('shows sign-in as a secondary button next to the primary log button', async () => {
     renderWithQuery(<Navbar />);
-    const signIn = await screen.findByRole('button', { name: 'Sign in with Google' });
+    const signIn = await screen.findByRole('button', { name: 'Sign in' });
     expect(signIn.className).toMatch(/border/);
   });
 
-  it('treats product pages as part of Discover', () => {
+  it('treats product pages as part of Explore', () => {
     pathname.current = '/products/p1';
     renderWithQuery(<Navbar />);
 
-    expect(screen.getByRole('link', { name: 'Discover' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('aria-current', 'page');
   });
 });

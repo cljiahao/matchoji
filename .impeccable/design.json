@@ -1,361 +1,670 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-20T18:09:34.274163+00:00",
+  "generatedAt": "2026-10-21T16:46:18.716158+00:00",
   "title": "Design System: Matchoji",
   "extensions": {
     "colorMeta": {
-      "matcha-jade": {
+      "matcha-green": {
         "role": "primary",
-        "displayName": "Matcha Jade",
-        "canonical": "#5c7a4f",
+        "displayName": "Deep Matcha Green",
         "tonalRamp": [
-          "oklch(15% 0.06 135)",
-          "oklch(25% 0.06 135)",
-          "oklch(35% 0.06 135)",
-          "oklch(47% 0.06 135)",
-          "oklch(60% 0.06 135)",
-          "oklch(72% 0.06 135)",
-          "oklch(84% 0.06 135)",
-          "oklch(95% 0.06 135)"
+          "oklch(15% 0.066 146.9)",
+          "oklch(26% 0.066 146.9)",
+          "oklch(38% 0.066 146.9)",
+          "oklch(49% 0.066 146.9)",
+          "oklch(61% 0.066 146.9)",
+          "oklch(72% 0.066 146.9)",
+          "oklch(84% 0.066 146.9)",
+          "oklch(95% 0.066 146.9)"
+        ]
+      },
+      "on-matcha-green": {
+        "role": "primary",
+        "displayName": "On Green White",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(26% 0.000 89.9)",
+          "oklch(38% 0.000 89.9)",
+          "oklch(49% 0.000 89.9)",
+          "oklch(61% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ]
+      },
+      "matcha-jade": {
+        "role": "secondary",
+        "displayName": "Jade",
+        "tonalRamp": [
+          "oklch(15% 0.073 136.5)",
+          "oklch(26% 0.073 136.5)",
+          "oklch(38% 0.073 136.5)",
+          "oklch(49% 0.073 136.5)",
+          "oklch(61% 0.073 136.5)",
+          "oklch(72% 0.073 136.5)",
+          "oklch(84% 0.073 136.5)",
+          "oklch(95% 0.073 136.5)"
         ]
       },
       "hojicha-amber": {
-        "role": "primary",
-        "displayName": "Hojicha Amber",
-        "canonical": "#8f6224",
+        "role": "secondary",
+        "displayName": "Amber",
         "tonalRamp": [
-          "oklch(15% 0.09 70)",
-          "oklch(25% 0.09 70)",
-          "oklch(35% 0.09 70)",
-          "oklch(47% 0.09 70)",
-          "oklch(60% 0.09 70)",
-          "oklch(72% 0.09 70)",
-          "oklch(84% 0.09 70)",
-          "oklch(95% 0.09 70)"
+          "oklch(15% 0.096 71.3)",
+          "oklch(26% 0.096 71.3)",
+          "oklch(38% 0.096 71.3)",
+          "oklch(49% 0.096 71.3)",
+          "oklch(61% 0.096 71.3)",
+          "oklch(72% 0.096 71.3)",
+          "oklch(84% 0.096 71.3)",
+          "oklch(95% 0.096 71.3)"
         ]
       },
-      "category-foreground": {
-        "role": "neutral",
-        "displayName": "Category White",
-        "canonical": "#ffffff",
+      "on-category": {
+        "role": "secondary",
+        "displayName": "On Category White",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
-      },
-      "matcha-tint": {
-        "role": "primary",
-        "displayName": "Matcha Tint",
-        "canonical": "color-mix(in oklab, var(--matcha) 15%, transparent)",
-        "tonalRamp": [
-          "oklch(15% 0.06 135)",
-          "oklch(25% 0.06 135)",
-          "oklch(35% 0.06 135)",
-          "oklch(47% 0.06 135)",
-          "oklch(60% 0.06 135)",
-          "oklch(72% 0.06 135)",
-          "oklch(84% 0.06 135)",
-          "oklch(95% 0.06 135)"
-        ]
-      },
-      "hojicha-tint": {
-        "role": "primary",
-        "displayName": "Hojicha Tint",
-        "canonical": "color-mix(in oklab, var(--hojicha) 15%, transparent)",
-        "tonalRamp": [
-          "oklch(15% 0.09 70)",
-          "oklch(25% 0.09 70)",
-          "oklch(35% 0.09 70)",
-          "oklch(47% 0.09 70)",
-          "oklch(60% 0.09 70)",
-          "oklch(72% 0.09 70)",
-          "oklch(84% 0.09 70)",
-          "oklch(95% 0.09 70)"
+          "oklch(15% 0.000 89.9)",
+          "oklch(26% 0.000 89.9)",
+          "oklch(38% 0.000 89.9)",
+          "oklch(49% 0.000 89.9)",
+          "oklch(61% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
         ]
       },
       "ink": {
         "role": "neutral",
         "displayName": "Ink",
-        "canonical": "#101010",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.000 89.9)",
+          "oklch(26% 0.000 89.9)",
+          "oklch(38% 0.000 89.9)",
+          "oklch(49% 0.000 89.9)",
+          "oklch(61% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
         ]
       },
-      "paper-ground": {
+      "page-white": {
         "role": "neutral",
-        "displayName": "Paper Ground",
-        "canonical": "#f6f4ef",
+        "displayName": "Page White",
         "tonalRamp": [
-          "oklch(15% 0.01 85)",
-          "oklch(25% 0.01 85)",
-          "oklch(35% 0.01 85)",
-          "oklch(47% 0.01 85)",
-          "oklch(60% 0.01 85)",
-          "oklch(72% 0.01 85)",
-          "oklch(84% 0.01 85)",
-          "oklch(95% 0.01 85)"
+          "oklch(15% 0.000 89.9)",
+          "oklch(26% 0.000 89.9)",
+          "oklch(38% 0.000 89.9)",
+          "oklch(49% 0.000 89.9)",
+          "oklch(61% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
         ]
       },
-      "white-surface": {
+      "shelf-tile": {
         "role": "neutral",
-        "displayName": "White Surface",
-        "canonical": "#ffffff",
+        "displayName": "Shelf Tile",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.004 91.4)",
+          "oklch(26% 0.004 91.4)",
+          "oklch(38% 0.004 91.4)",
+          "oklch(49% 0.004 91.4)",
+          "oklch(61% 0.004 91.4)",
+          "oklch(72% 0.004 91.4)",
+          "oklch(84% 0.004 91.4)",
+          "oklch(95% 0.004 91.4)"
         ]
       },
-      "primary-charcoal": {
+      "muted-ink": {
         "role": "neutral",
-        "displayName": "Primary Charcoal",
-        "canonical": "var(--color-neutral-900)",
+        "displayName": "Muted Ink",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
-      },
-      "primary-charcoal-hover": {
-        "role": "neutral",
-        "displayName": "Primary Charcoal Hover",
-        "canonical": "var(--color-neutral-800)",
-        "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
-      },
-      "charcoal-foreground": {
-        "role": "neutral",
-        "displayName": "Charcoal Foreground",
-        "canonical": "var(--white)",
-        "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
-      },
-      "soft-grey": {
-        "role": "neutral",
-        "displayName": "Soft Grey",
-        "canonical": "var(--color-neutral-100)",
-        "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
-      },
-      "soft-grey-hover": {
-        "role": "neutral",
-        "displayName": "Soft Grey Hover",
-        "canonical": "var(--color-neutral-200)",
-        "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
-      },
-      "muted-text": {
-        "role": "neutral",
-        "displayName": "Muted Text",
-        "canonical": "oklch(0.52 0 0)",
-        "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.010 84.6)",
+          "oklch(26% 0.010 84.6)",
+          "oklch(38% 0.010 84.6)",
+          "oklch(49% 0.010 84.6)",
+          "oklch(61% 0.010 84.6)",
+          "oklch(72% 0.010 84.6)",
+          "oklch(84% 0.010 84.6)",
+          "oklch(95% 0.010 84.6)"
         ]
       },
       "hairline": {
         "role": "neutral",
         "displayName": "Hairline",
-        "canonical": "var(--color-neutral-300)",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.007 88.6)",
+          "oklch(26% 0.007 88.6)",
+          "oklch(38% 0.007 88.6)",
+          "oklch(49% 0.007 88.6)",
+          "oklch(61% 0.007 88.6)",
+          "oklch(72% 0.007 88.6)",
+          "oklch(84% 0.007 88.6)",
+          "oklch(95% 0.007 88.6)"
         ]
       },
-      "hairline-hover": {
+      "field-edge": {
         "role": "neutral",
-        "displayName": "Hairline Hover",
-        "canonical": "var(--color-neutral-400)",
+        "displayName": "Field Edge",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
-      },
-      "input-stroke": {
-        "role": "neutral",
-        "displayName": "Input Stroke",
-        "canonical": "oklch(0.8 0 0)",
-        "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
-        ]
+          "oklch(15% 0.000 0.0)",
+          "oklch(26% 0.000 0.0)",
+          "oklch(38% 0.000 0.0)",
+          "oklch(49% 0.000 0.0)",
+          "oklch(61% 0.000 0.0)",
+          "oklch(72% 0.000 0.0)",
+          "oklch(84% 0.000 0.0)",
+          "oklch(95% 0.000 0.0)"
+        ],
+        "canonical": "oklch(0.8 0 0)"
       },
       "focus-ring": {
         "role": "neutral",
         "displayName": "Focus Ring",
-        "canonical": "oklch(0.35 0 0)",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(25% 0 0)",
-          "oklch(35% 0 0)",
-          "oklch(47% 0 0)",
-          "oklch(60% 0 0)",
-          "oklch(72% 0 0)",
-          "oklch(84% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.000 0.0)",
+          "oklch(26% 0.000 0.0)",
+          "oklch(38% 0.000 0.0)",
+          "oklch(49% 0.000 0.0)",
+          "oklch(61% 0.000 0.0)",
+          "oklch(72% 0.000 0.0)",
+          "oklch(84% 0.000 0.0)",
+          "oklch(95% 0.000 0.0)"
+        ],
+        "canonical": "oklch(0.35 0 0)"
+      },
+      "empty-star": {
+        "role": "neutral",
+        "displayName": "Empty Star",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(26% 0.000 89.9)",
+          "oklch(38% 0.000 89.9)",
+          "oklch(49% 0.000 89.9)",
+          "oklch(61% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
         ]
       },
       "destructive": {
-        "role": "neutral",
-        "displayName": "Destructive",
-        "canonical": "oklch(0.577 0.245 27.325)",
+        "role": "error",
+        "displayName": "Destructive Red",
         "tonalRamp": [
-          "oklch(15% 0.2 27)",
-          "oklch(25% 0.2 27)",
-          "oklch(35% 0.2 27)",
-          "oklch(47% 0.2 27)",
-          "oklch(60% 0.2 27)",
-          "oklch(72% 0.2 27)",
-          "oklch(84% 0.2 27)",
-          "oklch(95% 0.2 27)"
+          "oklch(15% 0.245 27.3)",
+          "oklch(26% 0.245 27.3)",
+          "oklch(38% 0.245 27.3)",
+          "oklch(49% 0.245 27.3)",
+          "oklch(61% 0.245 27.3)",
+          "oklch(72% 0.245 27.3)",
+          "oklch(84% 0.245 27.3)",
+          "oklch(95% 0.245 27.3)"
+        ],
+        "canonical": "oklch(0.577 0.245 27.325)"
+      },
+      "tin-matcha-body-1": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Body 1",
+        "tonalRamp": [
+          "oklch(15% 0.073 136.5)",
+          "oklch(26% 0.073 136.5)",
+          "oklch(38% 0.073 136.5)",
+          "oklch(49% 0.073 136.5)",
+          "oklch(61% 0.073 136.5)",
+          "oklch(72% 0.073 136.5)",
+          "oklch(84% 0.073 136.5)",
+          "oklch(95% 0.073 136.5)"
+        ]
+      },
+      "tin-matcha-shade-1": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Shade 1",
+        "tonalRamp": [
+          "oklch(15% 0.069 137.2)",
+          "oklch(26% 0.069 137.2)",
+          "oklch(38% 0.069 137.2)",
+          "oklch(49% 0.069 137.2)",
+          "oklch(61% 0.069 137.2)",
+          "oklch(72% 0.069 137.2)",
+          "oklch(84% 0.069 137.2)",
+          "oklch(95% 0.069 137.2)"
+        ]
+      },
+      "tin-matcha-lid-1": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Lid 1",
+        "tonalRamp": [
+          "oklch(15% 0.062 137.7)",
+          "oklch(26% 0.062 137.7)",
+          "oklch(38% 0.062 137.7)",
+          "oklch(49% 0.062 137.7)",
+          "oklch(61% 0.062 137.7)",
+          "oklch(72% 0.062 137.7)",
+          "oklch(84% 0.062 137.7)",
+          "oklch(95% 0.062 137.7)"
+        ]
+      },
+      "tin-matcha-body-2": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Body 2",
+        "tonalRamp": [
+          "oklch(15% 0.082 132.1)",
+          "oklch(26% 0.082 132.1)",
+          "oklch(38% 0.082 132.1)",
+          "oklch(49% 0.082 132.1)",
+          "oklch(61% 0.082 132.1)",
+          "oklch(72% 0.082 132.1)",
+          "oklch(84% 0.082 132.1)",
+          "oklch(95% 0.082 132.1)"
+        ]
+      },
+      "tin-matcha-shade-2": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Shade 2",
+        "tonalRamp": [
+          "oklch(15% 0.077 133.4)",
+          "oklch(26% 0.077 133.4)",
+          "oklch(38% 0.077 133.4)",
+          "oklch(49% 0.077 133.4)",
+          "oklch(61% 0.077 133.4)",
+          "oklch(72% 0.077 133.4)",
+          "oklch(84% 0.077 133.4)",
+          "oklch(95% 0.077 133.4)"
+        ]
+      },
+      "tin-matcha-lid-2": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Lid 2",
+        "tonalRamp": [
+          "oklch(15% 0.062 140.6)",
+          "oklch(26% 0.062 140.6)",
+          "oklch(38% 0.062 140.6)",
+          "oklch(49% 0.062 140.6)",
+          "oklch(61% 0.062 140.6)",
+          "oklch(72% 0.062 140.6)",
+          "oklch(84% 0.062 140.6)",
+          "oklch(95% 0.062 140.6)"
+        ]
+      },
+      "tin-matcha-body-3": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Body 3",
+        "tonalRamp": [
+          "oklch(15% 0.068 138.5)",
+          "oklch(26% 0.068 138.5)",
+          "oklch(38% 0.068 138.5)",
+          "oklch(49% 0.068 138.5)",
+          "oklch(61% 0.068 138.5)",
+          "oklch(72% 0.068 138.5)",
+          "oklch(84% 0.068 138.5)",
+          "oklch(95% 0.068 138.5)"
+        ]
+      },
+      "tin-matcha-shade-3": {
+        "role": "tertiary",
+        "displayName": "Tin Matcha Shade 3",
+        "tonalRamp": [
+          "oklch(15% 0.061 139.1)",
+          "oklch(26% 0.061 139.1)",
+          "oklch(38% 0.061 139.1)",
+          "oklch(49% 0.061 139.1)",
+          "oklch(61% 0.061 139.1)",
+          "oklch(72% 0.061 139.1)",
+          "oklch(84% 0.061 139.1)",
+          "oklch(95% 0.061 139.1)"
+        ]
+      },
+      "tin-hojicha-body-1": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Body 1",
+        "tonalRamp": [
+          "oklch(15% 0.096 71.3)",
+          "oklch(26% 0.096 71.3)",
+          "oklch(38% 0.096 71.3)",
+          "oklch(49% 0.096 71.3)",
+          "oklch(61% 0.096 71.3)",
+          "oklch(72% 0.096 71.3)",
+          "oklch(84% 0.096 71.3)",
+          "oklch(95% 0.096 71.3)"
+        ]
+      },
+      "tin-hojicha-shade-1": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Shade 1",
+        "tonalRamp": [
+          "oklch(15% 0.086 71.4)",
+          "oklch(26% 0.086 71.4)",
+          "oklch(38% 0.086 71.4)",
+          "oklch(49% 0.086 71.4)",
+          "oklch(61% 0.086 71.4)",
+          "oklch(72% 0.086 71.4)",
+          "oklch(84% 0.086 71.4)",
+          "oklch(95% 0.086 71.4)"
+        ]
+      },
+      "tin-hojicha-lid-1": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Lid 1",
+        "tonalRamp": [
+          "oklch(15% 0.072 71.5)",
+          "oklch(26% 0.072 71.5)",
+          "oklch(38% 0.072 71.5)",
+          "oklch(49% 0.072 71.5)",
+          "oklch(61% 0.072 71.5)",
+          "oklch(72% 0.072 71.5)",
+          "oklch(84% 0.072 71.5)",
+          "oklch(95% 0.072 71.5)"
+        ]
+      },
+      "tin-hojicha-body-2": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Body 2",
+        "tonalRamp": [
+          "oklch(15% 0.103 70.7)",
+          "oklch(26% 0.103 70.7)",
+          "oklch(38% 0.103 70.7)",
+          "oklch(49% 0.103 70.7)",
+          "oklch(61% 0.103 70.7)",
+          "oklch(72% 0.103 70.7)",
+          "oklch(84% 0.103 70.7)",
+          "oklch(95% 0.103 70.7)"
+        ]
+      },
+      "tin-hojicha-shade-2": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Shade 2",
+        "tonalRamp": [
+          "oklch(15% 0.092 71.2)",
+          "oklch(26% 0.092 71.2)",
+          "oklch(38% 0.092 71.2)",
+          "oklch(49% 0.092 71.2)",
+          "oklch(61% 0.092 71.2)",
+          "oklch(72% 0.092 71.2)",
+          "oklch(84% 0.092 71.2)",
+          "oklch(95% 0.092 71.2)"
+        ]
+      },
+      "tin-hojicha-lid-2": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Lid 2",
+        "tonalRamp": [
+          "oklch(15% 0.059 70.6)",
+          "oklch(26% 0.059 70.6)",
+          "oklch(38% 0.059 70.6)",
+          "oklch(49% 0.059 70.6)",
+          "oklch(61% 0.059 70.6)",
+          "oklch(72% 0.059 70.6)",
+          "oklch(84% 0.059 70.6)",
+          "oklch(95% 0.059 70.6)"
+        ]
+      },
+      "tin-hojicha-body-3": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Body 3",
+        "tonalRamp": [
+          "oklch(15% 0.082 72.3)",
+          "oklch(26% 0.082 72.3)",
+          "oklch(38% 0.082 72.3)",
+          "oklch(49% 0.082 72.3)",
+          "oklch(61% 0.082 72.3)",
+          "oklch(72% 0.082 72.3)",
+          "oklch(84% 0.082 72.3)",
+          "oklch(95% 0.082 72.3)"
+        ]
+      },
+      "tin-hojicha-shade-3": {
+        "role": "tertiary",
+        "displayName": "Tin Hojicha Shade 3",
+        "tonalRamp": [
+          "oklch(15% 0.073 72.5)",
+          "oklch(26% 0.073 72.5)",
+          "oklch(38% 0.073 72.5)",
+          "oklch(49% 0.073 72.5)",
+          "oklch(61% 0.073 72.5)",
+          "oklch(72% 0.073 72.5)",
+          "oklch(84% 0.073 72.5)",
+          "oklch(95% 0.073 72.5)"
+        ]
+      },
+      "tin-label-1": {
+        "role": "tertiary",
+        "displayName": "Tin Label 1",
+        "tonalRamp": [
+          "oklch(15% 0.015 90.2)",
+          "oklch(26% 0.015 90.2)",
+          "oklch(38% 0.015 90.2)",
+          "oklch(49% 0.015 90.2)",
+          "oklch(61% 0.015 90.2)",
+          "oklch(72% 0.015 90.2)",
+          "oklch(84% 0.015 90.2)",
+          "oklch(95% 0.015 90.2)"
+        ]
+      },
+      "tin-label-2": {
+        "role": "tertiary",
+        "displayName": "Tin Label 2",
+        "tonalRamp": [
+          "oklch(15% 0.011 89.7)",
+          "oklch(26% 0.011 89.7)",
+          "oklch(38% 0.011 89.7)",
+          "oklch(49% 0.011 89.7)",
+          "oklch(61% 0.011 89.7)",
+          "oklch(72% 0.011 89.7)",
+          "oklch(84% 0.011 89.7)",
+          "oklch(95% 0.011 89.7)"
+        ]
+      },
+      "tin-label-3": {
+        "role": "tertiary",
+        "displayName": "Tin Label 3",
+        "tonalRamp": [
+          "oklch(15% 0.014 88.7)",
+          "oklch(26% 0.014 88.7)",
+          "oklch(38% 0.014 88.7)",
+          "oklch(49% 0.014 88.7)",
+          "oklch(61% 0.014 88.7)",
+          "oklch(72% 0.014 88.7)",
+          "oklch(84% 0.014 88.7)",
+          "oklch(95% 0.014 88.7)"
+        ]
+      },
+      "flavor-green": {
+        "role": "tertiary",
+        "displayName": "Flavour Green",
+        "tonalRamp": [
+          "oklch(15% 0.098 130.3)",
+          "oklch(26% 0.098 130.3)",
+          "oklch(38% 0.098 130.3)",
+          "oklch(49% 0.098 130.3)",
+          "oklch(61% 0.098 130.3)",
+          "oklch(72% 0.098 130.3)",
+          "oklch(84% 0.098 130.3)",
+          "oklch(95% 0.098 130.3)"
+        ]
+      },
+      "flavor-savoury": {
+        "role": "tertiary",
+        "displayName": "Flavour Savoury",
+        "tonalRamp": [
+          "oklch(15% 0.055 170.2)",
+          "oklch(26% 0.055 170.2)",
+          "oklch(38% 0.055 170.2)",
+          "oklch(49% 0.055 170.2)",
+          "oklch(61% 0.055 170.2)",
+          "oklch(72% 0.055 170.2)",
+          "oklch(84% 0.055 170.2)",
+          "oklch(95% 0.055 170.2)"
+        ]
+      },
+      "flavor-sweet": {
+        "role": "tertiary",
+        "displayName": "Flavour Sweet",
+        "tonalRamp": [
+          "oklch(15% 0.104 74.8)",
+          "oklch(26% 0.104 74.8)",
+          "oklch(38% 0.104 74.8)",
+          "oklch(49% 0.104 74.8)",
+          "oklch(61% 0.104 74.8)",
+          "oklch(72% 0.104 74.8)",
+          "oklch(84% 0.104 74.8)",
+          "oklch(95% 0.104 74.8)"
+        ]
+      },
+      "flavor-floral": {
+        "role": "tertiary",
+        "displayName": "Flavour Floral",
+        "tonalRamp": [
+          "oklch(15% 0.072 339.8)",
+          "oklch(26% 0.072 339.8)",
+          "oklch(38% 0.072 339.8)",
+          "oklch(49% 0.072 339.8)",
+          "oklch(61% 0.072 339.8)",
+          "oklch(72% 0.072 339.8)",
+          "oklch(84% 0.072 339.8)",
+          "oklch(95% 0.072 339.8)"
+        ]
+      },
+      "flavor-bitter": {
+        "role": "tertiary",
+        "displayName": "Flavour Bitter",
+        "tonalRamp": [
+          "oklch(15% 0.054 106.8)",
+          "oklch(26% 0.054 106.8)",
+          "oklch(38% 0.054 106.8)",
+          "oklch(49% 0.054 106.8)",
+          "oklch(61% 0.054 106.8)",
+          "oklch(72% 0.054 106.8)",
+          "oklch(84% 0.054 106.8)",
+          "oklch(95% 0.054 106.8)"
+        ]
+      },
+      "flavor-roast": {
+        "role": "tertiary",
+        "displayName": "Flavour Roast",
+        "tonalRamp": [
+          "oklch(15% 0.089 62.8)",
+          "oklch(26% 0.089 62.8)",
+          "oklch(38% 0.089 62.8)",
+          "oklch(49% 0.089 62.8)",
+          "oklch(61% 0.089 62.8)",
+          "oklch(72% 0.089 62.8)",
+          "oklch(84% 0.089 62.8)",
+          "oklch(95% 0.089 62.8)"
+        ]
+      },
+      "flavor-nutty": {
+        "role": "tertiary",
+        "displayName": "Flavour Nutty",
+        "tonalRamp": [
+          "oklch(15% 0.050 73.1)",
+          "oklch(26% 0.050 73.1)",
+          "oklch(38% 0.050 73.1)",
+          "oklch(49% 0.050 73.1)",
+          "oklch(61% 0.050 73.1)",
+          "oklch(72% 0.050 73.1)",
+          "oklch(84% 0.050 73.1)",
+          "oklch(95% 0.050 73.1)"
         ]
       }
     },
     "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home heading only; 36px on phones."
+      },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Page titles: Discover and the product name, both 36px from sm."
+        "purpose": "Product name on the hero band; 36px on phones."
       },
-      "wordmark": {
-        "displayName": "Wordmark",
-        "purpose": "Navbar wordmark only."
-      },
-      "score-numeral": {
-        "displayName": "Score Numeral",
-        "purpose": "A product's average: 20px on cards, 48px for a product page's headline score. Lato 900, tabular."
+      "section-title": {
+        "displayName": "Section Title",
+        "purpose": "Shelf titles and product-page section heads."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Section headings (Rate it, Reviews)."
-      },
-      "card-title": {
-        "displayName": "Card Title",
-        "purpose": "Product names in cards and combobox rows; insights panel section headings."
+        "purpose": "Product names on shelf cards, two-line clamp."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Subtitles and brand line."
+        "purpose": "Review text and intro lines, prose width."
       },
-      "body-sm": {
-        "displayName": "Body Sm",
-        "purpose": "Review notes, meta, rating counts, buttons, tabs, nav links, full taste-profile and distribution rows, note chips and toggles, prep line."
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Brands, rating lines, filters, nav links (600)."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Category badges; at 400 for muted meta, panel asides, the n-of-6 counter, compact profile labels and in-review note chips."
+        "purpose": "Category and note chips."
+      },
+      "tab-label": {
+        "displayName": "Tab Label",
+        "purpose": "Mobile tab bar labels."
+      },
+      "score-lg": {
+        "displayName": "Score Large",
+        "purpose": "Product hero average."
+      },
+      "score-md": {
+        "displayName": "Score Medium",
+        "purpose": "Journal stats figures."
+      },
+      "score-sm": {
+        "displayName": "Score Small",
+        "purpose": "Compact averages."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Header Matchoji wordmark in deep matcha green."
       }
     },
     "shadows": [
       {
-        "name": "overlay",
-        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-        "purpose": "Log-a-tasting dialog."
-      },
-      {
-        "name": "popover",
-        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-        "purpose": "Select and menu popovers."
-      },
-      {
-        "name": "field",
+        "name": "hairline-lift",
         "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-        "purpose": "Inputs, select triggers and outline buttons."
+        "purpose": "Outline buttons and form fields at rest (from the UI primitives)."
+      },
+      {
+        "name": "search-focus",
+        "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        "purpose": "The 56px home search pill on focus."
+      },
+      {
+        "name": "dialog",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Modal dialogs over a 50% black scrim."
+      },
+      {
+        "name": "tin-ground",
+        "value": "ellipse fill #000 at 8% opacity",
+        "purpose": "Soft ground shadow drawn under each tin (SVG, not box-shadow)."
       }
     ],
     "motion": [
       {
-        "name": "state-transition",
-        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
-        "purpose": "Colour and border transitions on tabs, cards, nav links, stars, buttons; the prep summary chevron flip."
-      },
-      {
-        "name": "dialog",
-        "value": "200ms fade + zoom-95",
-        "purpose": "Dialog open/close."
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Easing for both data animations."
       },
       {
         "name": "bar-grow",
-        "value": "200ms cubic-bezier(0.16, 1, 0.3, 1), scaleX from 0, transform-origin left",
-        "purpose": "The one authored motion: taste-profile and rating-distribution bars grow from zero on first render. Off under prefers-reduced-motion."
+        "value": "200ms",
+        "purpose": "Rating-distribution bars grow from zero (scaleX, origin left)."
+      },
+      {
+        "name": "marker-slide",
+        "value": "600ms",
+        "purpose": "Taste-slider marker slides from the low end to the crowd average; visible throughout, no fade."
+      },
+      {
+        "name": "circle-lift",
+        "value": "300ms ease-out, translateY(-4px)",
+        "purpose": "Category circle hover lift."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none",
+        "purpose": "Both data animations are disabled under prefers-reduced-motion."
       }
     ],
     "breakpoints": [
@@ -370,227 +679,144 @@
       {
         "name": "lg",
         "value": "1024px"
-      },
-      {
-        "name": "xl",
-        "value": "1280px"
-      },
-      {
-        "name": "site-max",
-        "value": "1184px"
       }
-    ],
-    "selection": {
-      "value": "color-mix(in oklab, var(--matcha) 25%, transparent)",
-      "purpose": "Text selection tint; one of the two ambient jade uses (with accent-color on native controls)."
-    },
-    "focus": {
-      "value": "outline: 2px solid var(--ring); outline-offset: 2px",
-      "purpose": "Global :focus-visible outline, unlayered so utilities cannot remove it; the primitives' 3px ring at 50% remains underneath."
-    },
-    "nativeControls": {
-      "caretColor": "var(--foreground)",
-      "accentColor": "var(--matcha)",
-      "scrollbarColor": "var(--color-neutral-400) transparent",
-      "numberSpinners": "hidden",
-      "datePickerIcon": "opacity 0.55, 0.9 on hover",
-      "summaryMarker": "removed; summaries draw their own chevron"
-    }
+    ]
   },
   "components": [
     {
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Default action: log a tasting, submit a rating; sign in on the signed-out journal. The navbar's one primary.",
-      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>Log a tasting</button>",
-      "css": ".ds-btn-primary { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; justify-content:center; gap:8px; height:36px; padding:8px 16px; border:none; border-radius:8px; background:var(--primary, #171717); color:var(--primary-foreground, #f9f9f9); font-size:14px; font-weight:500; cursor:pointer; transition:all .15s; } .ds-btn-primary:hover { opacity:.9; } .ds-btn-primary:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, oklch(0.35 0 0)) 50%, transparent); }"
+      "description": "Deep matcha green pill for the main action, such as Log a tasting.",
+      "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5v14\"/></svg>Log a tasting</button>",
+      "css": ".ds-btn-primary { font-family: Figtree, sans-serif; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: none; border-radius: 9999px; background: #2f5233; color: #fff; font-size: 14px; font-weight: 500; transition: background 150ms; } .ds-btn-primary:hover { background: color-mix(in oklab, #2f5233 90%, transparent); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(0.35 0 0); outline-offset: 2px; }"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Secondary action, e.g. Load more reviews, and Sign in with Google in the navbar.",
-      "html": "<button class=\"ds-btn-outline\">Load more (12 left)</button>",
-      "css": ".ds-btn-outline { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; height:36px; padding:8px 16px; border:1px solid var(--border, #d4d4d4); border-radius:8px; background:var(--background, #f6f4ef); color:var(--foreground, #101010); font-size:14px; font-weight:500; box-shadow:0 1px 2px 0 rgb(0 0 0 / .05); cursor:pointer; transition:all .15s; } .ds-btn-outline:hover { background:var(--accent, #f5f5f5); } .ds-btn-outline:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, oklch(0.35 0 0)) 50%, transparent); }"
+      "description": "White pill with a hairline edge, used for Want to try and Continue with Google.",
+      "html": "<button class=\"ds-btn-outline\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/></svg>Want to try</button>",
+      "css": ".ds-btn-outline { font-family: Figtree, sans-serif; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid #e6e4df; border-radius: 9999px; background: #fff; color: #101010; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background 150ms; } .ds-btn-outline:hover { background: #f5f5f5; } .ds-btn-outline:focus-visible { outline: 2px solid oklch(0.35 0 0); outline-offset: 2px; }"
     },
     {
-      "name": "Search Field",
+      "name": "Search Pill",
       "kind": "input",
-      "refersTo": "input-search",
-      "description": "Discover search: 44px white field with an inset search icon.",
-      "html": "<form class=\"ds-search\" role=\"search\"><span class=\"ds-search-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/></svg></span><input class=\"ds-input\" type=\"search\" placeholder=\"Search by name or brand\" aria-label=\"Search teas\" /></form>",
-      "css": ".ds-search { position:relative; max-width:420px; } .ds-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); display:flex; color:var(--muted-foreground, #696969); pointer-events:none; } .ds-input { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; height:44px; width:100%; padding:4px 12px 4px 36px; border:1px solid var(--input, oklch(0.8 0 0)); border-radius:8px; background:var(--card, #fff); color:var(--foreground, #101010); font-size:14px; box-shadow:0 1px 2px 0 rgb(0 0 0 / .05); transition:border-color .15s, box-shadow .15s; } .ds-input::placeholder { color:var(--muted-foreground, #696969); } .ds-input:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; border-color:var(--ring, oklch(0.35 0 0)); box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, oklch(0.35 0 0)) 50%, transparent); }"
+      "refersTo": "search-pill-lg",
+      "description": "The 56px home search; 40px in the header.",
+      "html": "<form class=\"ds-search\" role=\"search\"><span class=\"ds-search-icon\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#6b6862\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg></span><input class=\"ds-search-input\" type=\"search\" placeholder=\"Search any matcha or hojicha\" aria-label=\"Search teas\"></form>",
+      "css": ".ds-search { position: relative; width: 420px; max-width: 100%; } .ds-search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); display: flex; pointer-events: none; } .ds-search-input { font-family: Figtree, sans-serif; width: 100%; height: 56px; padding: 0 20px 0 52px; border: 1px solid #e6e4df; border-radius: 9999px; background: #fff; color: #101010; font-size: 16px; transition: border-color 150ms; } .ds-search-input::placeholder { color: #6b6862; } .ds-search-input:hover { border-color: #d4d4d4; } .ds-search-input:focus-visible { border-color: #a3a3a3; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); outline: 2px solid oklch(0.35 0 0); outline-offset: 2px; }"
     },
     {
-      "name": "Category Badge",
+      "name": "Chips",
       "kind": "chip",
-      "refersTo": "badge-matcha",
-      "description": "Pill marking a product's category in its data colour.",
-      "html": "<span class=\"ds-badge ds-badge-matcha\">Matcha</span> <span class=\"ds-badge ds-badge-hojicha\">Hojicha</span>",
-      "css": ".ds-badge { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; padding:2px 10px; border-radius:9999px; font-size:12px; line-height:16px; font-weight:600; } .ds-badge-matcha { background:var(--matcha, #5c7a4f); color:var(--matcha-foreground, #fff); } .ds-badge-hojicha { background:var(--hojicha, #8f6224); color:var(--hojicha-foreground, #fff); }"
+      "refersTo": "chip-category-matcha",
+      "description": "Category chips in solid jade or amber, meta chips in white, note chips in shelf grey.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chip ds-chip-matcha\">Matcha</span><span class=\"ds-chip ds-chip-hojicha\">Hojicha</span><span class=\"ds-chip ds-chip-meta\">Ceremonial</span><span class=\"ds-chip ds-chip-note\">Umami</span></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; align-items: center; padding: 12px; background: color-mix(in oklab, #5c7a4f 8%, #fff); } .ds-chip { font-family: Figtree, sans-serif; display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; } .ds-chip-matcha { background: #5c7a4f; color: #fff; } .ds-chip-hojicha { background: #8f6224; color: #fff; } .ds-chip-meta { background: #fff; color: #101010; font-size: 14px; font-weight: 400; } .ds-chip-note { background: #f4f3f0; color: #101010; font-weight: 400; }"
     },
     {
-      "name": "Category Tabs",
-      "kind": "nav",
-      "refersTo": "category-tab",
-      "description": "Segmented All / Matcha / Hojicha filter; active tab fills with its category colour.",
-      "html": "<nav class=\"ds-tabs\" aria-label=\"Category\"><a class=\"ds-tab\" href=\"#\">All</a><a class=\"ds-tab ds-tab-matcha\" aria-current=\"page\" href=\"#\">Matcha</a><a class=\"ds-tab\" href=\"#\">Hojicha</a></nav>",
-      "css": ".ds-tabs { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; gap:4px; padding:4px; background:var(--card, #fff); border:1px solid var(--border, #d4d4d4); border-radius:10px; } .ds-tab { padding:6px 12px; border-radius:8px; font-size:14px; font-weight:500; color:var(--muted-foreground, #696969); text-decoration:none; transition:color .15s, background .15s; } .ds-tab:hover { color:var(--foreground, #101010); } .ds-tab:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; } .ds-tab-matcha[aria-current] { background:var(--matcha, #5c7a4f); color:var(--matcha-foreground, #fff); }"
-    },
-    {
-      "name": "Product Card",
+      "name": "Shelf Card",
       "kind": "card",
-      "refersTo": "product-card",
-      "description": "Whole-card link: white surface, image well (photo or category tint with leaf mark) with overlaid badge, up to two tinted note chips, score numeral, small stars and count. Equal height in a row.",
-      "html": "<a class=\"ds-card\" href=\"#\"><div class=\"ds-well ds-well-matcha\"><span class=\"ds-leaf\"><svg width=\"48\" height=\"48\" viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 38C10 20 22 9 39 9c0 17-11 29-29 29Z\"/><path d=\"M10 38 30 18\"/><path d=\"M20 28h6M24 24v-6\"/></svg></span><span class=\"ds-badge-m\">Matcha</span></div><div class=\"ds-card-body\"><div><h2 class=\"ds-card-title\">Uji Ceremonial Matcha</h2><p class=\"ds-muted\">Marukyu Koyamaen</p></div><p class=\"ds-meta\">Ceremonial · Uji</p><ul class=\"ds-card-notes\"><li>Umami</li><li>Grassy</li></ul><div class=\"ds-score-row\"><span class=\"ds-score\">4.2</span><span class=\"ds-on\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span><span class=\"ds-off\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span><span class=\"ds-muted ds-count\">(8)</span></div></div></a>",
-      "css": ".ds-card { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:flex; flex-direction:column; max-width:280px; overflow:hidden; border:1px solid var(--border, #d4d4d4); border-radius:10px; background:var(--card, #fff); color:var(--foreground, #101010); text-decoration:none; transition:border-color .15s; } .ds-card:hover { border-color:#a3a3a3; } .ds-card:hover .ds-card-title { text-decoration:underline; text-underline-offset:2px; } .ds-card:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; box-shadow:0 0 0 2px var(--background, #f6f4ef), 0 0 0 4px var(--ring, oklch(0.35 0 0)); } .ds-well { position:relative; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; } .ds-well-matcha { background:color-mix(in oklab, var(--matcha, #5c7a4f) 15%, transparent); } .ds-leaf { display:flex; color:var(--matcha, #5c7a4f); } .ds-badge-m { position:absolute; top:10px; left:10px; padding:2px 10px; border-radius:9999px; background:var(--matcha, #5c7a4f); color:var(--matcha-foreground, #fff); font-size:12px; line-height:16px; font-weight:600; } .ds-card-body { display:flex; flex-direction:column; gap:12px; padding:16px; } .ds-card-title { margin:0; font-size:16px; font-weight:600; line-height:1.25; } .ds-muted { margin:0; color:var(--muted-foreground, #696969); font-size:14px; } .ds-meta { margin:0; color:var(--muted-foreground, #696969); font-size:12px; } .ds-score-row { display:flex; align-items:center; gap:8px; } .ds-score { font-size:20px; line-height:1; font-weight:900; letter-spacing:-0.025em; font-variant-numeric:tabular-nums; } .ds-on { display:flex; color:var(--matcha, #5c7a4f); } .ds-off { display:flex; color:var(--muted-foreground, #696969); } .ds-count { font-variant-numeric:tabular-nums; } .ds-card-notes { display:flex; flex-wrap:wrap; gap:4px; margin:0; padding:0; list-style:none; } .ds-card-notes li { padding:2px 8px; border-radius:9999px; background:color-mix(in oklab, var(--matcha, #5c7a4f) 15%, transparent); font-size:12px; line-height:16px; }"
+      "refersTo": "product-tile",
+      "description": "A tea on its warm grey tile, brand above name, one rating line.",
+      "html": "<a class=\"ds-card\" href=\"#\"><div class=\"ds-card-tile\"><svg viewBox=\"0 0 120 160\" width=\"64\" aria-hidden=\"true\"><ellipse cx=\"60\" cy=\"150\" rx=\"40\" ry=\"5\" fill=\"#000\" opacity=\"0.08\"/><rect x=\"22\" y=\"34\" width=\"76\" height=\"114\" rx=\"8\" fill=\"#5c7a4f\"/><rect x=\"78\" y=\"34\" width=\"20\" height=\"114\" rx=\"8\" fill=\"#4d6942\"/><rect x=\"30\" y=\"38\" width=\"5\" height=\"106\" rx=\"2.5\" fill=\"#fff\" opacity=\"0.14\"/><rect x=\"18\" y=\"16\" width=\"84\" height=\"24\" rx=\"6\" fill=\"#3d5634\"/><rect x=\"18\" y=\"35\" width=\"84\" height=\"5\" fill=\"#000\" opacity=\"0.12\"/><rect x=\"22\" y=\"66\" width=\"76\" height=\"50\" fill=\"#f5f1e6\"/><rect x=\"22\" y=\"70\" width=\"76\" height=\"1.5\" fill=\"#4d6942\" opacity=\"0.5\"/><rect x=\"22\" y=\"110.5\" width=\"76\" height=\"1.5\" fill=\"#4d6942\" opacity=\"0.5\"/><text x=\"60\" y=\"99\" text-anchor=\"middle\" font-size=\"26\" font-weight=\"800\" fill=\"#4d6942\" font-family=\"Figtree, sans-serif\">M</text></svg></div><p class=\"ds-card-brand\">Marukyu Koyamaen</p><h3 class=\"ds-card-name\">Uji Ceremonial</h3><p class=\"ds-card-rating\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"#5c7a4f\" stroke=\"#5c7a4f\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/></svg><b>4.5</b><span>(2 ratings)</span></p></a>",
+      "css": ".ds-card { font-family: Figtree, sans-serif; display: flex; flex-direction: column; gap: 12px; width: 208px; color: #101010; text-decoration: none; } .ds-card-tile { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; border-radius: 16px; background: #f4f3f0; transition: filter 150ms; } .ds-card-tile svg { width: 46%; } .ds-card:hover .ds-card-tile { filter: brightness(0.97); } .ds-card:hover .ds-card-name { text-decoration: underline; } .ds-card-brand { margin: 0; font-size: 14px; color: #6b6862; } .ds-card-name { margin: -12px 0 0; font-size: 16px; font-weight: 700; line-height: 1.375; } .ds-card-rating { margin: -8px 0 0; display: flex; align-items: center; gap: 4px; font-size: 14px; font-variant-numeric: tabular-nums; } .ds-card-rating span { color: #6b6862; } .ds-card:focus-visible { outline: 2px solid oklch(0.35 0 0); outline-offset: 2px; }"
     },
     {
-      "name": "Score Numeral",
+      "name": "Score Block",
       "kind": "custom",
-      "refersTo": "",
-      "description": "Heavy tabular average that leads every score; 20px on cards, 48px on product pages.",
-      "html": "<div class=\"ds-scores\"><span class=\"ds-num ds-num-lg\">4.2</span><span class=\"ds-num\">4.2</span><span class=\"ds-num ds-num-none\">–</span></div>",
-      "css": ".ds-scores { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:flex; align-items:baseline; gap:24px; color:var(--foreground, #101010); } .ds-num { font-size:20px; line-height:1; font-weight:900; letter-spacing:-0.025em; font-variant-numeric:tabular-nums; } .ds-num-lg { font-size:48px; } .ds-num-none { color:var(--muted-foreground, #696969); }"
+      "refersTo": "score-lg",
+      "description": "The 60px 800 tabular numeral leading fractional stars and the rating count.",
+      "html": "<div class=\"ds-score\"><span class=\"ds-score-num\">4.5</span><div><div class=\"ds-score-stars\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"#5c7a4f\" stroke=\"#5c7a4f\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/></svg><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"#5c7a4f\" stroke=\"#5c7a4f\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/></svg><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"#5c7a4f\" stroke=\"#5c7a4f\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/></svg><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"#5c7a4f\" stroke=\"#5c7a4f\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/></svg><span class=\"ds-half\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"#5c7a4f\" stroke=\"#5c7a4f\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/></svg></span></div><p>2 ratings</p></div></div>",
+      "css": ".ds-score { font-family: Figtree, sans-serif; display: flex; align-items: center; gap: 16px; color: #101010; } .ds-score-num { font-size: 60px; font-weight: 800; line-height: 1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; } .ds-score-stars { display: flex; } .ds-score-stars svg { width: 16px; height: 16px; } .ds-half { display: inline-block; width: 8px; overflow: hidden; } .ds-score p { margin: 4px 0 0; font-size: 14px; color: #6b6862; }"
     },
     {
-      "name": "Navbar",
+      "name": "Flavour Card",
+      "kind": "card",
+      "refersTo": "flavor-card",
+      "description": "A flavour family: a colour band with a white icon disc, then notes and mention count.",
+      "html": "<div class=\"ds-flavor\"><div class=\"ds-flavor-band\"><span class=\"ds-flavor-disc\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z\"/><path d=\"M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12\"/></svg></span></div><div class=\"ds-flavor-body\"><p class=\"ds-flavor-notes\">Grassy, Spinach</p><p class=\"ds-flavor-count\">5 mentions of green notes</p></div></div>",
+      "css": ".ds-flavor { font-family: Figtree, sans-serif; width: 224px; overflow: hidden; border: 1px solid #e6e4df; border-radius: 16px; background: #fff; color: #101010; } .ds-flavor-band { display: flex; align-items: center; justify-content: center; height: 80px; background: #6f8f4e; } .ds-flavor-disc { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 9999px; background: rgb(255 255 255 / 0.2); } .ds-flavor-body { padding: 12px 16px; text-align: center; } .ds-flavor-notes { margin: 0; font-weight: 600; } .ds-flavor-count { margin: 2px 0 0; font-size: 12px; color: #6b6862; }"
+    },
+    {
+      "name": "Taste Slider",
+      "kind": "custom",
+      "refersTo": "matcha-jade",
+      "description": "A crowd-average marker between two pole words; the marker slides in from the low end.",
+      "html": "<div class=\"ds-taste\"><span>Light</span><div class=\"ds-taste-track\"><span class=\"ds-taste-marker\" style=\"left: 52%\"></span></div><span class=\"ds-taste-hi\">Full</span></div>",
+      "css": "@keyframes ds-marker-slide { from { left: 0; } } .ds-taste { font-family: Figtree, sans-serif; display: grid; grid-template-columns: 5.5rem 1fr 5.5rem; align-items: center; gap: 12px; width: 480px; max-width: 100%; font-size: 14px; color: #101010; } .ds-taste-track { position: relative; height: 8px; border-radius: 9999px; background: #f4f3f0; } .ds-taste-marker { position: absolute; top: 0; height: 8px; width: 22%; border-radius: 9999px; background: #5c7a4f; animation: ds-marker-slide 600ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-taste-hi { text-align: right; } @media (prefers-reduced-motion: reduce) { .ds-taste-marker { animation: none; } }"
+    },
+    {
+      "name": "Review Card",
+      "kind": "card",
+      "refersTo": "review-card",
+      "description": "Hairline card led by a category-tint score pill, with a hairline-topped reviewer footer.",
+      "html": "<article class=\"ds-review\"><p class=\"ds-review-score\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"#5c7a4f\" stroke=\"#5c7a4f\" stroke-width=\"2\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/></svg>4.0</p><p class=\"ds-review-text\">Bright and grassy, with a long sweet finish. Whisked smooth at 75 degrees.</p><ul class=\"ds-review-notes\"><li>Umami</li><li>Grassy</li></ul><footer class=\"ds-review-foot\"><span class=\"ds-avatar\">A</span><b>Aiko</b><span class=\"ds-muted\">12 Oct 2026</span></footer></article>",
+      "css": ".ds-review { font-family: Figtree, sans-serif; width: 420px; max-width: 100%; padding: 20px; border: 1px solid #e6e4df; border-radius: 16px; background: #fff; color: #101010; } .ds-review-score { display: inline-flex; align-items: center; gap: 4px; margin: 0; padding: 4px 10px; border-radius: 9999px; background: color-mix(in oklab, #5c7a4f 15%, transparent); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-review-text { margin: 12px 0 0; line-height: 1.5; } .ds-review-notes { display: flex; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; } .ds-review-notes li { padding: 2px 10px; border-radius: 9999px; background: #f4f3f0; font-size: 12px; } .ds-review-foot { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #e6e4df; font-size: 14px; } .ds-avatar { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 9999px; background: #f4f3f0; font-size: 12px; font-weight: 700; } .ds-muted { color: #6b6862; }"
+    },
+    {
+      "name": "Header Nav",
       "kind": "nav",
-      "refersTo": "",
-      "description": "Sticky white top bar: wordmark, then Discover/Journal links 32px after it, Log a tasting (the one primary) and auth (outline Sign in with Google, or the avatar menu) right, bottom hairline. Below sm the links wrap to a second row.",
-      "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-left\"><a class=\"ds-wordmark\" href=\"#\">Matchoji</a><a class=\"ds-nav-link\" aria-current=\"page\" href=\"#\">Discover</a><a class=\"ds-nav-link\" href=\"#\">Journal</a></div><div class=\"ds-nav-right\"><button class=\"ds-nav-btn\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>Log a tasting</button><span class=\"ds-avatar\" aria-label=\"Account\">CL</span></div></nav>",
-      "css": ".ds-nav { flex-wrap:wrap; row-gap:8px; font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:64px; padding:12px 24px; background:var(--card, #fff); border-bottom:1px solid var(--border, #d4d4d4); } .ds-nav-left, .ds-nav-right { display:flex; align-items:center; gap:24px; } .ds-nav-right { gap:12px; } .ds-wordmark { margin-right:8px; font-size:20px; font-weight:700; letter-spacing:-0.025em; color:var(--foreground, #101010); text-decoration:none; } .ds-nav-link { font-size:14px; font-weight:500; color:var(--muted-foreground, #696969); text-decoration:none; transition:color .15s; } .ds-nav-link:hover, .ds-nav-link[aria-current] { color:var(--foreground, #101010); } .ds-wordmark:focus-visible, .ds-nav-link:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; } .ds-nav-btn { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; gap:8px; height:36px; padding:8px 16px; border:none; border-radius:8px; background:var(--primary, #171717); color:var(--primary-foreground, #f9f9f9); font-size:14px; font-weight:500; cursor:pointer; } .ds-nav-btn:hover { opacity:.9; } .ds-nav-btn:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, oklch(0.35 0 0)) 50%, transparent); } .ds-avatar { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:9999px; background:var(--muted, #f5f5f5); font-size:12px; font-weight:600; }"
-    },
-    {
-      "name": "Star Rating Input",
-      "kind": "custom",
-      "refersTo": "",
-      "description": "Five 28px star radio buttons, filled in the product's category colour.",
-      "html": "<div class=\"ds-rate\" role=\"radiogroup\" aria-label=\"Rating out of 5 stars\"><button class=\"ds-star ds-star-on\" role=\"radio\" aria-checked=\"false\" aria-label=\"1 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star ds-star-on\" role=\"radio\" aria-checked=\"false\" aria-label=\"2 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star ds-star-on\" role=\"radio\" aria-checked=\"true\" aria-label=\"3 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star\" role=\"radio\" aria-checked=\"false\" aria-label=\"4 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button><button class=\"ds-star\" role=\"radio\" aria-checked=\"false\" aria-label=\"5 stars\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></button></div>",
-      "css": ".ds-rate { display:flex; gap:4px; } .ds-star { padding:2px; border:none; background:none; color:var(--muted-foreground, #696969); cursor:pointer; transition:color .15s; } .ds-star-on, .ds-star:hover { color:var(--matcha, #5c7a4f); } .ds-star:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; border-radius:4px; }"
-    },
-    {
-      "name": "Taste Profile Bars",
-      "kind": "custom",
-      "refersTo": "bar-fill-matcha",
-      "description": "Signature data graphic: four 1-5 meters filled in the category colour; full rows for a product's average, compact 2x2 grid inside a review.",
-      "html": "<div class=\"ds-tp-demo\"><ul class=\"ds-tp\"><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Sweetness</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Sweetness\" aria-valuenow=\"3.4\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:68%\"></div></div><span class=\"ds-tp-val\">3.4</span></li><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Umami</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Umami\" aria-valuenow=\"4.2\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:84%\"></div></div><span class=\"ds-tp-val\">4.2</span></li><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Bitterness</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Bitterness\" aria-valuenow=\"2\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:40%\"></div></div><span class=\"ds-tp-val\">2</span></li><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Body</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Body\" aria-valuenow=\"3.8\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:76%\"></div></div><span class=\"ds-tp-val\">3.8</span></li></ul><ul class=\"ds-tp ds-tp-compact\"><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Sweetness</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Sweetness\" aria-valuenow=\"3\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:60%\"></div></div></li><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Umami</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Umami\" aria-valuenow=\"4\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:80%\"></div></div></li><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Bitterness</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Bitterness\" aria-valuenow=\"2\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:40%\"></div></div></li><li class=\"ds-tp-row\"><span class=\"ds-tp-label\">Body</span><div class=\"ds-tp-track\" role=\"meter\" aria-label=\"Body\" aria-valuenow=\"4\" aria-valuemin=\"1\" aria-valuemax=\"5\"><div class=\"ds-tp-fill\" style=\"width:80%\"></div></div></li></ul></div>",
-      "css": ".ds-tp-demo { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:grid; gap:24px; max-width:360px; color:var(--foreground, #101010); } .ds-tp { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; } .ds-tp-row { display:grid; grid-template-columns:6rem 1fr 2.5rem; align-items:center; gap:12px; font-size:14px; } .ds-tp-track { height:8px; overflow:hidden; border-radius:9999px; background:var(--muted, #f5f5f5); } .ds-tp-fill { height:100%; border-radius:9999px; background:var(--matcha, #5c7a4f); transform-origin:left; animation:ds-bar-grow 200ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-tp-val { text-align:right; color:var(--muted-foreground, #696969); font-variant-numeric:tabular-nums; } .ds-tp-compact { display:grid; grid-template-columns:1fr 1fr; column-gap:24px; row-gap:4px; } .ds-tp-compact .ds-tp-row { grid-template-columns:4.5rem 1fr; font-size:12px; } .ds-tp-compact .ds-tp-label { color:var(--muted-foreground, #696969); } .ds-tp-compact .ds-tp-track { height:6px; } @keyframes ds-bar-grow { from { transform:scaleX(0); } } @media (prefers-reduced-motion: reduce) { .ds-tp-fill { animation:none; } }"
-    },
-    {
-      "name": "Rating Distribution",
-      "kind": "custom",
-      "refersTo": "bar-fill-hojicha",
-      "description": "Five bars, 5 stars first, width relative to the largest count, category fill.",
-      "html": "<ul class=\"ds-rd\" aria-label=\"Rating distribution\"><li class=\"ds-rd-row\"><span class=\"ds-rd-level\">5<span class=\"ds-rd-star\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span></span><div class=\"ds-rd-track\" aria-hidden=\"true\"><div class=\"ds-rd-fill\" style=\"width:67%\"></div></div><span class=\"ds-rd-count\">6</span></li><li class=\"ds-rd-row\"><span class=\"ds-rd-level\">4<span class=\"ds-rd-star\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span></span><div class=\"ds-rd-track\" aria-hidden=\"true\"><div class=\"ds-rd-fill\" style=\"width:100%\"></div></div><span class=\"ds-rd-count\">9</span></li><li class=\"ds-rd-row\"><span class=\"ds-rd-level\">3<span class=\"ds-rd-star\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span></span><div class=\"ds-rd-track\" aria-hidden=\"true\"><div class=\"ds-rd-fill\" style=\"width:33%\"></div></div><span class=\"ds-rd-count\">3</span></li><li class=\"ds-rd-row\"><span class=\"ds-rd-level\">2<span class=\"ds-rd-star\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span></span><div class=\"ds-rd-track\" aria-hidden=\"true\"><div class=\"ds-rd-fill\" style=\"width:11%\"></div></div><span class=\"ds-rd-count\">1</span></li><li class=\"ds-rd-row\"><span class=\"ds-rd-level\">1<span class=\"ds-rd-star\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/></svg></span></span><div class=\"ds-rd-track\" aria-hidden=\"true\"><div class=\"ds-rd-fill\" style=\"width:0%\"></div></div><span class=\"ds-rd-count\">0</span></li></ul>",
-      "css": ".ds-rd { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; max-width:320px; color:var(--foreground, #101010); } .ds-rd-row { display:grid; grid-template-columns:2rem 1fr 2rem; align-items:center; gap:12px; font-size:14px; } .ds-rd-level { display:flex; align-items:center; gap:4px; font-variant-numeric:tabular-nums; } .ds-rd-star { display:flex; color:var(--muted-foreground, #696969); } .ds-rd-track { height:8px; overflow:hidden; border-radius:9999px; background:var(--muted, #f5f5f5); } .ds-rd-fill { height:100%; border-radius:9999px; background:var(--hojicha, #8f6224); transform-origin:left; animation:ds-rd-grow 200ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-rd-count { text-align:right; color:var(--muted-foreground, #696969); font-variant-numeric:tabular-nums; } @keyframes ds-rd-grow { from { transform:scaleX(0); } } @media (prefers-reduced-motion: reduce) { .ds-rd-fill { animation:none; } }"
-    },
-    {
-      "name": "Flavour Note Picker",
-      "kind": "chip",
-      "refersTo": "pill-toggle",
-      "description": "Pill toggles (pressed = solid category badge colours), capped at 6 with an n-of-6 counter; below, the read-only tinted note chips with counts.",
-      "html": "<div class=\"ds-np\"><div class=\"ds-np-row\"><button type=\"button\" class=\"ds-pill\" aria-pressed=\"true\">Umami</button><button type=\"button\" class=\"ds-pill\" aria-pressed=\"false\">Grassy</button><button type=\"button\" class=\"ds-pill\" aria-pressed=\"true\">Creamy</button><button type=\"button\" class=\"ds-pill\" aria-pressed=\"true\">Seaweed</button><button type=\"button\" class=\"ds-pill\" aria-pressed=\"false\">Nutty</button><button type=\"button\" class=\"ds-pill\" aria-pressed=\"false\">Sweet</button><button type=\"button\" class=\"ds-pill\" aria-pressed=\"false\">Floral</button></div><p class=\"ds-np-count\" aria-live=\"polite\">3 of 6</p><ul class=\"ds-np-row ds-chips\"><li class=\"ds-chip\">Umami <span class=\"ds-chip-n\">7</span></li><li class=\"ds-chip\">Grassy <span class=\"ds-chip-n\">4</span></li></ul></div>",
-      "css": ".ds-np { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:flex; flex-direction:column; gap:8px; max-width:420px; color:var(--foreground, #101010); } .ds-np-row { display:flex; flex-wrap:wrap; gap:8px; list-style:none; margin:0; padding:0; } .ds-pill { font:inherit; font-size:14px; padding:4px 12px; border-radius:9999px; border:1px solid var(--border, #d4d4d4); background:transparent; color:inherit; cursor:pointer; transition:background-color .15s, border-color .15s, color .15s; } .ds-pill:hover { border-color:#a3a3a3; } .ds-pill[aria-pressed=\"true\"] { background:var(--matcha, #5c7a4f); color:var(--matcha-foreground, #fff); border-color:transparent; } .ds-pill:disabled { opacity:.4; cursor:not-allowed; } .ds-pill:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, oklch(0.35 0 0)) 50%, transparent); } .ds-np-count { margin:0; font-size:12px; color:var(--muted-foreground, #696969); font-variant-numeric:tabular-nums; } .ds-chips { margin-top:8px; } .ds-chip { display:flex; align-items:center; gap:6px; padding:4px 12px; border-radius:9999px; font-size:14px; background:color-mix(in oklab, var(--matcha, #5c7a4f) 15%, transparent); } .ds-chip-n { color:var(--muted-foreground, #696969); font-variant-numeric:tabular-nums; }"
-    },
-    {
-      "name": "Want to Try Button",
-      "kind": "button",
-      "refersTo": "want-to-try",
-      "description": "Outline toggle on white with a bookmark; label always 'Want to try', aria-pressed and a filled bookmark carry the saved state. Compact: a 32px round icon button in a feed card's top-right corner.",
-      "html": "<div class=\"ds-wtt-row\"><button class=\"ds-wtt\" aria-pressed=\"false\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/></svg>Want to try</button><button class=\"ds-wtt\" aria-pressed=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/></svg>Want to try</button><button class=\"ds-wtt ds-wtt-compact\" aria-pressed=\"true\" aria-label=\"Want to try\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/></svg></button></div>",
-      "css": ".ds-wtt-row { display:flex; align-items:center; gap:12px; } .ds-wtt { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:inline-flex; align-items:center; justify-content:center; gap:8px; height:36px; padding:8px 16px; border:1px solid var(--border, #d4d4d4); border-radius:8px; background:var(--card, #fff); color:var(--foreground, #101010); font-size:14px; font-weight:500; box-shadow:0 1px 2px 0 rgb(0 0 0 / .05); cursor:pointer; transition:all .15s; } .ds-wtt:hover { background:var(--accent, #f5f5f5); } .ds-wtt:focus-visible { outline:2px solid var(--ring, oklch(0.35 0 0)); outline-offset:2px; box-shadow:0 0 0 3px color-mix(in oklab, var(--ring, oklch(0.35 0 0)) 50%, transparent); } .ds-wtt-compact { width:32px; height:32px; padding:0; border-radius:9999px; }"
-    },
-    {
-      "name": "Journal Stats Panel",
-      "kind": "custom",
-      "refersTo": "journal-stats-panel",
-      "description": "White dl panel: Tastings, Average rating (score numeral), Category split (static jade/amber bar plus counts, no motion), Your notes.",
-      "html": "<dl class=\"ds-stats\"><div><dt>Tastings</dt><dd class=\"ds-stat-num\">14</dd></div><div><dt>Average rating</dt><dd class=\"ds-stat-num\">4.1</dd></div><div><dt>Category split</dt><dd><div class=\"ds-split\" aria-hidden=\"true\"><span class=\"ds-split-m\" style=\"width:36%\"></span><span class=\"ds-split-h\" style=\"width:64%\"></span></div><p class=\"ds-split-l\">Matcha 5 · Hojicha 9</p></dd></div><div><dt>Your notes</dt><dd class=\"ds-stat-notes\">Umami, Toasty, Nutty</dd></div></dl>",
-      "css": ".ds-stats { font-family: var(--font-lato), Lato, ui-sans-serif, system-ui, sans-serif; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:24px; margin:0; padding:24px; background:var(--card, #fff); border:1px solid var(--border, #d4d4d4); border-radius:10px; color:var(--foreground, #101010); } .ds-stats dt { margin-bottom:8px; color:var(--muted-foreground, #696969); font-size:14px; } .ds-stats dd { margin:0; } .ds-stat-num { font-size:30px; line-height:1; font-weight:900; letter-spacing:-0.025em; font-variant-numeric:tabular-nums; } .ds-split { display:flex; height:8px; overflow:hidden; border-radius:9999px; background:var(--muted, #f5f5f5); } .ds-split-m { background:var(--matcha, #5c7a4f); } .ds-split-h { background:var(--hojicha, #8f6224); } .ds-split-l { margin:8px 0 0; color:var(--muted-foreground, #696969); font-size:14px; font-variant-numeric:tabular-nums; } .ds-stat-notes { font-size:14px; }"
+      "refersTo": "nav-bar",
+      "description": "Sticky 64px white header with green wordmark, section links and the Log action.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-mark\" href=\"#\">Matchoji</a><a class=\"ds-nav-link ds-active\" href=\"#\" aria-current=\"page\">Explore</a><a class=\"ds-nav-link\" href=\"#\">Journal</a><button class=\"ds-nav-cta\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5v14\"/></svg>Log a tasting</button></nav>",
+      "css": ".ds-nav { font-family: Figtree, sans-serif; display: flex; align-items: center; gap: 24px; height: 64px; padding: 0 24px; border-bottom: 1px solid #e6e4df; background: rgb(255 255 255 / 0.95); backdrop-filter: blur(4px); } .ds-nav-mark { font-size: 20px; font-weight: 800; letter-spacing: -0.025em; color: #2f5233; text-decoration: none; } .ds-nav-link { font-size: 14px; font-weight: 600; color: #6b6862; text-decoration: none; transition: color 150ms; } .ds-nav-link:hover, .ds-nav-link.ds-active { color: #101010; } .ds-nav-cta { font-family: Figtree, sans-serif; margin-left: auto; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: none; border-radius: 9999px; background: #2f5233; color: #fff; font-size: 14px; font-weight: 500; } .ds-nav-cta:hover { background: color-mix(in oklab, #2f5233 90%, transparent); } .ds-nav-link:focus-visible { outline: 2px solid oklch(0.35 0 0); outline-offset: 2px; } .ds-nav-cta:focus-visible { outline: 2px solid oklch(0.35 0 0); outline-offset: 2px; }"
     }
   ],
   "narrative": {
-    "northStar": "The Tasting Ledger",
-    "overview": "Matchoji is a working logbook, not a showcase. The page is a faint paper tone, the working surfaces laid on it (cards, navbar, tab rail, search, filters, frames) are white, text is near-black, chrome is greyscale, and one workhorse sans (Lato) carries every word. Against that quiet ledger, exactly two colours do real work: jade marks matcha, amber marks hojicha. Category colour is data. It appears wherever a product or rating appears, so the scarce-matcha, abundant-hojicha contrast reads at a glance across a whole feed.\n\nThe system runs in Operate mode: dense enough to scan a grid of products, calm enough to read reviews. Components are shadcn primitives with the category layer applied on top; the bespoke language is small: the category badge, the product card's image well, the score numeral, the star rating and the taste-profile bars. The journal reuses that same vocabulary on white ruled lists rather than adding new pieces. Depth comes from the two-tone surface, white on paper, not from shadows. Cards rest flat on a hairline and darken that hairline on hover.\n\nThe confirmed rejection is the neutral-grayscale rating-app look where category is only a text label (the Vivino and Untappd clone pattern). Here, category is never a label alone.",
+    "northStar": "The Tea Shop Shelf",
+    "overview": "Matchoji plays Vivino's shop-shelf grammar straight, for tea. The page is plain white; every product sits on its own warm grey tile the way a tin sits on a shop shelf, and when no photograph exists a flat-drawn tin in the tea's own colours stands in for it. Shelves scroll sideways, a filter rail sits on the left of Explore, and the product page opens on a category-tinted band carrying the tile, the name, a big score numeral and a one-tap star row.\n\nThe world is product-led and numeral-led. Type is a single sans (Figtree) doing all the work through weight: 700 for headings and product names, 800 for the score numeral and wordmark. Colour has three jobs and keeps them separate: deep matcha green for actions, jade and amber for category data, and an earthy set of flavour-family colours for the flavour cards. Everything interactive is a pill. Surfaces are flat; depth comes from tile against white, not from shadow.\n\nDensity is relaxed and browsable: wide shelves, 24px gutters, generous stacks between sections. Motion is limited to two data animations (bars grow, taste markers slide) and small hover lifts.",
     "keyCharacteristics": [
-      "Paper ground (#f6f4ef) with white surfaces, near-black ink (#101010), greyscale chrome.",
-      "Two functional category colours, jade and amber, carried as fills, tints and graphics; both hold white text at WCAG AA.",
-      "One typeface, Lato, for everything; a heavy tabular score numeral is its signature.",
-      "Product cards lead with an image well: the photo, or a category-tinted field with a drawn leaf.",
-      "Flat surfaces with hairline borders; no resting shadows on cards.",
-      "Centred 1184px column with 24px gutters on every page.",
-      "Taste-profile bars (1 to 5, filled in the category colour) are the signature data graphic; they and the rating histogram carry the system's one authored motion."
+      "White page, warm grey shelf tiles (16px radius), flat-drawn tins when there is no photo.",
+      "One sans, Figtree, weight as hierarchy; tabular 800 numerals for scores.",
+      "Deep matcha green for actions only; jade and amber for category data only.",
+      "Every button, chip, search field and avatar is a full pill or circle.",
+      "Flat surfaces, hairline borders, no decorative shadow."
     ],
     "rules": [
       {
-        "name": "The Paper and White Rule",
-        "body": "The ground is paper; anything a person reads or operates sits on a white surface laid on it. Depth is that two-tone step, not a shadow. Never fill a card or panel with the paper tone, and never put the page itself on white.",
+        "name": "The Three Jobs Rule",
+        "body": "Green acts, jade and amber classify, flavour colours describe flavour. A colour never borrows another's job: no green category data, no jade buttons, no flavour colours outside flavour cards.",
         "section": "colors"
       },
       {
-        "name": "The Category-Is-Data Rule",
-        "body": "Jade and amber appear only where a product's category is being expressed: badge, image-well tint and leaf mark, star fill, active category tab, data-bar fill (including the journal's category-split bar), flavour-note chips and pressed toggles. They always come from `CATEGORY_STYLES`; no component hard-codes them. The two ambient uses are both browser surfaces native to the world: the text-selection tint (jade at 25%) and jade as the page's `accent-color` for native controls.",
+        "name": "The Category Is Data Rule",
+        "body": "Every jade or amber use comes from one category style map, so a tea's chip, stars, slider marker, bars, tint and band always agree.",
         "section": "colors"
       },
       {
-        "name": "The Jade-on-White Rule",
-        "body": "Jade text measures 4.39:1 on paper, below AA, and 4.83:1 on white. Jade (and, for parity, amber) appears as text only on a white surface; everywhere else it is a graphic: stars, bars, tints, badges, the leaf mark.",
-        "section": "colors"
-      },
-      {
-        "name": "The Charcoal Action Rule",
-        "body": "Buttons and other neutral actions are charcoal or outline. A jade \"Submit\" button would claim every rating is matcha.",
-        "section": "colors"
-      },
-      {
-        "name": "The One Voice Rule",
-        "body": "Lato only. No display face, no serif accent, no mono in shipped UI. This is Operate, not Persuade.",
+        "name": "The Numeral Outranks The Stars Rule",
+        "body": "Wherever an average appears with stars, the numeral is larger and heavier (800, tabular) and sits first; stars fill fractionally so they always agree with it.",
         "section": "typography"
       },
       {
-        "name": "The Numeral-First Rule",
-        "body": "Wherever a product's average is shown as a score, the heavy tabular numeral leads and the stars follow at a smaller size. The numeral is the first thing a taster reads; stars and count support it.",
+        "name": "The Weight Is Hierarchy Rule",
+        "body": "Hierarchy comes from size and weight in Figtree alone. No second display face, no uppercase tracked labels.",
         "section": "typography"
       },
       {
-        "name": "The Hairline-First Rule",
-        "body": "Separate with the paper-to-white step and 1px hairline borders before reaching for shadow. Only floating layers (dialogs, popovers) cast one; a clickable card answers hover with a darker hairline, not a lift.",
+        "name": "The Tile Not Shadow Rule",
+        "body": "A product is lifted off the page by its grey tile, never by a drop shadow. Hover on a tile darkens it slightly (brightness 0.97); category circles lift 4px.",
         "section": "elevation"
-      },
-      {
-        "name": "The One Motion Rule",
-        "body": "Data bars (taste profile and rating distribution) grow from zero on first render: 200ms scaleX from the left edge, ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), switched off under `prefers-reduced-motion`. It is the one authored motion; everything else is 150ms colour and border feedback on hover and press, the prep summary's chevron flip, and the primitives' dialog transitions.",
-        "section": "components"
       }
     ],
     "dos": [
-      "**Do** pull every jade and amber use from `CATEGORY_STYLES`, so badge, tint, leaf, star and tab can never disagree.",
-      "**Do** keep white text on both category fills; both were darkened specifically to clear 4.5:1.",
-      "**Do** put cards, panels, fields and frames on white over the paper ground (#f6f4ef).",
-      "**Do** lead a product's score with the heavy tabular numeral, stars after it.",
-      "**Do** give every product card an image well: the photo, or the category tint with the leaf mark.",
-      "**Do** keep neutral actions charcoal or outline, whatever the surrounding category.",
-      "**Do** use the 1184px column with 24px gutters on every page.",
-      "**Do** make loading skeletons match the final layout's grid and spacing.",
-      "**Do** keep reviews before \"Rate it\" in the detail page's DOM order; below `lg` they stack reviews first.",
-      "**Do** keep \"Log a tasting\" the navbar's one primary action; sign-in there is an outline button.",
-      "**Do** keep the global 2px focus outline reachable on every control; never hide it with `outline-none`.",
-      "**Do** make every radiogroup (stars, taste profile, prep method) one tab stop with arrow keys.",
-      "**Do** use the same taste-profile bars for one tasting and for a product's average, full on the product, compact in a review.",
-      "**Do** render each insights section only when tastings carry its data; never show an empty chart.",
-      "**Do** keep a review's text before its note chips, profile and prep line."
+      "**Do** put every product on a 16px shelf-tile tile, and draw its tin when there is no photo.",
+      "**Do** use deep matcha green only for actions and the wordmark.",
+      "**Do** pull jade and amber from the category style map for every chip, star, marker, bar, tint and band.",
+      "**Do** lead any rating with the 800-weight tabular numeral, with fractional stars beside it.",
+      "**Do** make every button, chip and search field a full pill.",
+      "**Do** separate surfaces with tile tone and 1px hairlines rather than shadows.",
+      "**Do** keep authored motion to the bar-grow and marker-slide data animations and small hover lifts, and switch them off under reduced motion."
     ],
     "donts": [
-      "**Don't** use jade or amber decoratively, for status, or for anything other than a product's category (the 25% jade selection tint and jade `accent-color` on native controls are the only ambient exceptions).",
-      "**Don't** set jade or amber text on the paper ground; jade measures 4.39:1 there. Use them as text only on white, otherwise as stars, bars, tints and badges.",
-      "**Don't** add a display face, second family or mono to shipped UI; Lato carries everything.",
-      "**Don't** reduce category to a text label alone; any product or rating shown must carry its colour.",
-      "**Don't** bring back the category side stripe on cards, or add coloured side stripes to any container; category lives in the image well, badge and stars.",
-      "**Don't** add resting shadows to cards or panels; the paper-to-white step and hairlines carry depth.",
-      "**Don't** add uppercase tracked eyebrow labels above titles; section titles carry hierarchy alone.",
-      "**Don't** animate anything beyond the data bars' first grow, the disclosure chevron and hover/press feedback, and never ship motion that ignores `prefers-reduced-motion`."
+      "**Don't** use jade, amber or the flavour colours for buttons or links.",
+      "**Don't** use flavour-family colours anywhere outside the flavour cards.",
+      "**Don't** add drop shadows to product tiles or cards.",
+      "**Don't** introduce a second display face, uppercase tracked labels or kickers above headings.",
+      "**Don't** show invented scores: an unrated tea shows an en dash numeral and \"Not yet rated\".",
+      "**Don't** square off buttons or chips with small radii."
     ]
   }
 }

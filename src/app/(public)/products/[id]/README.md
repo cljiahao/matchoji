@@ -2,9 +2,9 @@
 
 ## Purpose
 
-One product's detail page: hero with the score numeral, the crowd summary
-(`ProductInsights`), a "Want to try" toggle, reviews, and the inline "Rate it" form
-(the `#rate` anchor the sign-in round-trip returns to).
+One product's detail page, in Vivino's order: a category-tinted hero (tile, brand, name,
+score, "Rate it" stars, "Want to try"), "What does it taste like?" (`ProductInsights`),
+facts, photos, and `CommunityReviews` (the `#rate` anchor sign-in returns to).
 
 ## Contents
 

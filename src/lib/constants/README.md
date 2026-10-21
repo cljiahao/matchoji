@@ -3,7 +3,7 @@
 ## Purpose
 
 Environment-derived and route-path constants shared across the app. `routes.ts` lists the page
-routes (`/`, `/journal`); dynamic product pages are built inline as `/products/<id>`.
+routes (`/`, `/explore`, `/journal`); dynamic product pages are built inline as `/products/<id>`.
 
 ## Contents
 

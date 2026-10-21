@@ -2,26 +2,18 @@
 
 ## Purpose
 
-Pure helpers for review display and the sign-in drafts: a rating (`review-draft`) or a new
-product (`product-draft`) parked in sessionStorage across the OAuth redirect, both built on
-`session-draft`, which schema-checks what it reads back, kept separate so they are unit-tested
-without rendering.
-
-`tasting-vocab` holds the flavour-note lists, prep methods and taste attributes;
-`summarize-reviews` turns a product's reviews into its distribution, average profile, top
-notes, typical preparation and photos. `roving-radio` gives button-based radio groups one tab
-stop and wrapping arrow-key selection.
+Pure helpers for review display, kept separate so they are unit-tested without rendering.
+`tasting-vocab` holds the flavour-note lists and their families, prep methods, taste
+attributes and each attribute's two poles; `summarize-reviews` turns a product's reviews
+into its distribution, average profile, note counts, typical preparation and photos.
+`roving-radio` gives button-based radio groups one tab stop and wrapping arrow-key
+selection; `local-date` and `truncate-notes` format input and display.
 
 ## Contents
 
 - `index.ts`
 - `local-date.ts`
-- `product-draft.test.ts`
-- `product-draft.ts`
-- `review-draft.test.ts`
-- `review-draft.ts`
 - `roving-radio.ts`
-- `session-draft.ts`
 - `summarize-reviews.test.ts`
 - `summarize-reviews.ts`
 - `tasting-vocab.test.ts`

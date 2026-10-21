@@ -1,23 +1,25 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { AuthStatus } from '@/features/auth';
+import { SearchPill } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
-  { label: 'Discover', href: PAGE_ROUTES.HOME },
+  { label: 'Explore', href: PAGE_ROUTES.EXPLORE },
   { label: 'Journal', href: PAGE_ROUTES.JOURNAL },
 ] as const;
 
-// Product pages are reached from the feed, so they keep Discover marked as the section.
+// Product pages are reached from Explore, so they keep it marked as the section.
 function isActive(href: string, pathname: string): boolean {
-  if (href === PAGE_ROUTES.HOME) return pathname === '/' || pathname.startsWith('/products/');
+  if (href === PAGE_ROUTES.EXPLORE)
+    return pathname.startsWith(PAGE_ROUTES.EXPLORE) || pathname.startsWith('/products/');
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -25,15 +27,22 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-card border-border sticky top-0 z-50 w-full border-b">
-      <div className="max-w-site mx-auto flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3 sm:gap-x-8">
-        <div className="flex items-center gap-8">
-          <Link href={PAGE_ROUTES.HOME} className="text-xl font-bold tracking-tight">
-            Matchoji
-          </Link>
-        </div>
-        {/* Below sm the links wrap to their own row, so signed-out phones can still reach them. */}
-        <ul className="order-last flex w-full items-center gap-6 sm:order-none sm:mr-auto sm:w-auto">
+    <nav className="border-border sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-sm">
+      <div className="max-w-site mx-auto flex h-16 items-center gap-6 px-6">
+        <Link
+          href={PAGE_ROUTES.HOME}
+          className="text-brand flex items-center gap-2 text-xl font-extrabold tracking-tight"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/image_assets/logo.svg" alt="" className="h-8 w-8" />
+          Matchoji
+        </Link>
+
+        {/* Home already leads with a big search, so the bar's own only shows elsewhere. */}
+        {pathname !== PAGE_ROUTES.HOME && <SearchPill className="hidden w-64 md:block lg:w-72" />}
+
+        {/* Phones reach these through the bottom tab bar instead. */}
+        <ul className="hidden items-center gap-6 sm:flex">
           {NAV_LINKS.map((link) => {
             const active = isActive(link.href, pathname);
             return (
@@ -42,7 +51,7 @@ export function Navbar() {
                   href={link.href}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'text-sm font-medium transition-colors',
+                    'text-sm font-semibold transition-colors',
                     active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
@@ -53,15 +62,24 @@ export function Navbar() {
           })}
         </ul>
 
-        <div className="flex items-center gap-3">
-          <LogTastingDialog
-            trigger={
-              <Button aria-label="Log a tasting">
-                <Plus aria-hidden="true" />
-                <span className="hidden sm:inline">Log a tasting</span>
-              </Button>
-            }
-          />
+        <div className="ml-auto flex items-center gap-3">
+          <Link
+            href={PAGE_ROUTES.EXPLORE}
+            aria-label="Search teas"
+            className="hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full md:hidden"
+          >
+            <Search aria-hidden="true" className="h-5 w-5" />
+          </Link>
+          <div className="hidden sm:block">
+            <LogTastingDialog
+              trigger={
+                <Button>
+                  <Plus aria-hidden="true" />
+                  Log a tasting
+                </Button>
+              }
+            />
+          </div>
           <AuthStatus />
         </div>
       </div>

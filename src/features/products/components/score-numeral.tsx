@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 
 interface ScoreNumeralProps {
   value: number | null;
-  size: 'sm' | 'lg';
+  size: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
@@ -11,8 +11,8 @@ export function ScoreNumeral({ value, size, className }: ScoreNumeralProps) {
   return (
     <span
       className={cn(
-        'leading-none font-black tracking-tight tabular-nums',
-        size === 'lg' ? 'text-5xl' : 'text-xl',
+        'leading-none font-extrabold tracking-tight tabular-nums',
+        { sm: 'text-xl', md: 'text-3xl', lg: 'text-6xl' }[size],
         value === null && 'text-muted-foreground',
         className
       )}

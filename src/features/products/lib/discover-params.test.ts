@@ -33,14 +33,14 @@ describe('parseDiscoverParams', () => {
 describe('discoverHref', () => {
   it('keeps the other filters when one changes', () => {
     expect(discoverHref({ q: 'uji', sort: 'reviewed' }, { category: 'hojicha' })).toBe(
-      '/?q=uji&category=hojicha&sort=reviewed'
+      '/explore?q=uji&category=hojicha&sort=reviewed'
     );
   });
 
   it('omits the default sort and cleared values', () => {
     expect(
       discoverHref({ q: 'uji', category: 'matcha', sort: 'top' }, { category: undefined })
-    ).toBe('/?q=uji');
-    expect(discoverHref({ sort: 'top' }, {})).toBe('/');
+    ).toBe('/explore?q=uji');
+    expect(discoverHref({ sort: 'top' }, {})).toBe('/explore');
   });
 });

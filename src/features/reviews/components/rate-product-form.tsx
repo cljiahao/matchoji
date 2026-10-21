@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ImagePlus, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -13,17 +13,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { CustomFormField } from '@/components/widgets';
-import { signInWithGoogle, useSession } from '@/features/auth';
+import { useSession, useSignInPrompt } from '@/features/auth';
 import type { ProductSummary } from '@/features/products';
 
 import { useLogReview } from '../hooks/use-log-review.mutation';
-import {
-  clearReviewDraft,
-  draftForCategory,
-  loadReviewDraft,
-  localToday,
-  saveReviewDraft,
-} from '../lib';
+import { localToday } from '../lib';
 import { TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
 import { reviewSchemaFor, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
 import { FlavorNotePicker } from './flavor-note-picker';
@@ -38,9 +32,9 @@ const NOTES_PLACEHOLDER = {
 
 // Every field the form renders gets a defined value, so inputs stay controlled and a reset
 // after logging actually clears them on screen.
-function emptyReview(): ReviewInput {
+function emptyReview(stars = 0): ReviewInput {
   return {
-    stars: 0,
+    stars,
     notes: '',
     flavorNotes: [],
     doseG: '',
@@ -52,40 +46,28 @@ function emptyReview(): ReviewInput {
 
 interface RateProductFormProps {
   product: ProductSummary;
+  // Set when the visitor opened the form by tapping a star.
+  initialStars?: number;
   onLogged?: () => void;
 }
 
-// Signed-out visitors fill in the same form; submitting validates, parks the draft, and
-// sends them through Google sign-in back to this product, where the draft is restored.
-export function RateProductForm({ product, onLogged }: RateProductFormProps) {
+// Opened only for signed-in visitors (the entry points ask for sign-in first). A session
+// that lapses while the form is open sends the visitor to sign in rather than failing.
+export function RateProductForm({ product, initialStars, onLogged }: RateProductFormProps) {
   const [photo, setPhoto] = useState<File | null>(null);
-  const [redirecting, setRedirecting] = useState(false);
   const { session, isLoading: sessionLoading } = useSession();
+  const promptSignIn = useSignInPrompt();
   const router = useRouter();
   const logReviewMutation = useLogReview();
 
   const form = useForm<ReviewInput, unknown, ReviewOutput>({
     resolver: zodResolver(reviewSchemaFor(product.category)),
-    defaultValues: emptyReview(),
+    defaultValues: emptyReview(initialStars),
   });
-
-  useEffect(() => {
-    const draft = loadReviewDraft(product.id);
-    if (!draft) return;
-    form.reset({ ...emptyReview(), ...draftForCategory(draft, product.category) });
-    clearReviewDraft(product.id);
-    toast.info('Your rating is back. Add your photo again if you had one.');
-  }, [form, product.id, product.category]);
 
   async function handleSubmit(values: ReviewOutput) {
     if (!session) {
-      saveReviewDraft(product.id, values);
-      setRedirecting(true);
-      const { error } = await signInWithGoogle(`/products/${product.id}#rate`);
-      if (error) {
-        setRedirecting(false);
-        toast.error('Could not reach Google sign-in. Check your connection and try again.');
-      }
+      promptSignIn({ nextPath: `/products/${product.id}#rate` });
       return;
     }
 
@@ -106,7 +88,7 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
     }
   }
 
-  const pending = logReviewMutation.isPending || redirecting;
+  const pending = logReviewMutation.isPending;
 
   return (
     <Form {...form}>
@@ -174,14 +156,9 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
           </label>
         </div>
 
-        {!sessionLoading && !session && (
-          <p className="text-muted-foreground text-sm">
-            You&rsquo;ll sign in with Google first. Your rating is kept while you do.
-          </p>
-        )}
-        <Button type="submit" disabled={pending || sessionLoading} className="w-full">
+        <Button type="submit" size="lg" disabled={pending || sessionLoading} className="w-full">
           {pending && <Loader2 className="animate-spin" aria-hidden="true" />}
-          {session || sessionLoading ? 'Submit rating' : 'Sign in with Google to submit'}
+          Save rating
         </Button>
       </form>
     </Form>

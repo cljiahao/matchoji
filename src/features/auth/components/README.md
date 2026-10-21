@@ -5,8 +5,9 @@
 Sign-in/sign-out UI for the `auth` feature. `auth-components.test.tsx` covers these and
 `useSession` in jsdom.
 
-The navbar keeps Discover/Journal visible at every width, so `UserMenu` holds only account
-actions; `SignInButton` takes an `outline` variant for the navbar.
+`SignInDialog` is the "Join Matchoji" moment (Continue with Google); `SignInButton` opens
+it through the sign-in prompt and takes an `outline` variant and a label. `UserMenu` holds
+only account actions.
 
 ## Contents
 
@@ -14,6 +15,7 @@ actions; `SignInButton` takes an `outline` variant for the navbar.
 - `auth-status.tsx`
 - `index.ts`
 - `sign-in-button.tsx`
+- `sign-in-dialog.tsx`
 - `user-menu.tsx`
 
 ## Parent

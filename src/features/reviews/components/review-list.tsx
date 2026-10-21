@@ -21,23 +21,23 @@ export function ReviewList({ reviews, category }: ReviewListProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   if (reviews.length === 0) {
-    return <p className="text-muted-foreground text-sm">No reviews yet — be the first.</p>;
+    return <p className="text-muted-foreground">No reviews yet. Be the first to rate it.</p>;
   }
 
   const remaining = reviews.length - visibleCount;
 
   return (
-    <div>
+    <div className="space-y-4">
       {reviews.slice(0, visibleCount).map((review) => (
         <ReviewItem key={review.id} review={review} category={category} />
       ))}
       {remaining > 0 && (
         <Button
           variant="outline"
-          className="mt-4"
+          className="mt-2"
           onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
         >
-          Load more ({remaining} left)
+          Show more reviews ({remaining})
         </Button>
       )}
     </div>

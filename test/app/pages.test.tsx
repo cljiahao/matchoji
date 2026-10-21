@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createFakeBrowserClient, makeSession } from '../support/fake-browser-client';
@@ -19,16 +19,18 @@ vi.mock('next/server', async (importOriginal) => ({
 }));
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ refresh: vi.fn() }),
+  useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }),
   usePathname: () => '/',
   notFound: () => {
     throw new Error('NEXT_NOT_FOUND');
   },
 }));
 
+import ExploreLoading from '@/app/(public)/explore/loading';
+import ExplorePage from '@/app/(public)/explore/page';
 import JournalLoading from '@/app/(public)/journal/loading';
 import JournalPage from '@/app/(public)/journal/page';
-import DiscoverLoading from '@/app/(public)/loading';
+import HomeLoading from '@/app/(public)/loading';
 import Home from '@/app/(public)/page';
 import ProductLoading from '@/app/(public)/products/[id]/loading';
 import ProductPage from '@/app/(public)/products/[id]/page';
@@ -66,26 +68,175 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe('Discover page', () => {
+const REGION = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
+
+const row = (id: string, name: string, category: 'matcha' | 'hojicha', createdAt: string) => ({
+  ...productRow,
+  id,
+  name,
+  category,
+  created_at: createdAt,
+});
+
+describe('Home page', () => {
+  it('leads with search and the two teas, then shelves for each tea and the newest', async () => {
+    const { calls } = useServer({
+      products: [
+        { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
+        { data: [row('h1', 'Kyoto Bancha', 'hojicha', '2026-09-02T00:00:00Z')], error: null },
+        {
+          data: [
+            row('n1', 'Hoshino Fresh', 'matcha', '2026-09-03T00:00:00Z'),
+            row('h1', 'Kyoto Bancha', 'hojicha', '2026-09-02T00:00:00Z'),
+            row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z'),
+          ],
+          error: null,
+        },
+      ],
+      product_ratings: { data: [], error: null },
+    });
+
+    renderWithQuery(await Home());
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Find your next matcha or hojicha' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('search')).toHaveAttribute('action', '/explore');
+    expect(screen.getByRole('link', { name: /Stone-ground green tea/ })).toHaveAttribute(
+      'href',
+      '/explore?category=matcha'
+    );
+
+    const matcha = screen.getByRole('region', { name: 'Top-rated matcha' });
+    expect(within(matcha).getByRole('link', { name: /See all/ })).toHaveAttribute(
+      'href',
+      '/explore?category=matcha'
+    );
+    expect(within(matcha).getByRole('link', { name: /Uji Gold/ })).toHaveAttribute(
+      'href',
+      '/products/m1'
+    );
+    const hojicha = screen.getByRole('region', { name: 'Top-rated hojicha' });
+    expect(within(hojicha).getByRole('link', { name: /See all/ })).toHaveAttribute(
+      'href',
+      '/explore?category=hojicha'
+    );
+    const newest = screen.getByRole('region', { name: 'Newly added' });
+    expect(within(newest).getByRole('link', { name: /See all/ })).toHaveAttribute(
+      'href',
+      '/explore?sort=newest'
+    );
+    expect(
+      within(newest)
+        .getAllByRole('heading', { level: 3 })
+        .map((h) => h.textContent)
+    ).toEqual(['Hoshino Fresh', 'Kyoto Bancha', 'Uji Gold']);
+    expect(within(newest).getAllByRole('button', { name: 'Want to try' })).toHaveLength(3);
+
+    expect(calls.filter((c) => c.table === 'products' && c.method === 'from')).toHaveLength(3);
+    expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
+      ['category', 'matcha'],
+      ['category', 'hojicha'],
+    ]);
+  });
+
+  it('hides an empty shelf and keeps the others', async () => {
+    useServer({
+      products: [
+        { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
+        { data: [], error: null },
+        { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
+      ],
+      product_ratings: { data: [], error: null },
+    });
+
+    renderWithQuery(await Home());
+
+    expect(screen.getByRole('region', { name: 'Top-rated matcha' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Top-rated hojicha' })).not.toBeInTheDocument();
+    expect(screen.queryByText('No teas rated yet')).not.toBeInTheDocument();
+  });
+
+  it('invites the first tasting when the catalogue is empty', async () => {
+    useServer({ products: { data: [], error: null } });
+
+    renderWithQuery(await Home());
+
+    expect(screen.getByRole('heading', { name: 'No teas rated yet' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
+    expect(screen.queryByRole('region')).not.toBeInTheDocument();
+  });
+
+  it('uses mock data in development without Supabase', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
+    vi.stubEnv('NODE_ENV', 'development');
+
+    renderWithQuery(await Home());
+
+    const matcha = screen.getByRole('region', { name: 'Top-rated matcha' });
+    expect(within(matcha).getByRole('link', { name: /Uji Ceremonial/ })).toBeInTheDocument();
+    expect(within(matcha).queryByRole('link', { name: /Kukicha Roast/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Top-rated hojicha' })).toBeInTheDocument();
+    // Every mock tea is already on a tea shelf, so "Newly added" would only repeat them.
+    expect(screen.queryByRole('region', { name: 'Newly added' })).not.toBeInTheDocument();
+  });
+});
+
+describe('Explore page', () => {
   it('lists products from Supabase for the selected category', async () => {
     const { calls } = useServer({
       products: { data: [productRow], error: null },
       product_ratings: { data: [], error: null },
-      regions: { data: [], error: null },
+      regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
     });
 
-    renderWithQuery(await Home({ searchParams: Promise.resolve({ category: 'hojicha' }) }));
+    renderWithQuery(
+      await ExplorePage({ searchParams: Promise.resolve({ category: 'hojicha', sort: 'newest' }) })
+    );
 
-    expect(screen.getByRole('heading', { name: 'Discover' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Kyoto Bancha/ })).toHaveAttribute(
+    expect(screen.getByRole('heading', { level: 1, name: 'Explore Hojicha' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Kyoto Bancha' })).toHaveAttribute(
       'href',
       '/products/p1'
     );
+    expect(screen.getByText('Showing 1 tea')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Want to try' })).toBeInTheDocument();
     expect(calls).toContainEqual({
       table: 'products',
       method: 'eq',
       args: ['category', 'hojicha'],
     });
+
+    const filters = screen.getByRole('complementary', { name: 'Filters' });
+    expect(within(filters).getByRole('link', { name: 'Hojicha' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+    expect(within(filters).getByRole('link', { name: 'Uji, Kyoto' })).toHaveAttribute(
+      'href',
+      `/explore?category=hojicha&region=${REGION}&sort=newest`
+    );
+    expect(screen.getByRole('combobox', { name: 'Sort' })).toHaveTextContent('Newest');
+    const search = screen.getByRole('search');
+    expect(search.querySelector('input[name="category"]')).toHaveValue('hojicha');
+  });
+
+  it('titles a search and counts several teas', async () => {
+    useServer({
+      products: {
+        data: [productRow, row('p2', 'Kyoto Gold', 'hojicha', '2026-09-03T00:00:00Z')],
+        error: null,
+      },
+      product_ratings: { data: [], error: null },
+      regions: { data: [], error: null },
+    });
+
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ q: 'kyoto' }) }));
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Results for “kyoto”' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Showing 2 teas')).toBeInTheDocument();
   });
 
   it('still shows the feed when regions fail to load', async () => {
@@ -95,10 +246,11 @@ describe('Discover page', () => {
       regions: { data: null, error: new Error('boom') },
     });
 
-    renderWithQuery(await Home({ searchParams: Promise.resolve({}) }));
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({}) }));
 
-    expect(screen.getByRole('link', { name: /Kyoto Bancha/ })).toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: 'Region' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Explore teas' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Kyoto Bancha' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Region' })).not.toBeInTheDocument();
   });
 
   it('ignores unknown categories and shows the empty state', async () => {
@@ -107,33 +259,59 @@ describe('Discover page', () => {
       regions: { data: [], error: null },
     });
 
-    renderWithQuery(await Home({ searchParams: Promise.resolve({ category: 'sencha' }) }));
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ category: 'sencha' }) }));
 
-    expect(screen.getByText(/No tastings logged yet/)).toBeInTheDocument();
+    expect(
+      screen.getByText('No teas rated yet. Be the first to rate a matcha or hojicha.')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
     expect(calls.some((c) => c.method === 'eq')).toBe(false);
+  });
+
+  it('names the category in an empty filtered catalogue', async () => {
+    useServer({ products: { data: [], error: null }, regions: { data: [], error: null } });
+
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ category: 'matcha' }) }));
+
+    expect(screen.getByText('No matcha rated yet. Be the first to rate one.')).toBeInTheDocument();
   });
 
   it('shows a no-results state with a clear-filters link when a search matches nothing', async () => {
     useServer({ products: { data: [], error: null }, regions: { data: [], error: null } });
 
-    renderWithQuery(await Home({ searchParams: Promise.resolve({ q: 'gyokuro' }) }));
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ q: 'gyokuro' }) }));
 
     expect(screen.getByText('No teas match “gyokuro”.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Clear filters' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Clear filters' })).toHaveAttribute('href', '/explore');
+    expect(screen.queryByRole('button', { name: 'Log a tasting' })).not.toBeInTheDocument();
+  });
+
+  it('treats an empty region as no match rather than an empty catalogue', async () => {
+    useServer({
+      products: { data: [], error: null },
+      regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
+    });
+
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ region: REGION }) }));
+
+    expect(screen.getByText('No teas from this region yet.')).toBeInTheDocument();
+    expect(screen.getByText('Showing 0 teas')).toBeInTheDocument();
   });
 
   it('uses mock data in development without Supabase', async () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
     vi.stubEnv('NODE_ENV', 'development');
 
-    renderWithQuery(await Home({ searchParams: Promise.resolve({}) }));
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ category: 'matcha' }) }));
 
-    expect(screen.getByRole('link', { name: /Uji Ceremonial/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Uji Ceremonial' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Kukicha Roast' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Region' })).not.toBeInTheDocument();
   });
 });
 
 describe('Product page', () => {
-  it('shows the product, its reviews and the inline rate form', async () => {
+  it('shows the product, its taste, facts, photos and community reviews', async () => {
     useServer({
       products: { data: productRow, error: null },
       product_ratings: { data: [{ product_id: 'p1', avg_stars: 4, review_count: 1 }], error: null },
@@ -145,7 +323,7 @@ describe('Product page', () => {
             user_id: 'u1',
             stars: 4,
             notes: 'Toasty',
-            photo_url: null,
+            photo_url: 'https://cdn.test/cup.jpg',
             created_at: '2026-09-02T00:00:00Z',
             flavor_notes: ['roasty'],
             sweetness: null,
@@ -167,17 +345,41 @@ describe('Product page', () => {
     renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
 
     expect(screen.getByRole('heading', { level: 1, name: 'Kyoto Bancha' })).toBeInTheDocument();
-    expect(screen.getByText('4.0')).toHaveClass('text-5xl');
-    expect(screen.getByText('1 review')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Ratings' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Most noticed' })).toBeInTheDocument();
+    expect(screen.getAllByText('Ippodo')).toHaveLength(2);
+    expect(screen.getAllByText('4.0')[0]).toHaveClass('text-6xl');
+    expect(screen.getAllByText('1 rating')).toHaveLength(2);
+    expect(screen.getByText('Rate it')).toBeInTheDocument();
+    expect(screen.getAllByRole('group', { name: 'Rate Kyoto Bancha' })).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'Want to try' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'What does it taste like?' })).toBeInTheDocument();
+    expect(screen.getByText('1 mention of roasted notes')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Facts about the tea' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Tasting photo 1' })).toHaveAttribute(
+      'src',
+      'https://cdn.test/cup.jpg'
+    );
     expect(screen.getByText('Toasty')).toBeInTheDocument();
     expect(screen.getByText('Aiko')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Rate it' }).closest('section')).toHaveAttribute(
-      'id',
-      'rate'
-    );
+    expect(
+      screen.getByRole('heading', { name: 'Community reviews' }).closest('section')
+    ).toHaveAttribute('id', 'rate');
+  });
+
+  it('shows an unrated product with its grade and region', async () => {
+    useServer({
+      products: { data: { ...productRow, grade: 'First flush', region_id: REGION }, error: null },
+      regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
+      product_ratings: { data: [], error: null },
+      reviews: { data: [], error: null },
+    });
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
+
+    expect(screen.getByText('Not yet rated')).toBeInTheDocument();
+    expect(screen.getAllByText('First flush')).toHaveLength(2);
+    expect(screen.getAllByText('Uji, Kyoto')).toHaveLength(2);
+    expect(screen.queryByRole('heading', { name: 'Photos' })).not.toBeInTheDocument();
+    expect(screen.getByText('No reviews yet. Be the first to rate it.')).toBeInTheDocument();
   });
 
   it('404s for an unknown product', async () => {
@@ -245,7 +447,9 @@ describe('Journal page', () => {
     renderWithQuery(await JournalPage());
 
     expect(screen.getByRole('heading', { name: 'Your journal' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Sign in with Google' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Sign in to start your journal' })
+    ).toBeInTheDocument();
   });
 
   it('invites a first tasting when the journal is empty', async () => {
@@ -304,12 +508,13 @@ describe('static routes', () => {
   it('render loading skeletons as busy regions', () => {
     render(
       <>
-        <DiscoverLoading />
+        <HomeLoading />
+        <ExploreLoading />
         <ProductLoading />
         <JournalLoading />
       </>
     );
-    expect(screen.getAllByLabelText('Loading')).toHaveLength(3);
+    expect(screen.getAllByLabelText('Loading')).toHaveLength(4);
   });
 
   it('auth error page links back home', () => {
@@ -318,10 +523,15 @@ describe('static routes', () => {
     expect(screen.getByRole('link', { name: 'Back to Matchoji' })).toHaveAttribute('href', '/');
   });
 
-  it('footer shows the wordmark and only real links', () => {
+  it('footer shows the wordmark, tagline, section links and only real extra links', () => {
     const { rerender } = render(<SiteFooter />);
     expect(screen.getByText('Matchoji')).toBeInTheDocument();
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Rate and discover matcha and hojicha, one cup at a time.')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
+    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
+    expect(screen.getAllByRole('link')).toHaveLength(2);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');

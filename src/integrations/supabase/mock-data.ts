@@ -125,12 +125,26 @@ export const MOCK_REVIEWS: Record<string, Review[]> = {
   'mock-4': [],
 };
 
+// Score and count come from the mock reviews, so a page's hero, histogram and "based on N
+// tastings" agree with each other the way the real rating view guarantees.
+function withReviewStats(product: Product): Product {
+  const reviews = MOCK_REVIEWS[product.id] ?? [];
+  const total = reviews.reduce((sum, r) => sum + r.stars, 0);
+  return {
+    ...product,
+    reviewCount: reviews.length,
+    avgStars: reviews.length ? Math.round((total / reviews.length) * 10) / 10 : null,
+  };
+}
+
 export function getMockProducts(category?: 'matcha' | 'hojicha'): Product[] {
-  return category ? MOCK_PRODUCTS.filter((p) => p.category === category) : MOCK_PRODUCTS;
+  const products = category ? MOCK_PRODUCTS.filter((p) => p.category === category) : MOCK_PRODUCTS;
+  return products.map(withReviewStats);
 }
 
 export function getMockProduct(id: string): Product | null {
-  return MOCK_PRODUCTS.find((p) => p.id === id) ?? null;
+  const product = MOCK_PRODUCTS.find((p) => p.id === id);
+  return product ? withReviewStats(product) : null;
 }
 
 export function getMockReviews(productId: string): Review[] {

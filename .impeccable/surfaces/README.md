@@ -7,6 +7,7 @@ Direction-contract briefs, one per named surface, written by `impeccable shape` 
 ## Contents
 
 - `phase1.md`
+- `src-app-public-page-tsx.md`
 
 ## Parent
 

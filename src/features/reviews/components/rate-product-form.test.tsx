@@ -15,28 +15,33 @@ vi.mock('next/navigation', () => ({ useRouter: () => router, usePathname: () => 
 const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn(), info: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
+import { SignInPromptProvider } from '@/features/auth';
+
 import { RateProductForm } from './rate-product-form';
 
 const PRODUCT = { id: 'p1', name: 'Uji Ceremonial', brand: null, category: 'matcha' as const };
 
-function setup(options: Parameters<typeof createFakeBrowserClient>[0] = {}) {
+function setup(options: Parameters<typeof createFakeBrowserClient>[0] = {}, initialStars?: number) {
   const fake = createFakeBrowserClient(options);
   supabase.current = fake.client;
   const onLogged = vi.fn();
-  renderWithQuery(<RateProductForm product={PRODUCT} onLogged={onLogged} />);
+  renderWithQuery(
+    <SignInPromptProvider>
+      <RateProductForm product={PRODUCT} initialStars={initialStars} onLogged={onLogged} />
+    </SignInPromptProvider>
+  );
   return { ...fake, onLogged };
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
-  sessionStorage.clear();
 });
 
 describe('RateProductForm, signed in', () => {
   it('requires a star rating', async () => {
     const { calls } = setup({ session: makeSession() });
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Save rating' }));
     expect(await screen.findByText('Pick a rating')).toBeInTheDocument();
     expect(calls.some((c) => c.method === 'insert')).toBe(false);
   });
@@ -53,7 +58,7 @@ describe('RateProductForm, signed in', () => {
       screen.getByLabelText('Photo (optional)'),
       new File(['x'], 'cup.jpg', { type: 'image/jpeg' })
     );
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
 
     await waitFor(() => expect(onLogged).toHaveBeenCalled());
     expect(upload).toHaveBeenCalledWith(expect.stringMatching(/^user-1\//), expect.any(File));
@@ -85,7 +90,7 @@ describe('RateProductForm, signed in', () => {
     await userEvent.type(screen.getByLabelText('Matcha (g)'), '2');
     await userEvent.type(screen.getByLabelText('Water (ml)'), '70');
     await userEvent.type(screen.getByLabelText('Water temp (°C)'), '80');
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
 
     await waitFor(() => expect(onLogged).toHaveBeenCalled());
     expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
@@ -141,7 +146,7 @@ describe('RateProductForm, signed in', () => {
     const dose = screen.getByLabelText('Matcha (g)');
     await userEvent.type(dose, '2');
     await userEvent.clear(dose);
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
 
     await waitFor(() => expect(onLogged).toHaveBeenCalled());
     expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({ dose_g: null });
@@ -154,7 +159,7 @@ describe('RateProductForm, signed in', () => {
     await userEvent.click(screen.getByText('How you made it'));
     await userEvent.type(screen.getByLabelText('Matcha (g)'), '60');
     await userEvent.click(screen.getByText('How you made it'));
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
 
     expect(await screen.findByText('Between 0 and 50')).toBeInTheDocument();
     expect(screen.getByText('How you made it').closest('details')).toHaveAttribute('open');
@@ -167,30 +172,24 @@ describe('RateProductForm, signed in', () => {
     await userEvent.click(await screen.findByRole('radio', { name: '4 stars' }));
     await userEvent.click(screen.getByText('How you made it'));
     await userEvent.type(screen.getByLabelText('Water (ml)'), '70');
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
 
     await waitFor(() => expect(screen.getByLabelText('Water (ml)')).toHaveValue(null));
   });
 
-  it('restores a stale draft without a note from the other category', async () => {
-    sessionStorage.setItem(
-      'matchoji:review-draft:p1',
-      JSON.stringify({ stars: 3, flavorNotes: ['roasty', 'umami'] })
+  it('starts with the star the visitor tapped', async () => {
+    const { calls, onLogged } = setup(
+      { session: makeSession(), results: { reviews: { data: null, error: null } } },
+      4
     );
-    const { calls, onLogged } = setup({
-      session: makeSession(),
-      results: { reviews: { data: null, error: null } },
-    });
 
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Umami' })).toHaveAttribute('aria-pressed', 'true')
+    expect(await screen.findByRole('radio', { name: '4 stars' })).toHaveAttribute(
+      'aria-checked',
+      'true'
     );
-    expect(screen.getByText('1 of 6')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
     await waitFor(() => expect(onLogged).toHaveBeenCalled());
-    expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
-      flavor_notes: ['umami'],
-    });
+    expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({ stars: 4 });
   });
 
   it('still submits with stars only', async () => {
@@ -200,7 +199,7 @@ describe('RateProductForm, signed in', () => {
     });
 
     await userEvent.click(await screen.findByRole('radio', { name: '3 stars' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
 
     await waitFor(() => expect(onLogged).toHaveBeenCalled());
     expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
@@ -218,7 +217,7 @@ describe('RateProductForm, signed in', () => {
     });
 
     await userEvent.click(await screen.findByRole('radio', { name: '5 stars' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Submit rating' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(
@@ -229,52 +228,23 @@ describe('RateProductForm, signed in', () => {
   });
 });
 
+// Entry points ask for sign-in first, so this covers a session that lapsed mid-form.
 describe('RateProductForm, signed out', () => {
-  it('parks the draft and sends the user through Google sign-in back to this product', async () => {
-    const { auth } = setup();
-
-    expect(await screen.findByText(/sign in with Google first/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('radio', { name: '3 stars' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Sign in with Google to submit' }));
-
-    await waitFor(() => expect(auth.signInWithOAuth).toHaveBeenCalled());
-    expect(JSON.parse(sessionStorage.getItem('matchoji:review-draft:p1')!)).toMatchObject({
-      stars: 3,
-    });
-    const { options } = auth.signInWithOAuth.mock.calls[0][0];
-    const redirect = new URL(options.redirectTo);
-    expect(redirect.pathname).toBe('/auth/callback');
-    expect(redirect.searchParams.get('next')).toBe('/products/p1#rate');
-  });
-
-  it('re-enables the form and toasts when Google sign-in cannot start', async () => {
-    const { auth } = setup();
-    auth.signInWithOAuth.mockResolvedValueOnce({ data: {}, error: new Error('offline') });
+  it('asks for sign-in back to this product instead of saving', async () => {
+    const { auth, calls } = setup();
 
     await userEvent.click(await screen.findByRole('radio', { name: '3 stars' }));
-    const submit = screen.getByRole('button', { name: 'Sign in with Google to submit' });
+    const submit = screen.getByRole('button', { name: 'Save rating' });
+    await waitFor(() => expect(submit).toBeEnabled());
     await userEvent.click(submit);
 
-    await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith(
-        'Could not reach Google sign-in. Check your connection and try again.'
-      )
-    );
-    expect(submit).toBeEnabled();
-  });
+    expect(await screen.findByRole('dialog', { name: 'Join Matchoji' })).toBeInTheDocument();
+    expect(calls.some((c) => c.method === 'insert')).toBe(false);
+    await userEvent.click(screen.getByRole('button', { name: 'Continue with Google' }));
 
-  it('restores a parked draft on return and clears it', async () => {
-    sessionStorage.setItem(
-      'matchoji:review-draft:p1',
-      JSON.stringify({ stars: 2, notes: 'grassy' })
-    );
-    setup({ session: makeSession() });
-
-    await waitFor(() =>
-      expect(screen.getByRole('radio', { name: '2 stars' })).toHaveAttribute('aria-checked', 'true')
-    );
-    expect(screen.getByLabelText('Tasting notes (optional)')).toHaveValue('grassy');
-    expect(toast.info).toHaveBeenCalled();
-    expect(sessionStorage.getItem('matchoji:review-draft:p1')).toBeNull();
+    await waitFor(() => expect(auth.signInWithOAuth).toHaveBeenCalled());
+    const redirect = new URL(auth.signInWithOAuth.mock.calls[0][0].options.redirectTo);
+    expect(redirect.pathname).toBe('/auth/callback');
+    expect(redirect.searchParams.get('next')).toBe('/products/p1#rate');
   });
 });

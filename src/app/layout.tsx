@@ -2,13 +2,12 @@ import type { ReactNode } from 'react';
 
 import { Providers, ThemeProvider } from '@/components/layout';
 import type { Metadata } from 'next';
-import { Geist_Mono, Lato } from 'next/font/google';
+import { Figtree, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
-const lato = Lato({
-  variable: '--font-lato',
+const figtree = Figtree({
+  variable: '--font-figtree',
   subsets: ['latin'],
-  weight: ['100', '300', '400', '700', '900'],
 });
 
 const geistMono = Geist_Mono({
@@ -28,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className="no-scrollbar">
-      <body className={`${lato.variable} ${geistMono.variable} relative antialiased`}>
+      <body className={`${figtree.variable} ${geistMono.variable} relative antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <Providers>{children}</Providers>
         </ThemeProvider>

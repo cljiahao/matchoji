@@ -1,11 +1,15 @@
+export { CommunityReviews } from './community-reviews';
+export { FlavorFamilies } from './flavor-families';
 export { CategorySelect, RegionSelect } from './form-selects';
 export { LogTastingDialog } from './log-tasting-dialog';
 export { PrepSummary, formatPrep } from './prep-summary';
 export { ProductInsights } from './product-insights';
 export { ProductSearchCombobox } from './product-search-combobox';
 export { RateProductForm } from './rate-product-form';
+export { RateThisTea } from './rate-this-tea';
 export { RatingDistribution } from './rating-distribution';
 export { ReviewItem } from './review-item';
 export { ReviewList } from './review-list';
 export { StarRatingInput } from './star-rating-input';
 export { TasteProfileBars } from './taste-profile-bars';
+export { TasteStructure } from './taste-structure';
