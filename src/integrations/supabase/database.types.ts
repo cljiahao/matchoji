@@ -109,6 +109,16 @@ export interface Database {
           notes: string | null;
           photo_url: string | null;
           created_at: string;
+          flavor_notes: string[];
+          sweetness: number | null;
+          umami: number | null;
+          bitterness: number | null;
+          body: number | null;
+          prep_method: string | null;
+          dose_g: number | null;
+          water_ml: number | null;
+          water_temp_c: number | null;
+          tasted_on: string;
         };
         Insert: {
           id?: string;
@@ -118,6 +128,16 @@ export interface Database {
           notes?: string | null;
           photo_url?: string | null;
           created_at?: string;
+          flavor_notes?: string[];
+          sweetness?: number | null;
+          umami?: number | null;
+          bitterness?: number | null;
+          body?: number | null;
+          prep_method?: string | null;
+          dose_g?: number | null;
+          water_ml?: number | null;
+          water_temp_c?: number | null;
+          tasted_on?: string;
         };
         Update: {
           id?: string;
@@ -126,6 +146,34 @@ export interface Database {
           stars?: number;
           notes?: string | null;
           photo_url?: string | null;
+          created_at?: string;
+          flavor_notes?: string[];
+          sweetness?: number | null;
+          umami?: number | null;
+          bitterness?: number | null;
+          body?: number | null;
+          prep_method?: string | null;
+          dose_g?: number | null;
+          water_ml?: number | null;
+          water_temp_c?: number | null;
+          tasted_on?: string;
+        };
+        Relationships: [];
+      };
+      wishlist: {
+        Row: {
+          user_id: string;
+          product_id: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          product_id: string;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          product_id?: string;
           created_at?: string;
         };
         Relationships: [];

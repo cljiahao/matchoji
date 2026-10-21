@@ -6,8 +6,10 @@ import { useState } from 'react';
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
-import { truncateNotes } from '../lib';
+import { FLAVOR_NOTES, noteLabel, truncateNotes } from '../lib';
 import type { Review } from '../types';
+import { PrepSummary } from './prep-summary';
+import { TasteProfileBars } from './taste-profile-bars';
 
 // Roughly four lines at the max-w-prose width.
 const NOTES_PREVIEW_CHARS = 280;
@@ -19,6 +21,8 @@ interface ReviewItemProps {
 
 export function ReviewItem({ review, category }: ReviewItemProps) {
   const [expanded, setExpanded] = useState(false);
+  // Notes are free text in the DB; only the category's own vocabulary is shown.
+  const notes = review.flavorNotes.filter((n) => FLAVOR_NOTES[category].includes(n));
   const preview = review.notes ? truncateNotes(review.notes, NOTES_PREVIEW_CHARS) : null;
 
   return (
@@ -37,6 +41,7 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
         </div>
         <span className="text-muted-foreground text-xs">{review.reviewerName}</span>
       </div>
+
       {review.notes && preview && (
         <p className="mt-2 max-w-prose text-sm whitespace-pre-line">
           {expanded ? review.notes : preview.text}
@@ -55,6 +60,24 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
           )}
         </p>
       )}
+      {notes.length > 0 && (
+        <ul className="mt-2 flex flex-wrap gap-1.5">
+          {notes.map((note) => (
+            <li
+              key={note}
+              className={cn('rounded-full px-2.5 py-0.5 text-xs', CATEGORY_STYLES[category].tint)}
+            >
+              {noteLabel(note)}
+            </li>
+          ))}
+        </ul>
+      )}
+      {Object.keys(review.profile).length > 0 && (
+        <div className="mt-3 max-w-md">
+          <TasteProfileBars values={review.profile} category={category} compact />
+        </div>
+      )}
+      <PrepSummary prep={review.prep} className="mt-2 text-xs" />
       {review.photoUrl && (
         // Supabase Storage host isn't known until a real project exists, so next/image's
         // remotePatterns can't be configured yet — plain img until then.

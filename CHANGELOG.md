@@ -7,6 +7,14 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Richer tastings: flavour notes (per-category list, up to 6), a four-attribute taste
+  profile (sweetness, umami, bitterness, body), and an optional "How you made it" log
+  (method, grams, water, temperature, date tasted). Stars alone still log a tasting.
+- Product pages: a large score numeral, rating distribution, average taste profile, the
+  most-noticed notes, how people make it, and a strip of review photos — each shown only
+  when tastings carry that data.
+- Migration `20261021000000_tasting_journal.sql`: the new `reviews` columns and a
+  `wishlist` table for "want to try" (used by the journal).
 - Discover search (name or brand), region filter and sort (top rated, most reviewed,
   newest), all kept in the URL; a distinct "no teas match" state with a clear-filters link.
 - Phase 1 rating and discovery: Google sign-in (Supabase Auth), discover feed with

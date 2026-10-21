@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -17,11 +17,33 @@ import { signInWithGoogle, useSession } from '@/features/auth';
 import type { ProductSummary } from '@/features/products';
 
 import { useLogReview } from '../hooks/use-log-review.mutation';
-import { clearReviewDraft, loadReviewDraft, saveReviewDraft } from '../lib';
-import { reviewSchema, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
+import {
+  clearReviewDraft,
+  draftForCategory,
+  loadReviewDraft,
+  localToday,
+  saveReviewDraft,
+} from '../lib';
+import { TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
+import { reviewSchemaFor, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
+import { FlavorNotePicker } from './flavor-note-picker';
+import { PrepFields } from './prep-fields';
 import { StarRatingInput } from './star-rating-input';
+import { TasteProfileInput } from './taste-profile-input';
 
-const EMPTY: ReviewInput = { stars: 0, notes: '' };
+// Every field the form renders gets a defined value, so inputs stay controlled and a reset
+// after logging actually clears them on screen.
+function emptyReview(): ReviewInput {
+  return {
+    stars: 0,
+    notes: '',
+    flavorNotes: [],
+    doseG: '',
+    waterMl: '',
+    waterTempC: '',
+    tastedOn: localToday(),
+  };
+}
 
 interface RateProductFormProps {
   product: ProductSummary;
@@ -38,17 +60,17 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
   const logReviewMutation = useLogReview();
 
   const form = useForm<ReviewInput, unknown, ReviewOutput>({
-    resolver: zodResolver(reviewSchema),
-    defaultValues: EMPTY,
+    resolver: zodResolver(reviewSchemaFor(product.category)),
+    defaultValues: emptyReview(),
   });
 
   useEffect(() => {
     const draft = loadReviewDraft(product.id);
     if (!draft) return;
-    form.reset(draft);
+    form.reset({ ...emptyReview(), ...draftForCategory(draft, product.category) });
     clearReviewDraft(product.id);
     toast.info('Your rating is back. Add your photo again if you had one.');
-  }, [form, product.id]);
+  }, [form, product.id, product.category]);
 
   async function handleSubmit(values: ReviewOutput) {
     if (!session) {
@@ -70,7 +92,7 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
         photo,
       });
       toast.success('Tasting logged.');
-      form.reset(EMPTY);
+      form.reset(emptyReview());
       setPhoto(null);
       onLogged?.();
       router.refresh();
@@ -83,13 +105,35 @@ export function RateProductForm({ product, onLogged }: RateProductFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form noValidate onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <CustomFormField name="stars" label="Rating">
           <StarRatingInput category={product.category} />
         </CustomFormField>
+        <CustomFormField name="flavorNotes" label="What did you taste? (optional)">
+          <FlavorNotePicker category={product.category} />
+        </CustomFormField>
+        <fieldset className="space-y-1">
+          <legend className="mb-2 text-sm font-medium">Taste profile (optional)</legend>
+          {TASTE_ATTRIBUTES.map((attribute) => (
+            <Controller
+              key={attribute}
+              name={attribute}
+              control={form.control}
+              render={({ field }) => (
+                <TasteProfileInput
+                  attribute={attribute}
+                  category={product.category}
+                  value={field.value as number | undefined}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          ))}
+        </fieldset>
         <CustomFormField name="notes" label="Tasting notes (optional)">
           <Textarea placeholder="Toasty, nutty, smooth…" />
         </CustomFormField>
+        <PrepFields category={product.category} />
         <div className="space-y-2">
           <Label htmlFor="photo">Photo (optional)</Label>
           <Input

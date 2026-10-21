@@ -51,7 +51,53 @@ describe('createReview', () => {
     expect(calls).toContainEqual({
       table: 'reviews',
       method: 'insert',
-      args: [{ product_id: 'p1', user_id: 'u1', stars: 5, notes: null, photo_url: null }],
+      args: [
+        expect.objectContaining({
+          product_id: 'p1',
+          user_id: 'u1',
+          stars: 5,
+          notes: null,
+          photo_url: null,
+          flavor_notes: [],
+          prep_method: null,
+        }),
+      ],
+    });
+  });
+
+  it('inserts profile, notes and prep columns', async () => {
+    const { client, calls } = createFakeSupabase({ reviews: { data: null, error: null } });
+
+    await createReview(client, {
+      productId: 'p1',
+      userId: 'u1',
+      stars: 4,
+      flavorNotes: ['umami', 'creamy'],
+      umami: 5,
+      body: 3,
+      prepMethod: 'usucha',
+      doseG: 2,
+      waterMl: 70,
+      waterTempC: 80,
+      tastedOn: '2026-10-01',
+    });
+
+    expect(calls.find((c) => c.method === 'insert')?.args[0]).toEqual({
+      product_id: 'p1',
+      user_id: 'u1',
+      stars: 4,
+      notes: null,
+      photo_url: null,
+      flavor_notes: ['umami', 'creamy'],
+      sweetness: null,
+      umami: 5,
+      bitterness: null,
+      body: 3,
+      prep_method: 'usucha',
+      dose_g: 2,
+      water_ml: 70,
+      water_temp_c: 80,
+      tasted_on: '2026-10-01',
     });
   });
 

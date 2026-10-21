@@ -5,7 +5,8 @@
 Shared test infrastructure. `setup.ts` registers jest-dom matchers, RTL cleanup, and the
 jsdom polyfills Radix needs. `fake-supabase.ts` is a recording PostgREST-shaped client;
 `fake-browser-client.ts` adds steerable auth and storage on top for component tests;
-`render.tsx` wraps renders in a fresh TanStack Query client.
+`render.tsx` wraps renders in a fresh TanStack Query client and provides `makeProduct` /
+`makeReview` fixtures.
 
 ## Contents
 

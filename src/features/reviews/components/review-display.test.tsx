@@ -3,21 +3,18 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
+import { makeReview as baseReview } from '../../../../test/support/render';
 import type { Review } from '../types';
 import { ReviewItem } from './review-item';
 import { ReviewList } from './review-list';
 
 function makeReview(i: number, overrides: Partial<Review> = {}): Review {
-  return {
+  return baseReview({
     id: `r${i}`,
-    productId: 'p1',
     reviewerName: `taster${i}`,
-    stars: 4,
     notes: `note ${i}`,
-    photoUrl: null,
-    createdAt: '2026-09-01T00:00:00Z',
     ...overrides,
-  };
+  });
 }
 
 describe('ReviewItem', () => {
@@ -49,6 +46,32 @@ describe('ReviewItem', () => {
       'aria-expanded',
       'true'
     );
+  });
+
+  it('shows notes, compact profile and prep line', () => {
+    render(
+      <ReviewItem
+        review={makeReview(1, {
+          flavorNotes: ['roasty', 'toasted-rice'],
+          profile: { body: 3 },
+          prep: { method: 'steeped', doseG: 5, waterMl: 300, waterTempC: 95 },
+        })}
+        category="hojicha"
+      />
+    );
+
+    expect(screen.getByText('Roasty')).toBeInTheDocument();
+    expect(screen.getByText('Toasted rice')).toBeInTheDocument();
+    expect(screen.getByRole('meter', { name: 'Body' })).toHaveAttribute('aria-valuenow', '3');
+    expect(screen.getByText('Steeped · 5g · 300ml · 95°C')).toBeInTheDocument();
+  });
+
+  it('ignores notes outside the product category', () => {
+    render(
+      <ReviewItem review={makeReview(1, { flavorNotes: ['umami', 'roasty'] })} category="hojicha" />
+    );
+    expect(screen.getByText('Roasty')).toBeInTheDocument();
+    expect(screen.queryByText('Umami')).not.toBeInTheDocument();
   });
 
   it('renders no toggle for short notes and nothing for empty notes', () => {

@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { clearReviewDraft, loadReviewDraft, saveReviewDraft } from './review-draft';
+import {
+  clearReviewDraft,
+  draftForCategory,
+  loadReviewDraft,
+  saveReviewDraft,
+} from './review-draft';
 
 class MemoryStorage implements Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
   private items = new Map<string, string>();
@@ -60,5 +65,27 @@ describe('review draft', () => {
     expect(() => saveReviewDraft('p1', { stars: 3, notes: '' }, broken)).not.toThrow();
     expect(loadReviewDraft('p1', broken)).toBeNull();
     expect(() => clearReviewDraft('p1', broken)).not.toThrow();
+  });
+});
+
+describe('draftForCategory', () => {
+  it('round-trips the tasting fields', () => {
+    const storage = new MemoryStorage();
+    const draft = {
+      stars: 4,
+      flavorNotes: ['umami'],
+      umami: 5,
+      prepMethod: 'usucha' as const,
+      doseG: 2,
+    };
+    saveReviewDraft('p1', draft, storage);
+    expect(loadReviewDraft('p1', storage)).toMatchObject(draft);
+  });
+
+  // A stale draft can carry notes the product's picker can't show or remove.
+  it('drops notes outside the product category and keeps the rest', () => {
+    expect(
+      draftForCategory({ stars: 4, flavorNotes: ['umami', 'roasty'], body: 3 }, 'hojicha')
+    ).toEqual({ stars: 4, flavorNotes: ['roasty'], body: 3 });
   });
 });

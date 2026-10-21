@@ -152,6 +152,63 @@ components:
     backgroundColor: '{colors.white-surface}'
     textColor: '{colors.ink}'
     height: '64px'
+  bar-track:
+    backgroundColor: '{colors.soft-grey}'
+    rounded: '{rounded.full}'
+    height: '8px'
+  bar-track-compact:
+    backgroundColor: '{colors.soft-grey}'
+    rounded: '{rounded.full}'
+    height: '6px'
+  bar-fill-matcha:
+    backgroundColor: '{colors.matcha-jade}'
+    rounded: '{rounded.full}'
+  bar-fill-hojicha:
+    backgroundColor: '{colors.hojicha-amber}'
+    rounded: '{rounded.full}'
+  note-chip-matcha:
+    backgroundColor: '{colors.matcha-tint}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.full}'
+    padding: '4px 12px'
+  note-chip-hojicha:
+    backgroundColor: '{colors.hojicha-tint}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.full}'
+    padding: '4px 12px'
+  note-chip-compact:
+    rounded: '{rounded.full}'
+    padding: '2px 10px'
+  pill-toggle:
+    textColor: '{colors.ink}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.full}'
+    padding: '4px 12px'
+  pill-toggle-pressed-matcha:
+    backgroundColor: '{colors.matcha-jade}'
+    textColor: '{colors.category-foreground}'
+  pill-toggle-pressed-hojicha:
+    backgroundColor: '{colors.hojicha-amber}'
+    textColor: '{colors.category-foreground}'
+  method-pill-checked:
+    backgroundColor: '{colors.primary-charcoal}'
+    textColor: '{colors.charcoal-foreground}'
+    rounded: '{rounded.full}'
+    padding: '4px 12px'
+  insights-panel:
+    backgroundColor: '{colors.white-surface}'
+    rounded: '{rounded.lg}'
+    padding: '24px'
+  rate-panel:
+    backgroundColor: '{colors.white-surface}'
+    rounded: '{rounded.lg}'
+    padding: '20px'
+    width: '22rem'
+  hero-image-well:
+    rounded: '{rounded.lg}'
+    width: '14rem'
 ---
 
 # Design System: Matchoji
@@ -162,7 +219,7 @@ components:
 
 Matchoji is a working logbook, not a showcase. The page is a faint paper tone, the working surfaces laid on it (cards, navbar, tab rail, search, filters, frames) are white, text is near-black, chrome is greyscale, and one workhorse sans (Lato) carries every word. Against that quiet ledger, exactly two colours do real work: jade marks matcha, amber marks hojicha. Category colour is data. It appears wherever a product or rating appears, so the scarce-matcha, abundant-hojicha contrast reads at a glance across a whole feed.
 
-The system runs in Operate mode: dense enough to scan a grid of products, calm enough to read reviews. Components are shadcn primitives with the category layer applied on top; the bespoke language is small: the category badge, the product card's image well, the score numeral and the star rating. Depth comes from the two-tone surface, white on paper, not from shadows. Cards rest flat on a hairline and darken that hairline on hover.
+The system runs in Operate mode: dense enough to scan a grid of products, calm enough to read reviews. Components are shadcn primitives with the category layer applied on top; the bespoke language is small: the category badge, the product card's image well, the score numeral, the star rating and the taste-profile bars. Depth comes from the two-tone surface, white on paper, not from shadows. Cards rest flat on a hairline and darken that hairline on hover.
 
 The confirmed rejection is the neutral-grayscale rating-app look where category is only a text label (the Vivino and Untappd clone pattern). Here, category is never a label alone.
 
@@ -174,6 +231,7 @@ The confirmed rejection is the neutral-grayscale rating-app look where category 
 - Product cards lead with an image well: the photo, or a category-tinted field with a drawn leaf.
 - Flat surfaces with hairline borders; no resting shadows on cards.
 - Centred 1184px column with 24px gutters on every page.
+- Taste-profile bars (1 to 5, filled in the category colour) are the signature data graphic; they and the rating histogram carry the system's one authored motion.
 
 ## Colors
 
@@ -181,9 +239,9 @@ A greyscale ledger on paper, with two data colours that only ever mean "this is 
 
 ### Primary
 
-- **Matcha Jade** (matcha-jade): The matcha category. Fills the matcha badge and the active Matcha tab, fills stars on matcha ratings (display and input), and draws the leaf mark in an empty matcha image well. Darkened from the logo hex until white text on it clears 4.5:1 (4.83:1).
+- **Matcha Jade** (matcha-jade): The matcha category. Fills the matcha badge and the active Matcha tab, fills stars on matcha ratings (display and input), fills taste-profile and rating-distribution bars and pressed flavour-note toggles, and draws the leaf mark in an empty matcha image well. Darkened from the logo hex until white text on it clears 4.5:1 (4.83:1).
 - **Hojicha Amber** (hojicha-amber): The hojicha category, in exactly the same roles as jade. Darkened from the initial logo hex `#a9762c` for the same AA reason.
-- **Category Tints** (matcha-tint, hojicha-tint): The category colour at 15%, used only as the field of an image well that has no photo.
+- **Category Tints** (matcha-tint, hojicha-tint): The category colour at 15%, used as the field of an image well that has no photo and as the fill of read-only flavour-note chips (ink text on the tint).
 - **Category White** (category-foreground): Text on any jade or amber fill. Never place ink on a category fill.
 
 ### Neutral
@@ -192,7 +250,7 @@ A greyscale ledger on paper, with two data colours that only ever mean "this is 
 - **White Surface** (white-surface): Every surface laid on the ground: product cards, navbar, category tab rail, search field, filter selects, empty and no-results frames, popovers and dialogs.
 - **Ink** (ink): All primary text, including the score numeral.
 - **Primary Charcoal** (primary-charcoal, hover primary-charcoal-hover, text charcoal-foreground): Default buttons ("Sign in with Google", "Log a tasting", form submit) and the active All tab. Neutral actions stay charcoal; they never take a category colour.
-- **Soft Grey** (soft-grey, hover soft-grey-hover): Secondary and accent fills, outline-button hover, the active combobox and select row.
+- **Soft Grey** (soft-grey, hover soft-grey-hover): Secondary and accent fills, outline-button hover, the active combobox and select row, and the empty track of every data bar.
 - **Muted Text** (muted-text): Brands, grade and region meta, review counts, reviewer names, inactive tabs and nav links, placeholders, empty states, unfilled stars. Darkened so it clears 4.5:1 on paper (about 5.0:1) as well as on white.
 - **Hairline** (hairline, hover hairline-hover): Every border: navbar and footer rules, card edges, tab rail, review dividers, dashed empty-state frames. A product card's hairline darkens to hairline-hover on hover.
 - **Input Stroke** (input-stroke) and **Focus Ring** (focus-ring): Field outlines and the focus halo, the latter used at 50% for the 3px ring.
@@ -204,7 +262,7 @@ Dark-mode values exist in `globals.css` (the scaffold's inverted greyscale, wher
 
 **The Paper and White Rule.** The ground is paper; anything a person reads or operates sits on a white surface laid on it. Depth is that two-tone step, not a shadow. Never fill a card or panel with the paper tone, and never put the page itself on white.
 
-**The Category-Is-Data Rule.** Jade and amber appear only where a product's category is being expressed: badge, image-well tint and leaf mark, star fill, active category tab. They always come from `CATEGORY_STYLES`; no component hard-codes them. The one ambient use is the text-selection tint (jade at 25%), which is native to the world.
+**The Category-Is-Data Rule.** Jade and amber appear only where a product's category is being expressed: badge, image-well tint and leaf mark, star fill, active category tab, data-bar fill, flavour-note chips and pressed toggles. They always come from `CATEGORY_STYLES`; no component hard-codes them. The one ambient use is the text-selection tint (jade at 25%), which is native to the world.
 
 **The Jade-on-White Rule.** Jade text measures 4.39:1 on paper, below AA, and 4.83:1 on white. Jade (and, for parity, amber) appears as text only on a white surface; everywhere else it is a graphic: stars, bars, tints, badges, the leaf mark.
 
@@ -218,14 +276,14 @@ Dark-mode values exist in `globals.css` (the scaffold's inverted greyscale, wher
 
 ### Hierarchy
 
-- **Headline** (700, 1.875rem, tight tracking): Page titles: "Discover" and the product name on detail. Discover steps up to 2.25rem from `sm`.
+- **Headline** (700, 1.875rem, tight tracking): Page titles: "Discover" and the product name on detail. Both step up to 2.25rem from `sm`.
 - **Score Numeral** (900, 1.25rem on cards, line-height 1, tight tracking, tabular figures): A product's average to one decimal, in ink; an en dash in muted text when unrated. The component also carries a 3rem size for product pages.
 - **Wordmark** (700, 1.25rem, tight tracking): "Matchoji" in the navbar.
 - **Title** (600, 1.125rem): Section headings ("Rate it", "Reviews").
-- **Card Title** (600, 1rem, line-height 1.25): Product name in cards and combobox rows.
+- **Card Title** (600, 1rem, line-height 1.25): Product name in cards and combobox rows; section headings inside the insights panel ("Ratings", "Taste profile", "Most noticed").
 - **Body** (400, 1rem): Page subtitles, brand line on detail, empty-state copy.
-- **Body Small** (400, 0.875rem): Review notes (capped at `max-w-prose`, about 65ch), meta, rating counts with tabular numerals, buttons, tabs and nav links (at 500).
-- **Label** (600, 0.75rem): Category badges. Reviewer names and grade/region meta use the same size at 400 in muted text.
+- **Body Small** (400, 0.875rem): Review notes (capped at `max-w-prose`, about 65ch), meta, rating counts with tabular numerals, buttons, tabs and nav links (at 500), full taste-profile and distribution rows, flavour-note chips and toggles, the prep line.
+- **Label** (600, 0.75rem): Category badges. Reviewer names, grade/region meta, panel asides ("From 4 tastings"), the "n of 6" counter, compact profile labels and in-review note chips use the same size at 400, in muted text except the chips.
 
 ### Named Rules
 
@@ -238,13 +296,14 @@ Dark-mode values exist in `globals.css` (the scaffold's inverted greyscale, wher
 Every page uses one centred column: max width 1184px (`max-w-site`), 24px horizontal gutter. Most pages take 48px vertical padding; Discover takes 40px, 56px from `sm`. The navbar and footer share the same column and gutter, so edges line up from top to bottom.
 
 - **Discover feed:** heading and subtitle, then 32px below a toolbar: a full-width 44px search field, then a row with the category tabs left and the region and sort selects pushed right (wrapping on narrow screens), then the product grid 32px below. Grid: 2 columns from the smallest screen, 3 from `lg` (1024px), 4 from `xl` (1280px), with 12px gaps rising to 20px from `sm`.
-- **Product detail:** a header block (name with inline badge, brand, grade/region, aggregate rating), then 40px below a two-column grid from `lg`: reviews in a fluid column and "Rate it" in a fixed 22rem column, 48px apart, with "Rate it" aligned to the top of its row rather than stretched. Below `lg` the columns stack with "Rate it" first, so a signed-in visitor can rate without scrolling past every review.
+- **Product detail:** 40px top padding, 56px from `sm`. A hero: from `sm` a 14rem square image well (hairline, 10px radius) beside a vertically centred stack of badge, name (1.875rem, 2.25rem from `sm`), muted brand (1.125rem), grade/region, then the 48px score numeral with stars and review count; below `sm` the well stacks above, capped at 14rem. Then the insights panel 40px below, then 40px below that a two-column grid from `lg`: reviews in a fluid column and "Rate it" in a fixed 22rem column, 48px apart, with "Rate it" aligned to the top of its row rather than stretched. Below `lg` the columns stack with "Rate it" first, so a signed-in visitor can rate without scrolling past every review.
+- **Insights panel:** one column, two from `sm`, 32px gaps; the photo strip spans both columns.
 - **Rhythm:** 4 / 8 / 12 / 16 / 20 / 24 / 32 / 48px. Stacked form fields sit 16px apart; card internals use 8 to 12px steps.
 - **Loading:** skeletons mirror the final layout (heading bars, toolbar, card skeletons in the same grid), so nothing shifts on load.
 
 ## Elevation & Depth
 
-The system is flat with hairlines on a two-tone ground. White surfaces on paper carry the separation that shadows used to; no card or panel has a resting shadow. A product card signals that it is a link by darkening its hairline and underlining its name on hover. Dialogs and select popovers use the primitives' overlay shadows, and inputs and outline buttons carry the near-invisible field shadow. Everything else (navbar, tabs, review rows, empty state) is separated by 1px hairline borders only.
+The system is flat with hairlines on a two-tone ground. White surfaces on paper carry the separation that shadows used to; no card or panel has a resting shadow. A product card signals that it is a link by darkening its hairline and underlining its name on hover. Dialogs and select popovers use the primitives' overlay shadows, and inputs and outline buttons carry the near-invisible field shadow. Everything else (navbar, tabs, review rows, insights and "Rate it" panels, empty state) is separated by 1px hairline borders only.
 
 ### Shadow Vocabulary
 
@@ -258,7 +317,7 @@ The system is flat with hairlines on a two-tone ground. White surfaces on paper 
 
 ## Shapes
 
-Gently rounded throughout, from a 10px base radius: cards, tab rails, dialogs and empty-state frames use 10px; buttons, inputs, tabs, combobox lists and review photos use 8px. Pills (fully round) are reserved for category badges and the avatar/account trigger. Dashed hairline frames mark "nothing here yet" (empty feed, "add as new product"); a solid hairline frame marks "nothing matches" (no search results).
+Gently rounded throughout, from a 10px base radius: cards, tab rails, dialogs and empty-state frames use 10px; buttons, inputs, tabs, combobox lists and review photos use 8px. Pills (fully round) are reserved for category badges, the avatar/account trigger, flavour-note chips and toggles, prep-method radios, and data bars (track and fill). Review photos in the insights strip are 112px squares at 8px. Dashed hairline frames mark "nothing here yet" (empty feed, "add as new product"); a solid hairline frame marks "nothing matches" (no search results).
 
 Product cards clip their image well to the card's top corners, so the well reads as part of the card rather than an inset picture. Borders are uniform 1px hairlines on all four sides.
 
@@ -329,7 +388,53 @@ The signature component.
 
 ### Review Item
 
-- **Style:** rows divided by bottom hairlines (none on the last), 16px vertical padding. Category-filled stars left, muted reviewer name right, notes below in small text capped near 65ch, with an underlined "Read more" / "Show less" toggle for long notes. Optional photo is a 160px square crop at 8px radius.
+- **Style:** rows divided by bottom hairlines (none on the last), 16px vertical padding. Category-filled 16px stars left, muted reviewer name right, then the review text in small text capped near 65ch, with an underlined "Read more" / "Show less" toggle for long notes. The text always comes first; the structured tasting follows it.
+- **Structured tasting:** flavour-note chips (12px text, 2px by 10px, category tint, 6px gaps), then the compact taste profile capped near 28rem, then the prep line in 12px muted text. Optional photo is a 160px square crop at 8px radius. Each part renders only when the review carries it.
+
+### Taste Profile Bars
+
+The signature data graphic. One component reads both a single tasting and a product's average, so the two compare at a glance.
+
+- **Scale:** sweetness, umami, bitterness and body, each a `role="meter"` on 1 to 5. Fill width is value / 5; only attributes with a value are shown.
+- **Bar:** a soft-grey pill track with a pill fill in the category colour (`CATEGORY_STYLES.fill`).
+- **Full:** stacked rows 10px apart: 6rem label, 8px bar, the value right-aligned in muted tabular numerals (integers plain, averages to one decimal). Used for the product average.
+- **Compact:** a 2x2 grid (24px column gap, 4px row gap) of 12px muted labels in a 4.5rem column beside a 6px bar, no value. Used inside a review.
+- **Motion:** fills grow from zero on first render (see Motion below).
+
+### Rating Distribution
+
+- **Style:** five rows, 5 stars first: the level with a 12px muted star, an 8px bar, the count right-aligned in muted tabular numerals. Same track and category fill as the taste bars.
+- **Scale:** width is relative to the largest count, so the most common rating always fills the row.
+
+### Product Insights
+
+The crowd's view of a tea, between the hero and the reviews.
+
+- **Panel:** white surface, 1px hairline, 10px radius, 24px padding. Nothing renders until the product has a rating.
+- **Sections:** Ratings (the distribution), Taste profile (full bars, with a muted "From N tastings" aside right of the heading), Most noticed (note chips at 14px, 4px by 12px, category tint, each followed by its count in muted tabular numerals), How people make it (the prep line at 16px in ink), Photos (a horizontal strip of 112px squares, scrollbar hidden). Each section renders only when tastings carry its data; a new product shows nothing rather than empty charts.
+
+### Prep Summary
+
+- **Style:** one muted tabular line of the method then whichever of dose, water and temperature were logged, joined by middle dots: "Usucha · 2g · 70ml · 80°C". Absent without a method.
+
+### Flavour Note Picker
+
+- **Toggles:** pill buttons with `aria-pressed`, 14px text, 4px by 12px, 8px gaps. Unpressed: hairline border that darkens to hairline-hover on hover. Pressed: the solid category badge colours (fill with white text, border transparent).
+- **Cap:** six notes. At the cap, unpressed toggles disable at 40% opacity; a muted 12px "n of 6" counter below announces politely.
+
+### Taste Profile Input
+
+- **Style:** per attribute, a 6rem label, a radiogroup of five segment buttons (28px hit area, 8px pill segment, 4px gaps), and the chosen value or an en dash in muted tabular numerals.
+- **State:** segments up to the chosen step fill in the category colour (charcoal when no category is known); the rest are soft grey, hairline grey on hover. Clicking the chosen step clears it: every attribute is optional. Logging and reading a profile look the same.
+
+### Prep Fields
+
+- **Style:** a collapsed `<details>` in a hairline frame at 10px radius, summary "How you made it" (14px medium, 12px by 16px). Open, a hairline-topped body with 16px padding and 16px between rows.
+- **Contents:** method pill radios (same pill as the note toggles; chosen is charcoal with off-white text, never a category colour; clicking the chosen method clears it), a three-column row of number fields (dose, water, temperature), then a 176px date field. Collapsed by default so a quick rating stays quick.
+
+### Motion
+
+**The One Motion Rule.** Data bars (taste profile and rating distribution) grow from zero on first render: 200ms scaleX from the left edge, ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), switched off under `prefers-reduced-motion`. It is the one authored motion; everything else is 150ms colour and border feedback on hover and press, plus the primitives' dialog transitions.
 
 ## Do's and Don'ts
 
@@ -344,6 +449,9 @@ The signature component.
 - **Do** use the 1184px column with 24px gutters on every page.
 - **Do** make loading skeletons match the final layout's grid and spacing.
 - **Do** stack the detail page's "Rate it" column above reviews below `lg`.
+- **Do** use the same taste-profile bars for one tasting and for a product's average, full on the product, compact in a review.
+- **Do** render each insights section only when tastings carry its data; never show an empty chart.
+- **Do** keep a review's text before its note chips, profile and prep line.
 
 ### Don't:
 
@@ -354,3 +462,4 @@ The signature component.
 - **Don't** bring back the category side stripe on cards, or add coloured side stripes to any container; category lives in the image well, badge and stars.
 - **Don't** add resting shadows to cards or panels; the paper-to-white step and hairlines carry depth.
 - **Don't** add uppercase tracked eyebrow labels above titles; section titles carry hierarchy alone.
+- **Don't** animate anything beyond the data bars' first grow and hover/press feedback, and never ship motion that ignores `prefers-reduced-motion`.

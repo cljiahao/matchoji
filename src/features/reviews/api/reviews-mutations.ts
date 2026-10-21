@@ -36,6 +36,17 @@ export async function createReview(supabase: Client, input: CreateReviewInput): 
     stars: input.stars,
     notes: input.notes ?? null,
     photo_url: input.photoUrl ?? null,
+    flavor_notes: input.flavorNotes ?? [],
+    sweetness: input.sweetness ?? null,
+    umami: input.umami ?? null,
+    bitterness: input.bitterness ?? null,
+    body: input.body ?? null,
+    prep_method: input.prepMethod ?? null,
+    dose_g: input.doseG ?? null,
+    water_ml: input.waterMl ?? null,
+    water_temp_c: input.waterTempC ?? null,
+    // Omitted rather than null so the column default (today) applies.
+    ...(input.tastedOn ? { tasted_on: input.tastedOn } : {}),
   });
 
   if (error) throw error;

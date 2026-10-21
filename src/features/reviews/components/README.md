@@ -9,21 +9,34 @@ are sent through Google sign-in first (products need an authenticated insert), a
 dialog reopens with the product filled in. Component tests run the real hooks against a
 fake browser Supabase client (`test/support/fake-browser-client.ts`).
 
+The rating form adds `FlavorNotePicker`, `TasteProfileInput` and the collapsed `PrepFields`;
+the product page shows `ProductInsights` (`RatingDistribution`, `TasteProfileBars`,
+`PrepSummary`).
+
 ## Contents
 
+- `flavor-note-picker.tsx`
 - `form-selects.tsx`
 - `index.ts`
 - `log-tasting-dialog.test.tsx`
 - `log-tasting-dialog.tsx`
+- `prep-fields.tsx`
+- `prep-summary.tsx`
+- `product-insights.test.tsx`
+- `product-insights.tsx`
 - `product-search-combobox.test.tsx`
 - `product-search-combobox.tsx`
 - `rate-product-form.test.tsx`
 - `rate-product-form.tsx`
+- `rating-distribution.tsx`
 - `review-display.test.tsx`
 - `review-item.tsx`
 - `review-list.tsx`
 - `star-rating-input.test.tsx`
 - `star-rating-input.tsx`
+- `taste-profile-bars.tsx`
+- `taste-profile-input.tsx`
+- `tasting-inputs.test.tsx`
 
 ## Parent
 

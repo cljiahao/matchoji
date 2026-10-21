@@ -3,6 +3,7 @@ import { render, renderHook, type RenderOptions } from '@testing-library/react';
 import type { ReactElement, ReactNode } from 'react';
 
 import type { Product } from '@/features/products';
+import type { Review } from '@/features/reviews';
 
 export function createTestQueryClient() {
   return new QueryClient({
@@ -36,6 +37,23 @@ export function makeProduct(overrides: Partial<Product> = {}): Product {
     createdAt: '2026-09-01T00:00:00Z',
     avgStars: 4.5,
     reviewCount: 12,
+    ...overrides,
+  };
+}
+
+export function makeReview(overrides: Partial<Review> = {}): Review {
+  return {
+    id: 'r1',
+    productId: 'p1',
+    reviewerName: 'taster',
+    stars: 4,
+    notes: null,
+    photoUrl: null,
+    createdAt: '2026-09-01T00:00:00Z',
+    flavorNotes: [],
+    profile: {},
+    prep: { method: null, doseG: null, waterMl: null, waterTempC: null },
+    tastedOn: '2026-09-01',
     ...overrides,
   };
 }
