@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Route-level tests for `src/app/`: the discover and product pages (rendered as async
-Server Components against a fake Supabase client, including the product page's score and
-crowd summary built from tasting fields), loading and error routes, and the
-OAuth callback's redirect handling, including Discover's filter and no-results states and
-the journal's signed-out, empty and filled states.
+Route-level tests for `src/app/`, rendered as async Server Components against a fake
+Supabase client: the home page (its three shelves, empty shelves and empty catalogue),
+Explore (filters, sort, search, no-results and empty states), the product page (taste,
+facts, photos, community reviews), the journal's signed-out, empty and filled states,
+loading and error routes, and the OAuth callback's redirect handling.
 
 ## Contents
 
