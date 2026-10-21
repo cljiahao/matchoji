@@ -24,6 +24,7 @@ describe('listProducts', () => {
         data: [{ product_id: 'b', avg_stars: 4.5, review_count: 2 }],
         error: null,
       },
+      reviews: { data: [], error: null },
     });
 
     const products = await listProducts(client, { sort: 'top' });
@@ -31,6 +32,24 @@ describe('listProducts', () => {
     expect(products.map((p) => p.id)).toEqual(['b', 'a']);
     expect(products[0]).toMatchObject({ regionName: 'Uji, Kyoto', avgStars: 4.5, reviewCount: 2 });
     expect(products[1]).toMatchObject({ regionName: null, avgStars: null, reviewCount: 0 });
+  });
+
+  it('adds each product’s two most-noticed flavour notes', async () => {
+    const { client } = createFakeSupabase({
+      products: { data: [row('a')], error: null },
+      product_ratings: { data: [{ product_id: 'a', avg_stars: 4, review_count: 3 }], error: null },
+      reviews: {
+        data: [
+          { product_id: 'a', flavor_notes: ['umami', 'creamy'] },
+          { product_id: 'a', flavor_notes: ['creamy', 'sweet'] },
+          { product_id: 'a', flavor_notes: ['creamy'] },
+        ],
+        error: null,
+      },
+    });
+
+    const [product] = await listProducts(client, { sort: 'top' });
+    expect(product.topNotes).toEqual(['creamy', 'umami']);
   });
 
   it('filters by category when one is given', async () => {

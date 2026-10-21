@@ -6,7 +6,9 @@ Discover-feed UI: product cards and grid, category badge/tabs, star display, emp
 in jsdom.
 
 Cards lead with `ProductImageWell` (photo, or a category-tinted leaf) and `ScoreNumeral`;
-`DiscoverToolbar` holds search, category tabs, region and sort.
+`DiscoverToolbar` holds search, category tabs, region and sort. Cards show up to two
+flavour-note chips and take an optional `action` (e.g. the want-to-try toggle), rendered
+outside the card link because controls can't nest inside it.
 
 ## Contents
 

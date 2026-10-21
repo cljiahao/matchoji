@@ -3,7 +3,7 @@
 ## Purpose
 
 One product's detail page: hero with the score numeral, the crowd summary
-(`ProductInsights`), reviews, and the inline "Rate it" form
+(`ProductInsights`), a "Want to try" toggle, reviews, and the inline "Rate it" form
 (the `#rate` anchor the sign-in round-trip returns to).
 
 ## Contents

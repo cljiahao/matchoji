@@ -111,8 +111,7 @@ describe('AuthStatus', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Account menu' }));
     expect(await screen.findByText('aiko@example.com')).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: 'Discover' })).toHaveAttribute('href', '/');
-    expect(screen.queryByRole('menuitem', { name: 'Journal' })).not.toBeInTheDocument();
+
     await userEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }));
 
     await waitFor(() => expect(fake.auth.signOut).toHaveBeenCalled());

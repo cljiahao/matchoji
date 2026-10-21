@@ -10,7 +10,7 @@ the legacy anon key; no secret key is used. `clients.test.ts` checks the cookie
 wiring with `@supabase/ssr` mocked.
 
 `database.types.ts` covers the tasting-journal columns and `wishlist`; mock reviews carry
-sample notes, profiles and prep so the product page can be checked without data.
+sample notes, profiles and prep, and mock products their top notes, so the product page and Discover cards can be checked without data.
 
 ## Contents
 

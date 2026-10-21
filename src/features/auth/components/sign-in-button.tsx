@@ -7,7 +7,12 @@ import { Button } from '@/components/ui/button';
 
 import { signInWithGoogle } from '../lib/sign-in-with-google';
 
-export function SignInButton() {
+interface SignInButtonProps {
+  // The navbar shows it as secondary so "Log a tasting" stays the one primary action.
+  variant?: 'default' | 'outline';
+}
+
+export function SignInButton({ variant = 'default' }: SignInButtonProps) {
   const pathname = usePathname();
 
   async function handleSignIn() {
@@ -17,7 +22,7 @@ export function SignInButton() {
 
   // type="button" so it never submits a surrounding form.
   return (
-    <Button type="button" onClick={handleSignIn}>
+    <Button type="button" variant={variant} onClick={handleSignIn}>
       Sign in with Google
     </Button>
   );

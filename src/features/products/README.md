@@ -20,7 +20,9 @@ discover-feed UI (cards, category tabs, empty state).
 writes it via Supabase; `components/` renders it. `reviews` depends on this module (through
 its public `index.ts`) for search and product creation — this module never depends back on
 `reviews`.
-`lib/` holds `CATEGORY_STYLES`, the single source for jade/amber category classes.
+`lib/` holds `CATEGORY_STYLES`, the single source for jade/amber category classes. `types.ts`'s
+`Product` carries `topNotes` (the feed's two most-noticed notes); `ProductGrid` takes a
+`renderAction` slot for per-card controls owned by other features.
 
 ## Parent
 

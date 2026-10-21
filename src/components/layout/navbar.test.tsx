@@ -29,16 +29,27 @@ describe('Navbar', () => {
     expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
   });
 
-  // The journal page ships in a later PR; linking to it before then would be a 404.
-  it('does not link to the journal before it exists', () => {
+  it('links to the journal and marks the current route', () => {
+    pathname.current = '/journal';
     renderWithQuery(<Navbar />);
-    expect(screen.queryByRole('link', { name: 'Journal' })).not.toBeInTheDocument();
+
+    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
+    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Discover' })).not.toHaveAttribute('aria-current');
   });
 
-  it('marks only the current route', () => {
-    pathname.current = '/about';
+  // Signed-out phone users have no account menu, so the links can't hide behind it.
+  it('keeps section links visible on narrow screens', () => {
     renderWithQuery(<Navbar />);
-    expect(screen.getByRole('link', { name: 'Discover' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Journal' }).closest('ul')?.className).not.toMatch(
+      /(^|\s)hidden(\s|$)/
+    );
+  });
+
+  it('shows sign-in as a secondary button next to the primary log button', async () => {
+    renderWithQuery(<Navbar />);
+    const signIn = await screen.findByRole('button', { name: 'Sign in with Google' });
+    expect(signIn.className).toMatch(/border/);
   });
 
   it('treats product pages as part of Discover', () => {

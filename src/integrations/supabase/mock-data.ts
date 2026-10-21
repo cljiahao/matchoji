@@ -15,6 +15,7 @@ export const MOCK_PRODUCTS: Product[] = [
     createdAt: '2026-09-01T00:00:00.000Z',
     avgStars: 4.5,
     reviewCount: 12,
+    topNotes: ['creamy', 'umami'],
   },
   {
     id: 'mock-2',
@@ -27,6 +28,7 @@ export const MOCK_PRODUCTS: Product[] = [
     createdAt: '2026-09-02T00:00:00.000Z',
     avgStars: 4.2,
     reviewCount: 8,
+    topNotes: ['roasty', 'nutty'],
   },
   {
     id: 'mock-3',
@@ -39,6 +41,7 @@ export const MOCK_PRODUCTS: Product[] = [
     createdAt: '2026-09-03T00:00:00.000Z',
     avgStars: 3.8,
     reviewCount: 3,
+    topNotes: [],
   },
   {
     id: 'mock-4',
@@ -51,6 +54,7 @@ export const MOCK_PRODUCTS: Product[] = [
     createdAt: '2026-09-04T00:00:00.000Z',
     avgStars: null,
     reviewCount: 0,
+    topNotes: [],
   },
 ];
 

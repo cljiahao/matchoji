@@ -23,7 +23,7 @@ export const FlavorNotePicker = forwardRef<HTMLDivElement, FlavorNotePickerProps
     }
 
     return (
-      <div ref={ref} id={id} className="space-y-2">
+      <div ref={ref} id={id} role="group" aria-label="Flavour notes" className="space-y-2">
         <div className="flex flex-wrap gap-2">
           {FLAVOR_NOTES[category].map((note) => {
             const pressed = value.includes(note);

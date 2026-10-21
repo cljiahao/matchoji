@@ -3,12 +3,14 @@ import { vi } from 'vitest';
 
 import { createFakeSupabase, type QueryResult } from './fake-supabase';
 
+type QueuedResult = QueryResult | Promise<QueryResult>;
+
 // Stand-in for `@/integrations/supabase/client`'s createClient(): DB calls go through the
 // recording fake, auth and storage are spies tests can steer.
 export function createFakeBrowserClient(
   options: {
     session?: Session | null;
-    results?: Record<string, QueryResult | QueryResult[]>;
+    results?: Record<string, QueuedResult | QueuedResult[]>;
   } = {}
 ) {
   const db = createFakeSupabase(options.results ?? {});

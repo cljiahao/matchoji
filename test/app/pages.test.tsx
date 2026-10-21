@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createFakeBrowserClient } from '../support/fake-browser-client';
+import { createFakeBrowserClient, makeSession } from '../support/fake-browser-client';
 import { createFakeSupabase, type QueryResult } from '../support/fake-supabase';
 import { renderWithQuery } from '../support/render';
 
@@ -12,6 +12,12 @@ vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ser
 const browser = vi.hoisted(() => ({ current: null as unknown }));
 vi.mock('@/integrations/supabase/client', () => ({ createClient: () => browser.current }));
 
+const nextServer = vi.hoisted(() => ({ connection: vi.fn(async () => {}) }));
+vi.mock('next/server', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/server')>()),
+  connection: nextServer.connection,
+}));
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),
   usePathname: () => '/',
@@ -20,6 +26,8 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
+import JournalLoading from '@/app/(public)/journal/loading';
+import JournalPage from '@/app/(public)/journal/page';
 import DiscoverLoading from '@/app/(public)/loading';
 import Home from '@/app/(public)/page';
 import ProductLoading from '@/app/(public)/products/[id]/loading';
@@ -38,9 +46,15 @@ const productRow = {
   created_at: '2026-09-01T00:00:00Z',
 };
 
-function useServer(results: Record<string, QueryResult | QueryResult[]>) {
+function useServer(
+  results: Record<string, QueryResult | QueryResult[]>,
+  user: { id: string } | null = null
+) {
   const fake = createFakeSupabase(results);
-  server.current = fake.client;
+  server.current = {
+    from: fake.client.from,
+    auth: { getUser: async () => ({ data: { user }, error: null }) },
+  };
   return fake;
 }
 
@@ -157,6 +171,7 @@ describe('Product page', () => {
     expect(screen.getByText('1 review')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Ratings' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Most noticed' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Want to try' })).toBeInTheDocument();
     expect(screen.getByText('Toasty')).toBeInTheDocument();
     expect(screen.getByText('Aiko')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Rate it' }).closest('section')).toHaveAttribute(
@@ -182,15 +197,119 @@ describe('Product page', () => {
   });
 });
 
+const reviewRow = (id: string, productId: string, tastedOn: string, stars: number) => ({
+  id,
+  product_id: productId,
+  user_id: 'u1',
+  stars,
+  notes: null,
+  photo_url: null,
+  created_at: `${tastedOn}T00:00:00Z`,
+  flavor_notes: ['roasty'],
+  sweetness: null,
+  umami: null,
+  bitterness: null,
+  body: null,
+  prep_method: 'steeped',
+  dose_g: 5,
+  water_ml: 300,
+  water_temp_c: 95,
+  tasted_on: tastedOn,
+});
+
+describe('Journal page', () => {
+  // Without a request-time API before the Supabase check, Next prerenders /journal at build
+  // time and a build without Supabase env vars fails (it broke the Vercel preview).
+  it('renders per request: waits for the connection before reading the user', async () => {
+    const order: string[] = [];
+    nextServer.connection.mockImplementationOnce(async () => {
+      order.push('connection');
+    });
+    server.current = {
+      from: vi.fn(),
+      auth: {
+        getUser: async () => {
+          order.push('getUser');
+          return { data: { user: null }, error: null };
+        },
+      },
+    };
+
+    await JournalPage();
+
+    expect(order).toEqual(['connection', 'getUser']);
+  });
+
+  it('journal signed out shows sign-in', async () => {
+    useServer({});
+    renderWithQuery(await JournalPage());
+
+    expect(screen.getByRole('heading', { name: 'Your journal' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign in with Google' })).toBeInTheDocument();
+  });
+
+  it('invites a first tasting when the journal is empty', async () => {
+    useServer(
+      { reviews: { data: [], error: null }, wishlist: { data: [], error: null } },
+      { id: 'u1' }
+    );
+    renderWithQuery(await JournalPage());
+
+    expect(screen.getByText(/No tastings yet/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
+  });
+
+  it('journal lists tastings by month and the want-to-try list', async () => {
+    browser.current = createFakeBrowserClient({
+      session: makeSession({ id: 'u1' }),
+      results: { wishlist: { data: [{ product_id: 'p9' }], error: null } },
+    }).client;
+    useServer(
+      {
+        reviews: {
+          data: [reviewRow('r2', 'p1', '2026-10-05', 5), reviewRow('r1', 'p1', '2026-09-12', 3)],
+          error: null,
+        },
+        products: [
+          {
+            data: [{ id: 'p1', name: 'Kyoto Bancha', brand: 'Ippodo', category: 'hojicha' }],
+            error: null,
+          },
+          { data: [{ id: 'p9', name: 'Uji Gold', brand: null, category: 'matcha' }], error: null },
+        ],
+        wishlist: { data: [{ product_id: 'p9' }], error: null },
+      },
+      { id: 'u1' }
+    );
+    renderWithQuery(await JournalPage());
+
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('4.0')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'October 2026' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'September 2026' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: /Kyoto Bancha/ })[0]).toHaveAttribute(
+      'href',
+      '/products/p1'
+    );
+    expect(screen.getAllByText('Steeped · 5g · 300ml · 95°C')).toHaveLength(2);
+    expect(await screen.findByRole('link', { name: 'Uji Gold' })).toHaveAttribute(
+      'href',
+      '/products/p9'
+    );
+    expect(screen.getByRole('button', { name: 'Remove Uji Gold' })).toBeInTheDocument();
+  });
+});
+
 describe('static routes', () => {
   it('render loading skeletons as busy regions', () => {
     render(
       <>
         <DiscoverLoading />
         <ProductLoading />
+        <JournalLoading />
       </>
     );
-    expect(screen.getAllByLabelText('Loading')).toHaveLength(2);
+    expect(screen.getAllByLabelText('Loading')).toHaveLength(3);
   });
 
   it('auth error page links back home', () => {

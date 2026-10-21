@@ -11,7 +11,8 @@ fake browser Supabase client (`test/support/fake-browser-client.ts`).
 
 The rating form adds `FlavorNotePicker`, `TasteProfileInput` and the collapsed `PrepFields`;
 the product page shows `ProductInsights` (`RatingDistribution`, `TasteProfileBars`,
-`PrepSummary`).
+`PrepSummary`). Star and taste-profile inputs follow the radiogroup keyboard pattern via
+`lib/roving-radio`.
 
 ## Contents
 

@@ -9,7 +9,8 @@ without rendering.
 
 `tasting-vocab` holds the flavour-note lists, prep methods and taste attributes;
 `summarize-reviews` turns a product's reviews into its distribution, average profile, top
-notes, typical preparation and photos.
+notes, typical preparation and photos. `roving-radio` gives button-based radio groups one tab
+stop and wrapping arrow-key selection.
 
 ## Contents
 
@@ -19,6 +20,7 @@ notes, typical preparation and photos.
 - `product-draft.ts`
 - `review-draft.test.ts`
 - `review-draft.ts`
+- `roving-radio.ts`
 - `session-draft.ts`
 - `summarize-reviews.test.ts`
 - `summarize-reviews.ts`

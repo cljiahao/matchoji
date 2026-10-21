@@ -81,8 +81,9 @@
   --destructive: oklch(0.577 0.245 27.325);
 
   --border: var(--color-neutral-300);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* Field edges and the focus ring must read against white and paper (≥3:1 for the ring). */
+  --input: oklch(0.8 0 0);
+  --ring: oklch(0.35 0 0);
 
   /* Category identity (see .impeccable/surfaces/phase1.md OWN-WORLD) — fixed, not theme-adaptive.
      Both darkened from the initial logo hex until white text clears WCAG AA (4.5:1). */
@@ -133,6 +134,18 @@
   ::selection {
     background-color: color-mix(in oklab, var(--matcha) 25%, transparent);
   }
+  html {
+    caret-color: var(--foreground);
+    accent-color: var(--matcha);
+    scrollbar-color: var(--color-neutral-400) transparent;
+  }
+  /* Native disclosure triangles can't be themed; summaries draw their own chevron. */
+  summary {
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
   a {
     text-underline-offset: 0.2em;
   }
@@ -170,6 +183,35 @@
   .text-brand-gradient {
     @apply from-primary via-primary to-primary bg-linear-to-r bg-clip-text text-transparent;
   }
+}
+
+/* One visible focus treatment for every control. Deliberately outside any @layer: unlayered
+   rules outrank Tailwind utilities, so shadcn's `outline-none` + 50% ring (under 3:1)
+   can't hide it, and the CLI-managed ui/ files stay untouched. */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Number and date fields: hide the native spinners and tone the calendar icon down so they
+   read as part of the form rather than browser chrome. */
+input[type='number'] {
+  appearance: textfield;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+input[type='date'] {
+  color-scheme: light;
+}
+input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+}
+input[type='date']::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.9;
 }
 
 /* The one authored motion: data bars grow from zero when first shown. */

@@ -3,6 +3,7 @@
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
+import { handleRadioKeyDown, radioTabIndex } from '../lib/roving-radio';
 import { TASTE_ATTRIBUTE_LABELS, type TasteAttribute } from '../lib/tasting-vocab';
 
 const STEPS = [1, 2, 3, 4, 5] as const;
@@ -31,12 +32,16 @@ export function TasteProfileInput({
         {label}
       </span>
       <div role="radiogroup" aria-labelledby={`taste-${attribute}`} className="flex gap-1">
-        {STEPS.map((step) => (
+        {STEPS.map((step, index) => (
           <button
             key={step}
             type="button"
             role="radio"
             aria-checked={value === step}
+            tabIndex={radioTabIndex(index, value === undefined ? -1 : value - 1)}
+            onKeyDown={(e) =>
+              handleRadioKeyDown(e, index, STEPS.length, (i) => onChange?.(STEPS[i]))
+            }
             aria-label={`${label} ${step} of 5`}
             onClick={() => onChange?.(value === step ? undefined : step)}
             className="group flex h-7 flex-1 items-center"

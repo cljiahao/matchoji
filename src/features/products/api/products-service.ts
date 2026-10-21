@@ -6,7 +6,7 @@ import type { Product, ProductSummary } from '../types';
 
 import type { DiscoverFilters } from '../lib/discover-params';
 import { sortProducts } from '../lib/sort-products';
-import { applyRating, sortByRating } from './product-ratings';
+import { applyRating, sortByRating, topNotesByProduct } from './product-ratings';
 import { buildSearchFilter } from './search-filter';
 
 type Client = SupabaseClient<Database>;
@@ -25,7 +25,11 @@ interface ProductRow {
 // product_ratings is a view and regions is a separate table — neither is embedded via
 // PostgREST relationship syntax here (that needs full FK metadata this hand-written
 // Database type doesn't carry), so both are fetched separately and merged in code.
-async function hydrateProducts(supabase: Client, rows: ProductRow[]): Promise<Product[]> {
+async function hydrateProducts(
+  supabase: Client,
+  rows: ProductRow[],
+  { withTopNotes = false } = {}
+): Promise<Product[]> {
   if (rows.length === 0) return [];
 
   const regionIds = [...new Set(rows.map((r) => r.region_id).filter((id) => id !== null))];
@@ -57,7 +61,18 @@ async function hydrateProducts(supabase: Client, rows: ProductRow[]): Promise<Pr
     )
   );
 
-  return sortByRating(products);
+  if (!withTopNotes) return sortByRating(products);
+
+  // Only rated products can have notes; skip the read entirely for an unrated feed.
+  const rated = products.filter((p) => p.reviewCount > 0).map((p) => p.id);
+  if (rated.length === 0) return sortByRating(products);
+  const { data: noteRows, error } = await supabase
+    .from('reviews')
+    .select('product_id, flavor_notes')
+    .in('product_id', rated);
+  if (error) throw error;
+  const notes = topNotesByProduct(noteRows);
+  return sortByRating(products.map((p) => ({ ...p, topNotes: notes.get(p.id) ?? [] })));
 }
 
 export async function listProducts(supabase: Client, filters: DiscoverFilters): Promise<Product[]> {
@@ -74,7 +89,7 @@ export async function listProducts(supabase: Client, filters: DiscoverFilters): 
   const { data, error } = await query;
   if (error) throw error;
 
-  return sortProducts(await hydrateProducts(supabase, data), filters.sort);
+  return sortProducts(await hydrateProducts(supabase, data, { withTopNotes: true }), filters.sort);
 }
 
 export async function getProduct(supabase: Client, id: string): Promise<Product | null> {

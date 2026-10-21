@@ -10,26 +10,29 @@ export interface QueryResult {
   error: unknown;
 }
 
+// A pending result lets a test observe state while a request is still in flight.
+type QueuedResult = QueryResult | Promise<QueryResult>;
+
 export interface RecordedCall {
   table: string;
   method: string;
   args: unknown[];
 }
 
-export function createFakeSupabase(results: Record<string, QueryResult | QueryResult[]>) {
+export function createFakeSupabase(results: Record<string, QueuedResult | QueuedResult[]>) {
   const calls: RecordedCall[] = [];
   const queues = new Map(
     Object.entries(results).map(([table, r]) => [table, Array.isArray(r) ? [...r] : [r]])
   );
 
-  function next(table: string): QueryResult {
+  function next(table: string): QueuedResult {
     const queue = queues.get(table);
     if (!queue || queue.length === 0) throw new Error(`No fake result queued for "${table}"`);
     return queue.length > 1 ? queue.shift()! : queue[0];
   }
 
   function builder(table: string): unknown {
-    let result: QueryResult | undefined;
+    let result: QueuedResult | undefined;
     const resolve = () => (result ??= next(table));
     const proxy: unknown = new Proxy(
       {},
