@@ -61,7 +61,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             name={product.name}
             seed={product.id}
             mark={product.brand ?? product.name}
-            className="mx-auto aspect-square w-full max-w-60 bg-white/70 sm:mx-0 sm:max-w-none"
+            className="bg-background/70 mx-auto aspect-square w-full max-w-60 sm:mx-0 sm:max-w-none"
           />
           <div className="flex flex-col justify-center">
             {product.brand && <p className="text-lg font-medium">{product.brand}</p>}
@@ -71,10 +71,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <CategoryBadge category={product.category} />
               {product.grade && (
-                <span className="rounded-full bg-white px-2.5 py-0.5">{product.grade}</span>
+                <span className="bg-background rounded-full px-2.5 py-0.5">{product.grade}</span>
               )}
               {product.regionName && (
-                <span className="rounded-full bg-white px-2.5 py-0.5">{product.regionName}</span>
+                <span className="bg-background rounded-full px-2.5 py-0.5">
+                  {product.regionName}
+                </span>
               )}
             </div>
 
@@ -95,7 +97,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <p className="text-sm font-semibold">Rate it</p>
                 <RateThisTea product={productSummary} className="-ml-0.5" />
               </div>
-              <WantToTryButton productId={product.id} className="bg-white" />
+              <WantToTryButton productId={product.id} className="bg-background" />
             </div>
           </div>
         </div>

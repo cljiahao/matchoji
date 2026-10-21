@@ -15,7 +15,6 @@ controls can't nest inside it.
 
 - `category-badge.tsx`
 - `category-circles.tsx`
-- `empty-state.tsx`
 - `explore-filters.tsx`
 - `explore-sort.tsx`
 - `index.ts`

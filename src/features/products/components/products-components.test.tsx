@@ -10,7 +10,6 @@ const router = vi.hoisted(() => ({ push: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => router }));
 
 import { CategoryCircles } from './category-circles';
-import { EmptyState } from './empty-state';
 import { ExploreFilters } from './explore-filters';
 import { ExploreSort } from './explore-sort';
 import { ProductFacts } from './product-facts';
@@ -40,19 +39,6 @@ describe('CategoryBadge', () => {
     );
     expect(screen.getByText('Matcha')).toHaveClass('bg-matcha');
     expect(screen.getByText('Hojicha')).toHaveClass('bg-hojicha');
-  });
-});
-
-describe('EmptyState', () => {
-  it('names the filtered category', () => {
-    render(<EmptyState category="hojicha">cta</EmptyState>);
-    expect(screen.getByText(/No hojicha logged yet/)).toBeInTheDocument();
-  });
-
-  it('invites a first tasting when unfiltered', () => {
-    render(<EmptyState>cta</EmptyState>);
-    expect(screen.getByText(/No tastings logged yet/)).toBeInTheDocument();
-    expect(screen.getByText('cta')).toBeInTheDocument();
   });
 });
 

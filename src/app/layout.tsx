@@ -2,16 +2,11 @@ import type { ReactNode } from 'react';
 
 import { Providers, ThemeProvider } from '@/components/layout';
 import type { Metadata } from 'next';
-import { Figtree, Geist_Mono } from 'next/font/google';
+import { Figtree } from 'next/font/google';
 import './globals.css';
 
 const figtree = Figtree({
   variable: '--font-figtree',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
   subsets: ['latin'],
 });
 
@@ -27,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className="no-scrollbar">
-      <body className={`${figtree.variable} ${geistMono.variable} relative antialiased`}>
+      <body className={`${figtree.variable} relative antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <Providers>{children}</Providers>
         </ThemeProvider>

@@ -45,7 +45,7 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Sections"
-      className="border-border fixed inset-x-0 bottom-0 z-50 border-t bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm sm:hidden"
+      className="border-border bg-background/95 fixed inset-x-0 bottom-0 z-50 border-t pb-[env(safe-area-inset-bottom)] backdrop-blur-sm sm:hidden"
     >
       <ul className="flex items-center">
         <Tab href={PAGE_ROUTES.HOME} label="Home" icon={Home} active={pathname === '/'} />

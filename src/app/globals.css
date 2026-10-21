@@ -7,7 +7,7 @@
 @theme inline {
   /* Fonts & radius */
   --font-sans: var(--font-figtree);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -28,13 +28,10 @@
   /* Actions */
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary-hover: var(--secondary-hover);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent-hover: var(--accent-hover);
 
   /* Utility */
   --color-muted: var(--muted);
@@ -74,13 +71,10 @@
   --brand: #2f5233;
   --primary: var(--brand);
   --primary-foreground: #ffffff;
-  --primary-hover: #26442a;
   --secondary: var(--color-neutral-100);
   --secondary-foreground: var(--color-neutral-900);
-  --secondary-hover: var(--color-neutral-200);
   --accent: var(--color-neutral-100);
   --accent-foreground: var(--color-neutral-900);
-  --accent-hover: var(--color-neutral-200);
 
   --muted: #f4f3f0;
   --muted-foreground: #6b6862;
@@ -108,15 +102,12 @@
   --popover: var(--black);
   --popover-foreground: var(--white);
 
-  --primary: var(--white);
-  --primary-foreground: var(--color-neutral-900);
-  --primary-hover: var(--color-neutral-200);
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
   --secondary: var(--color-neutral-800);
   --secondary-foreground: var(--color-neutral-100);
-  --secondary-hover: var(--color-neutral-700);
   --accent: var(--color-neutral-800);
   --accent-foreground: var(--color-neutral-100);
-  --accent-hover: var(--color-neutral-700);
 
   --muted: oklch(0.269 0 0);
   --tile: oklch(0.24 0 0);

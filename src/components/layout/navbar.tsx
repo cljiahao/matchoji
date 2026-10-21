@@ -27,7 +27,7 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="border-border sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-sm">
+    <nav className="border-border bg-background/95 sticky top-0 z-50 w-full border-b backdrop-blur-sm">
       <div className="max-w-site mx-auto flex h-16 items-center gap-6 px-6">
         <Link
           href={PAGE_ROUTES.HOME}

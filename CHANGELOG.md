@@ -64,6 +64,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- Header, tab bar, search and product-page surfaces follow the theme instead of hard-coded
+  white, and dark mode keeps the green actions. Unused hover tokens, the unused Geist Mono
+  font and the unused discover empty-state component are removed.
 - The home page renders per request, so a build without Supabase env vars (Vercel Preview)
   no longer fails prerendering `/`.
 - Signed-out visitors adding a new product no longer hit "Could not add that product":

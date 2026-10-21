@@ -1,6 +1,5 @@
 export { CategoryBadge } from './category-badge';
 export { CategoryCircles } from './category-circles';
-export { EmptyState } from './empty-state';
 export { ExploreFilters } from './explore-filters';
 export { ExploreSort } from './explore-sort';
 export { ProductCard } from './product-card';

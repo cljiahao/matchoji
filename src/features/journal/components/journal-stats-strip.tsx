@@ -30,7 +30,7 @@ export function JournalStatsStrip({ stats }: JournalStatsStripProps) {
       </Stat>
       <Stat label="Category split">
         {/* The counts below carry the numbers; the bar is their picture. */}
-        <div className="flex h-2 overflow-hidden rounded-full bg-white" aria-hidden="true">
+        <div className="bg-background flex h-2 overflow-hidden rounded-full" aria-hidden="true">
           <div className={CATEGORY_STYLES.matcha.fill} style={{ width: `${matchaShare}%` }} />
           <div
             className={CATEGORY_STYLES.hojicha.fill}

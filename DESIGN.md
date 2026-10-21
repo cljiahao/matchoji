@@ -272,7 +272,7 @@ A white shop with one deep green for actions, two category colours treated as da
 ## Typography
 
 **Display Font:** Figtree (with sans-serif)
-**Label/Mono Font:** Geist Mono is loaded but not used for any visible role.
+**Mono:** none loaded; `--font-mono` falls back to the system monospace stack and has no visible role.
 
 **Character:** One friendly geometric sans, used the way a shop app uses it: large, tight-tracked bold headings and heavy tabular numerals, plain regular body.
 
