@@ -7,7 +7,8 @@ renders inside. Navbar and footer share the `max-w-site` column so their edges l
 page content; the navbar carries the logo, a search pill (off on home and Explore, which have their own),
 Explore and Journal links (handed to `MobileTabBar`, a fixed bottom bar with Home, Explore,
 Log and Journal, below `sm`), the global "Log a
-tasting" dialog and `AuthStatus` (sign-in button or user menu).
+tasting" dialog and `AuthStatus` (sign-in button or user menu). The footer is one slim row:
+wordmark and tagline, and section links from `sm`.
 
 ## Contents
 
