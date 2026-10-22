@@ -46,6 +46,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- The footer is one slim row under a hairline (61px instead of a 152px grey block); on
+  phones its section links give way to the tab bar.
 - Logging a tasting, rating and saving to "Want to try" now need an account, as on Vivino:
   signed out, each opens a "Join Matchoji" sign-in dialog first. Signed-out ratings and new
   products are no longer kept across sign-in.

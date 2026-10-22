@@ -9,15 +9,17 @@ interface SiteFooterProps {
 
 export function SiteFooter({ links = [] }: SiteFooterProps) {
   return (
-    <footer className="bg-muted w-full">
-      <div className="max-w-site mx-auto flex flex-col gap-6 px-6 py-10 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-brand text-lg font-extrabold tracking-tight">Matchoji</p>
-          <p className="text-muted-foreground mt-1 max-w-xs text-sm">
+    // One quiet row under a hairline: the page's content ends the page, not the footer.
+    <footer className="border-border w-full border-t">
+      <div className="max-w-site mx-auto flex flex-col gap-2 px-6 py-5 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-muted-foreground">
+          <span className="text-brand font-extrabold tracking-tight">Matchoji</span>
+          <span className="hidden sm:inline"> · </span>
+          <span className="block sm:inline">
             Rate and discover matcha and hojicha, one cup at a time.
-          </p>
-        </div>
-        <ul className="flex gap-6 text-sm font-semibold">
+          </span>
+        </p>
+        <ul className="hidden gap-6 font-semibold sm:flex">
           <li>
             <Link href={PAGE_ROUTES.EXPLORE} className="hover:underline">
               Explore
@@ -28,8 +30,12 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
               Journal
             </Link>
           </li>
+          {links.length > 0 && (
+            <li>
+              <LinkList links={links} className="text-muted-foreground" />
+            </li>
+          )}
         </ul>
-        {links.length > 0 && <LinkList links={links} className="text-muted-foreground text-sm" />}
       </div>
     </footer>
   );
