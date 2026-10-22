@@ -14,7 +14,7 @@ All notable changes to this project are documented here. Format follows
 - A failed page load inside the site now shows "We couldn’t load this page" with Try again
   and Explore, keeping the navbar, instead of a bare error screen.
 - CI builds the app for production with the Supabase vars blank, so a page that would fail
-  Vercel's build fails the PR first; Dependabot opens weekly grouped dependency PRs.
+  Vercel's build fails the PR first; Dependabot opens weekly grouped dependency PRs (skipping `@types/node` majors while the app runs on Node 24).
 - Vivino-style home page: "Find your next matcha or hojicha", a large search, Matcha and
   Hojicha circles, and shelves of top-rated matcha, top-rated hojicha and newly added teas.
 - Explore (`/explore`): the filtered list, with a filter rail (tea, region), sort and wide

@@ -9,6 +9,11 @@ updates:
     open-pull-requests-limit: 5
     labels: [dependencies, skip-readme-check]
     commit-message: { prefix: "chore(deps)" }
+    # @types/node tracks the runtime (Node 24, per engines and CI); its majors wait until the
+    # runtime moves.
+    ignore:
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
     groups:
       minor-and-patch:
         update-types: [minor, patch]
