@@ -7,6 +7,12 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Explore filters by minimum rating (4.5, 4, 3.5 or 3 and up) and by grade, alongside tea and
+  region; on phones the filters fold behind a "Filters" button so results show first.
+- Regions (`/regions`): every tea region with its matcha and hojicha counts, linking to
+  Explore for that region. Reached from the navbar and Explore's region filter.
+- A failed page load inside the site now shows "We couldn’t load this page" with Try again
+  and Explore, keeping the navbar, instead of a bare error screen.
 - CI builds the app for production with the Supabase vars blank, so a page that would fail
   Vercel's build fails the PR first; Dependabot opens weekly grouped dependency PRs.
 - Vivino-style home page: "Find your next matcha or hojicha", a large search, Matcha and

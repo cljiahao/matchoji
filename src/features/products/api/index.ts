@@ -1,2 +1,8 @@
 export { createProduct } from './products-mutations';
-export { getProduct, listProducts, listRegions, searchProducts } from './products-service';
+export {
+  getProduct,
+  listProducts,
+  listRegionSummaries,
+  listRegions,
+  searchProducts,
+} from './products-service';

@@ -22,11 +22,12 @@ beforeEach(() => {
 });
 
 describe('Navbar', () => {
-  it('shows the wordmark, Explore and Journal links and the log button', () => {
+  it('shows the wordmark, Explore, Regions and Journal links and the log button', () => {
     renderWithQuery(<Navbar />);
 
     expect(screen.getByRole('link', { name: 'Matchoji' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
+    expect(screen.getByRole('link', { name: 'Regions' })).toHaveAttribute('href', '/regions');
     expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
     expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
   });
