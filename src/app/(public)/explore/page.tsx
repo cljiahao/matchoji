@@ -5,17 +5,31 @@ import {
   CATEGORY_STYLES,
   ExploreFilters,
   ExploreSort,
+  FilterDisclosure,
   ProductRow,
   SearchPill,
+  filterByFacets,
+  gradeOptions,
   listProducts,
   listRegions,
   parseDiscoverParams,
   sortProducts,
+  type DiscoverFilters,
 } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
 import { shouldUseMockData } from '@/integrations/supabase/is-configured';
-import { getMockProducts } from '@/integrations/supabase/mock-data';
+import { MOCK_REGIONS, getMockProducts } from '@/integrations/supabase/mock-data';
 import { createClient } from '@/integrations/supabase/server';
+
+function activeFilterCount({ category, regionId, grade, minRating }: DiscoverFilters): number {
+  return [category, regionId, grade, minRating].filter(Boolean).length;
+}
+
+function noMatchMessage(filters: DiscoverFilters): string {
+  if (filters.q) return `No teas match “${filters.q}”.`;
+  if (filters.grade || filters.minRating) return 'No teas match these filters.';
+  return 'No teas from this region yet.';
+}
 
 interface ExplorePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -24,8 +38,11 @@ interface ExplorePageProps {
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const filters = parseDiscoverParams(await searchParams);
 
-  const [products, regions] = shouldUseMockData()
-    ? [sortProducts(getMockProducts(filters.category, filters.q), filters.sort), []]
+  const [matching, regions] = shouldUseMockData()
+    ? [
+        sortProducts(getMockProducts(filters.category, filters.q, filters.regionId), filters.sort),
+        MOCK_REGIONS,
+      ]
     : await (async () => {
         const supabase = await createClient();
         // Regions only feed the filter; losing them hides the rail section, not the results.
@@ -35,8 +52,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         ]);
       })();
 
-  // Search or region narrowing to nothing is "no match", not an empty catalogue.
-  const narrowed = Boolean(filters.q || filters.regionId);
+  // Grade options come from everything else that matched, so picking a grade never hides the
+  // other grades it could switch to.
+  const grades = gradeOptions(matching);
+  const products = filterByFacets(matching, filters);
+
+  // Any narrowing that leaves nothing is "no match", not an empty catalogue.
+  const narrowed = Boolean(filters.q || filters.regionId || filters.grade || filters.minRating);
   const teaName = filters.category ? CATEGORY_STYLES[filters.category].label : 'Teas';
   let heading = filters.category ? `Explore ${teaName}` : 'Explore teas';
   if (filters.q) heading = `Results for “${filters.q}”`;
@@ -47,7 +69,9 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-14">
         <aside aria-label="Filters" className="lg:sticky lg:top-24 lg:self-start">
-          <ExploreFilters filters={filters} regions={regions} />
+          <FilterDisclosure activeCount={activeFilterCount(filters)}>
+            <ExploreFilters filters={filters} regions={regions} grades={grades} />
+          </FilterDisclosure>
         </aside>
 
         <div className="min-w-0">
@@ -76,9 +100,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             )}
             {products.length === 0 && narrowed && (
               <div className="bg-muted flex-center flex-col gap-3 rounded-3xl py-16 text-center">
-                <p className="text-muted-foreground">
-                  {filters.q ? `No teas match “${filters.q}”.` : 'No teas from this region yet.'}
-                </p>
+                <p className="text-muted-foreground">{noMatchMessage(filters)}</p>
                 <Link href="/explore" className="text-brand text-sm font-semibold hover:underline">
                   Clear filters
                 </Link>

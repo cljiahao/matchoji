@@ -6,8 +6,9 @@ Product UI shared by home, Explore, product pages and the journal. `ProductImage
 tea on a warm grey tile: its photo, or a `TeaTin` drawn in the category's colours.
 `ProductCard` is the shelf card (brand, name, `RatingInline`) that `ProductShelf` lays out
 in a sideways-scrolling row; `ProductRow` is an Explore result with the big `ScoreNumeral`.
-`CategoryCircles` open Explore per tea; `ExploreFilters` (links), `ExploreSort` and
-`SearchPill` drive the Explore URL; `ProductFacts` is the product page's facts table. Cards
+`CategoryCircles` open Explore per tea; `ExploreFilters` (links for tea, rating, grade and
+region), `ExploreSort` and `SearchPill` drive the Explore URL, and `FilterDisclosure` folds
+the rail behind a "Filters" button below `lg`; `ProductFacts` is the product page's facts table. Cards
 and rows take an optional `action` (the want-to-try toggle), kept outside the link because
 controls can't nest inside it.
 
@@ -17,6 +18,7 @@ controls can't nest inside it.
 - `category-circles.tsx`
 - `explore-filters.tsx`
 - `explore-sort.tsx`
+- `filter-disclosure.tsx`
 - `index.ts`
 - `product-card.tsx`
 - `product-facts.tsx`

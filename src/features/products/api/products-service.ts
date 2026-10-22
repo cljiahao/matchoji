@@ -6,6 +6,7 @@ import type { Product, ProductSummary } from '../types';
 
 import type { DiscoverFilters } from '../lib/discover-params';
 import { sortProducts } from '../lib/sort-products';
+import { summarizeRegions, type RegionSummary } from '../lib/summarize-regions';
 import { applyRating, sortByRating, topNotesByProduct } from './product-ratings';
 import { buildSearchFilter } from './search-filter';
 
@@ -110,6 +111,16 @@ export async function listRegions(supabase: Client): Promise<{ id: string; name:
   const { data, error } = await supabase.from('regions').select('id, name').order('name');
   if (error) throw error;
   return data;
+}
+
+export async function listRegionSummaries(supabase: Client): Promise<RegionSummary[]> {
+  const [regions, products] = await Promise.all([
+    supabase.from('regions').select('id, name, prefecture, scarcity_note'),
+    supabase.from('products').select('region_id, category').not('region_id', 'is', null),
+  ]);
+  if (regions.error) throw regions.error;
+  if (products.error) throw products.error;
+  return summarizeRegions(regions.data, products.data);
 }
 
 export async function searchProducts(supabase: Client, query: string): Promise<ProductSummary[]> {

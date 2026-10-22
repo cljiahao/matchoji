@@ -1,7 +1,15 @@
 // Dev-only fixture data, rendered only when isSupabaseConfigured() is false — lets the UI be
 // visually verified before a real Supabase project exists. Delete this file once one does.
+import { summarizeRegions, type RegionSummary } from '@/features/products/lib/summarize-regions';
 import type { Product } from '@/features/products/types';
 import type { Review } from '@/features/reviews/types';
+
+// Real region ids are uuids, so the mock ones are too: Explore's region param only accepts uuids.
+export const MOCK_REGIONS = [
+  { id: '00000000-0000-4000-8000-000000000001', name: 'Uji, Kyoto', prefecture: 'Kyoto' },
+  { id: '00000000-0000-4000-8000-000000000002', name: 'Yame, Fukuoka', prefecture: 'Fukuoka' },
+  { id: '00000000-0000-4000-8000-000000000003', name: 'Nishio, Aichi', prefecture: 'Aichi' },
+];
 
 export const MOCK_PRODUCTS: Product[] = [
   {
@@ -139,11 +147,28 @@ function withReviewStats(product: Product): Product {
 
 // Matches name or brand case-insensitively, like the real search, so Explore can be checked
 // against mock data too.
-export function getMockProducts(category?: 'matcha' | 'hojicha', q?: string): Product[] {
+export function getMockProducts(
+  category?: 'matcha' | 'hojicha',
+  q?: string,
+  regionId?: string
+): Product[] {
   const term = q?.trim().toLowerCase();
+  const regionName = regionId && MOCK_REGIONS.find((r) => r.id === regionId)?.name;
   return MOCK_PRODUCTS.filter((p) => !category || p.category === category)
     .filter((p) => !term || `${p.name} ${p.brand ?? ''}`.toLowerCase().includes(term))
+    .filter((p) => !regionId || p.regionName === regionName)
     .map(withReviewStats);
+}
+
+export function getMockRegionSummaries(): RegionSummary[] {
+  const idByName = new Map(MOCK_REGIONS.map((r) => [r.name, r.id]));
+  return summarizeRegions(
+    MOCK_REGIONS.map((r) => ({ ...r, scarcity_note: null })),
+    MOCK_PRODUCTS.map((p) => ({
+      region_id: (p.regionName && idByName.get(p.regionName)) ?? null,
+      category: p.category,
+    }))
+  );
 }
 
 export function getMockProduct(id: string): Product | null {

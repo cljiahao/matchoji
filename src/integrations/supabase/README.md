@@ -11,7 +11,8 @@ wiring with `@supabase/ssr` mocked.
 
 `database.types.ts` covers the tasting-journal columns and `wishlist`; mock reviews carry
 sample notes, profiles and prep, and mock products take their score and count from those
-reviews, carry top notes and answer Explore's search by name or brand, so the product page and Discover cards can be checked without data.
+reviews, carry top notes and answer Explore's search by name or brand; three mock regions (uuid ids, as Explore
+requires) narrow Explore and fill the regions page, so the product page and Discover cards can be checked without data.
 
 ## Contents
 

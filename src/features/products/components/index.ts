@@ -2,6 +2,7 @@ export { CategoryBadge } from './category-badge';
 export { CategoryCircles } from './category-circles';
 export { ExploreFilters } from './explore-filters';
 export { ExploreSort } from './explore-sort';
+export { FilterDisclosure } from './filter-disclosure';
 export { ProductCard } from './product-card';
 export { ProductFacts } from './product-facts';
 export { ProductGrid } from './product-grid';

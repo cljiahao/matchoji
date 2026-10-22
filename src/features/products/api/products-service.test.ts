@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
-import { getProduct, listProducts, listRegions, searchProducts } from './products-service';
+import {
+  getProduct,
+  listProducts,
+  listRegionSummaries,
+  listRegions,
+  searchProducts,
+} from './products-service';
 
 const row = (id: string, overrides: Partial<Record<string, unknown>> = {}) => ({
   id,
@@ -138,6 +144,47 @@ describe('listRegions', () => {
     const error = new Error('boom');
     const { client } = createFakeSupabase({ regions: { data: null, error } });
     await expect(listRegions(client)).rejects.toBe(error);
+  });
+});
+
+describe('listRegionSummaries', () => {
+  const region = { id: 'r1', name: 'Uji, Kyoto', prefecture: 'Kyoto', scarcity_note: null };
+
+  it('counts each region’s teas from products that have a region', async () => {
+    const { client, calls } = createFakeSupabase({
+      regions: { data: [region], error: null },
+      products: { data: [{ region_id: 'r1', category: 'hojicha' }], error: null },
+    });
+
+    expect(await listRegionSummaries(client)).toEqual([
+      {
+        id: 'r1',
+        name: 'Uji, Kyoto',
+        prefecture: 'Kyoto',
+        scarcityNote: null,
+        counts: { matcha: 0, hojicha: 1 },
+      },
+    ]);
+    expect(calls).toContainEqual({
+      table: 'products',
+      method: 'not',
+      args: ['region_id', 'is', null],
+    });
+  });
+
+  it('throws when either read fails', async () => {
+    const error = new Error('boom');
+    const regionsFail = createFakeSupabase({
+      regions: { data: null, error },
+      products: { data: [], error: null },
+    });
+    await expect(listRegionSummaries(regionsFail.client)).rejects.toBe(error);
+
+    const productsFail = createFakeSupabase({
+      regions: { data: [region], error: null },
+      products: { data: null, error },
+    });
+    await expect(listRegionSummaries(productsFail.client)).rejects.toBe(error);
   });
 });
 

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { getMockProduct, getMockProducts, getMockReviews } from './mock-data';
+import {
+  MOCK_REGIONS,
+  getMockProduct,
+  getMockProducts,
+  getMockRegionSummaries,
+  getMockReviews,
+} from './mock-data';
 
 describe('mock data', () => {
   it('filters products by category', () => {
@@ -16,6 +22,15 @@ describe('mock data', () => {
       'Kyoto Roasted Bancha',
     ]);
     expect(getMockProducts('hojicha', 'uji')).toEqual([]);
+  });
+
+  it('narrows products by mock region id and counts teas per region', () => {
+    const uji = MOCK_REGIONS[0];
+    expect(getMockProducts(undefined, undefined, uji.id).map((p) => p.id)).toEqual(['mock-1']);
+    expect(getMockProducts(undefined, undefined, 'unknown')).toEqual([]);
+    const summaries = getMockRegionSummaries();
+    expect(summaries).toHaveLength(MOCK_REGIONS.length);
+    expect(summaries.find((r) => r.id === uji.id)?.counts).toEqual({ matcha: 1, hojicha: 0 });
   });
 
   it('takes score and count from the mock reviews', () => {
