@@ -2,7 +2,10 @@
 
 ## Purpose
 
-Versioned SQL migrations, applied in filename (timestamp) order.
+Versioned SQL migrations, applied in filename (timestamp) order. `audit_log` (from
+`20261023000000_audit_log.sql`) is filled by triggers on every app table, meeting
+`docs/CONSTITUTION.md`'s "all mutations write to an audit log"; a new table needs its own
+`audit_row_change` trigger.
 
 ## Contents
 
@@ -10,6 +13,7 @@ Versioned SQL migrations, applied in filename (timestamp) order.
 - `20260914071152_phase1_storage.sql`
 - `20261014000000_phase1_public_profiles_and_regions.sql`
 - `20261021000000_tasting_journal.sql`
+- `20261023000000_audit_log.sql`
 
 ## Parent
 

@@ -86,6 +86,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Security
 
+- Every insert, update and delete on the app's tables writes an audit-log row (who, what,
+  before and after) via database triggers. The log is closed to visitors and users, and
+  leaves profile emails out.
 - The OAuth callback only redirects to same-origin paths (open-redirect fix).
 - Product search strips PostgREST filter syntax from user input.
 - Reviews show a display name, never the reviewer's email.

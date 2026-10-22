@@ -10,7 +10,10 @@ Supabase Postgres schema, RLS policies, and Storage bucket setup as versioned SQ
 
 ## Connectivity
 
-`migrations/` holds the numbered SQL files, one per concern (Phase 1 tables, Phase 1 storage, public reviewer names + region seed, tasting journal), applied in filename order.
+`test/db/` applies these migrations (storage excepted) to an in-process Postgres (PGlite) with a
+stub of Supabase's auth schema and roles, and checks the audit-log triggers and RLS.
+
+`migrations/` holds the numbered SQL files, one per concern (Phase 1 tables, Phase 1 storage, public reviewer names + region seed, tasting journal, audit log), applied in filename order.
 
 ## Parent
 
