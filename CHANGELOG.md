@@ -7,6 +7,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- CI builds the app for production with the Supabase vars blank, so a page that would fail
+  Vercel's build fails the PR first; Dependabot opens weekly grouped dependency PRs.
 - Vivino-style home page: "Find your next matcha or hojicha", a large search, Matcha and
   Hojicha circles, and shelves of top-rated matcha, top-rated hojicha and newly added teas.
 - Explore (`/explore`): the filtered list, with a filter rail (tea, region), sort and wide
