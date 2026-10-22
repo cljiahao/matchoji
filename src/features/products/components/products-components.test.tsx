@@ -12,6 +12,7 @@ vi.mock('next/navigation', () => ({ useRouter: () => router }));
 import { CategoryCircles } from './category-circles';
 import { ExploreFilters } from './explore-filters';
 import { ExploreSort } from './explore-sort';
+import { FilterDisclosure } from './filter-disclosure';
 import { ProductFacts } from './product-facts';
 import { ProductGrid } from './product-grid';
 import { ProductImageWell } from './product-image-well';
@@ -278,6 +279,7 @@ describe('ExploreFilters', () => {
       <ExploreFilters
         filters={{ q: 'uji', category: 'hojicha', sort: 'newest' }}
         regions={[{ id: REGION, name: 'Uji, Kyoto' }]}
+        grades={[]}
       />
     );
 
@@ -312,6 +314,7 @@ describe('ExploreFilters', () => {
       <ExploreFilters
         filters={{ regionId: REGION, sort: 'top' }}
         regions={[{ id: REGION, name: 'Uji, Kyoto' }]}
+        grades={[]}
       />
     );
     expect(screen.getByRole('link', { name: 'Uji, Kyoto' })).toHaveAttribute(
@@ -320,10 +323,95 @@ describe('ExploreFilters', () => {
     );
     expect(screen.getByRole('link', { name: 'All regions' })).toHaveAttribute('href', '/explore');
     expect(screen.getByRole('link', { name: 'All teas' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: 'Browse regions' })).toHaveAttribute(
+      'href',
+      '/regions'
+    );
     unmount();
 
-    render(<ExploreFilters filters={{ sort: 'top' }} regions={[]} />);
+    render(<ExploreFilters filters={{ sort: 'top' }} regions={[]} grades={[]} />);
     expect(screen.queryByRole('navigation', { name: 'Region' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Grade' })).not.toBeInTheDocument();
+  });
+
+  it('filters by minimum rating, keeping the other filters', () => {
+    render(
+      <ExploreFilters
+        filters={{ category: 'matcha', minRating: 4, sort: 'top' }}
+        regions={[]}
+        grades={[]}
+      />
+    );
+
+    const rating = screen.getByRole('navigation', { name: 'Rating' });
+    expect(within(rating).getByRole('link', { name: '4 and up' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+    expect(within(rating).getByRole('link', { name: '4.5 and up' })).toHaveAttribute(
+      'href',
+      '/explore?category=matcha&rating=4.5'
+    );
+    expect(within(rating).getByRole('link', { name: 'Any rating' })).toHaveAttribute(
+      'href',
+      '/explore?category=matcha'
+    );
+  });
+
+  it('lists grades, marks the chosen one case-insensitively and keeps a linked grade no tea has', () => {
+    const { unmount } = render(
+      <ExploreFilters
+        filters={{ grade: 'ceremonial', sort: 'top' }}
+        regions={[]}
+        grades={['Ceremonial', 'Culinary']}
+      />
+    );
+    const grade = screen.getByRole('navigation', { name: 'Grade' });
+    expect(within(grade).getByRole('link', { name: 'Ceremonial' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+    expect(within(grade).getByRole('link', { name: 'Culinary' })).toHaveAttribute(
+      'href',
+      '/explore?grade=Culinary'
+    );
+    expect(within(grade).getByRole('link', { name: 'All grades' })).toHaveAttribute(
+      'href',
+      '/explore'
+    );
+    unmount();
+
+    render(<ExploreFilters filters={{ grade: 'Gyokuro', sort: 'top' }} regions={[]} grades={[]} />);
+    expect(screen.getByRole('link', { name: 'Gyokuro' })).toHaveAttribute('aria-current', 'true');
+  });
+});
+
+describe('FilterDisclosure', () => {
+  it('starts folded on small screens, shows the active count and toggles open', async () => {
+    render(
+      <FilterDisclosure activeCount={2}>
+        <p>rail</p>
+      </FilterDisclosure>
+    );
+
+    const button = screen.getByRole('button', { name: /Filters/ });
+    expect(button).toHaveTextContent('2');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    const panel = document.getElementById(button.getAttribute('aria-controls') ?? '');
+    expect(panel).toHaveClass('hidden', 'lg:block');
+
+    await userEvent.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+    expect(panel).not.toHaveClass('hidden');
+  });
+
+  it('shows no count without active filters', () => {
+    render(
+      <FilterDisclosure activeCount={0}>
+        <p>rail</p>
+      </FilterDisclosure>
+    );
+    expect(screen.getByRole('button', { name: 'Filters' })).toHaveTextContent(/^Filters$/);
   });
 });
 

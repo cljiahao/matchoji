@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createFakeBrowserClient, makeSession } from '../support/fake-browser-client';
@@ -26,6 +27,7 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
+import PublicError from '@/app/(public)/error';
 import ExploreLoading from '@/app/(public)/explore/loading';
 import ExplorePage from '@/app/(public)/explore/page';
 import JournalLoading from '@/app/(public)/journal/loading';
@@ -34,6 +36,8 @@ import HomeLoading from '@/app/(public)/loading';
 import Home from '@/app/(public)/page';
 import ProductLoading from '@/app/(public)/products/[id]/loading';
 import ProductPage from '@/app/(public)/products/[id]/page';
+import RegionsLoading from '@/app/(public)/regions/loading';
+import RegionsPage from '@/app/(public)/regions/page';
 import AuthErrorPage from '@/app/auth/error/page';
 import { SiteFooter } from '@/components/layout/site-footer';
 
@@ -318,7 +322,149 @@ describe('Explore page', () => {
 
     expect(screen.getByRole('link', { name: 'Uji Ceremonial' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Kukicha Roast' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('navigation', { name: 'Region' })).not.toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Region' })).toBeInTheDocument();
+  });
+
+  it('narrows mock data by region in development', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
+    vi.stubEnv('NODE_ENV', 'development');
+
+    renderWithQuery(
+      await ExplorePage({
+        searchParams: Promise.resolve({ region: '00000000-0000-4000-8000-000000000002' }),
+      })
+    );
+
+    expect(screen.getByRole('link', { name: 'Yame Single-Origin' })).toBeInTheDocument();
+    expect(screen.getByText('Showing 1 tea')).toBeInTheDocument();
+  });
+
+  it('filters by grade and minimum rating, offering the grades of the other matches', async () => {
+    useServer({
+      products: {
+        data: [
+          { ...productRow, grade: 'Bancha' },
+          { ...row('p2', 'Kyoto Gold', 'hojicha', '2026-09-03T00:00:00Z'), grade: 'Premium' },
+          { ...row('p3', 'Kyoto Silver', 'hojicha', '2026-09-04T00:00:00Z'), grade: 'Premium' },
+        ],
+        error: null,
+      },
+      product_ratings: {
+        data: [
+          { product_id: 'p1', avg_stars: 4.8, review_count: 2 },
+          { product_id: 'p2', avg_stars: 4.6, review_count: 1 },
+          { product_id: 'p3', avg_stars: 3.2, review_count: 1 },
+        ],
+        error: null,
+      },
+      reviews: { data: [], error: null },
+      regions: { data: [], error: null },
+    });
+
+    renderWithQuery(
+      await ExplorePage({ searchParams: Promise.resolve({ grade: 'premium', rating: '4.5' }) })
+    );
+
+    expect(screen.getByRole('link', { name: 'Kyoto Gold' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Kyoto Bancha' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Kyoto Silver' })).not.toBeInTheDocument();
+    expect(screen.getByText('Showing 1 tea')).toBeInTheDocument();
+    const grade = screen.getByRole('navigation', { name: 'Grade' });
+    expect(within(grade).getByRole('link', { name: 'Bancha' })).toHaveAttribute(
+      'href',
+      '/explore?grade=Bancha&rating=4.5'
+    );
+  });
+
+  it('says no teas match when grade or rating narrows to nothing', async () => {
+    useServer({
+      products: { data: [productRow], error: null },
+      product_ratings: { data: [], error: null },
+      regions: { data: [], error: null },
+    });
+
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ rating: '4' }) }));
+
+    expect(screen.getByText('No teas match these filters.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Clear filters' })).toHaveAttribute('href', '/explore');
+  });
+});
+
+describe('Regions page', () => {
+  it('renders per request and links each region to its Explore list, busiest first', async () => {
+    nextServer.connection.mockClear();
+    useServer({
+      regions: {
+        data: [
+          { id: REGION, name: 'Uji, Kyoto', prefecture: 'Kyoto', scarcity_note: null },
+          {
+            id: '9b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e',
+            name: 'Ise, Mie',
+            prefecture: 'Mie',
+            scarcity_note: 'Mostly sencha',
+          },
+        ],
+        error: null,
+      },
+      products: {
+        data: [
+          { region_id: REGION, category: 'matcha' },
+          { region_id: REGION, category: 'matcha' },
+        ],
+        error: null,
+      },
+    });
+
+    render(await RegionsPage());
+
+    expect(nextServer.connection).toHaveBeenCalled();
+    expect(screen.getByRole('heading', { level: 1, name: 'Tea regions' })).toBeInTheDocument();
+    const links = screen.getAllByRole('link');
+    expect(links[0]).toHaveAttribute('href', `/explore?region=${REGION}`);
+    expect(links[0]).toHaveTextContent('Uji, Kyoto');
+    expect(links[0]).toHaveTextContent('2 matcha');
+    expect(links[0]).not.toHaveTextContent('hojicha');
+    expect(links[1]).toHaveTextContent('No teas yet');
+    expect(links[1]).toHaveTextContent('Mostly sencha');
+  });
+
+  it('says so when no regions are listed', async () => {
+    useServer({ regions: { data: [], error: null }, products: { data: [], error: null } });
+
+    render(await RegionsPage());
+
+    expect(screen.getByText('No regions listed yet.')).toBeInTheDocument();
+  });
+
+  it('uses mock data in development without Supabase', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
+    vi.stubEnv('NODE_ENV', 'development');
+
+    render(await RegionsPage());
+
+    expect(screen.getByRole('link', { name: /Uji, Kyoto/ })).toHaveTextContent('1 matcha');
+  });
+});
+
+describe('Public error boundary', () => {
+  it('offers a retry and a way back to Explore, with the reference', async () => {
+    const retry = vi.fn();
+    const error = Object.assign(new Error('boom'), { digest: 'abc123' });
+
+    render(<PublicError error={error} retry={retry} />);
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'We couldn’t load this page' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Reference: abc123')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Explore teas' })).toHaveAttribute('href', '/explore');
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Try again' }));
+    expect(retry).toHaveBeenCalledOnce();
+  });
+
+  it('handles a thrown value that is not an Error', () => {
+    render(<PublicError error="nope" retry={() => {}} />);
+    expect(screen.queryByText(/Reference/)).not.toBeInTheDocument();
   });
 });
 
@@ -524,9 +670,10 @@ describe('static routes', () => {
         <ExploreLoading />
         <ProductLoading />
         <JournalLoading />
+        <RegionsLoading />
       </>
     );
-    expect(screen.getAllByLabelText('Loading')).toHaveLength(4);
+    expect(screen.getAllByLabelText('Loading')).toHaveLength(5);
   });
 
   it('auth error page links back home', () => {

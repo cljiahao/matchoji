@@ -40,7 +40,11 @@ function Tab({
 // is always one thumb away.
 export function MobileTabBar() {
   const pathname = usePathname();
-  const exploring = pathname.startsWith(PAGE_ROUTES.EXPLORE) || pathname.startsWith('/products/');
+  // Phones have no Regions tab; regions are reached from Explore, so they count as exploring.
+  const exploring =
+    pathname.startsWith(PAGE_ROUTES.EXPLORE) ||
+    pathname.startsWith(PAGE_ROUTES.REGIONS) ||
+    pathname.startsWith('/products/');
 
   return (
     <nav

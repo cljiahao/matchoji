@@ -22,6 +22,16 @@ describe('parseDiscoverParams', () => {
     expect(parseDiscoverParams({ q: '  ,() ' })).toEqual({ sort: 'top' });
   });
 
+  it('keeps a grade and a listed minimum rating, dropping other ratings', () => {
+    expect(parseDiscoverParams({ grade: ' Ceremonial ', rating: '3.5' })).toEqual({
+      grade: 'Ceremonial',
+      minRating: 3.5,
+      sort: 'top',
+    });
+    expect(parseDiscoverParams({ grade: '   ', rating: '5' })).toEqual({ sort: 'top' });
+    expect(parseDiscoverParams({ grade: 'x'.repeat(61), rating: '4.0' })).toEqual({ sort: 'top' });
+  });
+
   it('takes the first value of repeated params', () => {
     expect(parseDiscoverParams({ category: ['hojicha', 'matcha'] })).toEqual({
       category: 'hojicha',
@@ -34,6 +44,12 @@ describe('discoverHref', () => {
   it('keeps the other filters when one changes', () => {
     expect(discoverHref({ q: 'uji', sort: 'reviewed' }, { category: 'hojicha' })).toBe(
       '/explore?q=uji&category=hojicha&sort=reviewed'
+    );
+  });
+
+  it('carries grade and rating', () => {
+    expect(discoverHref({ sort: 'top' }, { grade: 'Ceremonial', minRating: 4.5 })).toBe(
+      '/explore?grade=Ceremonial&rating=4.5'
     );
   });
 
