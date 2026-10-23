@@ -16,6 +16,7 @@ const SORT_LABELS: Record<DiscoverSort, string> = {
   top: 'Top rated',
   reviewed: 'Most rated',
   newest: 'Newest',
+  scarce: 'Scarcest first',
 };
 
 // A select has no submit gesture of its own, so it navigates on change.

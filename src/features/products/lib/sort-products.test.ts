@@ -21,4 +21,21 @@ describe('sortProducts', () => {
   it('newest puts the latest added first', () => {
     expect(sortProducts(products, 'newest').map((p) => p.id)).toEqual(['c', 'b', 'a']);
   });
+
+  it('scarce puts the scarcest supply first, top rated within a level, unknown last', () => {
+    const bySupply = [
+      makeProduct({ id: 'none', supply: null, avgStars: 5 }),
+      makeProduct({ id: 'tight-low', supply: 'tight', avgStars: 3 }),
+      makeProduct({ id: 'plentiful', supply: 'plentiful', avgStars: 4 }),
+      makeProduct({ id: 'tight-high', supply: 'tight', avgStars: 4.5 }),
+      makeProduct({ id: 'scarce', supply: 'scarce', avgStars: null }),
+    ];
+    expect(sortProducts(bySupply, 'scarce').map((p) => p.id)).toEqual([
+      'scarce',
+      'tight-high',
+      'tight-low',
+      'plentiful',
+      'none',
+    ]);
+  });
 });

@@ -357,12 +357,21 @@ describe('Regions page', () => {
     useServer({
       regions: {
         data: [
-          { id: REGION, name: 'Uji, Kyoto', prefecture: 'Kyoto', scarcity_note: null },
+          {
+            id: REGION,
+            name: 'Uji, Kyoto',
+            prefecture: 'Kyoto',
+            scarcity_note: null,
+            matcha_supply: 'tight',
+            hojicha_supply: null,
+          },
           {
             id: '9b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e',
             name: 'Ise, Mie',
             prefecture: 'Mie',
             scarcity_note: 'Mostly sencha',
+            matcha_supply: 'scarce',
+            hojicha_supply: 'plentiful',
           },
         ],
         error: null,
@@ -376,23 +385,64 @@ describe('Regions page', () => {
       },
     });
 
-    render(await RegionsPage());
+    render(await RegionsPage({ searchParams: Promise.resolve({}) }));
 
     expect(nextServer.connection).toHaveBeenCalled();
     expect(screen.getByRole('heading', { level: 1, name: 'Tea regions' })).toBeInTheDocument();
-    const links = screen.getAllByRole('link');
+    const links = within(screen.getByRole('list')).getAllByRole('link');
     expect(links[0]).toHaveAttribute('href', `/explore?region=${REGION}`);
     expect(links[0]).toHaveTextContent('Uji, Kyoto');
     expect(links[0]).toHaveTextContent('2 matcha');
     expect(links[0]).not.toHaveTextContent('hojicha');
+    expect(links[0]).toHaveTextContent('Matcha tight');
     expect(links[1]).toHaveTextContent('No teas yet');
+    expect(links[1]).toHaveTextContent('Matcha scarce · Hojicha plentiful');
     expect(links[1]).toHaveTextContent('Mostly sencha');
+    expect(screen.getByRole('link', { name: 'Most teas' })).toHaveAttribute('aria-current', 'true');
+  });
+
+  it('puts the scarcest region first when sorted by scarcity', async () => {
+    useServer({
+      regions: {
+        data: [
+          {
+            id: REGION,
+            name: 'Uji, Kyoto',
+            prefecture: 'Kyoto',
+            scarcity_note: null,
+            matcha_supply: 'tight',
+            hojicha_supply: null,
+          },
+          {
+            id: '9b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e',
+            name: 'Ise, Mie',
+            prefecture: 'Mie',
+            scarcity_note: null,
+            matcha_supply: 'scarce',
+            hojicha_supply: null,
+          },
+        ],
+        error: null,
+      },
+      products: { data: [{ region_id: REGION, category: 'matcha' }], error: null },
+    });
+
+    render(await RegionsPage({ searchParams: Promise.resolve({ sort: 'scarce' }) }));
+
+    const sort = screen.getByRole('navigation', { name: 'Sort regions' });
+    expect(within(sort).getByRole('link', { name: 'Scarcest first' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+    const cards = screen.getAllByRole('listitem').map((li) => li.textContent);
+    expect(cards[0]).toContain('Ise, Mie');
+    expect(cards[1]).toContain('Uji, Kyoto');
   });
 
   it('says so when no regions are listed', async () => {
     useServer({ regions: { data: [], error: null }, products: { data: [], error: null } });
 
-    render(await RegionsPage());
+    render(await RegionsPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getByText('No regions listed yet.')).toBeInTheDocument();
   });

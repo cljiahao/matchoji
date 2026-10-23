@@ -13,7 +13,8 @@ wiring with `@supabase/ssr` mocked.
 `select-in.ts` splits a long `.in()` id list into batches of 100 (PostgREST puts the list in
 the URL) and merges the rows; every service with an open-ended id list uses it.
 
-`database.types.ts` covers the tasting-journal columns and `wishlist`.
+`database.types.ts` covers the tasting-journal columns, `wishlist` and the regions'
+`matcha_supply` / `hojicha_supply` levels (`SupplyLevel`).
 
 ## Contents
 

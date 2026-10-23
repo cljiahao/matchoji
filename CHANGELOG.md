@@ -7,6 +7,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Scarcity sort: Explore's "Scarcest first" and the Regions page's "Scarcest first" rank teas
+  and regions by how scarce their matcha or hojicha is (scarce, tight, plentiful). Regions
+  gain `matcha_supply` and `hojicha_supply` levels, seeded by
+  `supabase/seed/20261023_region_supply.sql` from public reporting on the matcha shortage;
+  region cards show the levels beside the note.
 - Explore filters by minimum rating (4.5, 4, 3.5 or 3 and up) and by grade, alongside tea and
   region; on phones the filters fold behind a "Filters" button so results show first.
 - Regions (`/regions`): every tea region with its matcha and hojicha counts, linking to

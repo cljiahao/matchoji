@@ -1,4 +1,4 @@
-import type { ProductCategory } from '@/integrations/supabase/database.types';
+import type { ProductCategory, SupplyLevel } from '@/integrations/supabase/database.types';
 
 export type { ProductCategory };
 
@@ -9,6 +9,8 @@ export interface Product {
   category: ProductCategory;
   grade: string | null;
   regionName: string | null;
+  // How scarce this tea's category is in its region; null without a region or a sourced level.
+  supply: SupplyLevel | null;
   imageUrl: string | null;
   createdAt: string;
   avgStars: number | null;

@@ -6,9 +6,10 @@
 tints, stars and the product hero band, so category colour is applied identically
 everywhere. `discover-params` turns the Explore URL into validated filters (invalid values
 are dropped) and back into `/explore` links via `discoverHref`; `sort-products` implements
-the three orders. `filter-products` applies the grade and minimum-rating filters after the
+the four orders, including "Scarcest first". `supply` ranks the supply levels (scarce,
+tight, plentiful, then unknown). `filter-products` applies the grade and minimum-rating filters after the
 query and lists the grade options; `summarize-regions` counts each region's matcha and
-hojicha for the regions page.
+hojicha for the regions page and `sortRegionsByScarcity` reorders them, scarcest first.
 
 ## Contents
 
@@ -22,6 +23,8 @@ hojicha for the regions page.
 - `sort-products.ts`
 - `summarize-regions.test.ts`
 - `summarize-regions.ts`
+- `supply.test.ts`
+- `supply.ts`
 
 ## Parent
 

@@ -38,30 +38,34 @@ async function hydrateProducts(
   const productIds = rows.map((r) => r.id);
 
   const [{ data: regions }, { data: ratings }] = await Promise.all([
-    selectIn(regionIds, (ids) => supabase.from('regions').select('id, name').in('id', ids)),
+    selectIn(regionIds, (ids) =>
+      supabase.from('regions').select('id, name, matcha_supply, hojicha_supply').in('id', ids)
+    ),
     selectIn(productIds, (ids) =>
       supabase.from('product_ratings').select('*').in('product_id', ids)
     ),
   ]);
 
-  const regionNameById = new Map(regions.map((r) => [r.id, r.name]));
+  const regionById = new Map(regions.map((r) => [r.id, r]));
   const ratingByProductId = new Map(ratings.map((r) => [r.product_id, r]));
 
-  const products = rows.map((row) =>
-    applyRating(
+  const products = rows.map((row) => {
+    const region = row.region_id ? regionById.get(row.region_id) : undefined;
+    return applyRating(
       {
         id: row.id,
         name: row.name,
         brand: row.brand,
         category: row.category,
         grade: row.grade,
-        regionName: row.region_id ? (regionNameById.get(row.region_id) ?? null) : null,
+        regionName: region?.name ?? null,
+        supply: region?.[`${row.category}_supply`] ?? null,
         imageUrl: row.image_url,
         createdAt: row.created_at,
       },
       ratingByProductId.get(row.id)
-    )
-  );
+    );
+  });
 
   if (!withTopNotes) return sortByRating(products);
 
@@ -115,7 +119,9 @@ export async function listRegions(supabase: Client): Promise<{ id: string; name:
 
 export async function listRegionSummaries(supabase: Client): Promise<RegionSummary[]> {
   const [regions, products] = await Promise.all([
-    supabase.from('regions').select('id, name, prefecture, scarcity_note'),
+    supabase
+      .from('regions')
+      .select('id, name, prefecture, scarcity_note, matcha_supply, hojicha_supply'),
     supabase.from('products').select('region_id, category').not('region_id', 'is', null),
   ]);
   if (regions.error) throw regions.error;
