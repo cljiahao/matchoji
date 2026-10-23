@@ -2,8 +2,9 @@
 
 ## Purpose
 
-`vendor-service`: `getMyVendor` (the user's own shop at any status), `applyAsVendor`
-(inserts without a status, so it starts pending) and `updateVendor`. `listing-service`:
+`vendor-service`: `getMyVendor` (the user's own shop at any status, with the admin's
+`reviewNote`), `applyAsVendor` (inserts without a status, so it starts pending),
+`updateVendor` and `reapplyAsVendor` (a rejected shop back to pending). `listing-service`:
 `listVendorListings` (with each tea's summary), `saveListing` (insert or update),
 `deleteListing`, `listCatalogue` (approved teas, for the tea picker) and `listProductOffers`, which joins
 approved vendors in code and orders in-stock offers first, cheapest first within a currency.

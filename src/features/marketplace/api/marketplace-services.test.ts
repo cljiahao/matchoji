@@ -7,7 +7,7 @@ import {
   listVendorListings,
   saveListing,
 } from './listing-service';
-import { applyAsVendor, getMyVendor, updateVendor } from './vendor-service';
+import { applyAsVendor, getMyVendor, reapplyAsVendor, updateVendor } from './vendor-service';
 
 const vendorRow = {
   id: 'v1',
@@ -151,5 +151,21 @@ describe('listing service', () => {
     const { client, calls } = createFakeSupabase({ listings: { data: [], error: null } });
     expect(await listProductOffers(client, 'p1')).toEqual([]);
     expect(calls.some((c) => c.table === 'vendors')).toBe(false);
+  });
+});
+
+describe('reapplyAsVendor', () => {
+  it('asks the database to put the rejected shop back in the queue', async () => {
+    const { client, calls } = createFakeSupabase({
+      'rpc:reapply_as_vendor': { data: null, error: null },
+    });
+    await reapplyAsVendor(client);
+    expect(calls).toEqual([{ table: 'rpc:reapply_as_vendor', method: 'rpc', args: [] }]);
+  });
+
+  it('throws when there is nothing to resubmit', async () => {
+    const error = new Error('There is no rejected application to resubmit.');
+    const { client } = createFakeSupabase({ 'rpc:reapply_as_vendor': { data: null, error } });
+    await expect(reapplyAsVendor(client)).rejects.toBe(error);
   });
 });

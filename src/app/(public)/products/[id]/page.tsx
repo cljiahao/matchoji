@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { WantToTryButton } from '@/features/journal';
@@ -47,6 +47,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   ]);
 
   if (!product) notFound();
+  // A merged duplicate forwards to the tea it repeated, so old links and shares still land.
+  if (product.mergedInto) permanentRedirect(`/products/${product.mergedInto}`);
 
   // Buying and stock belong to catalogue teas. A tea awaiting review can be rated and saved
   // only by whoever added it (the database enforces the same rule); a rejected one by nobody.
@@ -102,9 +104,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </>
                 ) : (
                   <>
-                    <span className="font-semibold">Not added to the catalogue.</span> We
-                    couldn&apos;t confirm this tea, often because it duplicates another. Your
-                    tastings of it are still in your journal.
+                    <span className="font-semibold">Not added to the catalogue.</span>{' '}
+                    {product.reviewNote ??
+                      'We couldn’t confirm this tea, often because it duplicates another.'}{' '}
+                    Your tastings of it are still in your journal.
                   </>
                 )}
               </p>

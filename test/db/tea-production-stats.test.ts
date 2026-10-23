@@ -1,38 +1,16 @@
-import { readFileSync, readdirSync } from 'node:fs';
-import path from 'node:path';
-
-import { PGlite } from '@electric-sql/pglite';
+import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-const SUPABASE = path.resolve(import.meta.dirname, '../../supabase');
+import { createMigratedDb, readSupabaseFile } from '../support/supabase-db';
 
-// Same Supabase stub as audit-log.test.ts: auth schema, auth.uid() and the API roles.
-const SUPABASE_STUB = `
-  create role anon nologin;
-  create role authenticated nologin;
-  create schema auth;
-  create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb);
-  create function auth.uid () returns uuid language sql stable as $$
-    select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
-  $$;
-  grant usage on schema auth, public to anon, authenticated;
-  alter default privileges in schema public grant all on tables to anon, authenticated;
-`;
-
-const STATS = readFileSync(path.join(SUPABASE, 'seed/20261023_tea_production_stats.sql'), 'utf8');
+const STATS = readSupabaseFile('seed/20261023_tea_production_stats.sql');
 
 let db: PGlite;
 
 const count = async (sql: string) => Number((await db.query<{ n: number }>(sql)).rows[0].n);
 
 beforeAll(async () => {
-  db = new PGlite();
-  await db.exec(SUPABASE_STUB);
-  const dir = path.join(SUPABASE, 'migrations');
-  for (const file of readdirSync(dir)
-    .filter((f) => f.endsWith('.sql') && !f.includes('storage'))
-    .sort())
-    await db.exec(readFileSync(path.join(dir, file), 'utf8'));
+  db = await createMigratedDb();
 }, 30_000);
 
 afterAll(async () => {

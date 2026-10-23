@@ -15,6 +15,8 @@ const base = {
   shopUrl: null,
   status: 'approved' as const,
   addedBy: null,
+  reviewNote: null,
+  mergedInto: null,
   imageUrl: null,
   createdAt: '2026-09-01T00:00:00Z',
 };

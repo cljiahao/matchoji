@@ -16,7 +16,8 @@ the URL) and merges the rows; every service with an open-ended id list uses it.
 `database.types.ts` covers the tasting-journal columns, `wishlist` and the regions'
 `matcha_supply` / `hojicha_supply` levels (`SupplyLevel`), `tea_production_stats`, `stock_reports` (`StockStatus`),
 `products.shop_url`, `products.status` (`ProductStatus`) and `added_by`, the `latest_reviews`
-view, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
+view, `profiles.is_admin`, `review_note` and `merged_into`, the admin functions under
+`Functions`, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
 until checkout is built.
 
 ## Contents

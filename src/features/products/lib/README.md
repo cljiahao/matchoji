@@ -8,7 +8,8 @@ everywhere. `discover-params` turns the Explore URL into validated filters (inva
 are dropped) and back into `/explore` links via `discoverHref`; `sort-products` implements
 the four orders, including "Scarcest first". `supply` ranks the supply levels (scarce,
 tight, plentiful, then unknown). The tests' `Product` fixtures carry every field, including
-`supply`, `shopUrl`, `status` and `addedBy`, which these helpers ignore. `filter-products` applies the grade and minimum-rating filters after the
+`supply`, `shopUrl`, `status`, `addedBy`, `reviewNote` and `mergedInto`, which these helpers
+ignore. `filter-products` applies the grade and minimum-rating filters after the
 query and lists the grade options; `summarize-regions` counts each region's matcha and
 hojicha for the regions page and `sortRegionsByScarcity` reorders them, scarcest first.
 

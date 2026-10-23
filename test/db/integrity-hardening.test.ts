@@ -1,25 +1,7 @@
-import { readFileSync, readdirSync } from 'node:fs';
-import path from 'node:path';
-
-import { PGlite } from '@electric-sql/pglite';
+import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-const SUPABASE = path.resolve(import.meta.dirname, '../../supabase');
-
-// Same Supabase stub as audit-log.test.ts: auth schema, auth.uid() and the API roles, with
-// Supabase's default grant of everything on new public tables and views.
-const SUPABASE_STUB = `
-  create role anon nologin;
-  create role authenticated nologin;
-  create schema auth;
-  create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb);
-  create function auth.uid () returns uuid language sql stable as $$
-    select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
-  $$;
-  grant usage on schema auth, public to anon, authenticated;
-  grant execute on function auth.uid () to anon, authenticated;
-  alter default privileges in schema public grant all on tables to anon, authenticated;
-`;
+import { createMigratedDb } from '../support/supabase-db';
 
 const ALICE = '11111111-1111-4111-8111-111111111111';
 const BOB = '22222222-2222-4222-8222-222222222222';
@@ -65,13 +47,7 @@ const review = (
   );
 
 beforeAll(async () => {
-  db = new PGlite();
-  await db.exec(SUPABASE_STUB);
-  const dir = path.join(SUPABASE, 'migrations');
-  for (const file of readdirSync(dir)
-    .filter((f) => f.endsWith('.sql') && !f.includes('storage'))
-    .sort())
-    await db.exec(readFileSync(path.join(dir, file), 'utf8'));
+  db = await createMigratedDb();
   await db.query(
     `insert into auth.users (id, email, raw_user_meta_data) values
      ($1, 'alice.smith@example.com', '{"full_name": "Alice Smith"}'),

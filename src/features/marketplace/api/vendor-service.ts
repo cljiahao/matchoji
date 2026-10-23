@@ -8,13 +8,14 @@ import type { Vendor } from '../types';
 type Client = SupabaseClient<Database>;
 type VendorRow = Database['public']['Tables']['vendors']['Row'];
 
-const COLUMNS = 'id, name, profile_info, website, country, ships_to, status';
+const COLUMNS = 'id, name, profile_info, website, country, ships_to, status, review_note';
 
 export function toVendor(
   row: Pick<
     VendorRow,
     'id' | 'name' | 'profile_info' | 'website' | 'country' | 'ships_to' | 'status'
-  >
+  > &
+    Partial<Pick<VendorRow, 'review_note'>>
 ): Vendor {
   return {
     id: row.id,
@@ -24,6 +25,7 @@ export function toVendor(
     country: row.country,
     shipsTo: row.ships_to,
     status: row.status,
+    reviewNote: row.review_note ?? null,
   };
 }
 
@@ -74,4 +76,10 @@ export async function updateVendor(
     .single();
   if (error) throw error;
   return toVendor(data);
+}
+
+// A rejected shop goes back into the review queue as pending, keeping its edited details.
+export async function reapplyAsVendor(supabase: Client): Promise<void> {
+  const { error } = await supabase.rpc('reapply_as_vendor');
+  if (error) throw error;
 }

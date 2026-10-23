@@ -31,6 +31,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Review queue (`/admin`, admins only): approve or reject teas tasters added and shop
+  applications with a reason the submitter sees, merge a duplicate tea into the one it repeats
+  (its tastings, saves, stock reports and listings move over and its page forwards), and set a
+  catalogue tea's photo and shop link. A rejected shop now sees the reason and can apply again.
+
 - Teas added while logging a tasting now await review, like Vivino's "processing" label on
   an unmatched scan: the taster can rate it and see it in their journal at once, its page
   says "Awaiting review", and it joins Explore, the home shelves, search and the region

@@ -4,7 +4,8 @@
 
 Phase 3, first slice: vendors (farms, roasters, tea shops) apply to sell, are approved by hand,
 and list catalogue teas with a price, currency, stock and a buy link to their own site. Each
-tea's page shows approved vendors' listings under "Where to buy". Checkout through Stripe
+tea's page shows approved vendors' listings under "Where to buy". Shops are approved or rejected (with a reason)
+in the `/admin` review queue, and a rejected shop can apply again. Checkout through Stripe
 Connect and order tracking come in later slices; until then buying happens on the vendor's
 site.
 

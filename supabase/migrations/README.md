@@ -30,6 +30,12 @@ carry a photo or shop link; review photos must be the author's own upload; lengt
 checks; one entry per tea name and brand; rejected teas readable to people who tasted or saved
 them; and `product_id` indexes. `20261025000001_storage_limits.sql` caps review photos at 5 MB
 of image types and stops anyone listing the bucket (PGlite skips Storage migrations).
+`20261025100000_admin_review.sql` adds `profiles.is_admin` (set by hand) and the admin
+functions `review_tea`, `set_tea_links`, `merge_tea` and `review_vendor`, each checking the
+flag, plus `reapply_as_vendor` for a rejected shop; reasons go in `review_note` and a merged
+duplicate records `merged_into`. Admins can read every tea and shop.
+`20261025100001_product_images_storage.sql` creates the `product-images` bucket, writable by
+admins only.
 
 ## Contents
 
@@ -45,6 +51,8 @@ of image types and stops anyone listing the bucket (PGlite skips Storage migrati
 - `20261024200000_tea_review_queue.sql`
 - `20261025000000_integrity_hardening.sql`
 - `20261025000001_storage_limits.sql`
+- `20261025100000_admin_review.sql`
+- `20261025100001_product_images_storage.sql`
 
 ## Parent
 

@@ -23,6 +23,10 @@ export interface Product {
   status: ProductStatus;
   // Who suggested the tea; lets its page offer rating to them while it awaits review.
   addedBy: string | null;
+  // Why a tea was rejected, shown to whoever added it; and, for a merged duplicate, the tea
+  // its page forwards to.
+  reviewNote: string | null;
+  mergedInto: string | null;
   createdAt: string;
   avgStars: number | null;
   reviewCount: number;

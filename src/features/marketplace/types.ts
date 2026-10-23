@@ -12,6 +12,8 @@ export interface Vendor {
   country: string;
   shipsTo: string[];
   status: VendorStatus;
+  // The admin's reason, shown to the shop when its application is rejected.
+  reviewNote: string | null;
 }
 
 export interface Listing {

@@ -3,6 +3,7 @@ import { connection } from 'next/server';
 import { SignInButton } from '@/features/auth';
 import {
   ListingForm,
+  ReapplyButton,
   VendorForm,
   VendorListings,
   getMyVendor,
@@ -42,10 +43,14 @@ function StatusNote({ vendor }: { vendor: Vendor }) {
     );
   }
   return (
-    <p className="bg-muted rounded-2xl px-5 py-4 text-sm">
-      <span className="font-semibold">{vendor.name} was not approved.</span> Your listings are
-      hidden. Reply to the email we sent if you think this is a mistake.
-    </p>
+    <div className="bg-muted space-y-3 rounded-2xl px-5 py-4 text-sm">
+      <p>
+        <span className="font-semibold">{vendor.name} was not approved.</span> Your listings are
+        hidden.{vendor.reviewNote && <> Our note: {vendor.reviewNote}</>}
+      </p>
+      <p>Update your details below if needed, then send the application again.</p>
+      <ReapplyButton />
+    </div>
   );
 }
 

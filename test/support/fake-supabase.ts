@@ -5,6 +5,8 @@ import type { Database } from '@/integrations/supabase/database.types';
 // A PostgREST-shaped stand-in: every filter method records its call and returns the
 // same builder; awaiting it (or .single()/.maybeSingle()) resolves to the result queued
 // for that table. Tests assert on the recorded calls and on what the service returns.
+// Database functions are queued as "rpc:<name>". It applies no filters and no RLS, so
+// permission and status rules are tested against real Postgres in test/db.
 export interface QueryResult {
   data: unknown;
   error: unknown;
@@ -57,6 +59,11 @@ export function createFakeSupabase(results: Record<string, QueuedResult | Queued
   const client = {
     from(table: string) {
       calls.push({ table, method: 'from', args: [table] });
+      return builder(table);
+    },
+    rpc(fn: string, args?: unknown) {
+      const table = `rpc:${fn}`;
+      calls.push({ table, method: 'rpc', args: args === undefined ? [] : [args] });
       return builder(table);
     },
   };

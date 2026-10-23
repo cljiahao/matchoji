@@ -1,26 +1,7 @@
-import { readFileSync, readdirSync } from 'node:fs';
-import path from 'node:path';
-
-import { PGlite } from '@electric-sql/pglite';
+import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-const MIGRATIONS = path.resolve(import.meta.dirname, '../../supabase/migrations');
-
-// The slice of Supabase the migrations lean on: the auth schema with users and auth.uid(),
-// the API roles, and the default grants Supabase gives them on public tables. Storage is
-// left out, so its migration is skipped.
-const SUPABASE_STUB = `
-  create role anon nologin;
-  create role authenticated nologin;
-  create schema auth;
-  create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb);
-  create function auth.uid () returns uuid language sql stable as $$
-    select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
-  $$;
-  grant usage on schema auth, public to anon, authenticated;
-  grant execute on function auth.uid () to anon, authenticated;
-  alter default privileges in schema public grant all on tables to anon, authenticated;
-`;
+import { createMigratedDb } from '../support/supabase-db';
 
 const USER = '11111111-1111-4111-8111-111111111111';
 
@@ -49,12 +30,7 @@ const entries = async (table: string) =>
   ).rows;
 
 beforeAll(async () => {
-  db = new PGlite();
-  await db.exec(SUPABASE_STUB);
-  const files = readdirSync(MIGRATIONS)
-    .filter((f) => f.endsWith('.sql') && !f.includes('storage'))
-    .sort();
-  for (const file of files) await db.exec(readFileSync(path.join(MIGRATIONS, file), 'utf8'));
+  db = await createMigratedDb();
   await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, $3)`, [
     USER,
     'taster@example.com',
