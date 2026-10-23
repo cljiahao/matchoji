@@ -10,6 +10,8 @@ pages, shelves and Explore rows. Timeline cards and want-to-try rows show
 Each timeline card has `TastingActions`: Edit (the tasting form, prefilled) and Delete (after a
 confirmation; the photo goes too).
 
+Component tests build `Review` objects with every field, including `authorId`.
+
 ## Contents
 
 - `index.ts`
