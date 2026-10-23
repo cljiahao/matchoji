@@ -10,6 +10,8 @@
 export type ProductCategory = 'hojicha' | 'matcha';
 export type ProfileRole = 'consumer' | 'vendor';
 export type SupplyLevel = 'scarce' | 'tight' | 'plentiful';
+export type TeaMetric = 'cultivated_ha' | 'aracha_t' | 'tencha_t';
+export type TeaStatSource = 'maff' | 'zencharen';
 
 export interface Database {
   public: {
@@ -71,6 +73,33 @@ export interface Database {
           matcha_supply?: SupplyLevel | null;
           hojicha_supply?: SupplyLevel | null;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      tea_production_stats: {
+        Row: {
+          prefecture: string;
+          year: number;
+          metric: TeaMetric;
+          value: number;
+          source: TeaStatSource;
+          source_ref: string;
+        };
+        Insert: {
+          prefecture: string;
+          year: number;
+          metric: TeaMetric;
+          value: number;
+          source: TeaStatSource;
+          source_ref: string;
+        };
+        Update: {
+          prefecture?: string;
+          year?: number;
+          metric?: TeaMetric;
+          value?: number;
+          source?: TeaStatSource;
+          source_ref?: string;
         };
         Relationships: [];
       };

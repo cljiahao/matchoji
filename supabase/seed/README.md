@@ -18,10 +18,18 @@ the 2024-2026 shortage; sources are listed in the file. Matcha levels are set on
 source covers the region (Uji scarce; Nishio, Kagoshima and Shizuoka tight). Hojicha is tight
 everywhere, since the bancha shortage is reported nationwide. It fills only empty fields.
 
+`20261023_tea_production_stats.sql` (after the `20261023200000_tea_production_stats`
+migration) loads 147 official figures for the 7 prefectures Matchoji's regions sit in, plus
+Japan: tea fields 2016-2026 and raw tea 2018-2025 from MAFF's crop statistics, and 2025 tencha
+from the national growers' federation. The header lists every e-Stat file (statInfId) it was
+read from. To add a year, download the new files the same way, append their rows and rerun:
+it adds new rows, updates revised values and leaves the rest untouched.
+
 ## Contents
 
 - `20261023_real_teas.sql`
 - `20261023_region_supply.sql`
+- `20261023_tea_production_stats.sql`
 - `20261023_tea_grades.sql`
 
 ## Parent

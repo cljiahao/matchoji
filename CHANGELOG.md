@@ -7,6 +7,12 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Tea supply in numbers (`/regions/supply`), linked from the Regions page: official tea
+  harvest figures for the prefectures Matchoji's regions are in. National tiles, then a card
+  per prefecture with its tencha (matcha's leaf) output and share, and tea-field and raw-tea
+  trends; an "All figures" table and source credits. Figures live in a new
+  `tea_production_stats` table, loaded by `supabase/seed/20261023_tea_production_stats.sql`
+  from MAFF's crop statistics (e-Stat) and the national growers' federation.
 - Scarcity sort: Explore's "Scarcest first" and the Regions page's "Scarcest first" rank teas
   and regions by how scarce their matcha or hojicha is (scarce, tight, plentiful). Regions
   gain `matcha_supply` and `hojicha_supply` levels, seeded by

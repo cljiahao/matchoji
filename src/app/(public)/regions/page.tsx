@@ -75,7 +75,10 @@ export default async function RegionsPage({ searchParams }: RegionsPageProps) {
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Tea regions</h1>
       <p className="text-muted-foreground mt-2 max-w-xl">
         Where the teas on Matchoji are grown. Pick a region to see its matcha and hojicha. Supply
-        levels come from public reporting on the matcha shortage.
+        levels come from public reporting on the matcha shortage.{' '}
+        <Link href={PAGE_ROUTES.SUPPLY} className="text-foreground underline underline-offset-2">
+          See the harvest numbers
+        </Link>
       </p>
 
       <nav aria-label="Sort regions" className="mt-6 flex gap-2">
