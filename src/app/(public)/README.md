@@ -7,7 +7,7 @@ search, category circles and shelves), Explore (`explore/`: the filtered list, f
 the URL as `?q=&category=&region=&grade=&rating=&sort=`), the regions page (`regions/`:
 every region with its tea counts, each linking to Explore), product pages and the journal.
 `error.tsx` catches a failed read inside the layout, so the navbar stays and the visitor
-can retry or go to Explore.
+can retry or go to Explore. Every page reads Supabase directly; there is no mock fallback.
 
 ## Contents
 

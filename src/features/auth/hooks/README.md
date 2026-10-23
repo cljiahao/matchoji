@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Client-side Supabase Auth session tracking, and the sign-in prompt: `SignInPromptProvider`
+Client-side Supabase Auth session tracking (`useSession` starts loading and asks Supabase
+straight away; there is no unconfigured mode), and the sign-in prompt: `SignInPromptProvider`
 mounts one `SignInDialog`, and `useSignInPrompt()` opens it from any write a signed-out
 visitor starts (rating, logging, want to try), returning them to the page afterwards.
 
