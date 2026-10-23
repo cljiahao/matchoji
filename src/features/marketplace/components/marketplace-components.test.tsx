@@ -14,6 +14,7 @@ const toast = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
 import { ListingForm } from './listing-form';
+import { ReapplyButton } from './reapply-button';
 import { VendorForm } from './vendor-form';
 import { VendorListings } from './vendor-listings';
 
@@ -177,5 +178,24 @@ describe('VendorListings', () => {
     useFake({});
     renderWithQuery(<VendorListings vendorId="v1" listings={[]} />);
     expect(screen.getByText('No listings yet. Add your first below.')).toBeInTheDocument();
+  });
+});
+
+describe('ReapplyButton', () => {
+  it('sends the application again and refreshes the page', async () => {
+    const fake = useFake({ 'rpc:reapply_as_vendor': { data: null, error: null } });
+    renderWithQuery(<ReapplyButton />);
+    await userEvent.click(screen.getByRole('button', { name: 'Apply again' }));
+    await waitFor(() => expect(router.refresh).toHaveBeenCalled());
+    expect(fake.calls).toContainEqual({ table: 'rpc:reapply_as_vendor', method: 'rpc', args: [] });
+  });
+
+  it('explains a failure', async () => {
+    useFake({ 'rpc:reapply_as_vendor': { data: null, error: new Error('nope') } });
+    renderWithQuery(<ReapplyButton />);
+    await userEvent.click(screen.getByRole('button', { name: 'Apply again' }));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('Could not resend your application. Try again.')
+    );
   });
 });
