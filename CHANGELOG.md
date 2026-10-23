@@ -7,6 +7,10 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Sell on Matchoji (`/sell`, linked from the footer): farms, roasters and tea shops apply to
+  sell, are approved by hand, then list catalogue teas with a price, currency, stock and a
+  link to buy on their own site. Each tea's page gains "Where to buy" with approved vendors'
+  offers, in-stock and cheapest first, or an invitation to sell it.
 - Stock at the official shop: each tea's page shows the latest community report ("Sold out ·
   reported 2 days ago"; reports older than two weeks are dropped), a link to the tea on its
   maker's shop, and "In stock" / "Sold out" buttons for signed-in tea drinkers. Matchoji

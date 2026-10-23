@@ -125,6 +125,12 @@ farm/roaster would onboard to a marketplace with zero existing users).
   payout.
 - Order status tracking for both buyer and vendor.
 
+Update 2026-10-24 — first slice built: vendor applications on `/sell`, manual
+approval by an admin's SQL update (which also sets `profiles.role`), listings with
+price, currency, stock and a buy link to the vendor's own site, and "Where to
+buy" on each tea's page. Checkout (Stripe Connect) and order tracking are the
+next slices; they need a Stripe account and the legal check below first.
+
 Open risk: cross-border sale of agricultural goods (shipping tea
 internationally) may carry customs/import requirements per destination
 country — needs real legal research before this phase starts, not solved

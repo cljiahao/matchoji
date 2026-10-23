@@ -13,7 +13,12 @@ its `source` (`maff` or `zencharen`) and `source_ref`; everyone can read it, nob
 it through the API, and writes are audited. `20261024000000_stock_reports.sql` adds `products.shop_url`
 (https only) and `stock_reports`: everyone reads, signed-in users insert their own, nobody
 edits or deletes, and a trigger refuses a second report on the same tea from the same person
-within 10 minutes.
+within 10 minutes. `20261024100000_marketplace_vendors_listings.sql` opens the Phase 3
+`vendors` and `listings` tables: users apply for themselves (pending only) and can edit their
+shop's details but not its status (column-level grants), approval is an admin's SQL update
+that also sets `profiles.role`, approved shops and their listings are public, and only
+approved vendors can add or change listings (price above zero, stock not negative, https buy
+link). `orders` stays dormant.
 
 ## Contents
 
@@ -25,6 +30,7 @@ within 10 minutes.
 - `20261023100000_region_supply.sql`
 - `20261023200000_tea_production_stats.sql`
 - `20261024000000_stock_reports.sql`
+- `20261024100000_marketplace_vendors_listings.sql`
 
 ## Parent
 
