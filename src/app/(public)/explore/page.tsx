@@ -18,7 +18,10 @@ import {
   type DiscoverFilters,
 } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
+import { MatchBadge, loadMatches } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
+
+const MATCH_POOL = 500;
 
 export const metadata: Metadata = { title: 'Explore teas' };
 
@@ -40,13 +43,36 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const filters = parseDiscoverParams(await searchParams);
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // "Best match" ranks by a score computed per taster, so it reads the matching teas (up to
+  // MATCH_POOL, ample for this catalogue) and pages in memory; every other sort pages in SQL.
+  const byMatch = filters.sort === 'match' && user !== null;
+  const page = filters.page ?? 1;
+
   // Regions only feed the filter; losing them hides the rail section, not the results.
-  const [{ products, total }, grades, regions] = await Promise.all([
-    listProducts(supabase, filters),
+  const [listing, grades, regions] = await Promise.all([
+    byMatch
+      ? listProducts(supabase, { ...filters, sort: 'top', page: 1 }, { limit: MATCH_POOL })
+      : listProducts(supabase, filters),
     listGradeOptions(supabase, filters),
     listRegions(supabase).catch(() => []),
   ]);
-  const page = filters.page ?? 1;
+  const taste = user
+    ? await loadMatches(
+        supabase,
+        user.id,
+        listing.products.map((p) => p.id)
+      )
+    : null;
+  const scoreOf = (id: string) => taste?.matches.get(id)?.score ?? -1;
+  const products = byMatch
+    ? [...listing.products]
+        .sort((a, b) => scoreOf(b.id) - scoreOf(a.id))
+        .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    : listing.products;
+  const total = byMatch ? listing.products.length : listing.total;
   const first = (page - 1) * PAGE_SIZE + 1;
   const last = first + products.length - 1;
   const pages = Math.ceil(total / PAGE_SIZE);
@@ -89,6 +115,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                   <li key={product.id}>
                     <ProductRow
                       product={product}
+                      badge={<MatchBadge match={taste?.matches.get(product.id)} />}
                       action={<WantToTryButton productId={product.id} compact />}
                     />
                   </li>

@@ -31,6 +31,13 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Match for you: signed-in tasters see how likely they are to love a tea ("86% match · Great
+  match"), worked out from their own ratings of the most similar teas and naming them
+  ("Because you rated Sayaka-no-mukashi 5★"). Explore rows show the match, and "Best match for
+  you" sorts by it.
+- Your taste, in the journal: favourite notes, how you like your tea, teas per category, and
+  the taste of teas you loved against those you didn't.
+
 - Explore pages its results 24 at a time ("Showing 1–24 of N", Previous/Next), with every
   filter and sort run by the database instead of loading the whole catalogue; the home shelves
   fetch only what they show. "Top rated" now weighs how many people rated a tea, so one 5★

@@ -374,6 +374,18 @@ export interface Database {
         };
         Relationships: [];
       };
+      // Each tea's community taste: averaged sliders and note mentions, from latest_reviews.
+      tea_taste_profiles: {
+        Row: {
+          product_id: string;
+          sweetness: number | null;
+          umami: number | null;
+          bitterness: number | null;
+          body: number | null;
+          notes: Record<string, number>;
+        };
+        Relationships: [];
+      };
       product_ratings: {
         Row: {
           product_id: string;
