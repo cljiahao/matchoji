@@ -6,13 +6,10 @@ import {
   ProductShelf,
   SearchPill,
   listProducts,
-  sortProducts,
   type DiscoverFilters,
   type Product,
 } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
-import { shouldUseMockData } from '@/integrations/supabase/is-configured';
-import { getMockProducts } from '@/integrations/supabase/mock-data';
 import { createClient } from '@/integrations/supabase/server';
 
 const SHELF_SIZE = 12;
@@ -32,19 +29,14 @@ const SHELVES: { title: string; filters: DiscoverFilters; href: string }[] = [
 ];
 
 async function loadShelves(): Promise<Product[][]> {
-  if (shouldUseMockData()) {
-    return SHELVES.map(({ filters }) =>
-      sortProducts(getMockProducts(filters.category), filters.sort)
-    );
-  }
   const supabase = await createClient();
   return Promise.all(SHELVES.map(({ filters }) => listProducts(supabase, filters)));
 }
 
 export default async function Home() {
-  // Shelves are live ratings, so the page renders per request. Without this it reads no
-  // request data, Next prerenders it at build time, and a build without Supabase env vars
-  // (Vercel Preview) fails on the production guard.
+  // Shelves are live ratings, so the page renders per request. Without this Next may
+  // prerender it at build time, and a build without Supabase env vars (CI, Vercel Preview)
+  // fails in supabaseEnv().
   await connection();
   const shelves = await loadShelves();
   const empty = shelves.every((products) => products.length === 0);

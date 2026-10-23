@@ -3,8 +3,9 @@
 ## Purpose
 
 Supabase client wiring: browser client, server (RSC/route handler) client, session-refresh
-middleware, hand-written database types, and a dev-only mock-data fallback used until a real
-Supabase project exists. Clients authenticate with the publishable key
+middleware and hand-written database types. All three clients read their settings through
+`env.ts`'s `supabaseEnv()`, which throws a clear "Supabase is not configured" error when the
+URL or key is missing; there is no offline fallback, so local dev needs `.env.local`. Clients authenticate with the publishable key
 (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `sb_publishable_...`), Supabase's replacement for
 the legacy anon key; no secret key is used. `clients.test.ts` checks the cookie
 wiring with `@supabase/ssr` mocked.
@@ -12,21 +13,16 @@ wiring with `@supabase/ssr` mocked.
 `select-in.ts` splits a long `.in()` id list into batches of 100 (PostgREST puts the list in
 the URL) and merges the rows; every service with an open-ended id list uses it.
 
-`database.types.ts` covers the tasting-journal columns and `wishlist`; mock reviews carry
-sample notes, profiles and prep, and mock products take their score and count from those
-reviews, carry top notes and answer Explore's search by name or brand; three mock regions (uuid ids, as Explore
-requires) narrow Explore and fill the regions page, so the product page and Discover cards can be checked without data.
+`database.types.ts` covers the tasting-journal columns and `wishlist`.
 
 ## Contents
 
 - `client.ts`
 - `clients.test.ts`
 - `database.types.ts`
-- `is-configured.test.ts`
-- `is-configured.ts`
+- `env.test.ts`
+- `env.ts`
 - `middleware.ts`
-- `mock-data.test.ts`
-- `mock-data.ts`
 - `select-in.test.ts`
 - `select-in.ts`
 - `server.ts`

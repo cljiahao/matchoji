@@ -99,6 +99,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Removed
 
+- The dev-only mock catalogue (now that the real one is seeded): every page reads Supabase,
+  and a missing URL or key fails with a clear "Supabase is not configured" error.
 - Unused template widgets (brand logo and text, card, dialog, floating shape, media card,
   pill, theme toggle) and their leftover gradient and float CSS.
 - Scaffold `/dashboard` route and the scaffold footer's placeholder credit and link.

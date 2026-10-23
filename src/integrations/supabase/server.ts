@@ -2,29 +2,27 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 import type { Database } from './database.types';
+import { supabaseEnv } from './env';
 
 // Next.js 16: cookies() is async — always await it.
 export async function createClient() {
   const cookieStore = await cookies();
+  const { url, key } = supabaseEnv();
 
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            for (const { name, value, options } of cookiesToSet) {
-              cookieStore.set(name, value, options);
-            }
-          } catch {
-            // Called from a Server Component — the proxy handles session refresh instead.
-          }
-        },
+  return createServerClient<Database>(url, key, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
       },
-    }
-  );
+      setAll(cookiesToSet) {
+        try {
+          for (const { name, value, options } of cookiesToSet) {
+            cookieStore.set(name, value, options);
+          }
+        } catch {
+          // Called from a Server Component — the proxy handles session refresh instead.
+        }
+      },
+    },
+  });
 }

@@ -17,8 +17,6 @@ import {
   listReviews,
   summarizeReviews,
 } from '@/features/reviews';
-import { shouldUseMockData } from '@/integrations/supabase/is-configured';
-import { getMockProduct, getMockReviews } from '@/integrations/supabase/mock-data';
 import { createClient } from '@/integrations/supabase/server';
 import { cn } from '@/lib/utils';
 
@@ -34,12 +32,11 @@ interface ProductPageProps {
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
 
-  const [product, reviews] = shouldUseMockData()
-    ? ([getMockProduct(id), getMockReviews(id)] as const)
-    : await (async () => {
-        const supabase = await createClient();
-        return Promise.all([getProduct(supabase, id), listReviews(supabase, id)]);
-      })();
+  const supabase = await createClient();
+  const [product, reviews] = await Promise.all([
+    getProduct(supabase, id),
+    listReviews(supabase, id),
+  ]);
 
   if (!product) notFound();
 

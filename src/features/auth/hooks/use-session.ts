@@ -4,7 +4,6 @@ import type { Session } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 
 import { createClient } from '@/integrations/supabase/client';
-import { isSupabaseConfigured } from '@/integrations/supabase/is-configured';
 
 interface UseSessionResult {
   session: Session | null;
@@ -13,11 +12,9 @@ interface UseSessionResult {
 
 export function useSession(): UseSessionResult {
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(isSupabaseConfigured());
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) return;
-
     const supabase = createClient();
 
     supabase.auth.getSession().then(({ data }) => {

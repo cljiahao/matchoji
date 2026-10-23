@@ -182,20 +182,6 @@ describe('Home page', () => {
     expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
     expect(screen.queryByRole('region')).not.toBeInTheDocument();
   });
-
-  it('uses mock data in development without Supabase', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
-    vi.stubEnv('NODE_ENV', 'development');
-
-    renderWithQuery(await Home());
-
-    const matcha = screen.getByRole('region', { name: 'Top-rated matcha' });
-    expect(within(matcha).getByRole('link', { name: /Uji Ceremonial/ })).toBeInTheDocument();
-    expect(within(matcha).queryByRole('link', { name: /Kukicha Roast/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Top-rated hojicha' })).toBeInTheDocument();
-    // Every mock tea is already on a tea shelf, so "Newly added" would only repeat them.
-    expect(screen.queryByRole('region', { name: 'Newly added' })).not.toBeInTheDocument();
-  });
 });
 
 describe('Explore page', () => {
@@ -314,31 +300,6 @@ describe('Explore page', () => {
     expect(screen.getByText('Showing 0 teas')).toBeInTheDocument();
   });
 
-  it('uses mock data in development without Supabase', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
-    vi.stubEnv('NODE_ENV', 'development');
-
-    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ category: 'matcha' }) }));
-
-    expect(screen.getByRole('link', { name: 'Uji Ceremonial' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Kukicha Roast' })).not.toBeInTheDocument();
-    expect(screen.getByRole('navigation', { name: 'Region' })).toBeInTheDocument();
-  });
-
-  it('narrows mock data by region in development', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
-    vi.stubEnv('NODE_ENV', 'development');
-
-    renderWithQuery(
-      await ExplorePage({
-        searchParams: Promise.resolve({ region: '00000000-0000-4000-8000-000000000002' }),
-      })
-    );
-
-    expect(screen.getByRole('link', { name: 'Yame Single-Origin' })).toBeInTheDocument();
-    expect(screen.getByText('Showing 1 tea')).toBeInTheDocument();
-  });
-
   it('filters by grade and minimum rating, offering the grades of the other matches', async () => {
     useServer({
       products: {
@@ -434,15 +395,6 @@ describe('Regions page', () => {
     render(await RegionsPage());
 
     expect(screen.getByText('No regions listed yet.')).toBeInTheDocument();
-  });
-
-  it('uses mock data in development without Supabase', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
-    vi.stubEnv('NODE_ENV', 'development');
-
-    render(await RegionsPage());
-
-    expect(screen.getByRole('link', { name: /Uji, Kyoto/ })).toHaveTextContent('1 matcha');
   });
 });
 
@@ -545,15 +497,6 @@ describe('Product page', () => {
     await expect(ProductPage({ params: Promise.resolve({ id: 'nope' }) })).rejects.toThrow(
       'NEXT_NOT_FOUND'
     );
-  });
-
-  it('uses mock data in development without Supabase', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
-    vi.stubEnv('NODE_ENV', 'development');
-
-    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'mock-1' }) }));
-
-    expect(screen.getByRole('heading', { level: 1, name: 'Uji Ceremonial' })).toBeInTheDocument();
   });
 });
 

@@ -7,7 +7,7 @@ Sign-in/sign-out UI for the `auth` feature. `auth-components.test.tsx` covers th
 
 `SignInDialog` is the "Join Matchoji" moment (Continue with Google); `SignInButton` opens
 it through the sign-in prompt and takes an `outline` variant and a label. `UserMenu` holds
-only account actions.
+only account actions. Tests run the real hooks against a fake browser Supabase client.
 
 ## Contents
 
