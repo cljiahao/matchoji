@@ -4,7 +4,7 @@
 
 Dated design documents, one per feature/project brainstorming session. The 2026-09-14 spec
 carries dated notes on how Phase 4's scarcity dashboard was actually built why the
-retailer stock scrape became community stock reports, and what Phase 3's first slice built.
+retailer stock scrape became community stock reports, what Phase 3's first slice built, and the review queue for taster-added teas.
 
 ## Contents
 

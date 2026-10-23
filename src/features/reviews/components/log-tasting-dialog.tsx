@@ -92,7 +92,8 @@ export function LogTastingDialog({ trigger }: LogTastingDialogProps) {
           </DialogTitle>
           <DialogDescription>
             {step === 'search' && 'Find the hojicha or matcha you tried.'}
-            {step === 'add-product' && "Add the product you tried — it'll join the catalog."}
+            {step === 'add-product' &&
+              "Add the tea you tried. You can rate it now; it joins Explore once we've checked it."}
             {step === 'rate' && 'How was it?'}
           </DialogDescription>
         </DialogHeader>

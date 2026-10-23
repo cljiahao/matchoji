@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
+import { useSession } from '@/features/auth';
 import { searchProducts } from '@/features/products';
 import { useDebouncedValue } from '@/hooks';
 import { createClient } from '@/integrations/supabase/client';
@@ -12,10 +13,11 @@ const SEARCH_DEBOUNCE_MS = 250;
 export function useProductSearch(query: string) {
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
   const searchable = query.trim().length >= 2;
+  const userId = useSession().session?.user.id;
 
   const result = useQuery({
-    queryKey: ['product-search', debouncedQuery],
-    queryFn: () => searchProducts(createClient(), debouncedQuery),
+    queryKey: ['product-search', debouncedQuery, userId],
+    queryFn: () => searchProducts(createClient(), debouncedQuery, userId),
     enabled: debouncedQuery.trim().length >= 2,
     // Interactive: a failing search should fall through to "add as new" quickly rather
     // than spin through the default three backed-off retries.

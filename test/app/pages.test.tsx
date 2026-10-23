@@ -51,6 +51,7 @@ const productRow = {
   grade: null,
   region_id: null,
   image_url: null,
+  status: 'approved',
   created_at: '2026-09-01T00:00:00Z',
 };
 
@@ -153,8 +154,11 @@ describe('Home page', () => {
 
     expect(calls.filter((c) => c.table === 'products' && c.method === 'from')).toHaveLength(3);
     expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
+      ['status', 'approved'],
       ['category', 'matcha'],
+      ['status', 'approved'],
       ['category', 'hojicha'],
+      ['status', 'approved'],
     ]);
   });
 
@@ -269,7 +273,9 @@ describe('Explore page', () => {
       screen.getByText('No teas rated yet. Be the first to rate a matcha or hojicha.')
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
-    expect(calls.some((c) => c.method === 'eq')).toBe(false);
+    expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
+      ['status', 'approved'],
+    ]);
   });
 
   it('names the category in an empty filtered catalogue', async () => {
@@ -727,6 +733,8 @@ describe('Product page', () => {
       'href',
       'https://global.ippodo-tea.co.jp/products/bancha601102'
     );
+    expect(screen.queryByText('Awaiting review.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Not added to the catalogue.')).not.toBeInTheDocument();
     const buy = screen
       .getByRole('heading', { name: 'Where to buy' })
       .closest('section') as HTMLElement;
@@ -741,7 +749,10 @@ describe('Product page', () => {
 
   it('shows an unrated product with its grade and region', async () => {
     useServer({
-      products: { data: { ...productRow, grade: 'First flush', region_id: REGION }, error: null },
+      products: {
+        data: { ...productRow, grade: 'First flush', region_id: REGION, status: 'pending' },
+        error: null,
+      },
       regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
       product_ratings: { data: [], error: null },
       reviews: { data: [], error: null },
@@ -752,6 +763,7 @@ describe('Product page', () => {
     renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
 
     expect(screen.getByText('Not yet rated')).toBeInTheDocument();
+    expect(screen.getByText('Awaiting review.')).toBeInTheDocument();
     expect(screen.getByText('No recent reports')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Sell it on Matchoji' })).toHaveAttribute(
       'href',
@@ -762,6 +774,20 @@ describe('Product page', () => {
     expect(screen.getAllByText('Uji, Kyoto')).toHaveLength(2);
     expect(screen.queryByRole('heading', { name: 'Photos' })).not.toBeInTheDocument();
     expect(screen.getByText('No reviews yet. Be the first to rate it.')).toBeInTheDocument();
+  });
+
+  it('tells the taster who added a rejected tea why it is not in the catalogue', async () => {
+    useServer({
+      products: { data: { ...productRow, status: 'rejected' }, error: null },
+      product_ratings: { data: [], error: null },
+      reviews: { data: [], error: null },
+      stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
+    });
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
+
+    expect(screen.getByText('Not added to the catalogue.')).toBeInTheDocument();
   });
 
   it('404s for an unknown product', async () => {

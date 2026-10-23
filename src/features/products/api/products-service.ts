@@ -1,6 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { Database, ProductCategory } from '@/integrations/supabase/database.types';
+import type {
+  Database,
+  ProductCategory,
+  ProductStatus,
+} from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
 import type { Product, ProductSummary } from '../types';
@@ -22,6 +26,7 @@ interface ProductRow {
   region_id: string | null;
   image_url: string | null;
   shop_url: string | null;
+  status: ProductStatus;
   created_at: string;
 }
 
@@ -63,6 +68,7 @@ async function hydrateProducts(
         supply: region?.[`${row.category}_supply`] ?? null,
         imageUrl: row.image_url,
         shopUrl: row.shop_url,
+        status: row.status,
         createdAt: row.created_at,
       },
       ratingByProductId.get(row.id)
@@ -85,7 +91,8 @@ async function hydrateProducts(
 export async function listProducts(supabase: Client, filters: DiscoverFilters): Promise<Product[]> {
   let query = supabase
     .from('products')
-    .select('id, name, brand, category, grade, region_id, image_url, shop_url, created_at')
+    .select('id, name, brand, category, grade, region_id, image_url, shop_url, status, created_at')
+    .eq('status', 'approved')
     .order('created_at', { ascending: false });
 
   const search = filters.q ? buildSearchFilter(filters.q) : null;
@@ -102,7 +109,7 @@ export async function listProducts(supabase: Client, filters: DiscoverFilters): 
 export async function getProduct(supabase: Client, id: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, brand, category, grade, region_id, image_url, shop_url, created_at')
+    .select('id, name, brand, category, grade, region_id, image_url, shop_url, status, created_at')
     .eq('id', id)
     .maybeSingle();
 
@@ -124,23 +131,41 @@ export async function listRegionSummaries(supabase: Client): Promise<RegionSumma
     supabase
       .from('regions')
       .select('id, name, prefecture, scarcity_note, matcha_supply, hojicha_supply'),
-    supabase.from('products').select('region_id, category').not('region_id', 'is', null),
+    supabase
+      .from('products')
+      .select('region_id, category')
+      .eq('status', 'approved')
+      .not('region_id', 'is', null),
   ]);
   if (regions.error) throw regions.error;
   if (products.error) throw products.error;
   return summarizeRegions(regions.data, products.data);
 }
 
-export async function searchProducts(supabase: Client, query: string): Promise<ProductSummary[]> {
+const SEARCH_LIMIT = 10;
+
+// The tea picker in "Log a tasting": approved teas, plus the searcher's own teas still
+// awaiting review, so logging one again does not create a duplicate. Other people's pending
+// teas stay out, like Vivino's unmatched scans. PostgREST allows one `or` per query, so the
+// ownership test runs here on a slightly larger page.
+export async function searchProducts(
+  supabase: Client,
+  query: string,
+  userId?: string
+): Promise<ProductSummary[]> {
   const filter = buildSearchFilter(query);
   if (!filter) return [];
 
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, brand, category')
+    .select('id, name, brand, category, status, added_by')
     .or(filter)
-    .limit(10);
+    .neq('status', 'rejected')
+    .limit(SEARCH_LIMIT * 2);
 
   if (error) throw error;
-  return data;
+  return data
+    .filter((p) => p.status === 'approved' || (userId !== undefined && p.added_by === userId))
+    .slice(0, SEARCH_LIMIT)
+    .map(({ id, name, brand, category }) => ({ id, name, brand, category }));
 }

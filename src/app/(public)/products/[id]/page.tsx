@@ -80,6 +80,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </span>
               )}
             </div>
+            {product.status !== 'approved' && (
+              // Like Vivino's "processing" label on an unmatched scan: the tea can be rated
+              // and shared, but it is not in Explore or search until someone checks it.
+              <p className="bg-background mt-4 max-w-md rounded-2xl px-4 py-3 text-sm">
+                {product.status === 'pending' ? (
+                  <>
+                    <span className="font-semibold">Awaiting review.</span> A taster added this tea;
+                    it joins Explore and search once we&apos;ve checked it.
+                  </>
+                ) : (
+                  <>
+                    <span className="font-semibold">Not added to the catalogue.</span> We
+                    couldn&apos;t confirm this tea, often because it duplicates another. Your
+                    tastings of it are still in your journal.
+                  </>
+                )}
+              </p>
+            )}
 
             <div className="mt-6 flex items-center gap-4">
               <ScoreNumeral value={product.avgStars} size="lg" />

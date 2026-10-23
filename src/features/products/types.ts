@@ -1,6 +1,10 @@
-import type { ProductCategory, SupplyLevel } from '@/integrations/supabase/database.types';
+import type {
+  ProductCategory,
+  ProductStatus,
+  SupplyLevel,
+} from '@/integrations/supabase/database.types';
 
-export type { ProductCategory };
+export type { ProductCategory, ProductStatus };
 
 export interface Product {
   id: string;
@@ -14,6 +18,9 @@ export interface Product {
   imageUrl: string | null;
   // The tea's page on its maker's own shop, where people check stock.
   shopUrl: string | null;
+  // Teas added by tasters stay 'pending' until an admin reviews them; see the review-queue
+  // migration. Lists and search show approved teas only.
+  status: ProductStatus;
   createdAt: string;
   avgStars: number | null;
   reviewCount: number;

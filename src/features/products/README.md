@@ -22,7 +22,8 @@ its public `index.ts`) for search and product creation — this module never dep
 `reviews`.
 `lib/` holds `CATEGORY_STYLES`, the single source for jade/amber category classes. `types.ts`'s
 `Product` carries `topNotes` (the feed's two most-noticed notes) , `supply` (how scarce
-its category is in its region) and `shopUrl` (its page on the maker's shop); `ProductGrid` takes a
+its category is in its region) `shopUrl` (its page on the maker's shop) and `status` (`pending` until an admin approves
+a taster-added tea); `ProductGrid` takes a
 `renderAction` slot for per-card controls owned by other features.
 
 ## Parent

@@ -6,11 +6,14 @@
 -- Region and grade are filled only where the maker states them; the rest stay null rather
 -- than guessed. No ratings: those come from real tastings.
 --
+-- Seeded teas skip the review queue (status 'approved'), so this runs after the
+-- 20261024200000_tea_review_queue migration on a fresh database.
+--
 -- Safe to run more than once: a tea already present (same name and brand) is skipped.
 -- Run in the Supabase SQL editor; inserts are recorded in audit_log with no actor.
 
-insert into public.products (name, brand, category, grade, region_id)
-select t.name, t.brand, t.category, t.grade, r.id
+insert into public.products (name, brand, category, grade, region_id, status)
+select t.name, t.brand, t.category, t.grade, r.id, 'approved'
 from (
   values
     ('Ummon-no-mukashi', 'Ippodo', 'matcha', null, null),

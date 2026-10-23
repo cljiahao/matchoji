@@ -124,11 +124,12 @@ export async function listProductOffers(
     );
 }
 
-// The whole catalogue, for the listing form's tea picker; small enough to send as one list.
+// The approved catalogue, for the listing form's tea picker; small enough to send as one list.
 export async function listCatalogue(supabase: Client): Promise<ProductSummary[]> {
   const { data, error } = await supabase
     .from('products')
     .select('id, name, brand, category')
+    .eq('status', 'approved')
     .order('name');
   if (error) throw error;
   return data;
