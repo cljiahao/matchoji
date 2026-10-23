@@ -2,6 +2,7 @@ export const PAGE_ROUTES = {
   HOME: '/',
   EXPLORE: '/explore',
   REGIONS: '/regions',
+  SUPPLY: '/regions/supply',
   JOURNAL: '/journal',
 } as const;
 

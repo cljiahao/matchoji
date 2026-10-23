@@ -11,13 +11,16 @@ of the log, and that users and visitors cannot read or write it. `seed-real-teas
 linked, every insert audited, and a rerun adding nothing; then the grades script: 4 Koicha, 4 Usucha, a hand-set grade
 kept, Yugen left ungraded. `region-supply.test.ts` checks the supply columns reject unknown
 levels and that `20261023_region_supply.sql` sets the sourced levels and notes, keeps values
-set by hand, and is safe to rerun.
+set by hand, and is safe to rerun. `tea-production-stats.test.ts` loads the stats seed (147
+rows, each audited), checks a rerun rewrites only a revised value, that unknown metrics and
+sources are rejected, and that visitors can read but not insert or update.
 
 ## Contents
 
 - `audit-log.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`
+- `tea-production-stats.test.ts`
 
 ## Parent
 

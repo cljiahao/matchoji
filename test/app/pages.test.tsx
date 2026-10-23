@@ -38,6 +38,7 @@ import ProductLoading from '@/app/(public)/products/[id]/loading';
 import ProductPage from '@/app/(public)/products/[id]/page';
 import RegionsLoading from '@/app/(public)/regions/loading';
 import RegionsPage from '@/app/(public)/regions/page';
+import SupplyPage from '@/app/(public)/regions/supply/page';
 import AuthErrorPage from '@/app/auth/error/page';
 import { SiteFooter } from '@/components/layout/site-footer';
 
@@ -399,6 +400,10 @@ describe('Regions page', () => {
     expect(links[1]).toHaveTextContent('Matcha scarce · Hojicha plentiful');
     expect(links[1]).toHaveTextContent('Mostly sencha');
     expect(screen.getByRole('link', { name: 'Most teas' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: 'See the harvest numbers' })).toHaveAttribute(
+      'href',
+      '/regions/supply'
+    );
   });
 
   it('puts the scarcest region first when sorted by scarcity', async () => {
@@ -445,6 +450,79 @@ describe('Regions page', () => {
     render(await RegionsPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getByText('No regions listed yet.')).toBeInTheDocument();
+  });
+});
+
+describe('Supply page', () => {
+  const stat = (
+    prefecture: string,
+    year: number,
+    metric: string,
+    value: number,
+    source = 'maff'
+  ) => ({ prefecture, year, metric, value, source });
+
+  it('shows national tiles, prefecture cards led by tencha, and the sources', async () => {
+    nextServer.connection.mockClear();
+    useServer({
+      tea_production_stats: {
+        data: [
+          stat('Japan', 2025, 'cultivated_ha', 33400),
+          stat('Japan', 2026, 'cultivated_ha', 31900),
+          stat('Japan', 2018, 'aracha_t', 86300),
+          stat('Japan', 2025, 'aracha_t', 75100),
+          stat('Japan', 2025, 'aracha_t', 73372, 'zencharen'),
+          stat('Japan', 2025, 'tencha_t', 6278, 'zencharen'),
+          stat('Shizuoka', 2025, 'aracha_t', 24100),
+          stat('Kyoto', 2016, 'cultivated_ha', 1580),
+          stat('Kyoto', 2026, 'cultivated_ha', 1510),
+          stat('Kyoto', 2025, 'aracha_t', 2280),
+          stat('Kyoto', 2025, 'aracha_t', 2121, 'zencharen'),
+          stat('Kyoto', 2025, 'tencha_t', 989, 'zencharen'),
+        ],
+        error: null,
+      },
+      regions: { data: [{ id: REGION, name: 'Uji, Kyoto', prefecture: 'Kyoto' }], error: null },
+    });
+
+    render(await SupplyPage());
+
+    expect(nextServer.connection).toHaveBeenCalled();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Tea supply in numbers' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('31,900 ha')).toBeInTheDocument();
+    expect(screen.getByText('−4% since 2025')).toBeInTheDocument();
+    expect(screen.getByText('−13% since 2018')).toBeInTheDocument();
+    expect(screen.getByText('8.6% of all tea')).toBeInTheDocument();
+
+    const cards = screen.getAllByRole('article');
+    expect(cards.map((c) => within(c).getByRole('heading', { level: 2 }).textContent)).toEqual([
+      'Kyoto',
+      'Shizuoka',
+    ]);
+    expect(within(cards[0]).getByRole('link', { name: 'Uji, Kyoto' })).toHaveAttribute(
+      'href',
+      `/explore?region=${REGION}`
+    );
+    expect(cards[0]).toHaveTextContent('989 t');
+    expect(cards[0]).toHaveTextContent('47% of its tea');
+    expect(cards[0]).toHaveTextContent('−4% since 2016');
+    expect(cards[1]).toHaveTextContent('Not reported');
+    expect(screen.getByText(/農林水産省「作物統計調査」/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Aichi Prefecture' })).toBeInTheDocument();
+  });
+
+  it('says so before the figures are seeded', async () => {
+    useServer({
+      tea_production_stats: { data: [], error: null },
+      regions: { data: [], error: null },
+    });
+
+    render(await SupplyPage());
+
+    expect(screen.getByText('No harvest figures loaded yet.')).toBeInTheDocument();
+    expect(screen.queryByText('All figures')).not.toBeInTheDocument();
   });
 });
 

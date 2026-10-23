@@ -14,7 +14,7 @@ wiring with `@supabase/ssr` mocked.
 the URL) and merges the rows; every service with an open-ended id list uses it.
 
 `database.types.ts` covers the tasting-journal columns, `wishlist` and the regions'
-`matcha_supply` / `hojicha_supply` levels (`SupplyLevel`).
+`matcha_supply` / `hojicha_supply` levels (`SupplyLevel`), and `tea_production_stats`.
 
 ## Contents
 

@@ -142,6 +142,14 @@ Build once Phase 3 has order/listing volume worth showing back to farms.
 - Surfacing demand signals (what's rating well, what's selling) back to
   vendors, as the value proposition for farms to stay on the platform.
 
+Update 2026-10-23 — the scarcity dashboard shipped ahead of Phase 3 (user's call)
+at prefecture level, not municipal: e-Stat's municipal tea series ends in 2006,
+and MAFF stopped breaking production down by tea type (tencha) after 2016 (per
+prefecture, after 2008). It reads `tea_production_stats` (MAFF fields and raw
+tea, plus the growers' federation's 2025 tencha) on `/regions/supply`;
+`Region.e_stat_area_ha` stays empty and the scarce/tight levels stay editorial.
+The retailer stock scrape was not built (ToS check still open).
+
 Open risk: scraping retailer stock pages is proven viable at hobby scale by
 existing restock-alert bots, but should be checked against each retailer's
 ToS before automating at platform scale (different risk profile than a
@@ -161,4 +169,6 @@ personal Discord bot).
 - Legal review needed before Phase 3 (cross-border agricultural sales) and
   before automating Phase 4 scraping (retailer ToS).
 - e-Stat data licensing/attribution requirements for public display — check
-  before Phase 4 ships the scarcity dashboard.
+  before Phase 4 ships the scarcity dashboard. Resolved 2026-10-23: e-Stat and
+  MAFF terms allow reuse with a source credit and a note that the figures were
+  processed; the supply page carries both.
