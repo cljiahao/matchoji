@@ -20,6 +20,7 @@ const SUPABASE_STUB = `
 `;
 
 const SEED = readFileSync(path.join(SUPABASE, 'seed/20261023_real_teas.sql'), 'utf8');
+const GRADES = readFileSync(path.join(SUPABASE, 'seed/20261023_tea_grades.sql'), 'utf8');
 
 let db: PGlite;
 
@@ -64,5 +65,28 @@ describe('real teas seed', () => {
     await db.exec(`update public.products set name = 'WAKO' where name = 'Wako'`);
     await db.exec(SEED);
     expect(await count('select count(*)::int as n from public.products')).toBe(18);
+  });
+
+  it('grades the matcha from the makers’ classifications, keeping any grade already set', async () => {
+    await db.exec(`update public.products set grade = 'Hand-set' where name = 'Isuzu'`);
+    await db.exec(GRADES);
+    await db.exec(GRADES);
+
+    const graded = await db.query<{ grade: string; n: number }>(
+      `select grade, count(*)::int as n from public.products where grade is not null
+       group by grade order by grade`
+    );
+    expect(graded.rows).toEqual([
+      { grade: 'Ceremonial', n: 1 },
+      { grade: 'Hand-set', n: 1 },
+      { grade: 'Karigane', n: 1 },
+      { grade: 'Koicha', n: 4 },
+      { grade: 'Usucha', n: 4 },
+    ]);
+    expect(
+      await count(
+        `select count(*)::int as n from public.products where name = 'Yugen' and grade is null`
+      )
+    ).toBe(1);
   });
 });
