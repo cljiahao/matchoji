@@ -37,7 +37,8 @@ duplicate records `merged_into`. Admins can read every tea and shop.
 `20261025100001_product_images_storage.sql` creates the `product-images` bucket, writable by
 admins only. `20261025200000_catalogue_discovery.sql` adds `catalogue_teas` (approved teas
 with region, rating, a weighted score, top and scarcity ranks), `pg_trgm` indexes on tea name
-and brand, and `search_teas` (approved teas plus the caller's pending ones, typo-tolerant).
+and brand, and `search_teas` (approved teas plus the caller's pending ones, typo-tolerant). `20261026000000_tea_taste_profiles.sql` adds `tea_taste_profiles`: each
+tea's averaged sliders and note mentions from `latest_reviews`, the match score's input.
 
 ## Contents
 
@@ -56,6 +57,7 @@ and brand, and `search_teas` (approved teas plus the caller's pending ones, typo
 - `20261025100000_admin_review.sql`
 - `20261025100001_product_images_storage.sql`
 - `20261025200000_catalogue_discovery.sql`
+- `20261026000000_tea_taste_profiles.sql`
 
 ## Parent
 

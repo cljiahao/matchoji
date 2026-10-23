@@ -22,6 +22,7 @@ import {
   summarizeReviews,
 } from '@/features/reviews';
 import { StockPanel, getLatestStockReport } from '@/features/stock';
+import { MatchSummary, loadMatches } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
 import { cn } from '@/lib/utils';
 
@@ -82,6 +83,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   // Buying and stock belong to catalogue teas. A tea awaiting review can be rated and saved
   // only by whoever added it (the database enforces the same rule); a rejected one by nobody.
+  // Signed-in tasters see how well the tea suits them, unless they've rated it themselves.
+  const taste = auth.user ? await loadMatches(supabase, auth.user.id, [product.id]) : null;
+  const rated = taste?.ownStars.has(product.id) ?? false;
+
   const listed = product.status === 'approved';
   const canEngage =
     listed ||
@@ -154,6 +159,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </p>
               </div>
             </div>
+
+            {taste && !rated && (
+              <MatchSummary
+                match={taste.matches.get(product.id)}
+                hasRatings={taste.hasRatings}
+                className="mt-4"
+              />
+            )}
 
             {canEngage && (
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">

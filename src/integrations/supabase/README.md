@@ -17,7 +17,7 @@ the URL) and merges the rows; every service with an open-ended id list uses it.
 `matcha_supply` / `hojicha_supply` levels (`SupplyLevel`), `tea_production_stats`, `stock_reports` (`StockStatus`),
 `products.shop_url`, `products.status` (`ProductStatus`) and `added_by`, the `latest_reviews`
 view, `profiles.is_admin`, `review_note` and `merged_into`, the admin functions and
-`search_teas` under `Functions`, the `catalogue_teas` view, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
+`search_teas` under `Functions`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
 until checkout is built.
 
 ## Contents

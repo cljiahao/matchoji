@@ -17,6 +17,7 @@ const SORT_LABELS: Record<DiscoverSort, string> = {
   reviewed: 'Most rated',
   newest: 'Newest',
   scarce: 'Scarcest first',
+  match: 'Best match for you',
 };
 
 // A select has no submit gesture of its own, so it navigates on change.
@@ -27,7 +28,7 @@ export function ExploreSort({ filters }: { filters: DiscoverFilters }) {
       value={filters.sort}
       onValueChange={(v) => router.push(discoverHref(filters, { sort: v as DiscoverSort }))}
     >
-      <SelectTrigger aria-label="Sort" className="w-40 rounded-full">
+      <SelectTrigger aria-label="Sort" className="w-48 rounded-full">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

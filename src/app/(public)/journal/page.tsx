@@ -11,6 +11,7 @@ import {
   listWishlist,
 } from '@/features/journal';
 import { LogTastingDialog } from '@/features/reviews';
+import { YourTaste, buildTasteProfile } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
 
 export const metadata: Metadata = { title: 'Your journal' };
@@ -66,6 +67,9 @@ export default async function JournalPage() {
       ) : (
         <div className="mt-8">
           <JournalStatsStrip stats={computeJournalStats(entries)} />
+          <div className="mt-10">
+            <YourTaste profile={buildTasteProfile(entries)} />
+          </div>
         </div>
       )}
 

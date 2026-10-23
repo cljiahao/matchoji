@@ -3,7 +3,8 @@ import { z } from 'zod';
 import { buildSearchFilter } from '../api/search-filter';
 import type { ProductCategory } from '../types';
 
-export const DISCOVER_SORTS = ['top', 'reviewed', 'newest', 'scarce'] as const;
+// 'match' ranks by the signed-in taster's match score; signed out it falls back to 'top'.
+export const DISCOVER_SORTS = ['top', 'reviewed', 'newest', 'scarce', 'match'] as const;
 export type DiscoverSort = (typeof DISCOVER_SORTS)[number];
 
 // Vivino's rating thresholds; a tea qualifies when its average is at or above the value.

@@ -5,7 +5,8 @@
 Product UI shared by home, Explore, product pages and the journal. `ProductImageWell` puts a
 tea on a warm grey tile: its photo, or a `TeaTin` drawn in the category's colours.
 `ProductCard` is the shelf card (brand, name, `RatingInline`) that `ProductShelf` lays out
-in a sideways-scrolling row; `ProductRow` is an Explore result with the big `ScoreNumeral`.
+in a sideways-scrolling row; `ProductRow` is an Explore result with the big `ScoreNumeral` and an optional per-viewer
+`badge` (the match score).
 `CategoryCircles` open Explore per tea; `ExploreFilters` (links for tea, rating, grade and
 region), `ExploreSort` (top rated, most rated, newest, scarcest first) and `SearchPill` drive the Explore URL, and `FilterDisclosure` folds
 the rail behind a "Filters" button below `lg`; `ProductFacts` is the product page's facts table; `ScoreNumeral` reads "out of 5" to screen readers. `CatalogueStatusNote` labels a tea

@@ -34,7 +34,8 @@ submitter, a merge moves tastings, saves and listings and forwards the duplicate
 rejected shop can reapply once. `catalogue-discovery.test.ts` checks the weighted ranking
 (three ratings beat one), that the view lists approved teas with their region and scarcity,
 and that `search_teas` forgives typos, treats wildcards as text and shows only the caller's
-own pending teas.
+own pending teas. `tea-taste-profiles.test.ts` checks the profile averages sliders and counts
+notes over each person's latest tasting only.
 
 ## Contents
 
@@ -47,6 +48,7 @@ own pending teas.
 - `marketplace.test.ts`
 - `stock-reports.test.ts`
 - `tea-review-queue.test.ts`
+- `tea-taste-profiles.test.ts`
 - `tea-production-stats.test.ts`
 
 ## Parent

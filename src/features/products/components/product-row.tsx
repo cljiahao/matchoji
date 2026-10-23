@@ -19,10 +19,12 @@ const noteLabel = (slug: string) => {
 interface ProductRowProps {
   product: Product;
   action?: ReactNode;
+  // A per-viewer note under the tea's details, such as the taste feature's match score.
+  badge?: ReactNode;
 }
 
 // An explore result: the tea left, who made it and where in the middle, the score right.
-export function ProductRow({ product, action }: ProductRowProps) {
+export function ProductRow({ product, action, badge }: ProductRowProps) {
   const meta = [product.grade, product.regionName].filter(Boolean).join(' · ');
   const countLabel = `${product.reviewCount} ${product.reviewCount === 1 ? 'rating' : 'ratings'}`;
 
@@ -51,6 +53,7 @@ export function ProductRow({ product, action }: ProductRowProps) {
           <CategoryBadge category={product.category} />
           {meta && <span className="text-muted-foreground text-sm">{meta}</span>}
         </div>
+        {badge}
         {product.topNotes.length > 0 && (
           <ul className="mt-1 hidden flex-wrap gap-1.5 sm:flex">
             {product.topNotes.map((note) => (

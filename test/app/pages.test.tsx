@@ -393,6 +393,44 @@ describe('Explore page', () => {
     );
   });
 
+  it('ranks by the signed-in taster’s match and badges each row', async () => {
+    const { calls } = useServer(
+      {
+        catalogue_teas: [
+          {
+            data: [
+              row('far', 'Roasty One', 'hojicha', '2026-09-01T00:00:00Z'),
+              row('near', 'Creamy One', 'matcha', '2026-09-02T00:00:00Z'),
+            ],
+            count: 2,
+            error: null,
+          },
+          { data: [], error: null },
+        ],
+        regions: { data: [], error: null },
+        latest_reviews: { data: [{ product_id: 'loved', stars: 5 }], error: null },
+        products: {
+          data: [
+            { id: 'loved', name: 'Sayaka', category: 'matcha', grade: null, region_id: null },
+            { id: 'far', name: 'Roasty One', category: 'hojicha', grade: null, region_id: null },
+            { id: 'near', name: 'Creamy One', category: 'matcha', grade: null, region_id: null },
+          ],
+          error: null,
+        },
+        tea_taste_profiles: { data: [], error: null },
+      },
+      { id: 'u1' }
+    );
+
+    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ sort: 'match' }) }));
+
+    const names = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
+    expect(names).toEqual(['Creamy One', 'Roasty One']);
+    expect(screen.getAllByText(/% match/)).toHaveLength(1);
+    // The pool is read by score order, not paged in SQL.
+    expect(calls.find((c) => c.method === 'range')?.args).toEqual([0, 499]);
+  });
+
   it('says no teas match when grade or rating narrows to nothing', async () => {
     useServer({
       catalogue_teas: { data: [], count: 0, error: null },
@@ -937,6 +975,37 @@ describe('Product page', () => {
     );
   });
 
+  it('shows a signed-in taster how well an unrated tea suits them, and why', async () => {
+    useServer(
+      {
+        products: [
+          { data: productRow, error: null },
+          {
+            data: [
+              { id: 'p1', name: 'Kyoto Bancha', category: 'hojicha', grade: null, region_id: null },
+              { id: 'p9', name: 'Gokujo', category: 'hojicha', grade: null, region_id: null },
+            ],
+            error: null,
+          },
+        ],
+        product_ratings: { data: null, error: null },
+        latest_reviews: [
+          { data: [], error: null },
+          { data: [{ product_id: 'p9', stars: 5 }], error: null },
+        ],
+        tea_taste_profiles: { data: [], error: null },
+        stock_reports: { data: null, error: null },
+        listings: { data: [], error: null },
+      },
+      { id: 'u1' }
+    );
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+
+    expect(screen.getByText('match for you')).toBeInTheDocument();
+    expect(screen.getByText('Because you rated Gokujo 5★.')).toBeInTheDocument();
+  });
+
   it('titles the page with the tea and brand, and keeps unlisted teas out of search', async () => {
     useServer({
       products: { data: { ...productRow, status: 'pending' }, error: null },
@@ -1087,6 +1156,9 @@ describe('Journal page', () => {
       '/products/p9'
     );
     expect(screen.getByRole('button', { name: 'Remove Uji Gold' })).toBeInTheDocument();
+    // Your taste reads one tea (its latest tasting), so it is an early read.
+    expect(screen.getByRole('heading', { name: 'Your taste' })).toBeInTheDocument();
+    expect(screen.getByText(/Early read from 1 tea/)).toBeInTheDocument();
   });
 });
 
