@@ -10,7 +10,6 @@ import {
   listWishlist,
 } from '@/features/journal';
 import { LogTastingDialog } from '@/features/reviews';
-import { shouldUseMockData } from '@/integrations/supabase/is-configured';
 import { createClient } from '@/integrations/supabase/server';
 
 function Header({ children }: { children?: React.ReactNode }) {
@@ -26,13 +25,15 @@ function Header({ children }: { children?: React.ReactNode }) {
 
 export default async function JournalPage() {
   // The journal is per user, so it must render per request. Without this the page reads no
-  // request data before the Supabase check, Next prerenders it at build time, and a build
-  // without Supabase env vars (local, Vercel Preview) fails on the production guard.
+  // request data before creating the client, Next may prerender it at build time, and a build
+  // without Supabase env vars (CI, Vercel Preview) fails in supabaseEnv().
   await connection();
-  const supabase = shouldUseMockData() ? null : await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!supabase || !user) {
+  if (!user) {
     return (
       <div className="max-w-site mx-auto w-full px-6 py-10 sm:py-14">
         <Header>Sign in to keep a private log of what you taste and a list of teas to try.</Header>

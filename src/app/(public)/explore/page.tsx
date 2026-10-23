@@ -13,12 +13,9 @@ import {
   listProducts,
   listRegions,
   parseDiscoverParams,
-  sortProducts,
   type DiscoverFilters,
 } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
-import { shouldUseMockData } from '@/integrations/supabase/is-configured';
-import { MOCK_REGIONS, getMockProducts } from '@/integrations/supabase/mock-data';
 import { createClient } from '@/integrations/supabase/server';
 
 function activeFilterCount({ category, regionId, grade, minRating }: DiscoverFilters): number {
@@ -38,19 +35,12 @@ interface ExplorePageProps {
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const filters = parseDiscoverParams(await searchParams);
 
-  const [matching, regions] = shouldUseMockData()
-    ? [
-        sortProducts(getMockProducts(filters.category, filters.q, filters.regionId), filters.sort),
-        MOCK_REGIONS,
-      ]
-    : await (async () => {
-        const supabase = await createClient();
-        // Regions only feed the filter; losing them hides the rail section, not the results.
-        return Promise.all([
-          listProducts(supabase, filters),
-          listRegions(supabase).catch(() => []),
-        ]);
-      })();
+  const supabase = await createClient();
+  // Regions only feed the filter; losing them hides the rail section, not the results.
+  const [matching, regions] = await Promise.all([
+    listProducts(supabase, filters),
+    listRegions(supabase).catch(() => []),
+  ]);
 
   // Grade options come from everything else that matched, so picking a grade never hides the
   // other grades it could switch to.

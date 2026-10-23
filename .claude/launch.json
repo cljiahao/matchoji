@@ -8,19 +8,6 @@
         "dev"
       ],
       "port": 3000
-    },
-    {
-      "name": "dev-mock",
-      "runtimeExecutable": "env",
-      "runtimeArgs": [
-        "NEXT_PUBLIC_SUPABASE_URL=",
-        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=",
-        "pnpm",
-        "dev",
-        "--port",
-        "3001"
-      ],
-      "port": 3001
     }
   ]
 }

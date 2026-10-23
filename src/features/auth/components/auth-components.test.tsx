@@ -51,15 +51,6 @@ describe('useSession', () => {
     const subscription = fake.auth.onAuthStateChange.mock.results[0].value.data.subscription;
     expect(subscription.unsubscribe).toHaveBeenCalled();
   });
-
-  it('stays signed out without touching Supabase when it is not configured', () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
-    const fake = useFake();
-    const { result } = renderHook(() => useSession());
-
-    expect(result.current).toEqual({ session: null, isLoading: false });
-    expect(fake.auth.getSession).not.toHaveBeenCalled();
-  });
 });
 
 describe('SignInButton', () => {

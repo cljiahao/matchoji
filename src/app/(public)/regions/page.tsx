@@ -8,8 +8,6 @@ import {
   type ProductCategory,
   type RegionSummary,
 } from '@/features/products';
-import { shouldUseMockData } from '@/integrations/supabase/is-configured';
-import { getMockRegionSummaries } from '@/integrations/supabase/mock-data';
 import { createClient } from '@/integrations/supabase/server';
 import { cn } from '@/lib/utils';
 
@@ -49,9 +47,7 @@ export default async function RegionsPage() {
   // Counts are live, so the page renders per request; see the home page for why this matters
   // to builds without Supabase env vars.
   await connection();
-  const regions = shouldUseMockData()
-    ? getMockRegionSummaries()
-    : await listRegionSummaries(await createClient());
+  const regions = await listRegionSummaries(await createClient());
 
   return (
     <div className="max-w-site mx-auto w-full px-6 py-10 sm:py-14">
