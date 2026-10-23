@@ -3,7 +3,8 @@
 ## Purpose
 
 Dated design documents, one per feature/project brainstorming session. The 2026-09-14 spec
-carries a dated note on how Phase 4's scarcity dashboard was actually built.
+carries dated notes on how Phase 4's scarcity dashboard was actually built and why the
+retailer stock scrape became community stock reports.
 
 ## Contents
 
