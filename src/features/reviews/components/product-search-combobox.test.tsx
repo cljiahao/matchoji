@@ -16,8 +16,8 @@ const HITS = [
   { id: 'a', name: 'Uji Ceremonial', brand: 'Marukyu', category: 'matcha' },
   { id: 'b', name: 'Uji Hojicha', brand: null, category: 'hojicha' },
 ];
-// Search reads review status too and returns only approved teas (or the searcher's own).
-const ROWS = HITS.map((hit) => ({ ...hit, status: 'approved', added_by: null }));
+// search_teas returns the matches already filtered and ranked.
+const ROWS = HITS;
 
 function Harness(props: { onSelect: () => void; onAddNew: () => void }) {
   const [query, setQuery] = useState('');
@@ -25,7 +25,7 @@ function Harness(props: { onSelect: () => void; onAddNew: () => void }) {
 }
 
 function setup(result: { data: unknown; error: unknown }) {
-  supabase.current = createFakeBrowserClient({ results: { products: result } }).client;
+  supabase.current = createFakeBrowserClient({ results: { 'rpc:search_teas': result } }).client;
   const onSelect = vi.fn();
   const onAddNew = vi.fn();
   renderWithQuery(<Harness onSelect={onSelect} onAddNew={onAddNew} />);
@@ -70,15 +70,17 @@ describe('ProductSearchCombobox', () => {
   });
 
   it('waits for typing to pause before searching', async () => {
-    const fake = createFakeBrowserClient({ results: { products: { data: ROWS, error: null } } });
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:search_teas': { data: ROWS, error: null } },
+    });
     supabase.current = fake.client;
     renderWithQuery(<Harness onSelect={vi.fn()} onAddNew={vi.fn()} />);
 
     await userEvent.type(screen.getByRole('combobox', { name: 'Search products' }), 'uji');
     await screen.findByRole('option', { name: /Uji Ceremonial/ });
 
-    expect(fake.calls.filter((c) => c.method === 'or')).toEqual([
-      { table: 'products', method: 'or', args: ['name.ilike.%uji%,brand.ilike.%uji%'] },
+    expect(fake.calls.filter((c) => c.method === 'rpc')).toEqual([
+      { table: 'rpc:search_teas', method: 'rpc', args: [{ q: 'uji' }] },
     ]);
   });
 

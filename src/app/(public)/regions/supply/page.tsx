@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { connection } from 'next/server';
 
@@ -12,6 +13,8 @@ import {
 } from '@/features/supply';
 import { createClient } from '@/integrations/supabase/server';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
+
+export const metadata: Metadata = { title: 'Tea supply in numbers' };
 
 const number = (value: number) => value.toLocaleString('en-US');
 

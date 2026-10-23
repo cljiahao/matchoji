@@ -18,6 +18,8 @@ rating"). The review list pages 10 at a time and long notes collapse behind "Rea
 Component tests run the real hooks against a fake browser Supabase client
 (`test/support/fake-browser-client.ts`).
 
+`RatingDistribution` reads each row to screen readers as one phrase ("5 stars: 3 ratings").
+
 ## Contents
 
 - `community-reviews.tsx`
@@ -37,6 +39,7 @@ Component tests run the real hooks against a fake browser Supabase client
 - `rate-product-form.tsx`
 - `rate-this-tea.test.tsx`
 - `rate-this-tea.tsx`
+- `rating-distribution.test.tsx`
 - `rating-distribution.tsx`
 - `review-display.test.tsx`
 - `review-item.tsx`

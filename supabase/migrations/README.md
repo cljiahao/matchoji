@@ -35,7 +35,9 @@ functions `review_tea`, `set_tea_links`, `merge_tea` and `review_vendor`, each c
 flag, plus `reapply_as_vendor` for a rejected shop; reasons go in `review_note` and a merged
 duplicate records `merged_into`. Admins can read every tea and shop.
 `20261025100001_product_images_storage.sql` creates the `product-images` bucket, writable by
-admins only.
+admins only. `20261025200000_catalogue_discovery.sql` adds `catalogue_teas` (approved teas
+with region, rating, a weighted score, top and scarcity ranks), `pg_trgm` indexes on tea name
+and brand, and `search_teas` (approved teas plus the caller's pending ones, typo-tolerant).
 
 ## Contents
 
@@ -53,6 +55,7 @@ admins only.
 - `20261025000001_storage_limits.sql`
 - `20261025100000_admin_review.sql`
 - `20261025100001_product_images_storage.sql`
+- `20261025200000_catalogue_discovery.sql`
 
 ## Parent
 

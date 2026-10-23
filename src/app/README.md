@@ -4,6 +4,10 @@
 
 Next.js App Router tree — pages, layouts, and API route handlers. `globals.css` holds the
 theme tokens and the few global rules (focus outline, pill buttons, number and date fields).
+`layout.tsx` sets the metadata base (`SITE_URL`) and the "%s · Matchoji" title template;
+`not-found.tsx` covers URLs outside every route; `sitemap.ts` lists the browse pages and
+catalogue teas (read per request) and `robots.ts` keeps admin, journal, sell and auth pages
+out of search engines.
 
 ## Contents
 
@@ -13,6 +17,9 @@ theme tokens and the few global rules (focus outline, pill buttons, number and d
 - `error.tsx`
 - `globals.css`
 - `layout.tsx`
+- `not-found.tsx`
+- `robots.ts`
+- `sitemap.ts`
 
 ## Connectivity
 

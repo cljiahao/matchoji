@@ -59,4 +59,17 @@ describe('discoverHref', () => {
     ).toBe('/explore?q=uji');
     expect(discoverHref({ sort: 'top' }, {})).toBe('/explore');
   });
+
+  it('reads a page from 2 up, dropping page 1 and nonsense', () => {
+    expect(parseDiscoverParams({ page: '3' })).toEqual({ sort: 'top', page: 3 });
+    for (const page of ['1', '0', '-2', '1.5', 'x', '1001'])
+      expect(parseDiscoverParams({ page })).toEqual({ sort: 'top' });
+  });
+
+  it('keeps the page only when the change is the page itself', () => {
+    const current = { q: 'uji', sort: 'top' as const, page: 4 };
+    expect(discoverHref(current, { page: 5 })).toBe('/explore?q=uji&page=5');
+    expect(discoverHref(current, { page: 1 })).toBe('/explore?q=uji');
+    expect(discoverHref(current, { category: 'matcha' })).toBe('/explore?q=uji&category=matcha');
+  });
 });

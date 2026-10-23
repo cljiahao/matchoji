@@ -8,7 +8,6 @@ export {
   type DiscoverSort,
   type MinRating,
 } from './discover-params';
-export { filterByFacets, gradeOptions } from './filter-products';
-export { sortProducts } from './sort-products';
+export { gradeOptions } from './filter-products';
 export { sortRegionsByScarcity, summarizeRegions, type RegionSummary } from './summarize-regions';
 export { SUPPLY_LABELS, SUPPLY_LEVELS, supplyRank, type SupplyLevel } from './supply';

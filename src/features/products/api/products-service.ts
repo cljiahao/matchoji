@@ -10,9 +10,9 @@ import { selectIn } from '@/integrations/supabase/select-in';
 import type { Product, ProductSummary } from '../types';
 
 import type { DiscoverFilters } from '../lib/discover-params';
-import { sortProducts } from '../lib/sort-products';
+import { gradeOptions } from '../lib/filter-products';
 import { summarizeRegions, type RegionSummary } from '../lib/summarize-regions';
-import { applyRating, sortByRating, topNotesByProduct } from './product-ratings';
+import { applyRating, topNotesByProduct } from './product-ratings';
 import { buildSearchFilter } from './search-filter';
 
 type Client = SupabaseClient<Database>;
@@ -35,86 +35,154 @@ interface ProductRow {
 
 // product_ratings is a view and regions is a separate table — neither is embedded via
 // PostgREST relationship syntax here (that needs full FK metadata this hand-written
-// Database type doesn't carry), so both are fetched separately and merged in code.
-async function hydrateProducts(
-  supabase: Client,
-  rows: ProductRow[],
-  { withTopNotes = false } = {}
-): Promise<Product[]> {
-  if (rows.length === 0) return [];
-
-  const regionIds = [...new Set(rows.map((r) => r.region_id).filter((id) => id !== null))];
-  const productIds = rows.map((r) => r.id);
-
-  const [regionsResult, ratingsResult] = await Promise.all([
-    selectIn(regionIds, (ids) =>
-      supabase.from('regions').select('id, name, matcha_supply, hojicha_supply').in('id', ids)
-    ),
-    selectIn(productIds, (ids) =>
-      supabase.from('product_ratings').select('*').in('product_id', ids)
-    ),
+// Database type doesn't carry), so both are fetched separately and merged in code. Used for a
+// single tea's page, which (unlike the lists) may be one awaiting review.
+async function hydrateProduct(supabase: Client, row: ProductRow): Promise<Product> {
+  const [regionResult, ratingResult] = await Promise.all([
+    row.region_id
+      ? supabase
+          .from('regions')
+          .select('id, name, matcha_supply, hojicha_supply')
+          .eq('id', row.region_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+    supabase.from('product_ratings').select('*').eq('product_id', row.id).maybeSingle(),
   ]);
 
   // A failed lookup must not look like "unrated" or "no region"; let the page's error state show.
-  if (regionsResult.error) throw regionsResult.error;
-  if (ratingsResult.error) throw ratingsResult.error;
-  const regionById = new Map(regionsResult.data.map((r) => [r.id, r]));
-  const ratingByProductId = new Map(ratingsResult.data.map((r) => [r.product_id, r]));
+  if (regionResult.error) throw regionResult.error;
+  if (ratingResult.error) throw ratingResult.error;
+  const region = regionResult.data;
 
-  const products = rows.map((row) => {
-    const region = row.region_id ? regionById.get(row.region_id) : undefined;
-    return applyRating(
-      {
-        id: row.id,
-        name: row.name,
-        brand: row.brand,
-        category: row.category,
-        grade: row.grade,
-        regionName: region?.name ?? null,
-        supply: region?.[`${row.category}_supply`] ?? null,
-        imageUrl: row.image_url,
-        shopUrl: row.shop_url,
-        status: row.status,
-        addedBy: row.added_by,
-        reviewNote: row.review_note,
-        mergedInto: row.merged_into,
-        createdAt: row.created_at,
-      },
-      ratingByProductId.get(row.id)
-    );
-  });
-
-  if (!withTopNotes) return sortByRating(products);
-
-  // Only rated products can have notes; skip the read entirely for an unrated feed.
-  const rated = products.filter((p) => p.reviewCount > 0).map((p) => p.id);
-  if (rated.length === 0) return sortByRating(products);
-  const { data: noteRows, error } = await selectIn(rated, (ids) =>
-    supabase.from('latest_reviews').select('product_id, flavor_notes').in('product_id', ids)
+  return applyRating(
+    {
+      id: row.id,
+      name: row.name,
+      brand: row.brand,
+      category: row.category,
+      grade: row.grade,
+      regionName: region?.name ?? null,
+      supply: region?.[`${row.category}_supply`] ?? null,
+      imageUrl: row.image_url,
+      shopUrl: row.shop_url,
+      status: row.status,
+      addedBy: row.added_by,
+      reviewNote: row.review_note,
+      mergedInto: row.merged_into,
+      createdAt: row.created_at,
+    },
+    ratingResult.data ?? undefined
   );
-  if (error) throw error;
-  const notes = topNotesByProduct(noteRows);
-  return sortByRating(products.map((p) => ({ ...p, topNotes: notes.get(p.id) ?? [] })));
 }
 
-export async function listProducts(supabase: Client, filters: DiscoverFilters): Promise<Product[]> {
-  let query = supabase
-    .from('products')
-    .select(
-      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, review_note, merged_into, created_at'
-    )
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false });
+const CATALOGUE_COLUMNS =
+  'id, name, brand, category, grade, region_name, supply, image_url, shop_url, created_at, review_count, avg_stars';
+
+type CatalogueRow = Pick<
+  Database['public']['Views']['catalogue_teas']['Row'],
+  | 'id'
+  | 'name'
+  | 'brand'
+  | 'category'
+  | 'grade'
+  | 'region_name'
+  | 'supply'
+  | 'image_url'
+  | 'shop_url'
+  | 'created_at'
+  | 'review_count'
+  | 'avg_stars'
+>;
+
+// Lists show approved teas only (catalogue_teas filters them), so the review fields are fixed.
+function fromCatalogue(row: CatalogueRow): Product {
+  return {
+    id: row.id,
+    name: row.name,
+    brand: row.brand,
+    category: row.category,
+    grade: row.grade,
+    regionName: row.region_name,
+    supply: row.supply,
+    imageUrl: row.image_url,
+    shopUrl: row.shop_url,
+    status: 'approved',
+    addedBy: null,
+    reviewNote: null,
+    mergedInto: null,
+    createdAt: row.created_at,
+    // numeric can arrive as a string from PostgREST.
+    avgStars: row.avg_stars === null ? null : Number(row.avg_stars),
+    reviewCount: Number(row.review_count),
+    topNotes: [],
+  };
+}
+
+export const PAGE_SIZE = 24;
+
+export interface ProductPage {
+  products: Product[];
+  // Every match, not just this page: "Showing 1–24 of N".
+  total: number;
+}
+
+const DESC = { ascending: false, nullsFirst: false } as const;
+
+export async function listProducts(
+  supabase: Client,
+  filters: DiscoverFilters,
+  { limit = PAGE_SIZE } = {}
+): Promise<ProductPage> {
+  let query = supabase.from('catalogue_teas').select(CATALOGUE_COLUMNS, { count: 'exact' });
 
   const search = filters.q ? buildSearchFilter(filters.q) : null;
   if (search) query = query.or(search);
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.regionId) query = query.eq('region_id', filters.regionId);
+  if (filters.grade) query = query.eq('grade_key', filters.grade.trim().toLowerCase());
+  if (filters.minRating) query = query.gte('avg_stars', filters.minRating);
 
+  // Each sort is an ORDER BY on catalogue_teas; ties fall back to newest first.
+  if (filters.sort === 'reviewed') {
+    query = query.order('review_count', DESC).order('avg_stars', DESC);
+  } else if (filters.sort === 'newest') {
+    query = query.order('created_at', DESC);
+  } else {
+    if (filters.sort === 'scarce') query = query.order('supply_rank');
+    query = query.order('top_rank').order('weighted_score', DESC).order('created_at', DESC);
+  }
+
+  const from = ((filters.page ?? 1) - 1) * limit;
+  const { data, error, count } = await query.range(from, from + limit - 1);
+  if (error) throw error;
+  const products = data.map(fromCatalogue);
+  const total = count ?? products.length;
+
+  // Card notes for this page's rated teas only.
+  const rated = products.filter((p) => p.reviewCount > 0).map((p) => p.id);
+  if (rated.length === 0) return { products, total };
+  const { data: noteRows, error: notesError } = await selectIn(rated, (ids) =>
+    supabase.from('latest_reviews').select('product_id, flavor_notes').in('product_id', ids)
+  );
+  if (notesError) throw notesError;
+  const notes = topNotesByProduct(noteRows);
+  return { products: products.map((p) => ({ ...p, topNotes: notes.get(p.id) ?? [] })), total };
+}
+
+// The grades among teas matching the search, tea and region (not the grade or rating
+// filters), so picking a grade never hides the other grades it could switch to.
+export async function listGradeOptions(
+  supabase: Client,
+  filters: DiscoverFilters
+): Promise<string[]> {
+  let query = supabase.from('catalogue_teas').select('grade').not('grade', 'is', null);
+  const search = filters.q ? buildSearchFilter(filters.q) : null;
+  if (search) query = query.or(search);
+  if (filters.category) query = query.eq('category', filters.category);
+  if (filters.regionId) query = query.eq('region_id', filters.regionId);
   const { data, error } = await query;
   if (error) throw error;
-
-  return sortProducts(await hydrateProducts(supabase, data, { withTopNotes: true }), filters.sort);
+  return gradeOptions(data);
 }
 
 export async function getProduct(supabase: Client, id: string): Promise<Product | null> {
@@ -129,8 +197,7 @@ export async function getProduct(supabase: Client, id: string): Promise<Product 
   if (error) throw error;
   if (!data) return null;
 
-  const [product] = await hydrateProducts(supabase, [data]);
-  return product;
+  return hydrateProduct(supabase, data);
 }
 
 export async function listRegions(supabase: Client): Promise<{ id: string; name: string }[]> {
@@ -155,30 +222,12 @@ export async function listRegionSummaries(supabase: Client): Promise<RegionSumma
   return summarizeRegions(regions.data, products.data);
 }
 
-const SEARCH_LIMIT = 10;
-
-// The tea picker in "Log a tasting": approved teas, plus the searcher's own teas still
-// awaiting review, so logging one again does not create a duplicate. Other people's pending
-// teas stay out, like Vivino's unmatched scans. PostgREST allows one `or` per query, so the
-// ownership test runs here on a slightly larger page.
-export async function searchProducts(
-  supabase: Client,
-  query: string,
-  userId?: string
-): Promise<ProductSummary[]> {
-  const filter = buildSearchFilter(query);
-  if (!filter) return [];
-
-  const { data, error } = await supabase
-    .from('products')
-    .select('id, name, brand, category, status, added_by')
-    .or(filter)
-    .neq('status', 'rejected')
-    .limit(SEARCH_LIMIT * 2);
-
+// The tea picker in "Log a tasting": the search_teas function ranks matches by how closely
+// they read (pg_trgm), so a typo still finds the tea. It returns approved teas plus the caller's
+// own teas awaiting review, so logging one again does not create a duplicate.
+export async function searchProducts(supabase: Client, query: string): Promise<ProductSummary[]> {
+  if (query.trim().length < 2) return [];
+  const { data, error } = await supabase.rpc('search_teas', { q: query });
   if (error) throw error;
-  return data
-    .filter((p) => p.status === 'approved' || (userId !== undefined && p.added_by === userId))
-    .slice(0, SEARCH_LIMIT)
-    .map(({ id, name, brand, category }) => ({ id, name, brand, category }));
+  return data;
 }

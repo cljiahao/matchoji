@@ -17,7 +17,8 @@ export function useProductSearch(query: string) {
 
   const result = useQuery({
     queryKey: ['product-search', debouncedQuery, userId],
-    queryFn: () => searchProducts(createClient(), debouncedQuery, userId),
+    // Keyed by user: the results include the searcher's own teas awaiting review.
+    queryFn: () => searchProducts(createClient(), debouncedQuery),
     enabled: debouncedQuery.trim().length >= 2,
     // Interactive: a failing search should fall through to "add as new" quickly rather
     // than spin through the default three backed-off retries.

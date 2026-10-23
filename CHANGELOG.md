@@ -31,6 +31,16 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Explore pages its results 24 at a time ("Showing 1–24 of N", Previous/Next), with every
+  filter and sort run by the database instead of loading the whole catalogue; the home shelves
+  fetch only what they show. "Top rated" now weighs how many people rated a tea, so one 5★
+  rating no longer outranks a hundred at 4.8★, and teas with fewer than 3 ratings rank below.
+- "Log a tasting" search forgives typos and ranks the closest matches first.
+- Regions, Tea supply and Sell are linked from the footer on phones too; every page has its
+  own title, tea pages get link previews, and there is a sitemap, robots rules and a "not
+  found" page inside the site. Screen readers hear ratings as "4.2 out of 5" and the rating
+  spread as "5 stars: 3 ratings".
+
 - Review queue (`/admin`, admins only): approve or reject teas tasters added and shop
   applications with a reason the submitter sees, merge a duplicate tea into the one it repeats
   (its tastings, saves, stock reports and listings move over and its page forwards), and set a

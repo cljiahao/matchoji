@@ -21,17 +21,6 @@ export function applyRating(
   };
 }
 
-// Rated products first (highest average first). Unrated products keep their incoming
-// order, which callers pass newest-first, so Array.prototype.sort's stability matters.
-export function sortByRating(products: Product[]): Product[] {
-  return [...products].sort((a, b) => {
-    if (a.avgStars === null && b.avgStars === null) return 0;
-    if (a.avgStars === null) return 1;
-    if (b.avgStars === null) return -1;
-    return b.avgStars - a.avgStars;
-  });
-}
-
 const CARD_NOTES = 2;
 
 // Counts notes across a product's reviews; ties keep first-seen order (Map + stable sort).

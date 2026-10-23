@@ -17,7 +17,15 @@ export function ScoreNumeral({ value, size, className }: ScoreNumeralProps) {
         className
       )}
     >
-      {value === null ? '–' : value.toFixed(1)}
+      {value === null ? (
+        // Unrated: the dash is decoration; the label beside it says "Not yet rated".
+        <span aria-hidden="true">–</span>
+      ) : (
+        <>
+          {value.toFixed(1)}
+          <span className="sr-only"> out of 5</span>
+        </>
+      )}
     </span>
   );
 }

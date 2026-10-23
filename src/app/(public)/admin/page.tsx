@@ -11,7 +11,7 @@ import {
 } from '@/features/admin';
 import { createClient } from '@/integrations/supabase/server';
 
-export const metadata: Metadata = { title: 'Review queue · Matchoji', robots: { index: false } };
+export const metadata: Metadata = { title: 'Review queue', robots: { index: false } };
 
 export default async function AdminPage() {
   await connection();

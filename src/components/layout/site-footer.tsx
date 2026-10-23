@@ -19,10 +19,21 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
             Rate and discover matcha and hojicha, one cup at a time.
           </span>
         </p>
-        <ul className="hidden gap-6 font-semibold sm:flex">
+        {/* Shown on phones too: the tab bar has no room for Regions, the supply figures or Sell. */}
+        <ul className="flex flex-wrap gap-x-6 gap-y-2 font-semibold">
           <li>
             <Link href={PAGE_ROUTES.EXPLORE} className="hover:underline">
               Explore
+            </Link>
+          </li>
+          <li>
+            <Link href={PAGE_ROUTES.REGIONS} className="hover:underline">
+              Regions
+            </Link>
+          </li>
+          <li>
+            <Link href={PAGE_ROUTES.SUPPLY} className="hover:underline">
+              Tea supply
             </Link>
           </li>
           <li>

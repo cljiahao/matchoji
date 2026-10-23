@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
 import { SignInButton } from '@/features/auth';
@@ -12,6 +13,8 @@ import {
   type Vendor,
 } from '@/features/marketplace';
 import { createClient } from '@/integrations/supabase/server';
+
+export const metadata: Metadata = { title: 'Sell on Matchoji' };
 
 function Page({ intro, children }: { intro: string; children: React.ReactNode }) {
   return (
