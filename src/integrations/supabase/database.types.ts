@@ -25,6 +25,7 @@ export interface Database {
           display_name: string;
           role: ProfileRole;
           is_admin: boolean;
+          is_public: boolean;
           created_at: string;
         };
         Insert: {
@@ -33,6 +34,7 @@ export interface Database {
           display_name: string;
           role?: ProfileRole;
           is_admin?: boolean;
+          is_public?: boolean;
           created_at?: string;
         };
         Update: {
@@ -40,6 +42,7 @@ export interface Database {
           email?: string;
           display_name?: string;
           role?: ProfileRole;
+          is_public?: boolean;
           created_at?: string;
         };
         Relationships: [];
@@ -146,6 +149,18 @@ export interface Database {
           stock?: number;
           url?: string;
         };
+        Relationships: [];
+      };
+      follows: {
+        Row: { follower_id: string; followee_id: string; created_at: string };
+        Insert: { follower_id: string; followee_id: string; created_at?: string };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      blocks: {
+        Row: { blocker_id: string; blocked_id: string; created_at: string };
+        Insert: { blocker_id: string; blocked_id: string; created_at?: string };
+        Update: Record<string, never>;
         Relationships: [];
       };
       stock_reports: {
@@ -400,6 +415,8 @@ export interface Database {
         Row: {
           id: string;
           display_name: string;
+          is_public: boolean;
+          created_at: string;
         };
         Relationships: [];
       };
@@ -417,6 +434,10 @@ export interface Database {
         Returns: undefined;
       };
       reapply_as_vendor: { Args: Record<string, never>; Returns: undefined };
+      following_feed: {
+        Args: { max_rows?: number };
+        Returns: Database['public']['Tables']['reviews']['Row'][];
+      };
       delete_my_account: { Args: Record<string, never>; Returns: undefined };
       search_teas: {
         Args: { q: string };

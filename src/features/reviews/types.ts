@@ -11,6 +11,8 @@ export interface Review {
   id: string;
   productId: string;
   reviewerName: string;
+  // The author's profile id, for linking to their profile; null once they deleted their account.
+  authorId: string | null;
   stars: number;
   notes: string | null;
   photoUrl: string | null;

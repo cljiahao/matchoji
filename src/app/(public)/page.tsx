@@ -10,6 +10,7 @@ import {
   type Product,
 } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
+import { TastingFeed, loadFeed, type Tasting } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
 
 const SHELF_SIZE = 12;
@@ -28,6 +29,15 @@ const SHELVES: { title: string; filters: DiscoverFilters; href: string }[] = [
   { title: 'Newly added', filters: { sort: 'newest' }, href: '/explore?sort=newest' },
 ];
 
+// Signed-in readers who follow people see their latest tastings first, as on Vivino.
+async function loadFollowingFeed(): Promise<Tasting[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user ? loadFeed(supabase) : [];
+}
+
 // Each shelf fetches only the teas it shows.
 async function loadShelves(): Promise<Product[][]> {
   const supabase = await createClient();
@@ -42,7 +52,7 @@ export default async function Home() {
   // prerender it at build time, and a build without Supabase env vars (CI, Vercel Preview)
   // fails in supabaseEnv().
   await connection();
-  const shelves = await loadShelves();
+  const [shelves, feed] = await Promise.all([loadShelves(), loadFollowingFeed()]);
   const empty = shelves.every((products) => products.length === 0);
   // On a small catalogue "Newly added" would only repeat the two shelves above; it earns its
   // place once it holds a tea they don't show.
@@ -66,6 +76,14 @@ export default async function Home() {
       </section>
 
       <div className="max-w-site mx-auto w-full space-y-14 px-6 pt-6 pb-16 sm:pb-24">
+        {feed.length > 0 && (
+          <section aria-labelledby="feed" className="space-y-4">
+            <h2 id="feed" className="text-2xl font-bold tracking-tight">
+              From people you follow
+            </h2>
+            <TastingFeed tastings={feed} />
+          </section>
+        )}
         {empty ? (
           <div className="bg-muted flex-center flex-col gap-4 rounded-3xl px-6 py-16 text-center">
             <h2 className="text-2xl font-bold tracking-tight">No teas rated yet</h2>

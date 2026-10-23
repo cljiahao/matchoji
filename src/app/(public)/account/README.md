@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`/account`, "Your account": the name shown on reviews, a data download and account deletion
+`/account`, "Your account": the name shown on reviews, privacy (public or private profile), blocked tasters, a data download and account deletion
 for a signed-in person; a sign-in prompt otherwise. Rendered per request and kept out of search
 engines.
 

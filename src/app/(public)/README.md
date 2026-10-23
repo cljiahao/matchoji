@@ -26,6 +26,7 @@ can retry or go to Explore. Every page reads Supabase directly; there is no mock
 - `products/`
 - `regions/`
 - `sell/`
+- `u/`
 
 ## Connectivity
 

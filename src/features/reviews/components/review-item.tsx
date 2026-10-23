@@ -1,6 +1,7 @@
 'use client';
 
 import { Star } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
@@ -91,7 +92,13 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
         >
           {review.reviewerName.charAt(0).toUpperCase()}
         </span>
-        <span className="font-semibold">{review.reviewerName}</span>
+        {review.authorId ? (
+          <Link href={`/u/${review.authorId}`} className="font-semibold hover:underline">
+            {review.reviewerName}
+          </Link>
+        ) : (
+          <span className="font-semibold">{review.reviewerName}</span>
+        )}
         <time dateTime={review.tastedOn} className="text-muted-foreground">
           {formatDay(review.tastedOn)}
         </time>

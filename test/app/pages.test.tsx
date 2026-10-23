@@ -31,7 +31,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 import AccountPage from '@/app/(public)/account/page';
-import AdminPage from '@/app/(public)/admin/page';
+import AdminPage, { generateMetadata as adminMetadata } from '@/app/(public)/admin/page';
 import PublicError from '@/app/(public)/error';
 import ExploreLoading from '@/app/(public)/explore/loading';
 import ExplorePage from '@/app/(public)/explore/page';
@@ -45,6 +45,7 @@ import RegionsLoading from '@/app/(public)/regions/loading';
 import RegionsPage from '@/app/(public)/regions/page';
 import SupplyPage from '@/app/(public)/regions/supply/page';
 import SellPage from '@/app/(public)/sell/page';
+import ProfilePage from '@/app/(public)/u/[id]/page';
 import AuthErrorPage from '@/app/auth/error/page';
 import { SiteFooter } from '@/components/layout/site-footer';
 
@@ -189,6 +190,36 @@ describe('Home page', () => {
       ['category', 'matcha'],
       ['category', 'hojicha'],
     ]);
+  });
+
+  it('leads a signed-in reader with tastings from people they follow', async () => {
+    useServer(
+      {
+        catalogue_teas: {
+          data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')],
+          error: null,
+        },
+        'rpc:following_feed': {
+          data: [{ ...reviewRow('r1', 'm1', '2026-10-05', 5), user_id: 'u2' }],
+          error: null,
+        },
+        public_profiles: { data: [{ id: 'u2', display_name: 'Ben' }], error: null },
+        products: {
+          data: [{ id: 'm1', name: 'Uji Gold', brand: null, category: 'matcha' }],
+          error: null,
+        },
+      },
+      { id: 'u1' }
+    );
+
+    renderWithQuery(await Home());
+
+    const feed = screen.getByRole('region', { name: 'From people you follow' });
+    expect(within(feed).getByRole('link', { name: 'Ben' })).toHaveAttribute('href', '/u/u2');
+    expect(within(feed).getByRole('link', { name: 'Uji Gold' })).toHaveAttribute(
+      'href',
+      '/products/m1'
+    );
   });
 
   it('hides an empty shelf and keeps the others', async () => {
@@ -721,15 +752,110 @@ describe('Account page', () => {
 
   it('shows a signed-in person their name, export and deletion', async () => {
     useServer(
-      { profiles: { data: { email: 'aiko@example.com', display_name: 'Aiko' }, error: null } },
+      {
+        profiles: {
+          data: { email: 'aiko@example.com', display_name: 'Aiko', is_public: true },
+          error: null,
+        },
+        blocks: { data: [{ blocked_id: 'u9' }], error: null },
+        public_profiles: { data: [{ id: 'u9', display_name: 'Spammy' }], error: null },
+      },
       { id: 'u1' }
     );
     renderWithQuery(await AccountPage());
+    expect(screen.getByRole('button', { name: 'Make my profile private' })).toBeInTheDocument();
+    expect(screen.getByText('Spammy')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'See your profile' })).toHaveAttribute('href', '/u/u1');
 
     expect(screen.getByText('Signed in as aiko@example.com')).toBeInTheDocument();
     expect(screen.getByLabelText('Name shown on your reviews')).toHaveValue('Aiko');
     expect(screen.getByRole('button', { name: 'Download my data' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Delete my account' })).toBeDisabled();
+  });
+});
+
+describe('Profile page', () => {
+  const PROFILE = '0b1c2d3e-4f50-4a6b-8c7d-9e0f1a2b3c4d';
+  const tasting = {
+    ...reviewRow('r1', 'p1', '2026-10-05', 5),
+    user_id: PROFILE,
+    notes: 'Deep umami',
+  };
+
+  it('shows a public taster’s counts, taste and recent tastings, with Follow', async () => {
+    useServer(
+      {
+        public_profiles: {
+          data: {
+            id: PROFILE,
+            display_name: 'Ben',
+            is_public: true,
+            created_at: '2026-09-01T00:00:00Z',
+          },
+          error: null,
+        },
+        latest_reviews: [
+          { data: null, count: 1, error: null },
+          { data: [tasting], error: null },
+        ],
+        // The fake resolves .maybeSingle() when it is built, before the awaited counts.
+        follows: [
+          { data: null, error: null },
+          { data: null, count: 4, error: null },
+          { data: null, count: 2, error: null },
+        ],
+        blocks: { data: null, error: null },
+        products: {
+          data: [{ id: 'p1', name: 'Kyoto Bancha', brand: 'Ippodo', category: 'hojicha' }],
+          error: null,
+        },
+      },
+      { id: 'viewer' }
+    );
+
+    renderWithQuery(await ProfilePage({ params: Promise.resolve({ id: PROFILE }) }));
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Ben' })).toBeInTheDocument();
+    expect(screen.getByText(/1 tea rated · 4 followers · 2 following/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Follow' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('heading', { name: "Ben's taste" })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Kyoto Bancha' })).toHaveAttribute(
+      'href',
+      '/products/p1'
+    );
+    expect(screen.getByText('Deep umami')).toBeInTheDocument();
+  });
+
+  it('shows only the name of a private taster', async () => {
+    useServer({
+      public_profiles: {
+        data: {
+          id: PROFILE,
+          display_name: 'Ben',
+          is_public: false,
+          created_at: '2026-09-01T00:00:00Z',
+        },
+        error: null,
+      },
+      latest_reviews: { data: null, count: 1, error: null },
+      follows: { data: null, count: 0, error: null },
+    });
+
+    renderWithQuery(await ProfilePage({ params: Promise.resolve({ id: PROFILE }) }));
+
+    expect(screen.getByText(/Ben keeps their profile private/)).toBeInTheDocument();
+    expect(screen.queryByText(/followers/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Recent tastings' })).not.toBeInTheDocument();
+  });
+
+  it('404s for an unknown or malformed id', async () => {
+    useServer({ public_profiles: { data: null, error: null } });
+    await expect(ProfilePage({ params: Promise.resolve({ id: PROFILE }) })).rejects.toThrow(
+      'NEXT_NOT_FOUND'
+    );
+    await expect(ProfilePage({ params: Promise.resolve({ id: 'nope' }) })).rejects.toThrow(
+      'NEXT_NOT_FOUND'
+    );
   });
 });
 
@@ -740,6 +866,7 @@ describe('Admin page', () => {
 
     useServer({ 'rpc:is_admin': { data: false, error: null } }, { id: 'u1' });
     await expect(AdminPage()).rejects.toThrow('NEXT_NOT_FOUND');
+    expect((await adminMetadata()).title).toBe('Not found');
   });
 
   it('shows an admin the pending teas and shops', async () => {

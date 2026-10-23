@@ -23,6 +23,7 @@ export function mapReviewRow(r: ReviewRow, reviewerName: string): Review {
   }
   return {
     id: r.id,
+    authorId: r.user_id,
     productId: r.product_id,
     reviewerName,
     stars: r.stars,

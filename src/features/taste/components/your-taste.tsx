@@ -11,7 +11,14 @@ import type { TasteProfile } from '../lib';
 const fmt = (value: number) => value.toFixed(1);
 
 // Vivino's "Your taste": what the journal's ratings say about the taster.
-export function YourTaste({ profile }: { profile: TasteProfile }) {
+export function YourTaste({
+  profile,
+  title = 'Your taste',
+}: {
+  profile: TasteProfile;
+  // "Your taste" in the journal; a taster's name on their public profile.
+  title?: string;
+}) {
   if (profile.ratedTeas === 0) return null;
   const tastes = TASTE_ATTRIBUTES.filter(
     (a) => profile.liked[a] !== undefined || profile.disliked[a] !== undefined
@@ -21,7 +28,7 @@ export function YourTaste({ profile }: { profile: TasteProfile }) {
     <section aria-labelledby="your-taste" className="space-y-4">
       <div className="flex flex-wrap items-baseline gap-x-3">
         <h2 id="your-taste" className="text-2xl font-bold tracking-tight">
-          Your taste
+          {title}
         </h2>
         {profile.early && (
           <p className="text-muted-foreground text-sm">

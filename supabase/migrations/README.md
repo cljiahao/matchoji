@@ -43,7 +43,10 @@ tea's averaged sliders and note mentions from `latest_reviews`, the match score'
 delete their tastings, keeps a deleted account's ratings with `user_id` set null (each counting
 as its own taster in `latest_reviews`), adds `delete_my_account()` (removes the account and
 scrubs the person from the audit trail), and caps each person at 60 tastings and 20 suggested
-teas a day.
+teas a day. `20261027000000_social_profiles_follows.sql` adds `profiles.is_public` (exposed by
+`public_profiles`), `blocks` (private to the blocker), `follows` (public; you follow for
+yourself, never someone who blocked you or whom you blocked; blocking ends follows both ways)
+and `following_feed()`.
 
 ## Contents
 
@@ -64,6 +67,7 @@ teas a day.
 - `20261025200000_catalogue_discovery.sql`
 - `20261026000000_tea_taste_profiles.sql`
 - `20261026100000_account_and_review_edits.sql`
+- `20261027000000_social_profiles_follows.sql`
 
 ## Parent
 
