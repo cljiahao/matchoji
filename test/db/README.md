@@ -16,13 +16,17 @@ rows, each audited), checks a rerun rewrites only a revised value, that unknown 
 sources are rejected, and that visitors can read but not insert or update. `stock-reports.test.ts` checks the
 shop-link seed (every tea linked, hand-set links kept, https only) and `stock_reports`: own
 reports only, audited, the 10-minute repeat brake, status values, visitors read-only, no
-edits or deletes.
+edits or deletes. `marketplace.test.ts` walks a vendor through applying (self-approval and
+applying for others refused), staying private while pending, approval (public shop, vendor
+role), listing (once per tea, others cannot edit), value checks, and rejection hiding the
+listings and reverting the role, with every change audited.
 
 ## Contents
 
 - `audit-log.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`
+- `marketplace.test.ts`
 - `stock-reports.test.ts`
 - `tea-production-stats.test.ts`
 

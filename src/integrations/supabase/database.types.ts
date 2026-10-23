@@ -4,8 +4,7 @@
 // every table's Relationships array, every view's Relationships array) — omitting any of these
 // silently collapses row/insert/update types to `never` throughout the client.
 //
-// Phase 3 tables (vendors, listings, orders) are intentionally not modeled here yet — nothing in
-// the app queries them, and guessing their shape now would be untested drift risk for no benefit.
+// orders is not modeled yet: nothing in the app queries it until checkout is built.
 
 export type ProductCategory = 'hojicha' | 'matcha';
 export type ProfileRole = 'consumer' | 'vendor';
@@ -13,6 +12,7 @@ export type SupplyLevel = 'scarce' | 'tight' | 'plentiful';
 export type TeaMetric = 'cultivated_ha' | 'aracha_t' | 'tencha_t';
 export type TeaStatSource = 'maff' | 'zencharen';
 export type StockStatus = 'in_stock' | 'sold_out';
+export type VendorStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Database {
   public: {
@@ -74,6 +74,72 @@ export interface Database {
           matcha_supply?: SupplyLevel | null;
           hojicha_supply?: SupplyLevel | null;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      vendors: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          profile_info: string | null;
+          website: string | null;
+          country: string;
+          ships_to: string[];
+          status: VendorStatus;
+          reviewed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          profile_info?: string | null;
+          website?: string | null;
+          country: string;
+          ships_to?: string[];
+          status?: VendorStatus;
+          reviewed_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          name?: string;
+          profile_info?: string | null;
+          website?: string | null;
+          country?: string;
+          ships_to?: string[];
+        };
+        Relationships: [];
+      };
+      listings: {
+        Row: {
+          id: string;
+          vendor_id: string;
+          product_id: string;
+          price: number;
+          currency: string;
+          stock: number;
+          url: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          vendor_id: string;
+          product_id: string;
+          price: number;
+          currency: string;
+          stock: number;
+          url: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          product_id?: string;
+          price?: number;
+          currency?: string;
+          stock?: number;
+          url?: string;
         };
         Relationships: [];
       };

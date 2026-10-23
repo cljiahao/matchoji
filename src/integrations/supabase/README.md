@@ -14,8 +14,9 @@ wiring with `@supabase/ssr` mocked.
 the URL) and merges the rows; every service with an open-ended id list uses it.
 
 `database.types.ts` covers the tasting-journal columns, `wishlist` and the regions'
-`matcha_supply` / `hojicha_supply` levels (`SupplyLevel`), `tea_production_stats`, `stock_reports` (`StockStatus`) and
-`products.shop_url`.
+`matcha_supply` / `hojicha_supply` levels (`SupplyLevel`), `tea_production_stats`, `stock_reports` (`StockStatus`),
+`products.shop_url`, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
+until checkout is built.
 
 ## Contents
 

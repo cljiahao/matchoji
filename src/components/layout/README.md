@@ -8,7 +8,7 @@ page content; the navbar carries the logo, a search pill (off on home and Explor
 Explore, Regions and Journal links (handed to `MobileTabBar`, a fixed bottom bar with Home, Explore,
 Log and Journal, below `sm`, where Regions counts as Explore), the global "Log a
 tasting" dialog and `AuthStatus` (sign-in button or user menu). The footer is one slim row:
-wordmark and tagline, and section links from `sm`.
+wordmark and tagline, and section links (Explore, Journal, Sell on Matchoji) from `sm`.
 
 ## Contents
 

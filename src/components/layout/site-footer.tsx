@@ -30,6 +30,11 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
               Journal
             </Link>
           </li>
+          <li>
+            <Link href={PAGE_ROUTES.SELL} className="hover:underline">
+              Sell on Matchoji
+            </Link>
+          </li>
           {links.length > 0 && (
             <li>
               <LinkList links={links} className="text-muted-foreground" />

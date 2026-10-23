@@ -9,6 +9,7 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 
 - `auth/`
 - `journal/`
+- `marketplace/`
 - `products/`
 - `reviews/`
 - `stock/`
@@ -18,7 +19,7 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 
 `products`, `auth` and `supply` have no dependency on other features. `reviews` depends on `products`
 (through its public `index.ts`, for product search/creation) and `auth` (for the current
-session). `stock` depends on `auth` only. `journal` depends on `reviews` (row mapping, vocabulary, prep display), `products`
+session). `stock` depends on `auth` only; `marketplace` depends on `products`. `journal` depends on `reviews` (row mapping, vocabulary, prep display), `products`
 and `auth`. Imports always go through a feature's `index.ts` and only point that way; where
 `products` needs another feature's control on a card it takes a render slot instead.
 

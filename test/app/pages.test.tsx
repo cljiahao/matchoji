@@ -39,6 +39,7 @@ import ProductPage from '@/app/(public)/products/[id]/page';
 import RegionsLoading from '@/app/(public)/regions/loading';
 import RegionsPage from '@/app/(public)/regions/page';
 import SupplyPage from '@/app/(public)/regions/supply/page';
+import SellPage from '@/app/(public)/sell/page';
 import AuthErrorPage from '@/app/auth/error/page';
 import { SiteFooter } from '@/components/layout/site-footer';
 
@@ -526,6 +527,89 @@ describe('Supply page', () => {
   });
 });
 
+describe('Sell page', () => {
+  const vendor = (status: string) => ({
+    id: 'v1',
+    name: 'Kyoto Leaf',
+    profile_info: null,
+    website: null,
+    country: 'JP',
+    ships_to: ['SG', 'JP'],
+    status,
+  });
+
+  it('asks a signed-out visitor to sign in', async () => {
+    useServer({});
+    renderWithQuery(await SellPage());
+    expect(screen.getByRole('button', { name: 'Sign in to apply' })).toBeInTheDocument();
+  });
+
+  it('shows the application form before a user has applied', async () => {
+    useServer({ vendors: { data: null, error: null } }, { id: 'u1' });
+    renderWithQuery(await SellPage());
+    expect(screen.getByRole('form', { name: 'Apply to sell' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Apply to sell' })).toBeInTheDocument();
+  });
+
+  it('says a pending shop is under review and offers no listing form', async () => {
+    useServer({ vendors: { data: vendor('pending'), error: null } }, { id: 'u1' });
+    renderWithQuery(await SellPage());
+    expect(screen.getByText('Kyoto Leaf is under review.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Shop name')).toHaveValue('Kyoto Leaf');
+    expect(screen.getByLabelText('Ships to')).toHaveValue('SG, JP');
+    expect(screen.queryByRole('form', { name: 'Add a listing' })).not.toBeInTheDocument();
+  });
+
+  it('lets an approved vendor manage listings, offering only teas not yet listed', async () => {
+    useServer(
+      {
+        vendors: { data: vendor('approved'), error: null },
+        listings: {
+          data: [
+            {
+              id: 'l1',
+              vendor_id: 'v1',
+              product_id: 'p1',
+              price: '32.50',
+              currency: 'SGD',
+              stock: 4,
+              url: 'https://leaf.example/sayaka',
+              updated_at: '2026-10-24T00:00:00Z',
+            },
+          ],
+          error: null,
+        },
+        // The catalogue read starts first; the listings' tea lookup waits for the listings.
+        products: [
+          {
+            data: [
+              { id: 'p1', name: 'Sayaka', brand: 'Ippodo', category: 'matcha' },
+              { id: 'p2', name: 'Wako', brand: 'Marukyu Koyamaen', category: 'matcha' },
+            ],
+            error: null,
+          },
+          {
+            data: [{ id: 'p1', name: 'Sayaka', brand: 'Ippodo', category: 'matcha' }],
+            error: null,
+          },
+        ],
+      },
+      { id: 'u1' }
+    );
+    renderWithQuery(await SellPage());
+
+    expect(screen.getByText('Sayaka')).toBeInTheDocument();
+    expect(screen.getByText(/SGD.32\.50 · 4 in stock/)).toBeInTheDocument();
+    const picker = screen.getByLabelText('Tea');
+    expect(
+      within(picker)
+        .getAllByRole('option')
+        .map((o) => o.textContent)
+    ).toEqual(['Pick a tea from the catalogue', 'Wako · Marukyu Koyamaen']);
+    expect(screen.getByLabelText('Currency')).toHaveValue('SGD');
+  });
+});
+
 describe('Public error boundary', () => {
   it('offers a retry and a way back to Explore, with the reference', async () => {
     const retry = vi.fn();
@@ -557,6 +641,35 @@ describe('Product page', () => {
         error: null,
       },
       stock_reports: { data: { status: 'sold_out', created_at: twoDaysAgo }, error: null },
+      listings: {
+        data: [
+          {
+            id: 'l1',
+            vendor_id: 'v1',
+            product_id: 'p1',
+            price: '18.00',
+            currency: 'SGD',
+            stock: 3,
+            url: 'https://leaf.example/bancha',
+            updated_at: '2026-10-24T00:00:00Z',
+          },
+        ],
+        error: null,
+      },
+      vendors: {
+        data: [
+          {
+            id: 'v1',
+            name: 'Kyoto Leaf',
+            profile_info: null,
+            website: null,
+            country: 'JP',
+            ships_to: ['SG'],
+            status: 'approved',
+          },
+        ],
+        error: null,
+      },
       product_ratings: { data: [{ product_id: 'p1', avg_stars: 4, review_count: 1 }], error: null },
       reviews: {
         data: [
@@ -614,6 +727,16 @@ describe('Product page', () => {
       'href',
       'https://global.ippodo-tea.co.jp/products/bancha601102'
     );
+    const buy = screen
+      .getByRole('heading', { name: 'Where to buy' })
+      .closest('section') as HTMLElement;
+    expect(buy).toHaveTextContent('Kyoto Leaf');
+    expect(buy).toHaveTextContent('Ships from Japan to Singapore');
+    expect(buy).toHaveTextContent('3 left');
+    expect(within(buy).getByRole('link', { name: /Buy from Kyoto Leaf/ })).toHaveAttribute(
+      'href',
+      'https://leaf.example/bancha'
+    );
   });
 
   it('shows an unrated product with its grade and region', async () => {
@@ -623,12 +746,17 @@ describe('Product page', () => {
       product_ratings: { data: [], error: null },
       reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
     });
 
     renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
 
     expect(screen.getByText('Not yet rated')).toBeInTheDocument();
     expect(screen.getByText('No recent reports')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Sell it on Matchoji' })).toHaveAttribute(
+      'href',
+      '/sell'
+    );
     expect(screen.queryByRole('link', { name: /shop/ })).not.toBeInTheDocument();
     expect(screen.getAllByText('First flush')).toHaveLength(2);
     expect(screen.getAllByText('Uji, Kyoto')).toHaveLength(2);
@@ -641,6 +769,7 @@ describe('Product page', () => {
       products: { data: null, error: null },
       reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
     });
     await expect(ProductPage({ params: Promise.resolve({ id: 'nope' }) })).rejects.toThrow(
       'NEXT_NOT_FOUND'
@@ -781,7 +910,8 @@ describe('static routes', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
     expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
-    expect(screen.getAllByRole('link')).toHaveLength(2);
+    expect(screen.getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute('href', '/sell');
+    expect(screen.getAllByRole('link')).toHaveLength(3);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
