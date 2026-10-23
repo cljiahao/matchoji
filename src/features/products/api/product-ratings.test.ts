@@ -13,6 +13,7 @@ const base = {
   regionName: null,
   supply: null,
   shopUrl: null,
+  status: 'approved' as const,
   imageUrl: null,
   createdAt: '2026-09-01T00:00:00Z',
 };

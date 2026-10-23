@@ -19,7 +19,10 @@ reports only, audited, the 10-minute repeat brake, status values, visitors read-
 edits or deletes. `marketplace.test.ts` walks a vendor through applying (self-approval and
 applying for others refused), staying private while pending, approval (public shop, vendor
 role), listing (once per tea, others cannot edit), value checks, and rejection hiding the
-listings and reverting the role, with every change audited.
+listings and reverting the role, with every change audited. `tea-review-queue.test.ts` checks seeded teas are approved,
+a taster's tea is pending and credited to them, nobody can add a tea as approved or credit
+someone else, a pending tea stays readable by link but only an admin can approve it, and a
+rejected tea is hidden from everyone but whoever added it.
 
 ## Contents
 
@@ -28,6 +31,7 @@ listings and reverting the role, with every change audited.
 - `seed-real-teas.test.ts`
 - `marketplace.test.ts`
 - `stock-reports.test.ts`
+- `tea-review-queue.test.ts`
 - `tea-production-stats.test.ts`
 
 ## Parent

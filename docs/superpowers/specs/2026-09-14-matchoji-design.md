@@ -101,6 +101,12 @@ Row-level security: `Review` rows are insertable only by their `user_id`
 insertable by any authenticated user for now (revisit moderation once there's
 real usage).
 
+Update 2026-10-24 — moderation added, modelled on Vivino holding an unmatched
+label scan as "processing": a taster-added `Product` is `pending` (credited via
+`added_by`) until an admin approves it. The taster can rate it at once and its
+page works by link, but Explore, shelves, search and region counts list
+approved teas only; a rejected tea is visible only to whoever added it.
+
 ### Phase 2 — Search/Discovery Enhancements
 
 Once Phase 1 has real data:

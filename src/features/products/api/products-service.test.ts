@@ -191,6 +191,7 @@ describe('listRegionSummaries', () => {
       method: 'not',
       args: ['region_id', 'is', null],
     });
+    expect(calls).toContainEqual({ table: 'products', method: 'eq', args: ['status', 'approved'] });
   });
 
   it('throws when either read fails', async () => {
@@ -218,13 +219,51 @@ describe('searchProducts', () => {
 
   it('queries with the sanitised name/brand filter', async () => {
     const hits = [{ id: 'a', name: 'Uji', brand: null, category: 'matcha' }];
-    const { client, calls } = createFakeSupabase({ products: { data: hits, error: null } });
+    const { client, calls } = createFakeSupabase({
+      products: {
+        data: hits.map((h) => ({ ...h, status: 'approved', added_by: null })),
+        error: null,
+      },
+    });
 
     expect(await searchProducts(client, 'uji,x')).toEqual(hits);
     expect(calls).toContainEqual({
       table: 'products',
       method: 'or',
       args: ['name.ilike.%uji x%,brand.ilike.%uji x%'],
+    });
+  });
+
+  it('keeps other people’s pending teas out but finds the searcher’s own', async () => {
+    const row = (id: string, status: string, added_by: string | null) => ({
+      id,
+      name: `Uji ${id}`,
+      brand: null,
+      category: 'matcha',
+      status,
+      added_by,
+    });
+    const rows = [
+      row('approved', 'approved', null),
+      row('mine', 'pending', 'u1'),
+      row('theirs', 'pending', 'u2'),
+    ];
+    const { client, calls } = createFakeSupabase({
+      products: [
+        { data: rows, error: null },
+        { data: rows, error: null },
+      ],
+    });
+
+    expect((await searchProducts(client, 'uji', 'u1')).map((p) => p.id)).toEqual([
+      'approved',
+      'mine',
+    ]);
+    expect((await searchProducts(client, 'uji')).map((p) => p.id)).toEqual(['approved']);
+    expect(calls).toContainEqual({
+      table: 'products',
+      method: 'neq',
+      args: ['status', 'rejected'],
     });
   });
 

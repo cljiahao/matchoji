@@ -16,6 +16,8 @@ const HITS = [
   { id: 'a', name: 'Uji Ceremonial', brand: 'Marukyu', category: 'matcha' },
   { id: 'b', name: 'Uji Hojicha', brand: null, category: 'hojicha' },
 ];
+// Search reads review status too and returns only approved teas (or the searcher's own).
+const ROWS = HITS.map((hit) => ({ ...hit, status: 'approved', added_by: null }));
 
 function Harness(props: { onSelect: () => void; onAddNew: () => void }) {
   const [query, setQuery] = useState('');
@@ -36,7 +38,7 @@ beforeEach(() => {
 
 describe('ProductSearchCombobox', () => {
   it('lists matches and supports arrow-key selection', async () => {
-    const { onSelect, input } = setup({ data: HITS, error: null });
+    const { onSelect, input } = setup({ data: ROWS, error: null });
 
     await userEvent.type(input, 'uji');
     await screen.findByRole('option', { name: /Uji Ceremonial/ });
@@ -57,7 +59,7 @@ describe('ProductSearchCombobox', () => {
   });
 
   it('wraps upward from no selection and clears it with Escape', async () => {
-    const { input } = setup({ data: HITS, error: null });
+    const { input } = setup({ data: ROWS, error: null });
 
     await userEvent.type(input, 'uji');
     await screen.findByRole('option', { name: /Uji Ceremonial/ });
@@ -68,7 +70,7 @@ describe('ProductSearchCombobox', () => {
   });
 
   it('waits for typing to pause before searching', async () => {
-    const fake = createFakeBrowserClient({ results: { products: { data: HITS, error: null } } });
+    const fake = createFakeBrowserClient({ results: { products: { data: ROWS, error: null } } });
     supabase.current = fake.client;
     renderWithQuery(<Harness onSelect={vi.fn()} onAddNew={vi.fn()} />);
 
@@ -83,7 +85,7 @@ describe('ProductSearchCombobox', () => {
   // While the debounce is pending there are no results yet; that must read as
   // "searching", not flash "No match" and the add-new affordance.
   it('shows searching, not "no match", while waiting to search', async () => {
-    const { input } = setup({ data: HITS, error: null });
+    const { input } = setup({ data: ROWS, error: null });
 
     await userEvent.type(input, 'uji');
     expect(screen.getByText('Searching…')).toBeInTheDocument();
@@ -91,7 +93,7 @@ describe('ProductSearchCombobox', () => {
   });
 
   it('selects a match on click', async () => {
-    const { onSelect, input } = setup({ data: HITS, error: null });
+    const { onSelect, input } = setup({ data: ROWS, error: null });
 
     await userEvent.type(input, 'uji');
     await userEvent.click(await screen.findByRole('option', { name: /Uji Ceremonial/ }));
@@ -119,7 +121,7 @@ describe('ProductSearchCombobox', () => {
   });
 
   it('does not search for a single character', async () => {
-    const { input } = setup({ data: HITS, error: null });
+    const { input } = setup({ data: ROWS, error: null });
 
     await userEvent.type(input, 'u');
     expect(screen.queryByRole('button', { name: 'Add as new product' })).not.toBeInTheDocument();

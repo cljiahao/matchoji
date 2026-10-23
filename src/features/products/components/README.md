@@ -11,7 +11,7 @@ region), `ExploreSort` (top rated, most rated, newest, scarcest first) and `Sear
 the rail behind a "Filters" button below `lg`; `ProductFacts` is the product page's facts table. Cards
 and rows take an optional `action` (the want-to-try toggle), kept outside the link because
 controls can't nest inside it. `products-components.test.tsx` builds full `Product`
-objects, so a new `Product` field (most recently `shopUrl`) is added to its fixtures too.
+objects, so a new `Product` field (most recently `shopUrl` and `status`) is added to its fixtures too.
 
 ## Contents
 

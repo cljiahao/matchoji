@@ -7,6 +7,10 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Teas added while logging a tasting now await review, like Vivino's "processing" label on
+  an unmatched scan: the taster can rate it and see it in their journal at once, its page
+  says "Awaiting review", and it joins Explore, the home shelves, search and the region
+  counts once an admin approves it. A rejected tea is visible only to whoever added it.
 - Sell on Matchoji (`/sell`, linked from the footer): farms, roasters and tea shops apply to
   sell, are approved by hand, then list catalogue teas with a price, currency, stock and a
   link to buy on their own site. Each tea's page gains "Where to buy" with approved vendors'

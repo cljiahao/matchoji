@@ -57,7 +57,16 @@ describe('LogTastingDialog', () => {
   it('goes from search to rating an existing product', async () => {
     setup({
       products: {
-        data: [{ id: 'a', name: 'Uji Ceremonial', brand: null, category: 'matcha' }],
+        data: [
+          {
+            id: 'a',
+            name: 'Uji Ceremonial',
+            brand: null,
+            category: 'matcha',
+            status: 'approved',
+            added_by: null,
+          },
+        ],
         error: null,
       },
     });

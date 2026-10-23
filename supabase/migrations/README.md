@@ -18,7 +18,10 @@ within 10 minutes. `20261024100000_marketplace_vendors_listings.sql` opens the P
 shop's details but not its status (column-level grants), approval is an admin's SQL update
 that also sets `profiles.role`, approved shops and their listings are public, and only
 approved vendors can add or change listings (price above zero, stock not negative, https buy
-link). `orders` stays dormant.
+link). `orders` stays dormant. `20261024200000_tea_review_queue.sql`
+adds `products.status` (existing teas approved, new ones pending), `added_by` and
+`reviewed_at`: signed-in users can only add pending teas credited to themselves, approval is
+an admin's SQL update, and a rejected tea is visible only to whoever added it.
 
 ## Contents
 
@@ -31,6 +34,7 @@ link). `orders` stays dormant.
 - `20261023200000_tea_production_stats.sql`
 - `20261024000000_stock_reports.sql`
 - `20261024100000_marketplace_vendors_listings.sql`
+- `20261024200000_tea_review_queue.sql`
 
 ## Parent
 
