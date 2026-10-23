@@ -13,13 +13,17 @@ kept, Yugen left ungraded. `region-supply.test.ts` checks the supply columns rej
 levels and that `20261023_region_supply.sql` sets the sourced levels and notes, keeps values
 set by hand, and is safe to rerun. `tea-production-stats.test.ts` loads the stats seed (147
 rows, each audited), checks a rerun rewrites only a revised value, that unknown metrics and
-sources are rejected, and that visitors can read but not insert or update.
+sources are rejected, and that visitors can read but not insert or update. `stock-reports.test.ts` checks the
+shop-link seed (every tea linked, hand-set links kept, https only) and `stock_reports`: own
+reports only, audited, the 10-minute repeat brake, status values, visitors read-only, no
+edits or deletes.
 
 ## Contents
 
 - `audit-log.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`
+- `stock-reports.test.ts`
 - `tea-production-stats.test.ts`
 
 ## Parent

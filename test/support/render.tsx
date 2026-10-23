@@ -35,6 +35,7 @@ export function makeProduct(overrides: Partial<Product> = {}): Product {
     regionName: 'Uji, Kyoto',
     supply: null,
     imageUrl: null,
+    shopUrl: null,
     createdAt: '2026-09-01T00:00:00Z',
     avgStars: 4.5,
     reviewCount: 12,

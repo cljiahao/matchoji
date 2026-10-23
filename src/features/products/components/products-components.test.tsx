@@ -237,6 +237,7 @@ describe('ProductRow', () => {
           grade: null,
           regionName: null,
           supply: null,
+          shopUrl: null,
           avgStars: null,
           reviewCount: 0,
         })}

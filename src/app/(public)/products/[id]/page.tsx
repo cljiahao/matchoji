@@ -17,6 +17,7 @@ import {
   listReviews,
   summarizeReviews,
 } from '@/features/reviews';
+import { StockPanel, getLatestStockReport } from '@/features/stock';
 import { createClient } from '@/integrations/supabase/server';
 import { cn } from '@/lib/utils';
 
@@ -33,9 +34,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
 
   const supabase = await createClient();
-  const [product, reviews] = await Promise.all([
+  const [product, reviews, stockReport] = await Promise.all([
     getProduct(supabase, id),
     listReviews(supabase, id),
+    getLatestStockReport(supabase, id),
   ]);
 
   if (!product) notFound();
@@ -96,6 +98,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
               <WantToTryButton productId={product.id} className="bg-background" />
             </div>
+
+            <StockPanel
+              productId={product.id}
+              brand={product.brand}
+              shopUrl={product.shopUrl}
+              initialReport={stockReport}
+              className="mt-6"
+            />
           </div>
         </div>
       </div>

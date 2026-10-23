@@ -10,7 +10,10 @@ Versioned SQL migrations, applied in filename (timestamp) order. `audit_log` (fr
 the scarcity sorts rank by. `20261023200000_tea_production_stats.sql` holds official tea
 figures per prefecture and year (`cultivated_ha`, `aracha_t`, `tencha_t`), each tagged with
 its `source` (`maff` or `zencharen`) and `source_ref`; everyone can read it, nobody can write
-it through the API, and writes are audited.
+it through the API, and writes are audited. `20261024000000_stock_reports.sql` adds `products.shop_url`
+(https only) and `stock_reports`: everyone reads, signed-in users insert their own, nobody
+edits or deletes, and a trigger refuses a second report on the same tea from the same person
+within 10 minutes.
 
 ## Contents
 
@@ -21,6 +24,7 @@ it through the API, and writes are audited.
 - `20261023000000_audit_log.sql`
 - `20261023100000_region_supply.sql`
 - `20261023200000_tea_production_stats.sql`
+- `20261024000000_stock_reports.sql`
 
 ## Parent
 
