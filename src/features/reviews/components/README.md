@@ -20,6 +20,8 @@ Component tests run the real hooks against a fake browser Supabase client
 
 `RatingDistribution` reads each row to screen readers as one phrase ("5 stars: 3 ratings").
 
+`RateProductForm` also edits an existing tasting (`review` prop): prefilled, "Save changes".
+
 ## Contents
 
 - `community-reviews.tsx`

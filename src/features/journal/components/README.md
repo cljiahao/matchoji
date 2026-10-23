@@ -7,11 +7,16 @@ tea tile), the want-to-try list with remove, and the `WantToTryButton` used on p
 pages, shelves and Explore rows. Timeline cards and want-to-try rows show
 `CatalogueStatusNote` ("Awaiting review", "Not in the catalogue") next to such teas.
 
+Each timeline card has `TastingActions`: Edit (the tasting form, prefilled) and Delete (after a
+confirmation; the photo goes too).
+
 ## Contents
 
 - `index.ts`
 - `journal-stats-strip.tsx`
 - `journal-timeline.tsx`
+- `tasting-actions.test.tsx`
+- `tasting-actions.tsx`
 - `want-to-try-button.test.tsx`
 - `want-to-try-button.tsx`
 - `wishlist-list.test.tsx`

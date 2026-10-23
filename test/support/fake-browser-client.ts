@@ -33,10 +33,15 @@ export function createFakeBrowserClient(
 
   const upload = vi.fn(async (_path: string, _file: unknown) => ({ error: null }));
   const remove = vi.fn(async (_paths: string[]) => ({ data: [], error: null }));
+  const list = vi.fn(async (_folder: string, _options?: unknown) => ({
+    data: [] as { name: string }[],
+    error: null as Error | null,
+  }));
   const storage = {
     from: vi.fn(() => ({
       upload,
       remove,
+      list,
       getPublicUrl: (path: string) => ({ data: { publicUrl: `https://cdn.test/${path}` } }),
     })),
   };
@@ -49,6 +54,7 @@ export function createFakeBrowserClient(
     auth,
     upload,
     remove,
+    list,
     emitAuthChange: (session: Session | null) => authListener?.('SIGNED_IN', session),
   };
 }

@@ -73,7 +73,7 @@ describe('audit log', () => {
           [USER, productId]
         )
       ).rows;
-      // RLS gives users no update or delete on reviews, so this changes nothing and logs nothing.
+      // Authors may edit their own tastings; the edit is logged as theirs.
       await db.query('update public.reviews set stars = 1 where id = $1', [review.id]);
       return review.id;
     });
@@ -83,12 +83,14 @@ describe('audit log', () => {
     const log = await entries('reviews');
     expect(log.map((e) => [e.action, e.actor_id])).toEqual([
       ['INSERT', USER],
+      ['UPDATE', USER],
       ['UPDATE', null],
       ['DELETE', null],
     ]);
     expect(log[0]).toMatchObject({ old_row: null, new_row: { stars: 4, user_id: USER } });
-    expect(log[1]).toMatchObject({ old_row: { stars: 4 }, new_row: { stars: 5 } });
-    expect(log[2]).toMatchObject({ old_row: { stars: 5 }, new_row: null });
+    expect(log[1]).toMatchObject({ old_row: { stars: 4 }, new_row: { stars: 1 } });
+    expect(log[2]).toMatchObject({ old_row: { stars: 1 }, new_row: { stars: 5 } });
+    expect(log[3]).toMatchObject({ old_row: { stars: 5 }, new_row: null });
     expect(await entries('products')).toHaveLength(1);
   });
 

@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 
 import { groupByMonth } from '../lib/journal-stats';
 import type { JournalEntry } from '../types';
+import { TastingActions } from './tasting-actions';
 
 // ids can't hold spaces ("October 2026"), so headings are keyed by the ISO month.
 const monthId = (isoDate: string) => `month-${isoDate.slice(0, 7)}`;
@@ -85,6 +86,7 @@ export function JournalTimeline({ entries }: { entries: JournalEntry[] }) {
                       </ul>
                     )}
                     <PrepSummary prep={entry.prep} className="text-xs" />
+                    <TastingActions entry={entry} />
                   </div>
                 </li>
               );

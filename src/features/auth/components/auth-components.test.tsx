@@ -212,7 +212,7 @@ describe('AuthStatus', () => {
     expect(await screen.findByRole('button', { name: 'Sign in' })).toBeInTheDocument();
   });
 
-  it('shows the account menu with sign-out for a signed-in user', async () => {
+  it('shows the account menu with account, sell and sign-out links for a signed-in user', async () => {
     const fake = useFake({
       session: makeSession({ user_metadata: { avatar_url: 'https://cdn.test/a.png' } }),
     });
@@ -220,6 +220,14 @@ describe('AuthStatus', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Account menu' }));
     expect(await screen.findByText('aiko@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Your account' })).toHaveAttribute(
+      'href',
+      '/account'
+    );
+    expect(screen.getByRole('menuitem', { name: 'Sell on Matchoji' })).toHaveAttribute(
+      'href',
+      '/sell'
+    );
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }));
 

@@ -39,6 +39,7 @@ notes over each person's latest tasting only.
 
 ## Contents
 
+- `account-and-review-edits.test.ts`
 - `admin-review.test.ts`
 - `audit-log.test.ts`
 - `catalogue-discovery.test.ts`

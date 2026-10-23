@@ -251,7 +251,8 @@ export interface Database {
       reviews: {
         Row: {
           id: string;
-          user_id: string;
+          // Null once the author deleted their account; the rating stays, anonymised.
+          user_id: string | null;
           product_id: string;
           stars: number;
           notes: string | null;
@@ -332,7 +333,8 @@ export interface Database {
       latest_reviews: {
         Row: {
           id: string;
-          user_id: string;
+          // Null once the author deleted their account; the rating stays, anonymised.
+          user_id: string | null;
           product_id: string;
           stars: number;
           notes: string | null;
@@ -415,6 +417,7 @@ export interface Database {
         Returns: undefined;
       };
       reapply_as_vendor: { Args: Record<string, never>; Returns: undefined };
+      delete_my_account: { Args: Record<string, never>; Returns: undefined };
       search_teas: {
         Args: { q: string };
         Returns: { id: string; name: string; brand: string | null; category: ProductCategory }[];

@@ -5,6 +5,7 @@ export const PAGE_ROUTES = {
   SUPPLY: '/regions/supply',
   JOURNAL: '/journal',
   SELL: '/sell',
+  ACCOUNT: '/account',
 } as const;
 
 export const API_ROUTES = {

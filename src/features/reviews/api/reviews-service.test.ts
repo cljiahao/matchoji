@@ -26,13 +26,22 @@ const review = (id: string, userId: string) => ({
 describe('listReviews', () => {
   it('maps reviews and names reviewers from public_profiles, never profiles', async () => {
     const { client, calls } = createFakeSupabase({
-      latest_reviews: { data: [review('r1', 'u1'), review('r2', 'u2')], error: null },
+      latest_reviews: {
+        data: [review('r1', 'u1'), review('r2', 'u2'), { ...review('r3', 'u3'), user_id: null }],
+        error: null,
+      },
       public_profiles: { data: [{ id: 'u1', display_name: 'Aiko' }], error: null },
     });
 
     const reviews = await listReviews(client, 'p1');
 
-    expect(reviews.map((r) => r.reviewerName)).toEqual(['Aiko', 'Anonymous']);
+    // A deleted account's rating stays, unnamed; only real authors are looked up.
+    expect(reviews.map((r) => r.reviewerName)).toEqual(['Aiko', 'Former taster', 'Former taster']);
+    expect(calls).toContainEqual({
+      table: 'public_profiles',
+      method: 'in',
+      args: ['id', ['u1', 'u2']],
+    });
     expect(reviews[0]).toMatchObject({ id: 'r1', productId: 'p1', stars: 4, notes: 'nutty' });
     expect(calls.some((c) => c.table === 'profiles')).toBe(false);
   });

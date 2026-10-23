@@ -1,6 +1,7 @@
 'use client';
 
-import { LogOut } from 'lucide-react';
+import { LogOut, Store, UserRound } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { createClient } from '@/integrations/supabase/client';
+import { PAGE_ROUTES } from '@/lib/constants/routes';
 
 import { useSession } from '../hooks/use-session';
 
@@ -41,6 +43,18 @@ export function UserMenu() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem disabled className="text-muted-foreground">
           {email}
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={PAGE_ROUTES.ACCOUNT}>
+            <UserRound />
+            Your account
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={PAGE_ROUTES.SELL}>
+            <Store />
+            Sell on Matchoji
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />

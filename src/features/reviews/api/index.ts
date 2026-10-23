@@ -1,2 +1,9 @@
-export { createReview, removeReviewPhoto, uploadReviewPhoto } from './reviews-mutations';
+export {
+  createReview,
+  deleteReview,
+  removeReviewPhoto,
+  reviewPhotoPath,
+  updateReview,
+  uploadReviewPhoto,
+} from './reviews-mutations';
 export { REVIEW_COLUMNS, listReviews, mapReviewRow } from './reviews-service';
