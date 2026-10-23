@@ -64,6 +64,8 @@ export async function createReview(supabase: Client, input: CreateReviewInput): 
     dose_g: input.doseG ?? null,
     water_ml: input.waterMl ?? null,
     water_temp_c: input.waterTempC ?? null,
+    harvest_year: input.harvestYear ?? null,
+    flush: input.flush ?? null,
     // Always the taster's own date: the column default is the database's (UTC) day, which
     // is yesterday for a morning tasting in Singapore.
     tasted_on: input.tastedOn ?? localToday(),
@@ -103,6 +105,8 @@ export async function updateReview(
       dose_g: input.doseG ?? null,
       water_ml: input.waterMl ?? null,
       water_temp_c: input.waterTempC ?? null,
+      harvest_year: input.harvestYear ?? null,
+      flush: input.flush ?? null,
       tasted_on: input.tastedOn ?? localToday(),
     })
     .eq('id', reviewId);

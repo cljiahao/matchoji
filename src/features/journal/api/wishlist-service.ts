@@ -51,10 +51,17 @@ export async function isWishlisted(
   return data !== null;
 }
 
-export async function listWishlist(supabase: Client, userId: string): Promise<ProductSummary[]> {
+export interface Stash {
+  ownedQuantity: number;
+  openedOn: string | null;
+}
+
+export type WishlistItem = ProductSummary & { stash: Stash };
+
+export async function listWishlist(supabase: Client, userId: string): Promise<WishlistItem[]> {
   const { data: rows, error } = await supabase
     .from('wishlist')
-    .select('product_id')
+    .select('product_id, owned_quantity, opened_on')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
@@ -67,5 +74,30 @@ export async function listWishlist(supabase: Client, userId: string): Promise<Pr
   if (productsError) throw productsError;
 
   const byId = new Map(products.map((p) => [p.id, p]));
-  return rows.flatMap((r) => byId.get(r.product_id) ?? []);
+  return rows.flatMap((r) => {
+    const product = byId.get(r.product_id);
+    return product
+      ? [
+          {
+            ...product,
+            stash: { ownedQuantity: r.owned_quantity ?? 0, openedOn: r.opened_on ?? null },
+          },
+        ]
+      : [];
+  });
+}
+
+// How many of a saved tea you have and when you opened it: a light cellar, as Vivino has.
+export async function setStash(
+  supabase: Client,
+  userId: string,
+  productId: string,
+  stash: Stash
+): Promise<void> {
+  const { error } = await supabase
+    .from('wishlist')
+    .update({ owned_quantity: stash.ownedQuantity, opened_on: stash.openedOn })
+    .eq('user_id', userId)
+    .eq('product_id', productId);
+  if (error) throw error;
 }

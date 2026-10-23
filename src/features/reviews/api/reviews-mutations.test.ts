@@ -82,6 +82,8 @@ describe('createReview', () => {
       doseG: 2,
       waterMl: 70,
       waterTempC: 80,
+      harvestYear: 2025,
+      flush: 'first',
       tastedOn: '2026-10-01',
     });
 
@@ -100,6 +102,8 @@ describe('createReview', () => {
       dose_g: 2,
       water_ml: 70,
       water_temp_c: 80,
+      harvest_year: 2025,
+      flush: 'first',
       tasted_on: '2026-10-01',
     });
   });

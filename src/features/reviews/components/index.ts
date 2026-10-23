@@ -1,4 +1,5 @@
 export { CommunityReviews } from './community-reviews';
+export { EditionList } from './edition-list';
 export { FlavorFamilies } from './flavor-families';
 export { CategorySelect, RegionSelect } from './form-selects';
 export { LogTastingDialog } from './log-tasting-dialog';

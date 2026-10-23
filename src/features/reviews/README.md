@@ -6,7 +6,7 @@ Rating a product: the star input, review list/item display, photo upload, and th
 search-or-create-then-rate dialog that drives the whole flow.
 
 `types.ts`'s `Review` carries `authorId` (null once the author deleted their account) so names
-can link to profiles.
+can link to profiles, and `edition` (harvest year and flush, tea's vintage).
 
 ## Contents
 

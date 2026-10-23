@@ -5,4 +5,7 @@ export {
   listWishlist,
   listWishlistIds,
   removeFromWishlist,
+  setStash,
+  type Stash,
+  type WishlistItem,
 } from './wishlist-service';

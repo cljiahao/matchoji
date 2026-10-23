@@ -7,7 +7,7 @@ import { useState, type ReactNode } from 'react';
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
-import { FLAVOR_NOTES, noteLabel, truncateNotes } from '../lib';
+import { FLAVOR_NOTES, editionLabel, noteLabel, truncateNotes } from '../lib';
 import type { Review } from '../types';
 import { PrepSummary } from './prep-summary';
 
@@ -77,6 +77,11 @@ export function ReviewItem({ review, category, footer }: ReviewItemProps) {
         </ul>
       )}
       <PrepSummary prep={review.prep} className="mt-2 text-xs" />
+      {review.edition.harvestYear && (
+        <p className="text-muted-foreground mt-1 text-xs">
+          {editionLabel(review.edition.harvestYear, review.edition.flush)}
+        </p>
+      )}
       {review.photoUrl && (
         // Supabase Storage host isn't known until a real project exists, so next/image's
         // remotePatterns can't be configured yet — plain img until then.

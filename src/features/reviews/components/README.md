@@ -20,6 +20,8 @@ Component tests run the real hooks against a fake browser Supabase client
 
 `RatingDistribution` reads each row to screen readers as one phrase ("5 stars: 3 ratings").
 
+`EditionList` ("Harvests") shows a tea's ratings per harvest with a "Top rated harvest" badge;
+the tasting form takes an optional harvest year and flush, and `ReviewItem` shows them.
 `RateProductForm` also edits an existing tasting (`review` prop): prefilled, "Save changes".
 
 `ReviewItem` links each reviewer's name to their profile and renders an optional `footer`;
@@ -29,6 +31,8 @@ page can supply another feature's client controls).
 ## Contents
 
 - `community-reviews.tsx`
+- `edition-list.test.tsx`
+- `edition-list.tsx`
 - `flavor-families.tsx`
 - `flavor-note-picker.tsx`
 - `form-selects.tsx`

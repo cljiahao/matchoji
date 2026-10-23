@@ -43,6 +43,7 @@ notes over each person's latest tasting only.
 - `admin-review.test.ts`
 - `audit-log.test.ts`
 - `catalogue-discovery.test.ts`
+- `editions-and-stash.test.ts`
 - `integrity-hardening.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`

@@ -6,10 +6,14 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CatalogueStatusNote, TeaTin, type ProductSummary } from '@/features/products';
 
+import type { Stash } from '../api/wishlist-service';
+
 import { useWishlist } from '../hooks/use-wishlist';
+import { StashEditor } from './stash-editor';
 
 interface WishlistListProps {
-  products: ProductSummary[];
+  // The stash is present on the journal's own list (the server read it with the products).
+  products: (ProductSummary & { stash?: Stash })[];
 }
 
 // The server sends the saved products in order; the shared id cache decides which are still
@@ -55,6 +59,9 @@ export function WishlistList({ products }: WishlistListProps) {
                 {product.name}
               </Link>
               <CatalogueStatusNote status={product.status} />
+              {product.stash && (
+                <StashEditor productId={product.id} name={product.name} stash={product.stash} />
+              )}
             </span>
           </div>
           <Button

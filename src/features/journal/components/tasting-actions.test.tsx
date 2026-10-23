@@ -28,6 +28,7 @@ const entry = {
   profile: { body: 3 },
   prep: { method: null, doseG: null, waterMl: null, waterTempC: null },
   tastedOn: '2026-10-01',
+  edition: { harvestYear: null, flush: null },
   product: { id: 'p1', name: 'Kyoto Bancha', brand: null, category: 'hojicha' as const },
 };
 

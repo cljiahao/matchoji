@@ -12,11 +12,16 @@ confirmation; the photo goes too).
 
 Component tests build `Review` objects with every field, including `authorId`.
 
+Want-to-try rows carry `StashEditor`: "I have this", how many and when opened (shown as days
+since opening, since matcha fades once opened).
+
 ## Contents
 
 - `index.ts`
 - `journal-stats-strip.tsx`
 - `journal-timeline.tsx`
+- `stash-editor.test.tsx`
+- `stash-editor.tsx`
 - `tasting-actions.test.tsx`
 - `tasting-actions.tsx`
 - `want-to-try-button.test.tsx`

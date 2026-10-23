@@ -62,6 +62,7 @@ export function makeReview(overrides: Partial<Review> = {}): Review {
     profile: {},
     prep: { method: null, doseG: null, waterMl: null, waterTempC: null },
     tastedOn: '2026-09-01',
+    edition: { harvestYear: null, flush: null },
     ...overrides,
   };
 }
