@@ -39,7 +39,7 @@ import JournalPage from '@/app/(public)/journal/page';
 import HomeLoading from '@/app/(public)/loading';
 import Home from '@/app/(public)/page';
 import ProductLoading from '@/app/(public)/products/[id]/loading';
-import ProductPage from '@/app/(public)/products/[id]/page';
+import ProductPage, { generateMetadata } from '@/app/(public)/products/[id]/page';
 import RegionsLoading from '@/app/(public)/regions/loading';
 import RegionsPage from '@/app/(public)/regions/page';
 import SupplyPage from '@/app/(public)/regions/supply/page';
@@ -84,19 +84,36 @@ const REGION = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
 // Tea pages 404 a malformed id before querying, so routes use a real uuid.
 const PRODUCT_ID = '5d1e2f3a-4b5c-4d6e-8f70-8192a3b4c5d6';
 
-const row = (id: string, name: string, category: 'matcha' | 'hojicha', createdAt: string) => ({
-  ...productRow,
+// A catalogue_teas row: an approved tea with its region, rating and scores already joined.
+const row = (
+  id: string,
+  name: string,
+  category: 'matcha' | 'hojicha',
+  createdAt: string,
+  extra: Record<string, unknown> = {}
+) => ({
   id,
   name,
+  brand: 'Ippodo',
   category,
+  grade: null,
+  region_name: null,
+  supply: null,
+  image_url: null,
+  shop_url: null,
   created_at: createdAt,
+  review_count: 0,
+  avg_stars: null,
+  ...extra,
 });
+
+const bancha = row('p1', 'Kyoto Bancha', 'hojicha', '2026-09-01T00:00:00Z');
 
 describe('Home page', () => {
   // Like /journal: without a request-time API first, Next prerenders / at build time and a
   // build without Supabase env vars fails.
   it('renders per request: waits for the connection before reading products', async () => {
-    const fake = useServer({ products: { data: [], error: null } });
+    const fake = useServer({ catalogue_teas: { data: [], error: null } });
     nextServer.connection.mockImplementationOnce(async () => {
       throw new Error('prerender bail-out');
     });
@@ -107,7 +124,7 @@ describe('Home page', () => {
 
   it('leads with search and the two teas, then shelves for each tea and the newest', async () => {
     const { calls } = useServer({
-      products: [
+      catalogue_teas: [
         { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
         { data: [row('h1', 'Kyoto Bancha', 'hojicha', '2026-09-02T00:00:00Z')], error: null },
         {
@@ -119,7 +136,6 @@ describe('Home page', () => {
           error: null,
         },
       ],
-      product_ratings: { data: [], error: null },
     });
 
     renderWithQuery(await Home());
@@ -159,24 +175,28 @@ describe('Home page', () => {
     ).toEqual(['Hoshino Fresh', 'Kyoto Bancha', 'Uji Gold']);
     expect(within(newest).getAllByRole('button', { name: 'Want to try' })).toHaveLength(3);
 
-    expect(calls.filter((c) => c.table === 'products' && c.method === 'from')).toHaveLength(3);
+    // Three queries, each fetching only its shelf.
+    expect(calls.filter((c) => c.table === 'catalogue_teas' && c.method === 'from')).toHaveLength(
+      3
+    );
+    expect(calls.filter((c) => c.method === 'range').map((c) => c.args)).toEqual([
+      [0, 11],
+      [0, 11],
+      [0, 11],
+    ]);
     expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
-      ['status', 'approved'],
       ['category', 'matcha'],
-      ['status', 'approved'],
       ['category', 'hojicha'],
-      ['status', 'approved'],
     ]);
   });
 
   it('hides an empty shelf and keeps the others', async () => {
     useServer({
-      products: [
+      catalogue_teas: [
         { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
         { data: [], error: null },
         { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
       ],
-      product_ratings: { data: [], error: null },
     });
 
     renderWithQuery(await Home());
@@ -187,7 +207,7 @@ describe('Home page', () => {
   });
 
   it('invites the first tasting when the catalogue is empty', async () => {
-    useServer({ products: { data: [], error: null } });
+    useServer({ catalogue_teas: { data: [], error: null } });
 
     renderWithQuery(await Home());
 
@@ -198,10 +218,9 @@ describe('Home page', () => {
 });
 
 describe('Explore page', () => {
-  it('lists products from Supabase for the selected category', async () => {
+  it('lists teas from the catalogue for the selected category', async () => {
     const { calls } = useServer({
-      products: { data: [productRow], error: null },
-      product_ratings: { data: [], error: null },
+      catalogue_teas: { data: [bancha], count: 1, error: null },
       regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
     });
 
@@ -214,10 +233,10 @@ describe('Explore page', () => {
       'href',
       '/products/p1'
     );
-    expect(screen.getByText('Showing 1 tea')).toBeInTheDocument();
+    expect(screen.getByText('Showing 1–1 of 1 tea')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Want to try' })).toBeInTheDocument();
     expect(calls).toContainEqual({
-      table: 'products',
+      table: 'catalogue_teas',
       method: 'eq',
       args: ['category', 'hojicha'],
     });
@@ -234,30 +253,42 @@ describe('Explore page', () => {
     expect(screen.getByRole('combobox', { name: 'Sort' })).toHaveTextContent('Newest');
     const search = screen.getByRole('search');
     expect(search.querySelector('input[name="category"]')).toHaveValue('hojicha');
+    expect(screen.queryByRole('navigation', { name: 'Pages' })).not.toBeInTheDocument();
   });
 
-  it('titles a search and counts several teas', async () => {
+  it('titles a search, counts the matches and pages through them', async () => {
     useServer({
-      products: {
-        data: [productRow, row('p2', 'Kyoto Gold', 'hojicha', '2026-09-03T00:00:00Z')],
+      catalogue_teas: {
+        data: [bancha, row('p2', 'Kyoto Gold', 'hojicha', '2026-09-03T00:00:00Z')],
+        count: 50,
         error: null,
       },
-      product_ratings: { data: [], error: null },
       regions: { data: [], error: null },
     });
 
-    renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ q: 'kyoto' }) }));
+    renderWithQuery(
+      await ExplorePage({ searchParams: Promise.resolve({ q: 'kyoto', page: '2' }) })
+    );
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'Results for “kyoto”' })
     ).toBeInTheDocument();
-    expect(screen.getByText('Showing 2 teas')).toBeInTheDocument();
+    expect(screen.getByText('Showing 25–26 of 50 teas')).toBeInTheDocument();
+    const pages = screen.getByRole('navigation', { name: 'Pages' });
+    expect(within(pages).getByText('Page 2 of 3')).toBeInTheDocument();
+    expect(within(pages).getByRole('link', { name: '← Previous' })).toHaveAttribute(
+      'href',
+      '/explore?q=kyoto'
+    );
+    expect(within(pages).getByRole('link', { name: 'Next →' })).toHaveAttribute(
+      'href',
+      '/explore?q=kyoto&page=3'
+    );
   });
 
   it('still shows the feed when regions fail to load', async () => {
     useServer({
-      products: { data: [productRow], error: null },
-      product_ratings: { data: [], error: null },
+      catalogue_teas: { data: [bancha], count: 1, error: null },
       regions: { data: null, error: new Error('boom') },
     });
 
@@ -270,7 +301,7 @@ describe('Explore page', () => {
 
   it('ignores unknown categories and shows the empty state', async () => {
     const { calls } = useServer({
-      products: { data: [], error: null },
+      catalogue_teas: { data: [], count: 0, error: null },
       regions: { data: [], error: null },
     });
 
@@ -280,13 +311,14 @@ describe('Explore page', () => {
       screen.getByText('No teas rated yet. Be the first to rate a matcha or hojicha.')
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
-    expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
-      ['status', 'approved'],
-    ]);
+    expect(calls.some((c) => c.method === 'eq')).toBe(false);
   });
 
   it('names the category in an empty filtered catalogue', async () => {
-    useServer({ products: { data: [], error: null }, regions: { data: [], error: null } });
+    useServer({
+      catalogue_teas: { data: [], count: 0, error: null },
+      regions: { data: [], error: null },
+    });
 
     renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ category: 'matcha' }) }));
 
@@ -294,7 +326,10 @@ describe('Explore page', () => {
   });
 
   it('shows a no-results state with a clear-filters link when a search matches nothing', async () => {
-    useServer({ products: { data: [], error: null }, regions: { data: [], error: null } });
+    useServer({
+      catalogue_teas: { data: [], count: 0, error: null },
+      regions: { data: [], error: null },
+    });
 
     renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ q: 'gyokuro' }) }));
 
@@ -305,34 +340,32 @@ describe('Explore page', () => {
 
   it('treats an empty region as no match rather than an empty catalogue', async () => {
     useServer({
-      products: { data: [], error: null },
+      catalogue_teas: { data: [], count: 0, error: null },
       regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
     });
 
     renderWithQuery(await ExplorePage({ searchParams: Promise.resolve({ region: REGION }) }));
 
     expect(screen.getByText('No teas from this region yet.')).toBeInTheDocument();
-    expect(screen.getByText('Showing 0 teas')).toBeInTheDocument();
+    expect(screen.getByText('No teas')).toBeInTheDocument();
   });
 
-  it('filters by grade and minimum rating, offering the grades of the other matches', async () => {
-    useServer({
-      products: {
-        data: [
-          { ...productRow, grade: 'Bancha' },
-          { ...row('p2', 'Kyoto Gold', 'hojicha', '2026-09-03T00:00:00Z'), grade: 'Premium' },
-          { ...row('p3', 'Kyoto Silver', 'hojicha', '2026-09-04T00:00:00Z'), grade: 'Premium' },
-        ],
-        error: null,
-      },
-      product_ratings: {
-        data: [
-          { product_id: 'p1', avg_stars: 4.8, review_count: 2 },
-          { product_id: 'p2', avg_stars: 4.6, review_count: 1 },
-          { product_id: 'p3', avg_stars: 3.2, review_count: 1 },
-        ],
-        error: null,
-      },
+  it('filters by grade and minimum rating in SQL, offering the grades of the other matches', async () => {
+    const { calls } = useServer({
+      catalogue_teas: [
+        {
+          data: [
+            row('p2', 'Kyoto Gold', 'hojicha', '2026-09-03T00:00:00Z', {
+              grade: 'Premium',
+              review_count: 1,
+              avg_stars: 4.6,
+            }),
+          ],
+          count: 1,
+          error: null,
+        },
+        { data: [{ grade: 'Bancha' }, { grade: 'Premium' }], error: null },
+      ],
       latest_reviews: { data: [], error: null },
       regions: { data: [], error: null },
     });
@@ -342,9 +375,17 @@ describe('Explore page', () => {
     );
 
     expect(screen.getByRole('link', { name: 'Kyoto Gold' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Kyoto Bancha' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Kyoto Silver' })).not.toBeInTheDocument();
-    expect(screen.getByText('Showing 1 tea')).toBeInTheDocument();
+    expect(screen.getByText('Showing 1–1 of 1 tea')).toBeInTheDocument();
+    expect(calls).toContainEqual({
+      table: 'catalogue_teas',
+      method: 'eq',
+      args: ['grade_key', 'premium'],
+    });
+    expect(calls).toContainEqual({
+      table: 'catalogue_teas',
+      method: 'gte',
+      args: ['avg_stars', 4.5],
+    });
     const grade = screen.getByRole('navigation', { name: 'Grade' });
     expect(within(grade).getByRole('link', { name: 'Bancha' })).toHaveAttribute(
       'href',
@@ -354,8 +395,7 @@ describe('Explore page', () => {
 
   it('says no teas match when grade or rating narrows to nothing', async () => {
     useServer({
-      products: { data: [productRow], error: null },
-      product_ratings: { data: [], error: null },
+      catalogue_teas: { data: [], count: 0, error: null },
       regions: { data: [], error: null },
     });
 
@@ -742,7 +782,7 @@ describe('Product page', () => {
         ],
         error: null,
       },
-      product_ratings: { data: [{ product_id: 'p1', avg_stars: 4, review_count: 1 }], error: null },
+      product_ratings: { data: { product_id: 'p1', avg_stars: 4, review_count: 1 }, error: null },
       latest_reviews: {
         data: [
           {
@@ -819,8 +859,8 @@ describe('Product page', () => {
         data: { ...productRow, grade: 'First flush', region_id: REGION, status: 'pending' },
         error: null,
       },
-      regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
-      product_ratings: { data: [], error: null },
+      regions: { data: { id: REGION, name: 'Uji, Kyoto' }, error: null },
+      product_ratings: { data: null, error: null },
       latest_reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
@@ -847,7 +887,7 @@ describe('Product page', () => {
     useServer(
       {
         products: { data: { ...productRow, status: 'pending', added_by: 'u1' }, error: null },
-        product_ratings: { data: [], error: null },
+        product_ratings: { data: null, error: null },
         latest_reviews: { data: [], error: null },
         stock_reports: { data: null, error: null },
         listings: { data: [], error: null },
@@ -865,7 +905,7 @@ describe('Product page', () => {
   it('invites sellers and stock reports on an approved tea nobody sells yet', async () => {
     useServer({
       products: { data: productRow, error: null },
-      product_ratings: { data: [], error: null },
+      product_ratings: { data: null, error: null },
       latest_reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
@@ -887,7 +927,7 @@ describe('Product page', () => {
         data: { ...productRow, status: 'rejected', merged_into: 'keep-id' },
         error: null,
       },
-      product_ratings: { data: [], error: null },
+      product_ratings: { data: null, error: null },
       latest_reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
@@ -895,6 +935,19 @@ describe('Product page', () => {
     await expect(ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) })).rejects.toThrow(
       'NEXT_REDIRECT /products/keep-id'
     );
+  });
+
+  it('titles the page with the tea and brand, and keeps unlisted teas out of search', async () => {
+    useServer({
+      products: { data: { ...productRow, status: 'pending' }, error: null },
+      product_ratings: { data: { product_id: 'p1', avg_stars: 4, review_count: 2 }, error: null },
+    });
+    const meta = await generateMetadata({ params: Promise.resolve({ id: PRODUCT_ID }) });
+    expect(meta.title).toBe('Kyoto Bancha · Ippodo');
+    expect(meta.description).toBe(
+      'Kyoto Bancha · Ippodo: hojicha. 4.0 out of 5 from 2 ratings on Matchoji.'
+    );
+    expect(meta.robots).toEqual({ index: false });
   });
 
   it('404s a malformed tea id without querying', async () => {
@@ -908,7 +961,7 @@ describe('Product page', () => {
   it('tells the taster who added a rejected tea why it is not in the catalogue', async () => {
     useServer({
       products: { data: { ...productRow, status: 'rejected' }, error: null },
-      product_ratings: { data: [], error: null },
+      product_ratings: { data: null, error: null },
       latest_reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
@@ -1066,7 +1119,12 @@ describe('static routes', () => {
     expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
     expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
     expect(screen.getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute('href', '/sell');
-    expect(screen.getAllByRole('link')).toHaveLength(3);
+    expect(screen.getByRole('link', { name: 'Regions' })).toHaveAttribute('href', '/regions');
+    expect(screen.getByRole('link', { name: 'Tea supply' })).toHaveAttribute(
+      'href',
+      '/regions/supply'
+    );
+    expect(screen.getAllByRole('link')).toHaveLength(5);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');

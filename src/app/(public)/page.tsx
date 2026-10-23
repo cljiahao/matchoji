@@ -28,9 +28,13 @@ const SHELVES: { title: string; filters: DiscoverFilters; href: string }[] = [
   { title: 'Newly added', filters: { sort: 'newest' }, href: '/explore?sort=newest' },
 ];
 
+// Each shelf fetches only the teas it shows.
 async function loadShelves(): Promise<Product[][]> {
   const supabase = await createClient();
-  return Promise.all(SHELVES.map(({ filters }) => listProducts(supabase, filters)));
+  const pages = await Promise.all(
+    SHELVES.map(({ filters }) => listProducts(supabase, filters, { limit: SHELF_SIZE }))
+  );
+  return pages.map((p) => p.products);
 }
 
 export default async function Home() {

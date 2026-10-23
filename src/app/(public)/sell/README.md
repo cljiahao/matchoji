@@ -9,6 +9,7 @@ yet listed, defaulting to their last currency) and shop details. Rendered per re
 
 ## Contents
 
+- `loading.tsx`
 - `page.tsx`
 
 ## Parent

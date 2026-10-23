@@ -56,17 +56,8 @@ beforeEach(() => {
 describe('LogTastingDialog', () => {
   it('goes from search to rating an existing product', async () => {
     setup({
-      products: {
-        data: [
-          {
-            id: 'a',
-            name: 'Uji Ceremonial',
-            brand: null,
-            category: 'matcha',
-            status: 'approved',
-            added_by: null,
-          },
-        ],
+      'rpc:search_teas': {
+        data: [{ id: 'a', name: 'Uji Ceremonial', brand: null, category: 'matcha' }],
         error: null,
       },
     });
@@ -81,10 +72,8 @@ describe('LogTastingDialog', () => {
   it('adds a new product with category and region, then rates it', async () => {
     const created = { id: 'new', name: 'Kagoshima Gold', brand: null, category: 'hojicha' };
     const { calls } = setup({
-      products: [
-        { data: [], error: null },
-        { data: created, error: null },
-      ],
+      'rpc:search_teas': { data: [], error: null },
+      products: { data: created, error: null },
     });
 
     await openAndSearch('Kagoshima Gold');
@@ -111,10 +100,8 @@ describe('LogTastingDialog', () => {
 
   it('shows inline errors and keeps the user on the add step when creation fails', async () => {
     setup({
-      products: [
-        { data: [], error: null },
-        { data: null, error: new Error('rls') },
-      ],
+      'rpc:search_teas': { data: [], error: null },
+      products: { data: null, error: new Error('rls') },
     });
 
     await openAndSearch('Kagoshima Gold');
@@ -136,10 +123,8 @@ describe('LogTastingDialog', () => {
 
   it('says so when the tea is already on Matchoji', async () => {
     setup({
-      products: [
-        { data: [], error: null },
-        { data: null, error: Object.assign(new Error('dup'), { code: '23505' }) },
-      ],
+      'rpc:search_teas': { data: [], error: null },
+      products: { data: null, error: Object.assign(new Error('dup'), { code: '23505' }) },
     });
 
     await openAndSearch('Sayaka');
@@ -154,7 +139,7 @@ describe('LogTastingDialog', () => {
   });
 
   it('resets to the search step when reopened', async () => {
-    setup({ products: { data: [], error: null } });
+    setup({ 'rpc:search_teas': { data: [], error: null } });
 
     await openAndSearch('Kagoshima Gold');
     await userEvent.click(await screen.findByRole('button', { name: 'Add as new product' }));

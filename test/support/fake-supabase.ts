@@ -10,6 +10,8 @@ import type { Database } from '@/integrations/supabase/database.types';
 export interface QueryResult {
   data: unknown;
   error: unknown;
+  // What `select(…, { count: 'exact' })` reports.
+  count?: number | null;
 }
 
 // A pending result lets a test observe state while a request is still in flight.

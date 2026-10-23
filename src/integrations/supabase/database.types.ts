@@ -351,6 +351,29 @@ export interface Database {
         };
         Relationships: [];
       };
+      // Approved teas with region, rating, weighted score and scarcity rank, for the lists.
+      catalogue_teas: {
+        Row: {
+          id: string;
+          name: string;
+          brand: string | null;
+          category: ProductCategory;
+          grade: string | null;
+          grade_key: string | null;
+          region_id: string | null;
+          region_name: string | null;
+          supply: SupplyLevel | null;
+          supply_rank: number;
+          image_url: string | null;
+          shop_url: string | null;
+          created_at: string;
+          review_count: number;
+          avg_stars: number | null;
+          weighted_score: number | null;
+          top_rank: number;
+        };
+        Relationships: [];
+      };
       product_ratings: {
         Row: {
           product_id: string;
@@ -380,6 +403,10 @@ export interface Database {
         Returns: undefined;
       };
       reapply_as_vendor: { Args: Record<string, never>; Returns: undefined };
+      search_teas: {
+        Args: { q: string };
+        Returns: { id: string; name: string; brand: string | null; category: ProductCategory }[];
+      };
     };
   };
 }

@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
+import { cache } from 'react';
 import { z } from 'zod';
 
 import { WantToTryButton } from '@/features/journal';
@@ -32,14 +34,42 @@ interface ProductPageProps {
   params: Promise<{ id: string }>;
 }
 
+const isTeaId = (id: string) => z.uuid().safeParse(id).success;
+
+// One read per request, shared by the page and its metadata.
+const loadProduct = cache(async (id: string) => getProduct(await createClient(), id));
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const product = isTeaId(id) ? await loadProduct(id) : null;
+  if (!product) return { title: 'Tea not found' };
+  const title = product.brand ? `${product.name} · ${product.brand}` : product.name;
+  const rating =
+    product.avgStars === null
+      ? 'Not yet rated'
+      : `${product.avgStars.toFixed(1)} out of 5 from ${product.reviewCount} ratings`;
+  const description = `${title}: ${product.category}. ${rating} on Matchoji.`;
+  return {
+    title,
+    description,
+    // Teas outside the catalogue are shareable by link but kept out of search engines.
+    robots: product.status === 'approved' ? undefined : { index: false },
+    openGraph: {
+      title,
+      description,
+      images: product.imageUrl ? [{ url: product.imageUrl }] : undefined,
+    },
+  };
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
   // A malformed id would make Postgres reject the query; it is simply not a tea.
-  if (!z.uuid().safeParse(id).success) notFound();
+  if (!isTeaId(id)) notFound();
 
   const supabase = await createClient();
   const [product, reviews, stockReport, offers, { data: auth }] = await Promise.all([
-    getProduct(supabase, id),
+    loadProduct(id),
     listReviews(supabase, id),
     getLatestStockReport(supabase, id),
     listProductOffers(supabase, id),

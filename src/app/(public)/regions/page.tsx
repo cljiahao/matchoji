@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { connection } from 'next/server';
 
@@ -13,6 +14,8 @@ import {
 import { createClient } from '@/integrations/supabase/server';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
+
+export const metadata: Metadata = { title: 'Tea regions' };
 
 const CATEGORIES: ProductCategory[] = ['matcha', 'hojicha'];
 

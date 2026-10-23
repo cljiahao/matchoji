@@ -10,6 +10,7 @@ table, and the source credits the e-Stat and MAFF terms require. Rendered per re
 
 ## Contents
 
+- `loading.tsx`
 - `page.tsx`
 
 ## Parent

@@ -8,6 +8,8 @@ with the most teas come first, or the scarcest first with `?sort=scarce`; each c
 Explore filtered to that region. Rendered per request, since counts are live, from `listRegionSummaries`. The intro links to
 `supply/`, the official harvest figures behind the levels.
 
+Titled "Tea regions".
+
 ## Contents
 
 - `loading.tsx`

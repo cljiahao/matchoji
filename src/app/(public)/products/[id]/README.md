@@ -11,7 +11,10 @@ under its badges (like Vivino's "processing" label on an unmatched scan); a reje
 visible only to the taster who added it, says it was not added to the catalogue. Rating and want-to-try appear only on catalogue teas
 or, for a tea awaiting review, to whoever added it; stock and "Where to buy" only on catalogue
 teas. A malformed id 404s before any query. A merged duplicate forwards permanently to the tea
-it repeated, and a rejected tea shows the admin's reason to whoever added it.
+it repeated, and a rejected tea shows the admin's reason to whoever added it. `generateMetadata` titles
+the page "Name · Brand", describes its rating, uses its photo for link previews and keeps teas
+outside the catalogue out of search engines; the product read is shared with the page through
+React `cache`.
 
 ## Contents
 

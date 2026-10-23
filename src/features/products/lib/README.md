@@ -5,8 +5,8 @@
 `CATEGORY_STYLES`: the jade (matcha) / amber (hojicha) Tailwind classes for badges, fills,
 tints, stars and the product hero band, so category colour is applied identically
 everywhere. `discover-params` turns the Explore URL into validated filters (invalid values
-are dropped) and back into `/explore` links via `discoverHref`; `sort-products` implements
-the four orders, including "Scarcest first". `supply` ranks the supply levels (scarce,
+are dropped, `page` from 2 up) and back into `/explore` links via `discoverHref`; the sorts now run in SQL (see `api`); `filter-products`'s `gradeOptions` dedupes grades
+for the filter rail. `supply` ranks the supply levels (scarce,
 tight, plentiful, then unknown). The tests' `Product` fixtures carry every field, including
 `supply`, `shopUrl`, `status`, `addedBy`, `reviewNote` and `mergedInto`, which these helpers
 ignore. `filter-products` applies the grade and minimum-rating filters after the
@@ -21,8 +21,6 @@ hojicha for the regions page and `sortRegionsByScarcity` reorders them, scarcest
 - `filter-products.test.ts`
 - `filter-products.ts`
 - `index.ts`
-- `sort-products.test.ts`
-- `sort-products.ts`
 - `summarize-regions.test.ts`
 - `summarize-regions.ts`
 - `supply.test.ts`

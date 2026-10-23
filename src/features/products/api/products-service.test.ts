@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
   getProduct,
+  listGradeOptions,
   listProducts,
   listRegionSummaries,
   listRegions,
@@ -21,42 +22,61 @@ const row = (id: string, overrides: Partial<Record<string, unknown>> = {}) => ({
   ...overrides,
 });
 
+const tea = (id: string, overrides: Partial<Record<string, unknown>> = {}) => ({
+  id,
+  name: `Tea ${id}`,
+  brand: null,
+  category: 'matcha',
+  grade: null,
+  region_name: null,
+  supply: null,
+  image_url: null,
+  shop_url: null,
+  created_at: '2026-09-01T00:00:00Z',
+  review_count: 0,
+  avg_stars: null,
+  ...overrides,
+});
+
 describe('listProducts', () => {
-  it('merges region names, supply and ratings, rated products first', async () => {
+  it('maps catalogue rows, coercing numbers, and reports the total', async () => {
     const { client } = createFakeSupabase({
-      products: { data: [row('a'), row('b', { region_id: 'r1' })], error: null },
-      regions: {
-        data: [{ id: 'r1', name: 'Uji, Kyoto', matcha_supply: 'scarce', hojicha_supply: 'tight' }],
-        error: null,
-      },
-      product_ratings: {
-        data: [{ product_id: 'b', avg_stars: 4.5, review_count: 2 }],
+      catalogue_teas: {
+        data: [
+          tea('b', {
+            region_name: 'Uji, Kyoto',
+            supply: 'scarce',
+            review_count: 2,
+            avg_stars: '4.50',
+          }),
+          tea('a'),
+        ],
+        count: 30,
         error: null,
       },
       latest_reviews: { data: [], error: null },
     });
 
-    const products = await listProducts(client, { sort: 'top' });
+    const { products, total } = await listProducts(client, { sort: 'top' });
 
+    expect(total).toBe(30);
     expect(products.map((p) => p.id)).toEqual(['b', 'a']);
     expect(products[0]).toMatchObject({
       regionName: 'Uji, Kyoto',
       supply: 'scarce',
       avgStars: 4.5,
       reviewCount: 2,
+      status: 'approved',
     });
-    expect(products[1]).toMatchObject({
-      regionName: null,
-      supply: null,
-      avgStars: null,
-      reviewCount: 0,
-    });
+    expect(products[1]).toMatchObject({ avgStars: null, reviewCount: 0 });
   });
 
-  it('adds each product’s two most-noticed flavour notes', async () => {
-    const { client } = createFakeSupabase({
-      products: { data: [row('a')], error: null },
-      product_ratings: { data: [{ product_id: 'a', avg_stars: 4, review_count: 3 }], error: null },
+  it('adds each rated tea’s two most-noticed flavour notes, reading this page only', async () => {
+    const { client, calls } = createFakeSupabase({
+      catalogue_teas: {
+        data: [tea('a', { review_count: 3, avg_stars: 4 }), tea('b')],
+        error: null,
+      },
       latest_reviews: {
         data: [
           { product_id: 'a', flavor_notes: ['umami', 'creamy'] },
@@ -67,68 +87,89 @@ describe('listProducts', () => {
       },
     });
 
-    const [product] = await listProducts(client, { sort: 'top' });
-    expect(product.topNotes).toEqual(['creamy', 'umami']);
-  });
-
-  it('filters by category when one is given', async () => {
-    const { client, calls } = createFakeSupabase({
-      products: { data: [], error: null },
-    });
-
-    await listProducts(client, { category: 'hojicha', sort: 'top' });
-
+    const { products } = await listProducts(client, { sort: 'top' });
+    expect(products[0].topNotes).toEqual(['creamy', 'umami']);
     expect(calls).toContainEqual({
-      table: 'products',
-      method: 'eq',
-      args: ['category', 'hojicha'],
+      table: 'latest_reviews',
+      method: 'in',
+      args: ['product_id', ['a']],
     });
   });
 
-  it('applies search, category and region filters', async () => {
-    const { client, calls } = createFakeSupabase({ products: { data: [], error: null } });
+  it('filters and pages in SQL', async () => {
+    const { client, calls } = createFakeSupabase({ catalogue_teas: { data: [], error: null } });
     const regionId = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
 
-    await listProducts(client, { q: 'uji', category: 'matcha', regionId, sort: 'newest' });
+    await listProducts(client, {
+      q: 'uji',
+      category: 'matcha',
+      regionId,
+      grade: ' Ceremonial ',
+      minRating: 4,
+      sort: 'newest',
+      page: 3,
+    });
 
-    expect(calls).toContainEqual({
-      table: 'products',
-      method: 'or',
-      args: ['name.ilike.%uji%,brand.ilike.%uji%'],
-    });
-    expect(calls).toContainEqual({ table: 'products', method: 'eq', args: ['category', 'matcha'] });
-    expect(calls).toContainEqual({
-      table: 'products',
-      method: 'eq',
-      args: ['region_id', regionId],
-    });
+    const of = (method: string) => calls.filter((c) => c.method === method).map((c) => c.args);
+    expect(of('or')).toEqual([['name.ilike.%uji%,brand.ilike.%uji%']]);
+    expect(of('eq')).toEqual([
+      ['category', 'matcha'],
+      ['region_id', regionId],
+      ['grade_key', 'ceremonial'],
+    ]);
+    expect(of('gte')).toEqual([['avg_stars', 4]]);
+    expect(of('order')).toEqual([['created_at', { ascending: false, nullsFirst: false }]]);
+    expect(of('range')).toEqual([[48, 71]]);
   });
 
-  it('skips the region lookup when no product has a region', async () => {
-    const { client, calls } = createFakeSupabase({
-      products: { data: [row('a')], error: null },
-      product_ratings: { data: [], error: null },
-    });
+  it('ranks "top" by weighted score and "scarce" by supply first', async () => {
+    const top = createFakeSupabase({ catalogue_teas: { data: [], error: null } });
+    await listProducts(top.client, { sort: 'top' }, { limit: 12 });
+    expect(top.calls.filter((c) => c.method === 'order').map((c) => c.args[0])).toEqual([
+      'top_rank',
+      'weighted_score',
+      'created_at',
+    ]);
+    expect(top.calls.find((c) => c.method === 'range')?.args).toEqual([0, 11]);
 
-    await listProducts(client, { sort: 'top' });
-
-    expect(calls.some((c) => c.table === 'regions')).toBe(false);
-  });
-
-  it('throws when ratings fail to load instead of showing teas as unrated', async () => {
-    const error = new Error('ratings');
-    const { client } = createFakeSupabase({
-      products: { data: [row('a')], error: null },
-      product_ratings: { data: null, error },
-    });
-    await expect(listProducts(client, { sort: 'top' })).rejects.toBe(error);
+    const scarce = createFakeSupabase({ catalogue_teas: { data: [], error: null } });
+    await listProducts(scarce.client, { sort: 'scarce' });
+    expect(scarce.calls.filter((c) => c.method === 'order').map((c) => c.args[0])).toEqual([
+      'supply_rank',
+      'top_rank',
+      'weighted_score',
+      'created_at',
+    ]);
   });
 
   it('throws the Supabase error', async () => {
     const error = new Error('rls denied');
-    const { client } = createFakeSupabase({ products: { data: null, error } });
-
+    const { client } = createFakeSupabase({ catalogue_teas: { data: null, error } });
     await expect(listProducts(client, { sort: 'top' })).rejects.toBe(error);
+  });
+});
+
+describe('listGradeOptions', () => {
+  it('lists distinct grades among teas matching everything but grade and rating', async () => {
+    const { client, calls } = createFakeSupabase({
+      catalogue_teas: {
+        data: [{ grade: 'Ceremonial' }, { grade: 'ceremonial ' }, { grade: 'Koicha' }],
+        error: null,
+      },
+    });
+
+    expect(
+      await listGradeOptions(client, {
+        category: 'matcha',
+        grade: 'Koicha',
+        minRating: 4,
+        sort: 'top',
+      })
+    ).toEqual(['Ceremonial', 'Koicha']);
+    expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
+      ['category', 'matcha'],
+    ]);
+    expect(calls.some((c) => c.method === 'gte')).toBe(false);
   });
 });
 
@@ -141,7 +182,7 @@ describe('getProduct', () => {
   it('returns the hydrated product', async () => {
     const { client } = createFakeSupabase({
       products: { data: row('a'), error: null },
-      product_ratings: { data: [{ product_id: 'a', avg_stars: 3, review_count: 1 }], error: null },
+      product_ratings: { data: { product_id: 'a', avg_stars: 3, review_count: 1 }, error: null },
     });
     expect(await getProduct(client, 'a')).toMatchObject({ id: 'a', avgStars: 3 });
   });
@@ -226,59 +267,19 @@ describe('searchProducts', () => {
     expect(calls).toEqual([]);
   });
 
-  it('queries with the sanitised name/brand filter', async () => {
+  it('asks the search_teas function, which ranks typo-tolerant matches', async () => {
     const hits = [{ id: 'a', name: 'Uji', brand: null, category: 'matcha' }];
     const { client, calls } = createFakeSupabase({
-      products: {
-        data: hits.map((h) => ({ ...h, status: 'approved', added_by: null })),
-        error: null,
-      },
+      'rpc:search_teas': { data: hits, error: null },
     });
 
-    expect(await searchProducts(client, 'uji,x')).toEqual(hits);
-    expect(calls).toContainEqual({
-      table: 'products',
-      method: 'or',
-      args: ['name.ilike.%uji x%,brand.ilike.%uji x%'],
-    });
-  });
-
-  it('keeps other people’s pending teas out but finds the searcher’s own', async () => {
-    const row = (id: string, status: string, added_by: string | null) => ({
-      id,
-      name: `Uji ${id}`,
-      brand: null,
-      category: 'matcha',
-      status,
-      added_by,
-    });
-    const rows = [
-      row('approved', 'approved', null),
-      row('mine', 'pending', 'u1'),
-      row('theirs', 'pending', 'u2'),
-    ];
-    const { client, calls } = createFakeSupabase({
-      products: [
-        { data: rows, error: null },
-        { data: rows, error: null },
-      ],
-    });
-
-    expect((await searchProducts(client, 'uji', 'u1')).map((p) => p.id)).toEqual([
-      'approved',
-      'mine',
-    ]);
-    expect((await searchProducts(client, 'uji')).map((p) => p.id)).toEqual(['approved']);
-    expect(calls).toContainEqual({
-      table: 'products',
-      method: 'neq',
-      args: ['status', 'rejected'],
-    });
+    expect(await searchProducts(client, 'uji')).toEqual(hits);
+    expect(calls).toEqual([{ table: 'rpc:search_teas', method: 'rpc', args: [{ q: 'uji' }] }]);
   });
 
   it('throws the Supabase error', async () => {
     const error = new Error('boom');
-    const { client } = createFakeSupabase({ products: { data: null, error } });
+    const { client } = createFakeSupabase({ 'rpc:search_teas': { data: null, error } });
     await expect(searchProducts(client, 'uji')).rejects.toBe(error);
   });
 });

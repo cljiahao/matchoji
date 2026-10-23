@@ -59,13 +59,17 @@ describe('StarRatingDisplay', () => {
 });
 
 describe('ScoreNumeral', () => {
-  it('renders one decimal and a muted dash for null', () => {
-    const { rerender } = render(<ScoreNumeral value={4} size="lg" />);
-    expect(screen.getByText('4.0')).toHaveClass('tabular-nums', 'font-extrabold', 'text-6xl');
+  it('renders one decimal, read as "out of 5", and a hidden muted dash for null', () => {
+    const { container, rerender } = render(<ScoreNumeral value={4} size="lg" />);
+    const score = container.firstElementChild as HTMLElement;
+    expect(score).toHaveTextContent('4.0 out of 5');
+    expect(score).toHaveClass('tabular-nums', 'font-extrabold', 'text-6xl');
+    expect(screen.getByText('out of 5')).toHaveClass('sr-only');
     rerender(<ScoreNumeral value={4} size="md" />);
-    expect(screen.getByText('4.0')).toHaveClass('text-3xl');
+    expect(container.firstElementChild).toHaveClass('text-3xl');
     rerender(<ScoreNumeral value={null} size="sm" />);
-    expect(screen.getByText('–')).toHaveClass('text-xl', 'text-muted-foreground');
+    expect(container.firstElementChild).toHaveClass('text-xl', 'text-muted-foreground');
+    expect(screen.getByText('–')).toHaveAttribute('aria-hidden', 'true');
   });
 });
 

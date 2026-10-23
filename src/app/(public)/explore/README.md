@@ -10,6 +10,9 @@ that matches nothing shows a no-match message with a clear-filters link; an empt
 invites the first tasting. Products and regions come from Supabase; a failed region read only
 hides the region filter.
 
+Results come 24 per page from `catalogue_teas`, filtered and sorted in SQL, with "Showing
+1–24 of N" and Previous/Next links (`?page=`); any other filter change returns to page 1.
+
 ## Contents
 
 - `loading.tsx`

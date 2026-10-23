@@ -17,6 +17,8 @@ export interface DiscoverFilters {
   grade?: string;
   minRating?: MinRating;
   sort: DiscoverSort;
+  // 1-based; absent means the first page.
+  page?: number;
 }
 
 type RawParams = Record<string, string | string[] | undefined>;
@@ -47,11 +49,16 @@ export function parseDiscoverParams(params: RawParams): DiscoverFilters {
   const sort = z.enum(DISCOVER_SORTS).safeParse(first(params.sort));
   if (sort.success) filters.sort = sort.data;
 
+  const page = z.coerce.number().int().min(2).max(1000).safeParse(first(params.page));
+  if (page.success) filters.page = page.data;
+
   return filters;
 }
 
 // Builds an Explore URL from the current filters plus a change, so every control (tea, region,
 // grade, rating, sort) keeps the others. The default sort is left out to keep URLs short.
+// Any change other than the page goes back to page 1, since the results it pages through
+// have changed.
 export function discoverHref(current: DiscoverFilters, patch: Partial<DiscoverFilters>): string {
   const next = { ...current, ...patch };
   const params = new URLSearchParams();
@@ -61,6 +68,7 @@ export function discoverHref(current: DiscoverFilters, patch: Partial<DiscoverFi
   if (next.grade) params.set('grade', next.grade);
   if (next.minRating) params.set('rating', String(next.minRating));
   if (next.sort && next.sort !== 'top') params.set('sort', next.sort);
+  if (patch.page && patch.page > 1) params.set('page', String(patch.page));
   const query = params.toString();
   return query ? `/explore?${query}` : '/explore';
 }

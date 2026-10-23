@@ -31,12 +31,16 @@ refused, review photos must be the author's own, rejected teas stay visible to t
 and the per-tea indexes exist. `admin-review.test.ts` checks users cannot make themselves
 admin, only admins can review, link or merge teas and review shops, reasons reach the
 submitter, a merge moves tastings, saves and listings and forwards the duplicate, and a
-rejected shop can reapply once.
+rejected shop can reapply once. `catalogue-discovery.test.ts` checks the weighted ranking
+(three ratings beat one), that the view lists approved teas with their region and scarcity,
+and that `search_teas` forgives typos, treats wildcards as text and shows only the caller's
+own pending teas.
 
 ## Contents
 
 - `admin-review.test.ts`
 - `audit-log.test.ts`
+- `catalogue-discovery.test.ts`
 - `integrity-hardening.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`

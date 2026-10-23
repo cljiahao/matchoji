@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { WantToTryButton } from '@/features/journal';
@@ -6,10 +7,11 @@ import {
   ExploreFilters,
   ExploreSort,
   FilterDisclosure,
+  PAGE_SIZE,
   ProductRow,
   SearchPill,
-  filterByFacets,
-  gradeOptions,
+  discoverHref,
+  listGradeOptions,
   listProducts,
   listRegions,
   parseDiscoverParams,
@@ -17,6 +19,8 @@ import {
 } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
 import { createClient } from '@/integrations/supabase/server';
+
+export const metadata: Metadata = { title: 'Explore teas' };
 
 function activeFilterCount({ category, regionId, grade, minRating }: DiscoverFilters): number {
   return [category, regionId, grade, minRating].filter(Boolean).length;
@@ -37,15 +41,18 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
   const supabase = await createClient();
   // Regions only feed the filter; losing them hides the rail section, not the results.
-  const [matching, regions] = await Promise.all([
+  const [{ products, total }, grades, regions] = await Promise.all([
     listProducts(supabase, filters),
+    listGradeOptions(supabase, filters),
     listRegions(supabase).catch(() => []),
   ]);
-
-  // Grade options come from everything else that matched, so picking a grade never hides the
-  // other grades it could switch to.
-  const grades = gradeOptions(matching);
-  const products = filterByFacets(matching, filters);
+  const page = filters.page ?? 1;
+  const first = (page - 1) * PAGE_SIZE + 1;
+  const last = first + products.length - 1;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const teaWord = total === 1 ? 'tea' : 'teas';
+  const countLabel =
+    products.length === 0 ? 'No teas' : `Showing ${first}–${last} of ${total} ${teaWord}`;
 
   // Any narrowing that leaves nothing is "no match", not an empty catalogue.
   const narrowed = Boolean(filters.q || filters.regionId || filters.grade || filters.minRating);
@@ -69,7 +76,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             <SearchPill filters={filters} className="sm:w-80" />
             <div className="flex items-center justify-between gap-3 sm:justify-end">
               <p className="text-muted-foreground text-sm" aria-live="polite">
-                Showing {products.length} {products.length === 1 ? 'tea' : 'teas'}
+                {countLabel}
               </p>
               <ExploreSort filters={filters} />
             </div>
@@ -87,6 +94,35 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                   </li>
                 ))}
               </ul>
+            )}
+            {pages > 1 && (
+              <nav aria-label="Pages" className="mt-6 flex items-center justify-between text-sm">
+                {page > 1 ? (
+                  <Link
+                    href={discoverHref(filters, { page: page - 1 })}
+                    className="font-semibold hover:underline"
+                    rel="prev"
+                  >
+                    ← Previous
+                  </Link>
+                ) : (
+                  <span />
+                )}
+                <span className="text-muted-foreground">
+                  Page {page} of {pages}
+                </span>
+                {page < pages ? (
+                  <Link
+                    href={discoverHref(filters, { page: page + 1 })}
+                    className="font-semibold hover:underline"
+                    rel="next"
+                  >
+                    Next →
+                  </Link>
+                ) : (
+                  <span />
+                )}
+              </nav>
             )}
             {products.length === 0 && narrowed && (
               <div className="bg-muted flex-center flex-col gap-3 rounded-3xl py-16 text-center">

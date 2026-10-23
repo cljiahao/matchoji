@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
 import { SignInButton } from '@/features/auth';
@@ -11,6 +12,8 @@ import {
 } from '@/features/journal';
 import { LogTastingDialog } from '@/features/reviews';
 import { createClient } from '@/integrations/supabase/server';
+
+export const metadata: Metadata = { title: 'Your journal' };
 
 function Header({ children }: { children?: React.ReactNode }) {
   return (
