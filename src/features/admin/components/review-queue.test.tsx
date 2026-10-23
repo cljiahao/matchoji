@@ -77,4 +77,37 @@ describe('ReviewQueueList', () => {
     expect(calls[0].args).toEqual([{ duplicate: 't1', keep: 'keep' }]);
     expect(router.refresh).not.toHaveBeenCalled();
   });
+
+  it('reviews a shop application, and cancels a half-written rejection', async () => {
+    const fake = createFakeSupabase({ 'rpc:review_vendor': { data: null, error: null } });
+    supabase.current = fake.client;
+    renderWithQuery(
+      <ReviewQueueList
+        teas={[]}
+        shops={[
+          {
+            id: 'v1',
+            name: 'Leaf',
+            country: 'JP',
+            shipsTo: ['SG', 'MY'],
+            website: 'https://leaf.example',
+            profileInfo: 'Family farm in Uji.',
+            createdAt: '2026-10-24T00:00:00Z',
+          },
+        ]}
+        catalogue={catalogue}
+      />
+    );
+
+    expect(screen.getByRole('heading', { name: 'Teas awaiting review (0)' })).toBeInTheDocument();
+    expect(screen.getByText(/Ships from JP to SG, MY/)).toBeInTheDocument();
+    expect(screen.getByText('Family farm in Uji.')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Reject…' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Approve Leaf' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Leaf can now list teas.'));
+    expect(fake.calls[0].args).toEqual([{ vendor: 'v1', decision: 'approved', note: undefined }]);
+  });
 });
