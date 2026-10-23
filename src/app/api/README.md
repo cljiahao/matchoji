@@ -10,7 +10,7 @@ App Router API route handlers. Every handler here is wrapped in `withLogging()` 
 
 ## Connectivity
 
-Each subfolder is one API route, matching Next.js's file-based routing; `health/` is the only route so far and is what the Dockerfile's `HEALTHCHECK` probes.
+Each subfolder is one API route, matching Next.js's file-based routing; `health/` is the only route so far and is what the Dockerfile's `HEALTHCHECK` probes; it checks the database too.
 
 ## Parent
 

@@ -54,7 +54,8 @@ the admin-only `resolve_report()`, which removes or keeps the content and tells 
 why. `20261028000000_editions_and_stash.sql` adds `reviews.harvest_year` and `flush` (editable by
 the author; `latest_reviews` recreated to carry them), the `edition_ratings` view with a
 `top_harvest` flag (best edition with 3+ ratings), and the want-to-try stash
-(`owned_quantity`, `opened_on`, owner-editable).
+(`owned_quantity`, `opened_on`, owner-editable). `20261028100000_health_check.sql` adds
+`health()`, a no-op anyone may call, which `/api/health` uses to prove the database answers.
 
 ## Contents
 
@@ -78,6 +79,7 @@ the author; `latest_reviews` recreated to carry them), the `edition_ratings` vie
 - `20261027000000_social_profiles_follows.sql`
 - `20261027100000_social_reactions.sql`
 - `20261028000000_editions_and_stash.sql`
+- `20261028100000_health_check.sql`
 
 ## Parent
 

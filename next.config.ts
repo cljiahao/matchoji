@@ -30,9 +30,11 @@ const nextConfig: NextConfig = {
           // CSP baseline — tighten after auth/analytics are wired. frame-ancestors replaces X-Frame-Options for CSP2+ browsers.
           {
             key: 'Content-Security-Policy',
+            // img-src admits https images (Supabase Storage photos, tea packshots) and inline
+            // data/blob previews. script-src stays unset: Next's inline scripts need nonces first.
             value: isDev
-              ? "base-uri 'self'; object-src 'none'; form-action 'self'"
-              : "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'",
+              ? "base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob: https:"
+              : "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob: https:",
           },
         ],
       },
