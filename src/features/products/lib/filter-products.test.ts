@@ -12,6 +12,7 @@ const product = (id: string, grade: string | null, avgStars: number | null): Pro
   grade,
   regionName: null,
   supply: null,
+  shopUrl: null,
   imageUrl: null,
   createdAt: '2026-09-01T00:00:00Z',
   avgStars,

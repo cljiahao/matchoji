@@ -21,8 +21,8 @@ writes it via Supabase; `components/` renders it. `reviews` depends on this modu
 its public `index.ts`) for search and product creation — this module never depends back on
 `reviews`.
 `lib/` holds `CATEGORY_STYLES`, the single source for jade/amber category classes. `types.ts`'s
-`Product` carries `topNotes` (the feed's two most-noticed notes) and `supply` (how scarce
-its category is in its region); `ProductGrid` takes a
+`Product` carries `topNotes` (the feed's two most-noticed notes) , `supply` (how scarce
+its category is in its region) and `shopUrl` (its page on the maker's shop); `ProductGrid` takes a
 `renderAction` slot for per-card controls owned by other features.
 
 ## Parent

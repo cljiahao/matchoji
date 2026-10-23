@@ -21,6 +21,7 @@ interface ProductRow {
   grade: string | null;
   region_id: string | null;
   image_url: string | null;
+  shop_url: string | null;
   created_at: string;
 }
 
@@ -61,6 +62,7 @@ async function hydrateProducts(
         regionName: region?.name ?? null,
         supply: region?.[`${row.category}_supply`] ?? null,
         imageUrl: row.image_url,
+        shopUrl: row.shop_url,
         createdAt: row.created_at,
       },
       ratingByProductId.get(row.id)
@@ -83,7 +85,7 @@ async function hydrateProducts(
 export async function listProducts(supabase: Client, filters: DiscoverFilters): Promise<Product[]> {
   let query = supabase
     .from('products')
-    .select('id, name, brand, category, grade, region_id, image_url, created_at')
+    .select('id, name, brand, category, grade, region_id, image_url, shop_url, created_at')
     .order('created_at', { ascending: false });
 
   const search = filters.q ? buildSearchFilter(filters.q) : null;
@@ -100,7 +102,7 @@ export async function listProducts(supabase: Client, filters: DiscoverFilters): 
 export async function getProduct(supabase: Client, id: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, brand, category, grade, region_id, image_url, created_at')
+    .select('id, name, brand, category, grade, region_id, image_url, shop_url, created_at')
     .eq('id', id)
     .maybeSingle();
 

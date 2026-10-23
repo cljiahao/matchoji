@@ -12,6 +12,7 @@ export type ProfileRole = 'consumer' | 'vendor';
 export type SupplyLevel = 'scarce' | 'tight' | 'plentiful';
 export type TeaMetric = 'cultivated_ha' | 'aracha_t' | 'tencha_t';
 export type TeaStatSource = 'maff' | 'zencharen';
+export type StockStatus = 'in_stock' | 'sold_out';
 
 export interface Database {
   public: {
@@ -76,6 +77,28 @@ export interface Database {
         };
         Relationships: [];
       };
+      stock_reports: {
+        Row: {
+          id: number;
+          product_id: string;
+          user_id: string;
+          status: StockStatus;
+          created_at: string;
+        };
+        Insert: {
+          product_id: string;
+          user_id?: string;
+          status: StockStatus;
+          created_at?: string;
+        };
+        Update: {
+          product_id?: string;
+          user_id?: string;
+          status?: StockStatus;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       tea_production_stats: {
         Row: {
           prefecture: string;
@@ -112,6 +135,7 @@ export interface Database {
           grade: string | null;
           region_id: string | null;
           image_url: string | null;
+          shop_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -122,6 +146,7 @@ export interface Database {
           grade?: string | null;
           region_id?: string | null;
           image_url?: string | null;
+          shop_url?: string | null;
           created_at?: string;
         };
         Update: {
@@ -132,6 +157,7 @@ export interface Database {
           grade?: string | null;
           region_id?: string | null;
           image_url?: string | null;
+          shop_url?: string | null;
           created_at?: string;
         };
         Relationships: [];

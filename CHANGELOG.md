@@ -7,6 +7,10 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Stock at the official shop: each tea's page shows the latest community report ("Sold out ·
+  reported 2 days ago"; reports older than two weeks are dropped), a link to the tea on its
+  maker's shop, and "In stock" / "Sold out" buttons for signed-in tea drinkers. Matchoji
+  never checks shops itself, since the makers' terms and robots.txt rule out scraping.
 - Tea supply in numbers (`/regions/supply`), linked from the Regions page: official tea
   harvest figures for the prefectures Matchoji's regions are in. National tiles, then a card
   per prefecture with its tencha (matcha's leaf) output and share, and tea-field and raw-tea

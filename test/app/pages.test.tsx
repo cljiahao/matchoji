@@ -550,8 +550,13 @@ describe('Public error boundary', () => {
 
 describe('Product page', () => {
   it('shows the product, its taste, facts, photos and community reviews', async () => {
+    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
     useServer({
-      products: { data: productRow, error: null },
+      products: {
+        data: { ...productRow, shop_url: 'https://global.ippodo-tea.co.jp/products/bancha601102' },
+        error: null,
+      },
+      stock_reports: { data: { status: 'sold_out', created_at: twoDaysAgo }, error: null },
       product_ratings: { data: [{ product_id: 'p1', avg_stars: 4, review_count: 1 }], error: null },
       reviews: {
         data: [
@@ -601,6 +606,14 @@ describe('Product page', () => {
     expect(
       screen.getByRole('heading', { name: 'Community reviews' }).closest('section')
     ).toHaveAttribute('id', 'rate');
+    const stock = screen.getByRole('heading', { name: 'Stock at the official shop' })
+      .parentElement as HTMLElement;
+    expect(stock).toHaveTextContent('Sold out');
+    expect(stock).toHaveTextContent('reported 2 days ago');
+    expect(within(stock).getByRole('link', { name: /Check Ippodo’s shop/ })).toHaveAttribute(
+      'href',
+      'https://global.ippodo-tea.co.jp/products/bancha601102'
+    );
   });
 
   it('shows an unrated product with its grade and region', async () => {
@@ -609,11 +622,14 @@ describe('Product page', () => {
       regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
       product_ratings: { data: [], error: null },
       reviews: { data: [], error: null },
+      stock_reports: { data: null, error: null },
     });
 
     renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
 
     expect(screen.getByText('Not yet rated')).toBeInTheDocument();
+    expect(screen.getByText('No recent reports')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /shop/ })).not.toBeInTheDocument();
     expect(screen.getAllByText('First flush')).toHaveLength(2);
     expect(screen.getAllByText('Uji, Kyoto')).toHaveLength(2);
     expect(screen.queryByRole('heading', { name: 'Photos' })).not.toBeInTheDocument();
@@ -621,7 +637,11 @@ describe('Product page', () => {
   });
 
   it('404s for an unknown product', async () => {
-    useServer({ products: { data: null, error: null }, reviews: { data: [], error: null } });
+    useServer({
+      products: { data: null, error: null },
+      reviews: { data: [], error: null },
+      stock_reports: { data: null, error: null },
+    });
     await expect(ProductPage({ params: Promise.resolve({ id: 'nope' }) })).rejects.toThrow(
       'NEXT_NOT_FOUND'
     );

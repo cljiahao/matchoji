@@ -12,6 +12,8 @@ export interface Product {
   // How scarce this tea's category is in its region; null without a region or a sourced level.
   supply: SupplyLevel | null;
   imageUrl: string | null;
+  // The tea's page on its maker's own shop, where people check stock.
+  shopUrl: string | null;
   createdAt: string;
   avgStars: number | null;
   reviewCount: number;

@@ -25,11 +25,16 @@ from the national growers' federation. The header lists every e-Stat file (statI
 read from. To add a year, download the new files the same way, append their rows and rerun:
 it adds new rows, updates revised values and leaves the rest untouched.
 
+`20261024_shop_urls.sql` (after the `20261024000000_stock_reports` migration) links each
+seeded tea to its page on the maker's shop: Ippodo's global store, Marukyu Koyamaen's English
+shop, and Aiya's US shop home page. It fills only empty links and is safe to rerun.
+
 ## Contents
 
 - `20261023_real_teas.sql`
 - `20261023_region_supply.sql`
 - `20261023_tea_production_stats.sql`
+- `20261024_shop_urls.sql`
 - `20261023_tea_grades.sql`
 
 ## Parent

@@ -148,7 +148,12 @@ and MAFF stopped breaking production down by tea type (tencha) after 2016 (per
 prefecture, after 2008). It reads `tea_production_stats` (MAFF fields and raw
 tea, plus the growers' federation's 2025 tencha) on `/regions/supply`;
 `Region.e_stat_area_ha` stays empty and the scarce/tight levels stay editorial.
-The retailer stock scrape was not built (ToS check still open).
+Update 2026-10-24 — the retailer stock scrape was dropped after the ToS check:
+Marukyu Koyamaen's robots.txt disallows all crawling, Ippodo's US terms list
+"spider, crawl, or scrape" as a prohibited use and its global store's terms
+forbid using site information without approval. In its place, signed-in users
+file community stock reports (`stock_reports`) from each tea's page, which links
+to the tea on its maker's shop (`products.shop_url`).
 
 Open risk: scraping retailer stock pages is proven viable at hobby scale by
 existing restock-alert bots, but should be checked against each retailer's
@@ -166,8 +171,8 @@ personal Discord bot).
 
 ## 7. Open Questions
 
-- Legal review needed before Phase 3 (cross-border agricultural sales) and
-  before automating Phase 4 scraping (retailer ToS).
+- Legal review needed before Phase 3 (cross-border agricultural sales). The
+  Phase 4 scraping question is settled: not permitted (see Phase 4 update).
 - e-Stat data licensing/attribution requirements for public display — check
   before Phase 4 ships the scarcity dashboard. Resolved 2026-10-23: e-Stat and
   MAFF terms allow reuse with a source credit and a note that the figures were

@@ -12,6 +12,7 @@ const base = {
   grade: null,
   regionName: null,
   supply: null,
+  shopUrl: null,
   imageUrl: null,
   createdAt: '2026-09-01T00:00:00Z',
 };
