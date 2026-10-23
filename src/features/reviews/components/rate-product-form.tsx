@@ -17,9 +17,11 @@ import { useSession, useSignInPrompt } from '@/features/auth';
 import type { ProductSummary } from '@/features/products';
 
 import { useLogReview } from '../hooks/use-log-review.mutation';
+import { useUpdateReview } from '../hooks/use-update-review.mutation';
 import { localToday } from '../lib';
 import { TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
 import { reviewSchemaFor, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
+import type { Review } from '../types';
 import { FlavorNotePicker } from './flavor-note-picker';
 import { PrepFields } from './prep-fields';
 import { StarRatingInput } from './star-rating-input';
@@ -44,30 +46,69 @@ function emptyReview(stars = 0): ReviewInput {
   };
 }
 
+// An existing tasting as form values, for editing it.
+function fromReview(review: Review): ReviewInput {
+  return {
+    stars: review.stars,
+    notes: review.notes ?? '',
+    flavorNotes: review.flavorNotes,
+    sweetness: review.profile.sweetness,
+    umami: review.profile.umami,
+    bitterness: review.profile.bitterness,
+    body: review.profile.body,
+    prepMethod: review.prep.method ?? undefined,
+    doseG: review.prep.doseG ?? '',
+    waterMl: review.prep.waterMl ?? '',
+    waterTempC: review.prep.waterTempC ?? '',
+    tastedOn: review.tastedOn,
+  };
+}
+
 interface RateProductFormProps {
   product: ProductSummary;
   // Set when the visitor opened the form by tapping a star.
   initialStars?: number;
+  // Set to edit this tasting instead of logging a new one.
+  review?: Review;
   onLogged?: () => void;
 }
 
 // Opened only for signed-in visitors (the entry points ask for sign-in first). A session
 // that lapses while the form is open sends the visitor to sign in rather than failing.
-export function RateProductForm({ product, initialStars, onLogged }: RateProductFormProps) {
+export function RateProductForm({ product, initialStars, review, onLogged }: RateProductFormProps) {
   const [photo, setPhoto] = useState<File | null>(null);
   const { session, isLoading: sessionLoading } = useSession();
   const promptSignIn = useSignInPrompt();
   const router = useRouter();
   const logReviewMutation = useLogReview();
+  const updateReviewMutation = useUpdateReview();
 
   const form = useForm<ReviewInput, unknown, ReviewOutput>({
     resolver: zodResolver(reviewSchemaFor(product.category)),
-    defaultValues: emptyReview(initialStars),
+    defaultValues: review ? fromReview(review) : emptyReview(initialStars),
   });
 
   async function handleSubmit(values: ReviewOutput) {
     if (!session) {
       promptSignIn({ nextPath: `/products/${product.id}#rate` });
+      return;
+    }
+
+    if (review) {
+      try {
+        await updateReviewMutation.mutateAsync({
+          ...values,
+          reviewId: review.id,
+          userId: session.user.id,
+          currentPhotoUrl: review.photoUrl,
+          photo,
+        });
+        toast.success('Tasting updated.');
+        onLogged?.();
+        router.refresh();
+      } catch {
+        toast.error('Could not save your changes. Try again.');
+      }
       return;
     }
 
@@ -88,7 +129,7 @@ export function RateProductForm({ product, initialStars, onLogged }: RateProduct
     }
   }
 
-  const pending = logReviewMutation.isPending;
+  const pending = logReviewMutation.isPending || updateReviewMutation.isPending;
 
   return (
     <Form {...form}>
@@ -151,14 +192,14 @@ export function RateProductForm({ product, initialStars, onLogged }: RateProduct
           >
             <ImagePlus aria-hidden="true" className="text-muted-foreground h-4 w-4" />
             <span className={photo ? 'truncate' : 'text-muted-foreground'}>
-              {photo ? photo.name : 'Add a photo of your cup'}
+              {photo?.name ?? (review?.photoUrl ? 'Replace your photo' : 'Add a photo of your cup')}
             </span>
           </label>
         </div>
 
         <Button type="submit" size="lg" disabled={pending || sessionLoading} className="w-full">
           {pending && <Loader2 className="animate-spin" aria-hidden="true" />}
-          Save rating
+          {review ? 'Save changes' : 'Save rating'}
         </Button>
       </form>
     </Form>

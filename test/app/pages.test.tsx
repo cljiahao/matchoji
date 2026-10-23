@@ -30,6 +30,7 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
+import AccountPage from '@/app/(public)/account/page';
 import AdminPage from '@/app/(public)/admin/page';
 import PublicError from '@/app/(public)/error';
 import ExploreLoading from '@/app/(public)/explore/loading';
@@ -708,6 +709,27 @@ describe('Sell page', () => {
         .map((o) => o.textContent)
     ).toEqual(['Pick a tea from the catalogue', 'Wako · Marukyu Koyamaen']);
     expect(screen.getByLabelText('Currency')).toHaveValue('SGD');
+  });
+});
+
+describe('Account page', () => {
+  it('asks a visitor to sign in', async () => {
+    useServer({});
+    renderWithQuery(await AccountPage());
+    expect(screen.getByText('Sign in to manage your name and your data.')).toBeInTheDocument();
+  });
+
+  it('shows a signed-in person their name, export and deletion', async () => {
+    useServer(
+      { profiles: { data: { email: 'aiko@example.com', display_name: 'Aiko' }, error: null } },
+      { id: 'u1' }
+    );
+    renderWithQuery(await AccountPage());
+
+    expect(screen.getByText('Signed in as aiko@example.com')).toBeInTheDocument();
+    expect(screen.getByLabelText('Name shown on your reviews')).toHaveValue('Aiko');
+    expect(screen.getByRole('button', { name: 'Download my data' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Delete my account' })).toBeDisabled();
   });
 });
 

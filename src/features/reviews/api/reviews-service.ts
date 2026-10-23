@@ -56,12 +56,15 @@ export async function listReviews(supabase: Client, productId: string): Promise<
   // profiles is owner-only (it holds email); public_profiles exposes just the display
   // name. Fetched separately since views carry no FK metadata for PostgREST embedding.
   const { data: profiles, error: profilesError } = await selectIn(
-    reviews.map((r) => r.user_id),
+    reviews.flatMap((r) => (r.user_id ? [r.user_id] : [])),
     (ids) => supabase.from('public_profiles').select('id, display_name').in('id', ids)
   );
 
   if (profilesError) throw profilesError;
   const nameByUserId = new Map(profiles.map((p) => [p.id, p.display_name]));
 
-  return reviews.map((r) => mapReviewRow(r, nameByUserId.get(r.user_id) ?? 'Anonymous'));
+  // A deleted account's ratings stay, without a name.
+  return reviews.map((r) =>
+    mapReviewRow(r, (r.user_id && nameByUserId.get(r.user_id)) || 'Former taster')
+  );
 }

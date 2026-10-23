@@ -14,11 +14,14 @@ up through `selectIn`, so a product with many reviewers never builds an over-lon
 distribution and taste summary agree with the score; a failed name lookup throws instead of
 showing "Anonymous". Photos are stored under a random name with the file's extension, and
 `removeReviewPhoto` deletes one whose review failed to save. `createReview` always sends the
-taster's local date.
+taster's local date. `updateReview` and `deleteReview` (which also removes the photo) edit the
+author's own tasting; `reviewPhotoPath` reads a photo's storage path from its URL. Ratings of a
+deleted account show as "Former taster".
 
 ## Contents
 
 - `index.ts`
+- `review-edits.test.ts`
 - `reviews-mutations.test.ts`
 - `reviews-mutations.ts`
 - `reviews-service.test.ts`

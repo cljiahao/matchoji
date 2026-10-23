@@ -39,6 +39,11 @@ admins only. `20261025200000_catalogue_discovery.sql` adds `catalogue_teas` (app
 with region, rating, a weighted score, top and scarcity ranks), `pg_trgm` indexes on tea name
 and brand, and `search_teas` (approved teas plus the caller's pending ones, typo-tolerant). `20261026000000_tea_taste_profiles.sql` adds `tea_taste_profiles`: each
 tea's averaged sliders and note mentions from `latest_reviews`, the match score's input.
+`20261026100000_account_and_review_edits.sql` lets authors edit (tasting fields only) and
+delete their tastings, keeps a deleted account's ratings with `user_id` set null (each counting
+as its own taster in `latest_reviews`), adds `delete_my_account()` (removes the account and
+scrubs the person from the audit trail), and caps each person at 60 tastings and 20 suggested
+teas a day.
 
 ## Contents
 
@@ -58,6 +63,7 @@ tea's averaged sliders and note mentions from `latest_reviews`, the match score'
 - `20261025100001_product_images_storage.sql`
 - `20261025200000_catalogue_discovery.sql`
 - `20261026000000_tea_taste_profiles.sql`
+- `20261026100000_account_and_review_edits.sql`
 
 ## Parent
 

@@ -9,6 +9,9 @@ exposes `isSearching`, which is true through the debounce window as well as the 
 keys results by the signed-in user, since `search_teas` also returns their own teas
 awaiting review.
 
+`useUpdateReview` saves an edited tasting: a new photo replaces the old one (whose file is then
+removed), and a failed save removes the new upload instead.
+
 ## Contents
 
 - `index.ts`
@@ -17,6 +20,8 @@ awaiting review.
 - `use-log-review.test.tsx`
 - `use-product-search.query.ts`
 - `use-regions.query.ts`
+- `use-update-review.mutation.ts`
+- `use-update-review.test.tsx`
 
 ## Parent
 

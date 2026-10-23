@@ -7,7 +7,7 @@ jsdom polyfills Radix needs. `supabase-db.ts` builds a PGlite Postgres with ever
 `test/db`. `fake-supabase.ts` is a recording PostgREST-shaped client (database functions are
 queued as `rpc:<name>`, and a result may carry `count`) (a queued result may be a Promise, so a test can
 observe state while a request is in flight);
-`fake-browser-client.ts` adds steerable auth and storage (upload and remove) on top for
+`fake-browser-client.ts` adds steerable auth and storage (upload, remove and list) on top for
 component tests;
 `render.tsx` wraps renders in a fresh TanStack Query client and provides `makeProduct` /
 `makeReview` fixtures (`makeProduct` is an approved tea with no supply level or shop link unless a test sets one).

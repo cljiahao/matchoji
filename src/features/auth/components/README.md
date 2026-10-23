@@ -9,6 +9,8 @@ Sign-in/sign-out UI for the `auth` feature. `auth-components.test.tsx` covers th
 it through the sign-in prompt and takes an `outline` variant and a label. `UserMenu` holds
 only account actions. Tests run the real hooks against a fake browser Supabase client.
 
+`UserMenu` links to Your account and Sell on Matchoji above Sign out.
+
 ## Contents
 
 - `auth-components.test.tsx`

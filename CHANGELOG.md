@@ -31,6 +31,13 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Edit or delete your own tastings from the journal; a new photo replaces the old one.
+- Your account (`/account`, linked from the account menu with Sell on Matchoji): change the
+  name on your reviews, download all your data as JSON, or delete your account. Your ratings
+  stay on the teas, unnamed, as on Vivino; everything else goes, including your trace in the
+  audit log.
+- Daily limits of 60 tastings and 20 suggested teas per person.
+
 - Match for you: signed-in tasters see how likely they are to love a tea ("86% match · Great
   match"), worked out from their own ratings of the most similar teas and naming them
   ("Because you rated Sayaka-no-mukashi 5★"). Explore rows show the match, and "Best match for

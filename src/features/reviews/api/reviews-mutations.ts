@@ -71,3 +71,50 @@ export async function createReview(supabase: Client, input: CreateReviewInput): 
 
   if (error) throw error;
 }
+
+// The path inside review-photos, from a stored public URL; null for anything else.
+export function reviewPhotoPath(url: string | null): string | null {
+  const marker = '/storage/v1/object/public/review-photos/';
+  const at = url?.indexOf(marker) ?? -1;
+  return url && at >= 0 ? url.slice(at + marker.length) : null;
+}
+
+type ReviewFields = Omit<CreateReviewInput, 'productId' | 'userId'>;
+
+// RLS lets only the author update or delete a tasting; who wrote it and which tea it is are
+// not editable (column grants).
+export async function updateReview(
+  supabase: Client,
+  reviewId: string,
+  input: ReviewFields
+): Promise<void> {
+  const { error } = await supabase
+    .from('reviews')
+    .update({
+      stars: input.stars,
+      notes: input.notes ?? null,
+      photo_url: input.photoUrl ?? null,
+      flavor_notes: input.flavorNotes ?? [],
+      sweetness: input.sweetness ?? null,
+      umami: input.umami ?? null,
+      bitterness: input.bitterness ?? null,
+      body: input.body ?? null,
+      prep_method: input.prepMethod ?? null,
+      dose_g: input.doseG ?? null,
+      water_ml: input.waterMl ?? null,
+      water_temp_c: input.waterTempC ?? null,
+      tasted_on: input.tastedOn ?? localToday(),
+    })
+    .eq('id', reviewId);
+  if (error) throw error;
+}
+
+export async function deleteReview(
+  supabase: Client,
+  review: { id: string; photoUrl: string | null }
+): Promise<void> {
+  const { error } = await supabase.from('reviews').delete().eq('id', review.id);
+  if (error) throw error;
+  const path = reviewPhotoPath(review.photoUrl);
+  if (path) await removeReviewPhoto(supabase, path).catch(() => undefined);
+}
