@@ -22,10 +22,13 @@ const row = (id: string, overrides: Partial<Record<string, unknown>> = {}) => ({
 });
 
 describe('listProducts', () => {
-  it('merges region names and ratings, rated products first', async () => {
+  it('merges region names, supply and ratings, rated products first', async () => {
     const { client } = createFakeSupabase({
       products: { data: [row('a'), row('b', { region_id: 'r1' })], error: null },
-      regions: { data: [{ id: 'r1', name: 'Uji, Kyoto' }], error: null },
+      regions: {
+        data: [{ id: 'r1', name: 'Uji, Kyoto', matcha_supply: 'scarce', hojicha_supply: 'tight' }],
+        error: null,
+      },
       product_ratings: {
         data: [{ product_id: 'b', avg_stars: 4.5, review_count: 2 }],
         error: null,
@@ -36,8 +39,18 @@ describe('listProducts', () => {
     const products = await listProducts(client, { sort: 'top' });
 
     expect(products.map((p) => p.id)).toEqual(['b', 'a']);
-    expect(products[0]).toMatchObject({ regionName: 'Uji, Kyoto', avgStars: 4.5, reviewCount: 2 });
-    expect(products[1]).toMatchObject({ regionName: null, avgStars: null, reviewCount: 0 });
+    expect(products[0]).toMatchObject({
+      regionName: 'Uji, Kyoto',
+      supply: 'scarce',
+      avgStars: 4.5,
+      reviewCount: 2,
+    });
+    expect(products[1]).toMatchObject({
+      regionName: null,
+      supply: null,
+      avgStars: null,
+      reviewCount: 0,
+    });
   });
 
   it('adds each product’s two most-noticed flavour notes', async () => {
@@ -148,7 +161,14 @@ describe('listRegions', () => {
 });
 
 describe('listRegionSummaries', () => {
-  const region = { id: 'r1', name: 'Uji, Kyoto', prefecture: 'Kyoto', scarcity_note: null };
+  const region = {
+    id: 'r1',
+    name: 'Uji, Kyoto',
+    prefecture: 'Kyoto',
+    scarcity_note: null,
+    matcha_supply: 'scarce',
+    hojicha_supply: null,
+  };
 
   it('counts each region’s teas from products that have a region', async () => {
     const { client, calls } = createFakeSupabase({
@@ -162,6 +182,7 @@ describe('listRegionSummaries', () => {
         name: 'Uji, Kyoto',
         prefecture: 'Kyoto',
         scarcityNote: null,
+        supply: { matcha: 'scarce', hojicha: null },
         counts: { matcha: 0, hojicha: 1 },
       },
     ]);

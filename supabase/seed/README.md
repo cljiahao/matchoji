@@ -12,9 +12,16 @@ are skipped. No ratings are seeded; those come from real tastings.
 thick tea) or Usucha (thin tea only). It fills only empty grades and is safe to rerun.
 Regions stay empty because neither maker states where a single product is grown.
 
+`20261023_region_supply.sql` (run after the `20261023100000_region_supply` migration) sets
+each region's matcha and hojicha supply level and a one-line note, from public reporting on
+the 2024-2026 shortage; sources are listed in the file. Matcha levels are set only where a
+source covers the region (Uji scarce; Nishio, Kagoshima and Shizuoka tight). Hojicha is tight
+everywhere, since the bancha shortage is reported nationwide. It fills only empty fields.
+
 ## Contents
 
 - `20261023_real_teas.sql`
+- `20261023_region_supply.sql`
 - `20261023_tea_grades.sql`
 
 ## Parent

@@ -9,6 +9,7 @@
 
 export type ProductCategory = 'hojicha' | 'matcha';
 export type ProfileRole = 'consumer' | 'vendor';
+export type SupplyLevel = 'scarce' | 'tight' | 'plentiful';
 
 export interface Database {
   public: {
@@ -45,6 +46,8 @@ export interface Database {
           municipality: string | null;
           e_stat_area_ha: number | null;
           scarcity_note: string | null;
+          matcha_supply: SupplyLevel | null;
+          hojicha_supply: SupplyLevel | null;
           created_at: string;
         };
         Insert: {
@@ -54,6 +57,8 @@ export interface Database {
           municipality?: string | null;
           e_stat_area_ha?: number | null;
           scarcity_note?: string | null;
+          matcha_supply?: SupplyLevel | null;
+          hojicha_supply?: SupplyLevel | null;
           created_at?: string;
         };
         Update: {
@@ -63,6 +68,8 @@ export interface Database {
           municipality?: string | null;
           e_stat_area_ha?: number | null;
           scarcity_note?: string | null;
+          matcha_supply?: SupplyLevel | null;
+          hojicha_supply?: SupplyLevel | null;
           created_at?: string;
         };
         Relationships: [];

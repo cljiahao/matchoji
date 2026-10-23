@@ -33,6 +33,7 @@ export function makeProduct(overrides: Partial<Product> = {}): Product {
     category: 'matcha',
     grade: 'Ceremonial',
     regionName: 'Uji, Kyoto',
+    supply: null,
     imageUrl: null,
     createdAt: '2026-09-01T00:00:00Z',
     avgStars: 4.5,

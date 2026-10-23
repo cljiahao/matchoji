@@ -10,4 +10,5 @@ export {
 } from './discover-params';
 export { filterByFacets, gradeOptions } from './filter-products';
 export { sortProducts } from './sort-products';
-export { summarizeRegions, type RegionSummary } from './summarize-regions';
+export { sortRegionsByScarcity, summarizeRegions, type RegionSummary } from './summarize-regions';
+export { SUPPLY_LABELS, SUPPLY_LEVELS, supplyRank, type SupplyLevel } from './supply';

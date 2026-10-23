@@ -11,6 +11,7 @@ const base = {
   category: 'hojicha' as const,
   grade: null,
   regionName: null,
+  supply: null,
   imageUrl: null,
   createdAt: '2026-09-01T00:00:00Z',
 };

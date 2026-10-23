@@ -7,7 +7,7 @@ jsdom polyfills Radix needs. `fake-supabase.ts` is a recording PostgREST-shaped 
 observe state while a request is in flight);
 `fake-browser-client.ts` adds steerable auth and storage on top for component tests;
 `render.tsx` wraps renders in a fresh TanStack Query client and provides `makeProduct` /
-`makeReview` fixtures.
+`makeReview` fixtures (`makeProduct` has no supply level unless a test sets one).
 
 ## Contents
 
