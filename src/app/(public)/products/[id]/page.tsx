@@ -21,6 +21,7 @@ import {
   listReviews,
   summarizeReviews,
 } from '@/features/reviews';
+import { ReviewReactions, loadReactions } from '@/features/social';
 import { StockPanel, getLatestStockReport } from '@/features/stock';
 import { MatchSummary, loadMatches } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
@@ -91,6 +92,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const canEngage =
     listed ||
     (product.status === 'pending' && auth.user != null && auth.user.id === product.addedBy);
+
+  const reactions = await loadReactions(
+    supabase,
+    reviews.map((r) => r.id),
+    auth.user?.id ?? null
+  );
+  const footers = Object.fromEntries(
+    reviews.map((r) => [
+      r.id,
+      <ReviewReactions
+        key={r.id}
+        reviewId={r.id}
+        reviewAuthorId={r.authorId}
+        initial={reactions[r.id]}
+      />,
+    ])
+  );
 
   const summary = summarizeReviews(reviews);
   const productSummary = {
@@ -218,6 +236,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <CommunityReviews
           product={productSummary}
           canRate={canEngage}
+          footers={footers}
           avgStars={product.avgStars}
           reviews={reviews}
           summary={summary}

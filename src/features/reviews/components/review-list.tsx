@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
 import type { ProductCategory } from '@/features/products';
@@ -15,9 +15,11 @@ const PAGE_SIZE = 10;
 interface ReviewListProps {
   reviews: Review[];
   category: ProductCategory;
+  // Rendered under each review, keyed by review id (elements, so they can cross from server).
+  footers?: Record<string, ReactNode>;
 }
 
-export function ReviewList({ reviews, category }: ReviewListProps) {
+export function ReviewList({ reviews, category, footers }: ReviewListProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   if (reviews.length === 0) {
@@ -29,7 +31,12 @@ export function ReviewList({ reviews, category }: ReviewListProps) {
   return (
     <div className="space-y-4">
       {reviews.slice(0, visibleCount).map((review) => (
-        <ReviewItem key={review.id} review={review} category={category} />
+        <ReviewItem
+          key={review.id}
+          review={review}
+          category={category}
+          footer={footers?.[review.id]}
+        />
       ))}
       {remaining > 0 && (
         <Button

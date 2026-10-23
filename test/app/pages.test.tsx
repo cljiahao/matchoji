@@ -894,6 +894,7 @@ describe('Admin page', () => {
           },
         ],
         vendors: { data: [], error: null },
+        content_reports: { data: [], error: null },
       },
       { id: 'admin' }
     );
@@ -903,6 +904,7 @@ describe('Admin page', () => {
     expect(screen.getByRole('heading', { name: 'Teas awaiting review (1)' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Approve Hoshi' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Shop applications (0)' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Reports (0)' })).toBeInTheDocument();
     expect(
       within(screen.getByLabelText('Tea that Hoshi duplicates')).getAllByRole('option')
     ).toHaveLength(2);
@@ -940,6 +942,8 @@ describe('Product page', () => {
         error: null,
       },
       stock_reports: { data: { status: 'sold_out', created_at: twoDaysAgo }, error: null },
+      review_likes: { data: [{ review_id: 'r1', user_id: 'someone' }], error: null },
+      review_comments: { data: [], error: null },
       listings: {
         data: [
           {
@@ -1028,6 +1032,12 @@ describe('Product page', () => {
     );
     expect(screen.queryByText('Awaiting review.')).not.toBeInTheDocument();
     expect(screen.queryByText('Not added to the catalogue.')).not.toBeInTheDocument();
+    // Reactions sit under each review.
+    expect(screen.getByRole('button', { name: 'Like (1)' })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
+    expect(screen.getByRole('button', { name: '0 comments' })).toBeInTheDocument();
     const buy = screen
       .getByRole('heading', { name: 'Where to buy' })
       .closest('section') as HTMLElement;

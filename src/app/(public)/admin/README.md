@@ -6,6 +6,8 @@
 `is_admin` (set once by hand in SQL), and is excluded from search engines; only admins see its "Review queue" title. Rendered per
 request.
 
+It lists teas and shops to review and open reports.
+
 ## Contents
 
 - `page.tsx`

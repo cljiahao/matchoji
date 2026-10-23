@@ -46,7 +46,12 @@ scrubs the person from the audit trail), and caps each person at 60 tastings and
 teas a day. `20261027000000_social_profiles_follows.sql` adds `profiles.is_public` (exposed by
 `public_profiles`), `blocks` (private to the blocker), `follows` (public; you follow for
 yourself, never someone who blocked you or whom you blocked; blocking ends follows both ways)
-and `following_feed()`.
+and `following_feed()`. `20261027100000_social_reactions.sql` adds `review_likes` and
+`review_comments` (for yourself, never across a block; a comment's author or the review's author
+can delete it; 100 comments a day), `notifications` (written only by triggers on follows, likes,
+comments and admin decisions; readers can only mark theirs read), and `content_reports` with
+the admin-only `resolve_report()`, which removes or keeps the content and tells every reporter
+why.
 
 ## Contents
 
@@ -68,6 +73,7 @@ and `following_feed()`.
 - `20261026000000_tea_taste_profiles.sql`
 - `20261026100000_account_and_review_edits.sql`
 - `20261027000000_social_profiles_follows.sql`
+- `20261027100000_social_reactions.sql`
 
 ## Parent
 
