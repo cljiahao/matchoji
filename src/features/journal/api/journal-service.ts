@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { REVIEW_COLUMNS, mapReviewRow } from '@/features/reviews';
 import type { Database } from '@/integrations/supabase/database.types';
+import { selectIn } from '@/integrations/supabase/select-in';
 
 import type { JournalEntry } from '../types';
 
@@ -18,10 +19,10 @@ export async function listMyReviews(supabase: Client, userId: string): Promise<J
   if (error) throw error;
   if (rows.length === 0) return [];
 
-  const { data: products, error: productsError } = await supabase
-    .from('products')
-    .select('id, name, brand, category')
-    .in('id', [...new Set(rows.map((r) => r.product_id))]);
+  const { data: products, error: productsError } = await selectIn(
+    rows.map((r) => r.product_id),
+    (ids) => supabase.from('products').select('id, name, brand, category').in('id', ids)
+  );
   if (productsError) throw productsError;
 
   const byId = new Map(products.map((p) => [p.id, p]));

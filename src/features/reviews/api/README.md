@@ -7,7 +7,8 @@ photo upload to Storage. Tested against a recording fake Supabase
 client (`test/support/fake-supabase.ts`).
 
 Reviews read and write the tasting profile and preparation columns; `mapReviewRow` and
-`REVIEW_COLUMNS` are shared with the journal (`features/journal`).
+`REVIEW_COLUMNS` are shared with the journal (`features/journal`). Reviewer names are looked
+up through `selectIn`, so a product with many reviewers never builds an over-long URL.
 
 ## Contents
 

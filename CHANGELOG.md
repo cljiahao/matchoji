@@ -74,6 +74,10 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- Catalogue, journal and review lookups fetch ids in batches of 100, so pages keep loading
+  once there are hundreds of teas or reviewers instead of failing on an over-long URL.
+- The journal's loading skeleton and the "How you made it" panel use the same corner radii
+  as the rest of the app.
 - Explore no longer shows a second search bar in the header, and mock data honours the
   search so Explore can be checked locally.
 - Header, tab bar, search and product-page surfaces follow the theme instead of hard-coded
@@ -95,4 +99,6 @@ All notable changes to this project are documented here. Format follows
 
 ### Removed
 
+- Unused template widgets (brand logo and text, card, dialog, floating shape, media card,
+  pill, theme toggle) and their leftover gradient and float CSS.
 - Scaffold `/dashboard` route and the scaffold footer's placeholder credit and link.

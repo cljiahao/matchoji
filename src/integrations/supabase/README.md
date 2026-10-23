@@ -9,6 +9,9 @@ Supabase project exists. Clients authenticate with the publishable key
 the legacy anon key; no secret key is used. `clients.test.ts` checks the cookie
 wiring with `@supabase/ssr` mocked.
 
+`select-in.ts` splits a long `.in()` id list into batches of 100 (PostgREST puts the list in
+the URL) and merges the rows; every service with an open-ended id list uses it.
+
 `database.types.ts` covers the tasting-journal columns and `wishlist`; mock reviews carry
 sample notes, profiles and prep, and mock products take their score and count from those
 reviews, carry top notes and answer Explore's search by name or brand; three mock regions (uuid ids, as Explore
@@ -24,6 +27,8 @@ requires) narrow Explore and fill the regions page, so the product page and Disc
 - `middleware.ts`
 - `mock-data.test.ts`
 - `mock-data.ts`
+- `select-in.test.ts`
+- `select-in.ts`
 - `server.ts`
 
 ## Parent

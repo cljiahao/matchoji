@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database, ProductCategory } from '@/integrations/supabase/database.types';
+import { selectIn } from '@/integrations/supabase/select-in';
 
 import type { Product, ProductSummary } from '../types';
 
@@ -37,14 +38,14 @@ async function hydrateProducts(
   const productIds = rows.map((r) => r.id);
 
   const [{ data: regions }, { data: ratings }] = await Promise.all([
-    regionIds.length > 0
-      ? supabase.from('regions').select('id, name').in('id', regionIds)
-      : Promise.resolve({ data: [] as { id: string; name: string }[] }),
-    supabase.from('product_ratings').select('*').in('product_id', productIds),
+    selectIn(regionIds, (ids) => supabase.from('regions').select('id, name').in('id', ids)),
+    selectIn(productIds, (ids) =>
+      supabase.from('product_ratings').select('*').in('product_id', ids)
+    ),
   ]);
 
-  const regionNameById = new Map(regions?.map((r) => [r.id, r.name]));
-  const ratingByProductId = new Map(ratings?.map((r) => [r.product_id, r]));
+  const regionNameById = new Map(regions.map((r) => [r.id, r.name]));
+  const ratingByProductId = new Map(ratings.map((r) => [r.product_id, r]));
 
   const products = rows.map((row) =>
     applyRating(
@@ -67,10 +68,9 @@ async function hydrateProducts(
   // Only rated products can have notes; skip the read entirely for an unrated feed.
   const rated = products.filter((p) => p.reviewCount > 0).map((p) => p.id);
   if (rated.length === 0) return sortByRating(products);
-  const { data: noteRows, error } = await supabase
-    .from('reviews')
-    .select('product_id, flavor_notes')
-    .in('product_id', rated);
+  const { data: noteRows, error } = await selectIn(rated, (ids) =>
+    supabase.from('reviews').select('product_id, flavor_notes').in('product_id', ids)
+  );
   if (error) throw error;
   const notes = topNotesByProduct(noteRows);
   return sortByRating(products.map((p) => ({ ...p, topNotes: notes.get(p.id) ?? [] })));

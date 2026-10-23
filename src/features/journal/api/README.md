@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Supabase reads and writes for the journal: the signed-in user's own tastings (`listMyReviews`) and their want-to-try list (`wishlist-service`).
+Supabase reads and writes for the journal: the signed-in user's own tastings (`listMyReviews`) and their want-to-try list (`wishlist-service`). Both look up products through `selectIn`, in
+batches, however long the list grows.
 
 ## Contents
 

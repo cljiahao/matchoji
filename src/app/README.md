@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Next.js App Router tree — pages, layouts, and API route handlers.
+Next.js App Router tree — pages, layouts, and API route handlers. `globals.css` holds the
+theme tokens and the few global rules (focus outline, pill buttons, number and date fields).
 
 ## Contents
 

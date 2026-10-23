@@ -176,12 +176,6 @@
   .max-w-content {
     @apply max-w-[1000px];
   }
-  .bg-brand-gradient {
-    @apply from-primary via-primary to-primary bg-linear-to-r;
-  }
-  .text-brand-gradient {
-    @apply from-primary via-primary to-primary bg-linear-to-r bg-clip-text text-transparent;
-  }
 }
 
 /* One visible focus treatment for every control. Deliberately outside any @layer: unlayered
@@ -252,17 +246,4 @@ input[type='date']::-webkit-calendar-picker-indicator:hover {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-15px) rotate(5deg);
-  }
-}
-.animate-float {
-  animation: float 10s ease-in-out infinite;
 }

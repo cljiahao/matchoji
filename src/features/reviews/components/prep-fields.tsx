@@ -29,7 +29,7 @@ export function PrepFields({ category }: PrepFieldsProps) {
     <details
       open={userOpen || hasError}
       onToggle={(e) => setUserOpen(e.currentTarget.open)}
-      className="group border-border rounded-lg border"
+      className="group border-border rounded-2xl border"
     >
       <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-medium select-none">
         How you made it

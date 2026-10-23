@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '@/integrations/supabase/database.types';
+import { selectIn } from '@/integrations/supabase/select-in';
 
 import { TASTE_ATTRIBUTES, type PrepMethod } from '../lib/tasting-vocab';
 import type { Review } from '../types';
@@ -52,15 +53,12 @@ export async function listReviews(supabase: Client, productId: string): Promise<
 
   // profiles is owner-only (it holds email); public_profiles exposes just the display
   // name. Fetched separately since views carry no FK metadata for PostgREST embedding.
-  const { data: profiles } = await supabase
-    .from('public_profiles')
-    .select('id, display_name')
-    .in(
-      'id',
-      reviews.map((r) => r.user_id)
-    );
+  const { data: profiles } = await selectIn(
+    reviews.map((r) => r.user_id),
+    (ids) => supabase.from('public_profiles').select('id, display_name').in('id', ids)
+  );
 
-  const nameByUserId = new Map(profiles?.map((p) => [p.id, p.display_name]));
+  const nameByUserId = new Map(profiles.map((p) => [p.id, p.display_name]));
 
   return reviews.map((r) => mapReviewRow(r, nameByUserId.get(r.user_id) ?? 'Anonymous'));
 }
