@@ -76,6 +76,8 @@ afterEach(() => {
 });
 
 const REGION = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
+// Tea pages 404 a malformed id before querying, so routes use a real uuid.
+const PRODUCT_ID = '5d1e2f3a-4b5c-4d6e-8f70-8192a3b4c5d6';
 
 const row = (id: string, name: string, category: 'matcha' | 'hojicha', createdAt: string) => ({
   ...productRow,
@@ -326,7 +328,7 @@ describe('Explore page', () => {
         ],
         error: null,
       },
-      reviews: { data: [], error: null },
+      latest_reviews: { data: [], error: null },
       regions: { data: [], error: null },
     });
 
@@ -677,7 +679,7 @@ describe('Product page', () => {
         error: null,
       },
       product_ratings: { data: [{ product_id: 'p1', avg_stars: 4, review_count: 1 }], error: null },
-      reviews: {
+      latest_reviews: {
         data: [
           {
             id: 'r1',
@@ -704,7 +706,7 @@ describe('Product page', () => {
       public_profiles: { data: [{ id: 'u1', display_name: 'Aiko' }], error: null },
     });
 
-    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
 
     expect(screen.getByRole('heading', { level: 1, name: 'Kyoto Bancha' })).toBeInTheDocument();
     expect(screen.getAllByText('Ippodo')).toHaveLength(2);
@@ -755,37 +757,84 @@ describe('Product page', () => {
       },
       regions: { data: [{ id: REGION, name: 'Uji, Kyoto' }], error: null },
       product_ratings: { data: [], error: null },
-      reviews: { data: [], error: null },
+      latest_reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });
 
-    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
 
     expect(screen.getByText('Not yet rated')).toBeInTheDocument();
     expect(screen.getByText('Awaiting review.')).toBeInTheDocument();
+    expect(screen.getAllByText('First flush')).toHaveLength(2);
+    expect(screen.getAllByText('Uji, Kyoto')).toHaveLength(2);
+    expect(screen.queryByRole('heading', { name: 'Photos' })).not.toBeInTheDocument();
+    expect(screen.getByText('No reviews yet. Be the first to rate it.')).toBeInTheDocument();
+    // Someone else's tea awaiting review: no rating, buying or stock tools.
+    expect(screen.queryByText('Rate it')).not.toBeInTheDocument();
+    expect(screen.queryByText('Add your rating')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Where to buy' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Stock at the official shop' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('lets whoever added a tea awaiting review rate it', async () => {
+    useServer(
+      {
+        products: { data: { ...productRow, status: 'pending', added_by: 'u1' }, error: null },
+        product_ratings: { data: [], error: null },
+        latest_reviews: { data: [], error: null },
+        stock_reports: { data: null, error: null },
+        listings: { data: [], error: null },
+      },
+      { id: 'u1' }
+    );
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+
+    expect(screen.getByText('Rate it')).toBeInTheDocument();
+    expect(screen.getByText('Add your rating')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Where to buy' })).not.toBeInTheDocument();
+  });
+
+  it('invites sellers and stock reports on an approved tea nobody sells yet', async () => {
+    useServer({
+      products: { data: productRow, error: null },
+      product_ratings: { data: [], error: null },
+      latest_reviews: { data: [], error: null },
+      stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
+    });
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+
     expect(screen.getByText('No recent reports')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Sell it on Matchoji' })).toHaveAttribute(
       'href',
       '/sell'
     );
     expect(screen.queryByRole('link', { name: /shop/ })).not.toBeInTheDocument();
-    expect(screen.getAllByText('First flush')).toHaveLength(2);
-    expect(screen.getAllByText('Uji, Kyoto')).toHaveLength(2);
-    expect(screen.queryByRole('heading', { name: 'Photos' })).not.toBeInTheDocument();
-    expect(screen.getByText('No reviews yet. Be the first to rate it.')).toBeInTheDocument();
+  });
+
+  it('404s a malformed tea id without querying', async () => {
+    const fake = useServer({});
+    await expect(ProductPage({ params: Promise.resolve({ id: 'p1' }) })).rejects.toThrow(
+      'NEXT_NOT_FOUND'
+    );
+    expect(fake.calls).toEqual([]);
   });
 
   it('tells the taster who added a rejected tea why it is not in the catalogue', async () => {
     useServer({
       products: { data: { ...productRow, status: 'rejected' }, error: null },
       product_ratings: { data: [], error: null },
-      reviews: { data: [], error: null },
+      latest_reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });
 
-    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: 'p1' }) }));
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
 
     expect(screen.getByText('Not added to the catalogue.')).toBeInTheDocument();
   });
@@ -793,7 +842,7 @@ describe('Product page', () => {
   it('404s for an unknown product', async () => {
     useServer({
       products: { data: null, error: null },
-      reviews: { data: [], error: null },
+      latest_reviews: { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });

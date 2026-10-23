@@ -11,11 +11,19 @@ interface CommunityReviewsProps {
   avgStars: number | null;
   reviews: Review[];
   summary: ReviewSummary;
+  // False for a tea the viewer cannot rate (awaiting someone else's review, or rejected).
+  canRate?: boolean;
 }
 
 // Reviews on the left; the score, its spread and "add your rating" stay beside them, the
 // way Vivino keeps the rating action next to what other people said.
-export function CommunityReviews({ product, avgStars, reviews, summary }: CommunityReviewsProps) {
+export function CommunityReviews({
+  product,
+  avgStars,
+  reviews,
+  summary,
+  canRate = true,
+}: CommunityReviewsProps) {
   const count = reviews.length;
 
   return (
@@ -48,13 +56,15 @@ export function CommunityReviews({ product, avgStars, reviews, summary }: Commun
             <RatingDistribution distribution={summary.distribution} category={product.category} />
           </div>
         )}
-        <div className="bg-muted rounded-2xl p-5">
-          <h3 className="font-semibold">Add your rating</h3>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Tap a star, then add notes if you like.
-          </p>
-          <RateThisTea product={product} className="mt-3" />
-        </div>
+        {canRate && (
+          <div className="bg-muted rounded-2xl p-5">
+            <h3 className="font-semibold">Add your rating</h3>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Tap a star, then add notes if you like.
+            </p>
+            <RateThisTea product={product} className="mt-3" />
+          </div>
+        )}
       </aside>
     </section>
   );

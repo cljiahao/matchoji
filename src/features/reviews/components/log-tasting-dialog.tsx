@@ -77,8 +77,15 @@ export function LogTastingDialog({ trigger }: LogTastingDialogProps) {
       const created = await createProductMutation.mutateAsync(values);
       setProduct(created);
       setStep('rate');
-    } catch {
-      toast.error('Could not add that product. Check the details and try again.');
+    } catch (error) {
+      // products_name_brand_key: the catalogue (or the review queue) already has this tea.
+      const duplicate =
+        typeof error === 'object' && error !== null && 'code' in error && error.code === '23505';
+      toast.error(
+        duplicate
+          ? 'That tea is already on Matchoji. Search for it by name instead.'
+          : 'Could not add that product. Check the details and try again.'
+      );
     }
   }
 

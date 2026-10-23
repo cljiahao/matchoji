@@ -26,7 +26,7 @@ const review = (id: string, userId: string) => ({
 describe('listReviews', () => {
   it('maps reviews and names reviewers from public_profiles, never profiles', async () => {
     const { client, calls } = createFakeSupabase({
-      reviews: { data: [review('r1', 'u1'), review('r2', 'u2')], error: null },
+      latest_reviews: { data: [review('r1', 'u1'), review('r2', 'u2')], error: null },
       public_profiles: { data: [{ id: 'u1', display_name: 'Aiko' }], error: null },
     });
 
@@ -40,7 +40,7 @@ describe('listReviews', () => {
   // numeric(4,1) can arrive as a string; unset attributes stay out of the profile.
   it('maps profile and prep, omitting unset attributes', async () => {
     const { client } = createFakeSupabase({
-      reviews: { data: [review('r1', 'u1')], error: null },
+      latest_reviews: { data: [review('r1', 'u1')], error: null },
       public_profiles: { data: [], error: null },
     });
 
@@ -53,7 +53,7 @@ describe('listReviews', () => {
   });
 
   it('skips the profile lookup when there are no reviews', async () => {
-    const { client, calls } = createFakeSupabase({ reviews: { data: [], error: null } });
+    const { client, calls } = createFakeSupabase({ latest_reviews: { data: [], error: null } });
 
     expect(await listReviews(client, 'p1')).toEqual([]);
     expect(calls.some((c) => c.table === 'public_profiles')).toBe(false);
@@ -61,7 +61,16 @@ describe('listReviews', () => {
 
   it('throws the Supabase error', async () => {
     const error = new Error('boom');
-    const { client } = createFakeSupabase({ reviews: { data: null, error } });
+    const { client } = createFakeSupabase({ latest_reviews: { data: null, error } });
+    await expect(listReviews(client, 'p1')).rejects.toBe(error);
+  });
+
+  it('throws when reviewer names fail to load instead of showing "Anonymous"', async () => {
+    const error = new Error('names');
+    const { client } = createFakeSupabase({
+      latest_reviews: { data: [review('r1', 'u1')], error: null },
+      public_profiles: { data: null, error },
+    });
     await expect(listReviews(client, 'p1')).rejects.toBe(error);
   });
 });

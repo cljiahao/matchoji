@@ -25,12 +25,13 @@ describe('uploadReviewPhoto', () => {
     const { client, from, upload } = storageClient();
     const file = new File(['x'], 'cup.jpg', { type: 'image/jpeg' });
 
-    const url = await uploadReviewPhoto(client, 'user-1', file);
+    const photo = await uploadReviewPhoto(client, 'user-1', file);
 
     expect(from).toHaveBeenCalledWith('review-photos');
     const path = upload.mock.calls[0][0] as string;
-    expect(path).toMatch(/^user-1\/.+-cup\.jpg$/);
-    expect(url).toBe(`https://cdn.test/${path}`);
+    // A random name keeps the visitor's own file name out of the public URL.
+    expect(path).toMatch(/^user-1\/[0-9a-f-]{36}\.jpg$/);
+    expect(photo).toEqual({ path, publicUrl: `https://cdn.test/${path}` });
   });
 
   it('throws when the upload fails', async () => {
@@ -60,6 +61,8 @@ describe('createReview', () => {
           photo_url: null,
           flavor_notes: [],
           prep_method: null,
+          // The taster's local date, never the database's UTC default.
+          tasted_on: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
         }),
       ],
     });

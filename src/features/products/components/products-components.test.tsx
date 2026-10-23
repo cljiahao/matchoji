@@ -239,6 +239,7 @@ describe('ProductRow', () => {
           supply: null,
           shopUrl: null,
           status: 'approved',
+          addedBy: null,
           avgStars: null,
           reviewCount: 0,
         })}

@@ -27,6 +27,7 @@ interface ProductRow {
   image_url: string | null;
   shop_url: string | null;
   status: ProductStatus;
+  added_by: string | null;
   created_at: string;
 }
 
@@ -43,7 +44,7 @@ async function hydrateProducts(
   const regionIds = [...new Set(rows.map((r) => r.region_id).filter((id) => id !== null))];
   const productIds = rows.map((r) => r.id);
 
-  const [{ data: regions }, { data: ratings }] = await Promise.all([
+  const [regionsResult, ratingsResult] = await Promise.all([
     selectIn(regionIds, (ids) =>
       supabase.from('regions').select('id, name, matcha_supply, hojicha_supply').in('id', ids)
     ),
@@ -52,8 +53,11 @@ async function hydrateProducts(
     ),
   ]);
 
-  const regionById = new Map(regions.map((r) => [r.id, r]));
-  const ratingByProductId = new Map(ratings.map((r) => [r.product_id, r]));
+  // A failed lookup must not look like "unrated" or "no region"; let the page's error state show.
+  if (regionsResult.error) throw regionsResult.error;
+  if (ratingsResult.error) throw ratingsResult.error;
+  const regionById = new Map(regionsResult.data.map((r) => [r.id, r]));
+  const ratingByProductId = new Map(ratingsResult.data.map((r) => [r.product_id, r]));
 
   const products = rows.map((row) => {
     const region = row.region_id ? regionById.get(row.region_id) : undefined;
@@ -69,6 +73,7 @@ async function hydrateProducts(
         imageUrl: row.image_url,
         shopUrl: row.shop_url,
         status: row.status,
+        addedBy: row.added_by,
         createdAt: row.created_at,
       },
       ratingByProductId.get(row.id)
@@ -81,7 +86,7 @@ async function hydrateProducts(
   const rated = products.filter((p) => p.reviewCount > 0).map((p) => p.id);
   if (rated.length === 0) return sortByRating(products);
   const { data: noteRows, error } = await selectIn(rated, (ids) =>
-    supabase.from('reviews').select('product_id, flavor_notes').in('product_id', ids)
+    supabase.from('latest_reviews').select('product_id, flavor_notes').in('product_id', ids)
   );
   if (error) throw error;
   const notes = topNotesByProduct(noteRows);
@@ -91,7 +96,9 @@ async function hydrateProducts(
 export async function listProducts(supabase: Client, filters: DiscoverFilters): Promise<Product[]> {
   let query = supabase
     .from('products')
-    .select('id, name, brand, category, grade, region_id, image_url, shop_url, status, created_at')
+    .select(
+      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, created_at'
+    )
     .eq('status', 'approved')
     .order('created_at', { ascending: false });
 
@@ -109,7 +116,9 @@ export async function listProducts(supabase: Client, filters: DiscoverFilters): 
 export async function getProduct(supabase: Client, id: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, brand, category, grade, region_id, image_url, shop_url, status, created_at')
+    .select(
+      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, created_at'
+    )
     .eq('id', id)
     .maybeSingle();
 

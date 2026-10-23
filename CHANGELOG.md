@@ -5,6 +5,30 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Security
+
+- Profiles can no longer be edited or deleted through the public profile view (closed by hand
+  on 2026-10-24 and now recorded in a migration); users can change only their display name,
+  and default names no longer use part of the email.
+- Ratings, want-to-try, stock reports and listings attach only to teas in the catalogue (a
+  taster may still rate the tea they added while it awaits review). Review photos must be the
+  author's own upload, at most 5 MB, and the photo bucket can no longer be listed.
+
+### Fixed
+
+- A tea's score, rating spread, taste summary and flavour notes count each person's latest
+  tasting, so logging a tea repeatedly no longer moves them; the journal keeps every tasting.
+- The same tea cannot be added twice; "Log a tasting" says so and points to search.
+- A tea that is later rejected stays in the journal and want-to-try list of everyone who
+  tasted or saved it, labelled "Not in the catalogue"; teas awaiting review are labelled too.
+- Teas outside the catalogue no longer show "Where to buy" or stock reports, and only the
+  person who added a tea awaiting review can rate it.
+- A failed rating or reviewer-name lookup shows the error page instead of "Not yet rated" or
+  "Anonymous"; a malformed tea link shows "not found".
+- Tastings logged without a date use the taster's local day, not the server's; a photo whose
+  tasting failed to save is removed, and stored photo names no longer include the original
+  file name.
+
 ### Added
 
 - Teas added while logging a tasting now await review, like Vivino's "processing" label on

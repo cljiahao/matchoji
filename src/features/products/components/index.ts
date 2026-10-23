@@ -1,3 +1,4 @@
+export { CatalogueStatusNote } from './catalogue-status-note';
 export { CategoryBadge } from './category-badge';
 export { CategoryCircles } from './category-circles';
 export { ExploreFilters } from './explore-filters';

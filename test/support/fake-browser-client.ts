@@ -31,10 +31,12 @@ export function createFakeBrowserClient(
     signOut: vi.fn(async () => ({ error: null })),
   };
 
-  const upload = vi.fn(async () => ({ error: null }));
+  const upload = vi.fn(async (_path: string, _file: unknown) => ({ error: null }));
+  const remove = vi.fn(async (_paths: string[]) => ({ data: [], error: null }));
   const storage = {
     from: vi.fn(() => ({
       upload,
+      remove,
       getPublicUrl: (path: string) => ({ data: { publicUrl: `https://cdn.test/${path}` } }),
     })),
   };
@@ -46,6 +48,7 @@ export function createFakeBrowserClient(
     calls: db.calls,
     auth,
     upload,
+    remove,
     emitAuthChange: (session: Session | null) => authListener?.('SIGNED_IN', session),
   };
 }

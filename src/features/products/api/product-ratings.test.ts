@@ -14,6 +14,7 @@ const base = {
   supply: null,
   shopUrl: null,
   status: 'approved' as const,
+  addedBy: null,
   imageUrl: null,
   createdAt: '2026-09-01T00:00:00Z',
 };

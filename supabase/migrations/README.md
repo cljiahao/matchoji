@@ -22,6 +22,14 @@ link). `orders` stays dormant. `20261024200000_tea_review_queue.sql`
 adds `products.status` (existing teas approved, new ones pending), `added_by` and
 `reviewed_at`: signed-in users can only add pending teas credited to themselves, approval is
 an admin's SQL update, and a rejected tea is visible only to whoever added it.
+`20261025000000_integrity_hardening.sql` is M0 of the 2026-10-24 roadmap: `public_profiles`
+read-only; profiles editable only in `display_name` (1–40 characters) with defaults that never
+use the email; `latest_reviews` and a `product_ratings` that count each person's latest tasting;
+writes allowed only on catalogue teas (or a taster's own pending one); a pending tea cannot
+carry a photo or shop link; review photos must be the author's own upload; length and date
+checks; one entry per tea name and brand; rejected teas readable to people who tasted or saved
+them; and `product_id` indexes. `20261025000001_storage_limits.sql` caps review photos at 5 MB
+of image types and stops anyone listing the bucket (PGlite skips Storage migrations).
 
 ## Contents
 
@@ -35,6 +43,8 @@ an admin's SQL update, and a rejected tea is visible only to whoever added it.
 - `20261024000000_stock_reports.sql`
 - `20261024100000_marketplace_vendors_listings.sql`
 - `20261024200000_tea_review_queue.sql`
+- `20261025000000_integrity_hardening.sql`
+- `20261025000001_storage_limits.sql`
 
 ## Parent
 

@@ -22,11 +22,17 @@ role), listing (once per tea, others cannot edit), value checks, and rejection h
 listings and reverting the role, with every change audited. `tea-review-queue.test.ts` checks seeded teas are approved,
 a taster's tea is pending and credited to them, nobody can add a tea as approved or credit
 someone else, a pending tea stays readable by link but only an admin can approve it, and a
-rejected tea is hidden from everyone but whoever added it.
+rejected tea is hidden from everyone but whoever added it. `integrity-hardening.test.ts`
+proves M0: `public_profiles` cannot be written, users change only their display name, default
+names skip the email, scores count latest tastings, writes refuse other people's pending and
+any rejected tea, suggested teas carry no photo or link, duplicates and over-long values are
+refused, review photos must be the author's own, rejected teas stay visible to their tasters,
+and the per-tea indexes exist.
 
 ## Contents
 
 - `audit-log.test.ts`
+- `integrity-hardening.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`
 - `marketplace.test.ts`

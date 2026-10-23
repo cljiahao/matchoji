@@ -21,6 +21,8 @@ export interface Product {
   // Teas added by tasters stay 'pending' until an admin reviews them; see the review-queue
   // migration. Lists and search show approved teas only.
   status: ProductStatus;
+  // Who suggested the tea; lets its page offer rating to them while it awaits review.
+  addedBy: string | null;
   createdAt: string;
   avgStars: number | null;
   reviewCount: number;
@@ -33,4 +35,6 @@ export interface ProductSummary {
   name: string;
   brand: string | null;
   category: ProductCategory;
+  // Read only where a list can include teas outside the catalogue (journal, want-to-try).
+  status?: ProductStatus;
 }

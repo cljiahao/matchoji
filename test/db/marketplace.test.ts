@@ -72,7 +72,8 @@ beforeAll(async () => {
     ]);
   product = (
     await rows<{ id: string }>(
-      `insert into public.products (name, brand, category) values ('Sayaka', 'Ippodo', 'matcha')
+      `insert into public.products (name, brand, category, status)
+       values ('Sayaka', 'Ippodo', 'matcha', 'approved')
        returning id`
     )
   )[0].id;
@@ -145,6 +146,24 @@ describe('approval and listings', () => {
         )
       )
     ).toEqual([{ price: '32.50', currency: 'SGD' }]);
+  });
+
+  it('refuses a listing of a tea that is not in the catalogue yet', async () => {
+    const vendor = await vendorId(SELLER);
+    const pending = (
+      await rows<{ id: string }>(
+        `insert into public.products (name, category) values ('Unreviewed', 'matcha') returning id`
+      )
+    )[0].id;
+    await expect(
+      as(SELLER, () =>
+        db.query(
+          `insert into public.listings (vendor_id, product_id, price, currency, stock, url)
+           values ($1, $2, 10, 'SGD', 1, 'https://kyoto-leaf.example/x')`,
+          [vendor, pending]
+        )
+      )
+    ).rejects.toThrow(/row-level security/);
   });
 
   it('stops other users editing or deleting the listing', async () => {

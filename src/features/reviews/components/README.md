@@ -5,7 +5,9 @@
 The rating UI. `RateThisTea` is Vivino's one-tap rating: signed out, a star opens the
 sign-in dialog; signed in, it opens `RateProductForm` in a dialog with that star set.
 `LogTastingDialog` (find or add a product, then rate it) also asks for sign-in first; a
-tea added there awaits review before it joins Explore, and the dialog says so. The
+tea added there awaits review before it joins Explore, and the dialog says so; a duplicate of
+an existing tea is named as such. `CommunityReviews` hides "Add your rating" when the page says
+the viewer cannot rate the tea. The
 form adds `FlavorNotePicker`, `TasteProfileInput` and the collapsed `PrepFields` (a 16px panel, like the other tiles); star and
 taste inputs follow the radiogroup keyboard pattern via `lib/roving-radio`.
 

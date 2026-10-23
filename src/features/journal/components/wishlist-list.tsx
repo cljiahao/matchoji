@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { TeaTin, type ProductSummary } from '@/features/products';
+import { CatalogueStatusNote, TeaTin, type ProductSummary } from '@/features/products';
 
 import { useWishlist } from '../hooks/use-wishlist';
 
@@ -54,6 +54,7 @@ export function WishlistList({ products }: WishlistListProps) {
               >
                 {product.name}
               </Link>
+              <CatalogueStatusNote status={product.status} />
             </span>
           </div>
           <Button

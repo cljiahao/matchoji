@@ -2,16 +2,30 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '@/integrations/supabase/database.types';
 
+import { localToday } from '../lib/local-date';
 import type { ReviewOutput } from '../schemas/review.schema';
 
 type Client = SupabaseClient<Database>;
+
+export interface UploadedPhoto {
+  path: string;
+  publicUrl: string;
+}
+
+// The stored name is random plus a short extension: the visitor's own file name (which can
+// hold personal details or odd characters) never reaches a public URL.
+function photoPath(userId: string, file: File): string {
+  const ext = /\.([a-z0-9]{1,5})$/i.exec(file.name)?.[1]?.toLowerCase();
+  const suffix = ext ? '.' + ext : '';
+  return `${userId}/${crypto.randomUUID()}${suffix}`;
+}
 
 export async function uploadReviewPhoto(
   supabase: Client,
   userId: string,
   file: File
-): Promise<string> {
-  const path = `${userId}/${crypto.randomUUID()}-${file.name}`;
+): Promise<UploadedPhoto> {
+  const path = photoPath(userId, file);
 
   const { error } = await supabase.storage.from('review-photos').upload(path, file);
   if (error) throw error;
@@ -20,7 +34,12 @@ export async function uploadReviewPhoto(
     data: { publicUrl },
   } = supabase.storage.from('review-photos').getPublicUrl(path);
 
-  return publicUrl;
+  return { path, publicUrl };
+}
+
+// Best effort: a photo whose review failed to save is removed so it does not linger.
+export async function removeReviewPhoto(supabase: Client, path: string): Promise<void> {
+  await supabase.storage.from('review-photos').remove([path]);
 }
 
 interface CreateReviewInput extends ReviewOutput {
@@ -45,8 +64,9 @@ export async function createReview(supabase: Client, input: CreateReviewInput): 
     dose_g: input.doseG ?? null,
     water_ml: input.waterMl ?? null,
     water_temp_c: input.waterTempC ?? null,
-    // Omitted rather than null so the column default (today) applies.
-    ...(input.tastedOn ? { tasted_on: input.tastedOn } : {}),
+    // Always the taster's own date: the column default is the database's (UTC) day, which
+    // is yesterday for a morning tasting in Singapore.
+    tasted_on: input.tastedOn ?? localToday(),
   });
 
   if (error) throw error;
