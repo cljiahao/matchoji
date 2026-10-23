@@ -24,6 +24,7 @@ export interface Database {
           email: string;
           display_name: string;
           role: ProfileRole;
+          is_admin: boolean;
           created_at: string;
         };
         Insert: {
@@ -31,6 +32,7 @@ export interface Database {
           email: string;
           display_name: string;
           role?: ProfileRole;
+          is_admin?: boolean;
           created_at?: string;
         };
         Update: {
@@ -89,6 +91,7 @@ export interface Database {
           ships_to: string[];
           status: VendorStatus;
           reviewed_at: string | null;
+          review_note: string | null;
           created_at: string;
         };
         Insert: {
@@ -101,6 +104,7 @@ export interface Database {
           ships_to?: string[];
           status?: VendorStatus;
           reviewed_at?: string | null;
+          review_note?: string | null;
           created_at?: string;
         };
         Update: {
@@ -206,6 +210,8 @@ export interface Database {
           status: ProductStatus;
           added_by: string | null;
           reviewed_at: string | null;
+          review_note: string | null;
+          merged_into: string | null;
           created_at: string;
         };
         Insert: {
@@ -220,6 +226,8 @@ export interface Database {
           status?: ProductStatus;
           added_by?: string | null;
           reviewed_at?: string | null;
+          review_note?: string | null;
+          merged_into?: string | null;
           created_at?: string;
         };
         Update: {
@@ -234,6 +242,8 @@ export interface Database {
           status?: ProductStatus;
           added_by?: string | null;
           reviewed_at?: string | null;
+          review_note?: string | null;
+          merged_into?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -358,7 +368,18 @@ export interface Database {
       };
     };
     Functions: {
-      [_ in never]: never;
+      is_admin: { Args: Record<string, never>; Returns: boolean };
+      review_tea: {
+        Args: { tea: string; decision: 'approved' | 'rejected'; note?: string };
+        Returns: undefined;
+      };
+      set_tea_links: { Args: { tea: string; image: string; shop: string }; Returns: undefined };
+      merge_tea: { Args: { duplicate: string; keep: string }; Returns: undefined };
+      review_vendor: {
+        Args: { vendor: string; decision: 'approved' | 'rejected'; note?: string };
+        Returns: undefined;
+      };
+      reapply_as_vendor: { Args: Record<string, never>; Returns: undefined };
     };
   };
 }

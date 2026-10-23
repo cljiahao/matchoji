@@ -2,6 +2,7 @@
 
 ## Purpose
 
+Every file builds its database with `createMigratedDb()` from `test/support/supabase-db.ts`.
 Database tests: `audit-log.test.ts` applies `supabase/migrations/` (storage excepted) to an
 in-process PGlite Postgres, with a stub of the Supabase pieces they use (`auth.users`,
 `auth.uid()`, the `anon`/`authenticated` roles and their default grants). It checks that
@@ -27,10 +28,14 @@ proves M0: `public_profiles` cannot be written, users change only their display 
 names skip the email, scores count latest tastings, writes refuse other people's pending and
 any rejected tea, suggested teas carry no photo or link, duplicates and over-long values are
 refused, review photos must be the author's own, rejected teas stay visible to their tasters,
-and the per-tea indexes exist.
+and the per-tea indexes exist. `admin-review.test.ts` checks users cannot make themselves
+admin, only admins can review, link or merge teas and review shops, reasons reach the
+submitter, a merge moves tastings, saves and listings and forwards the duplicate, and a
+rejected shop can reapply once.
 
 ## Contents
 
+- `admin-review.test.ts`
 - `audit-log.test.ts`
 - `integrity-hardening.test.ts`
 - `region-supply.test.ts`

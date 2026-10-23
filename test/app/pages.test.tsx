@@ -25,8 +25,12 @@ vi.mock('next/navigation', () => ({
   notFound: () => {
     throw new Error('NEXT_NOT_FOUND');
   },
+  permanentRedirect: (url: string) => {
+    throw new Error(`NEXT_REDIRECT ${url}`);
+  },
 }));
 
+import AdminPage from '@/app/(public)/admin/page';
 import PublicError from '@/app/(public)/error';
 import ExploreLoading from '@/app/(public)/explore/loading';
 import ExplorePage from '@/app/(public)/explore/page';
@@ -62,6 +66,7 @@ function useServer(
   const fake = createFakeSupabase(results);
   server.current = {
     from: fake.client.from,
+    rpc: fake.client.rpc,
     auth: { getUser: async () => ({ data: { user }, error: null }) },
   };
   return fake;
@@ -559,6 +564,16 @@ describe('Sell page', () => {
     expect(screen.getByRole('button', { name: 'Apply to sell' })).toBeInTheDocument();
   });
 
+  it('shows a rejected shop the reason and lets it apply again', async () => {
+    useServer(
+      { vendors: { data: { ...vendor('rejected'), review_note: 'Add a website.' }, error: null } },
+      { id: 'u1' }
+    );
+    renderWithQuery(await SellPage());
+    expect(screen.getByText(/Our note: Add a website\./)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Apply again' })).toBeInTheDocument();
+  });
+
   it('says a pending shop is under review and offers no listing form', async () => {
     useServer({ vendors: { data: vendor('pending'), error: null } }, { id: 'u1' });
     renderWithQuery(await SellPage());
@@ -615,6 +630,55 @@ describe('Sell page', () => {
         .map((o) => o.textContent)
     ).toEqual(['Pick a tea from the catalogue', 'Wako · Marukyu Koyamaen']);
     expect(screen.getByLabelText('Currency')).toHaveValue('SGD');
+  });
+});
+
+describe('Admin page', () => {
+  it('404s for visitors and for signed-in people who are not admins', async () => {
+    useServer({});
+    await expect(AdminPage()).rejects.toThrow('NEXT_NOT_FOUND');
+
+    useServer({ 'rpc:is_admin': { data: false, error: null } }, { id: 'u1' });
+    await expect(AdminPage()).rejects.toThrow('NEXT_NOT_FOUND');
+  });
+
+  it('shows an admin the pending teas and shops', async () => {
+    useServer(
+      {
+        'rpc:is_admin': { data: true, error: null },
+        products: [
+          {
+            data: [
+              {
+                id: 't1',
+                name: 'Hoshi',
+                brand: 'Farm',
+                category: 'matcha',
+                grade: null,
+                added_by: null,
+                created_at: '2026-10-24T00:00:00Z',
+              },
+            ],
+            error: null,
+          },
+          {
+            data: [{ id: 'p1', name: 'Sayaka', brand: 'Ippodo', category: 'matcha' }],
+            error: null,
+          },
+        ],
+        vendors: { data: [], error: null },
+      },
+      { id: 'admin' }
+    );
+
+    renderWithQuery(await AdminPage());
+
+    expect(screen.getByRole('heading', { name: 'Teas awaiting review (1)' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Approve Hoshi' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Shop applications (0)' })).toBeInTheDocument();
+    expect(
+      within(screen.getByLabelText('Tea that Hoshi duplicates')).getAllByRole('option')
+    ).toHaveLength(2);
   });
 });
 
@@ -815,6 +879,22 @@ describe('Product page', () => {
       '/sell'
     );
     expect(screen.queryByRole('link', { name: /shop/ })).not.toBeInTheDocument();
+  });
+
+  it('forwards a merged duplicate to the tea it repeated', async () => {
+    useServer({
+      products: {
+        data: { ...productRow, status: 'rejected', merged_into: 'keep-id' },
+        error: null,
+      },
+      product_ratings: { data: [], error: null },
+      latest_reviews: { data: [], error: null },
+      stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
+    });
+    await expect(ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) })).rejects.toThrow(
+      'NEXT_REDIRECT /products/keep-id'
+    );
   });
 
   it('404s a malformed tea id without querying', async () => {

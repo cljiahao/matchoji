@@ -5,4 +5,4 @@ export {
   listVendorListings,
   saveListing,
 } from './listing-service';
-export { applyAsVendor, getMyVendor, updateVendor } from './vendor-service';
+export { applyAsVendor, getMyVendor, reapplyAsVendor, updateVendor } from './vendor-service';

@@ -9,7 +9,8 @@ filtered after it, in `lib`. `listRegionSummaries` returns every region with its
 product carries `supply`, its category's level in its region, and `shopUrl`. Explore, the shelves and the region counts read approved teas only;
 `searchProducts` (the "Log a tasting" picker) returns approved teas plus the searcher's own
 teas awaiting review. Card flavour notes come from `latest_reviews`, and a failed region or
-rating lookup throws rather than showing a tea as unrated. Region, rating and note
+rating lookup throws rather than showing a tea as unrated. `getProduct` also reads
+`review_note` and `merged_into`. Region, rating and note
 lookups go through `selectIn` batches, since `listProducts` loads the whole catalogue. Pure helpers
 (rating merge/sort, search-filter building) are split out
 so they can be unit-tested without a client. Services are tested against a recording

@@ -28,6 +28,8 @@ interface ProductRow {
   shop_url: string | null;
   status: ProductStatus;
   added_by: string | null;
+  review_note: string | null;
+  merged_into: string | null;
   created_at: string;
 }
 
@@ -74,6 +76,8 @@ async function hydrateProducts(
         shopUrl: row.shop_url,
         status: row.status,
         addedBy: row.added_by,
+        reviewNote: row.review_note,
+        mergedInto: row.merged_into,
         createdAt: row.created_at,
       },
       ratingByProductId.get(row.id)
@@ -97,7 +101,7 @@ export async function listProducts(supabase: Client, filters: DiscoverFilters): 
   let query = supabase
     .from('products')
     .select(
-      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, created_at'
+      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, review_note, merged_into, created_at'
     )
     .eq('status', 'approved')
     .order('created_at', { ascending: false });
@@ -117,7 +121,7 @@ export async function getProduct(supabase: Client, id: string): Promise<Product 
   const { data, error } = await supabase
     .from('products')
     .select(
-      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, created_at'
+      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, review_note, merged_into, created_at'
     )
     .eq('id', id)
     .maybeSingle();

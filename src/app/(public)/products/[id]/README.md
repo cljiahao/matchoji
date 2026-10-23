@@ -10,7 +10,8 @@ offers load from Supabase in parallel; an unknown id 404s. A tea awaiting review
 under its badges (like Vivino's "processing" label on an unmatched scan); a rejected one,
 visible only to the taster who added it, says it was not added to the catalogue. Rating and want-to-try appear only on catalogue teas
 or, for a tea awaiting review, to whoever added it; stock and "Where to buy" only on catalogue
-teas. A malformed id 404s before any query.
+teas. A malformed id 404s before any query. A merged duplicate forwards permanently to the tea
+it repeated, and a rejected tea shows the admin's reason to whoever added it.
 
 ## Contents
 

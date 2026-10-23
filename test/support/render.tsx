@@ -38,6 +38,8 @@ export function makeProduct(overrides: Partial<Product> = {}): Product {
     shopUrl: null,
     status: 'approved',
     addedBy: null,
+    reviewNote: null,
+    mergedInto: null,
     createdAt: '2026-09-01T00:00:00Z',
     avgStars: 4.5,
     reviewCount: 12,
