@@ -48,69 +48,102 @@ Phases 1, 2 and 4, and Phase 3's first slice, built the skeleton. This spec does
 
 ## 3. Audit findings to fix first
 
-I verified these myself, or they come with exact file references from the audit.
+Two independent read-only sweeps of the repository produced this list on 2026-10-24. Items
+marked "verified" were confirmed against the live database or by reading the code directly.
 
-**Integrity and security**
+### Security
 
-1. **Scores can be gamed.** `reviews` allows many rows per user per tea, which the journal needs: each one is a separate tasting. But `product_ratings` averages every row (`supabase/migrations/20260914071129_phase1_schema.sql:109`), so logging a tea 50 times moves its score.
-   - **Fix:** the public score counts each user's **latest** tasting of a tea, and their earlier tastings stay in their journal.
-   - **Vivino:** one rating per user per vintage.
-2. **Users can change their own role and email.** The profile update policy has no column limit (`phase1_schema.sql:23`).
-   - **Fix:** column-level grants, so only `display_name` is user-editable, with a length check.
-3. **Writes can attach to teas that aren't approved.** Reviews, want-to-try, stock reports and listings can all attach to a pending or rejected tea.
-   - **Fix:** reviews, want-to-try and stock reports may attach only to approved teas, or to the inserting user's own pending tea. Listings may attach to approved teas only.
-4. **The database doesn't check lengths or dates.** Tea name, brand and grade, review notes and `display_name` have no length checks, and `tasted_on` can be in the future. Zod runs only in the browser.
-   - **Fix:** database `check` constraints that mirror the Zod schemas.
-5. **Photos aren't locked down.**
-   - **Fix:** `reviews.photo_url` must be in this project's `review-photos` bucket under the author's folder.
-   - **Fix:** the bucket gets a size limit (5 MB) and image-only MIME types.
-   - **Fix:** a pending tea's adder cannot set `image_url` or `shop_url`; only an admin sets them.
-6. **Some failed reads look like empty data.** `hydrateProducts` ignores errors from the regions and ratings reads, so a failed read looks like "Not yet rated". Such failures must throw.
+- **S1. Anyone could edit or delete any profile through `public_profiles` (verified live; fixed by hand on 2026-10-24).**
+  - **Cause:** the view runs with its owner's rights and is auto-updatable, and Supabase's default grants gave `anon` and `authenticated` write access to it. A deleted profile cascades to its reviews, want-to-try list and shop.
+  - **Fix:** M0 records the `revoke insert, update, delete` in a migration with a test.
+- **S2. Users can change their own `role` and `email` (verified).**
+  - **Cause:** the profile update policy has no `with check` and no column grants (`phase1_schema.sql:23-25`).
+  - **Fix:** only `display_name` is user-editable, 1–40 characters.
+- **S3. Writes can attach to teas that aren't approved.** Reviews, want-to-try, stock reports and listings all can.
+  - **Fix:** reviews, want-to-try and stock reports may attach only to approved teas, or to the user's own pending tea. Listings may attach to approved teas only.
+- **S4. Photos aren't locked down.**
+  - **Fix:** `reviews.photo_url` must point into the `review-photos` bucket, under the author's own folder.
+  - **Fix:** the bucket gets a 5 MB size limit and image-only MIME types, and anyone can currently list its folders; that listing is removed.
+  - **Fix:** a pending tea's adder cannot set `image_url` or `shop_url`.
+- **S5. Default display names publish part of the user's email.** The fallback is the text before the `@`.
+  - **Fix:** new users default to their Google name, else "Tea drinker" plus a short random suffix.
 
-**Data flow** 7. **Rejecting a tea hides other people's tastings of it.**
+### Integrity
 
-- **Cause:** the tea disappears for everyone but its adder, so RLS hides it from their journal and want-to-try lists.
-- **Fix:** they keep their entries, shown with a "removed from the catalogue" label, by reading the minimal name from a security-definer view.
-- **Merging:** when a duplicate tea is merged, the tastings move to the surviving tea (see M1).
+- **I1. Scores can be gamed (verified).** `product_ratings` averages every row (`phase1_schema.sql:109-115`), and the tea page's distribution, taste profile, notes and preparation also count every row (`summarize-reviews.ts:78-80`), as do the card notes (`products-service.ts:83-87`).
+  - **Fix:** everything public counts each user's latest tasting of a tea. The journal keeps every tasting.
+- **I2. The database doesn't check lengths or dates.** Zod runs only in the browser.
+  - **Fix:** `check` constraints that mirror Zod, for tea name 120, brand 120, grade 60 and review notes 2000 characters.
+  - **Fix:** a tasting date can't be more than a day ahead of the database's date, which allows for time zones.
+- **I3. A blank tasting date takes the database's day.** That is UTC, so it can be the user's yesterday.
+  - **Fix:** the app always sends the user's local date.
+- **I4. Nothing stops duplicate teas.**
+  - **Fix:** a unique index on `lower(name), lower(coalesce(brand, ''))`.
+  - **Fix:** the add-tea step reports "already in the catalogue" when that index refuses an insert.
+- **I5. Some failed reads look like empty data.** `hydrateProducts` ignores errors from the regions and ratings reads, and `listReviews` hides a failed name lookup as "Anonymous". All of these must throw.
+- **I6. Photo uploads can be orphaned.** A failed review insert leaves its uploaded photo behind, and the raw file name goes into the storage path.
+  - **Fix:** remove the photo when the insert fails, and use a random name with the file's extension.
+- **I7. Rejecting a tea hides other people's tastings of it.**
+  - **Fix:** a rejected tea stays readable to anyone who tasted it or saved it to want-to-try. The journal labels it "Not in the catalogue". Merging (M1) moves the tastings to the surviving tea.
+- **I8. Non-approved tea pages show buying and stock tools.** Fix: hide "Where to buy" and stock reports on non-approved teas.
+- **I9. Two indexes are missing:** `reviews(product_id)` and `listings(product_id)`.
+- **I10. App tests can't catch query mistakes.** The fake Supabase client ignores filters and RLS, so status and permission rules are tested in PGlite.
 
-8. **Non-approved teas show buying and stock tools.** Pending and rejected tea pages still show "Where to buy", stock reports and the rating buttons. Fix: hide "Where to buy" and stock reports; keep rating for the adder only.
-9. **Lists load everything.**
-   - **Problem:** `listProducts` loads the whole catalogue plus every review's flavour notes, and the home page calls it 3 times.
-   - **Fix:** paging, a query that fetches only each shelf's top teas, and a precomputed top-notes view.
-10. **One 5★ review outranks 100 reviews at 4.8★.**
-    - **Fix:** "Top rated" uses a weighted score, `(v·R + m·C)/(v + m)`. Here R is the tea's average, v its rating count, C the catalogue average, and m = 5.
-    - **Vivino:** weights by count too; its formula is undisclosed, so m = 5 is my call.
-    - Teas with fewer than 3 ratings show their stars but stay out of "Top rated".
-11. **Nothing stops duplicate teas.** Fix: a unique index on `lower(name), lower(coalesce(brand, ''))`, plus an "already in the catalogue" check in the add-tea step.
+### Scale and discovery (M1)
 
-**UX** 12. **Phones can't reach two areas.** On phones nothing links to `/sell`, `/regions` or `/regions/supply`. Fix: add them to the account menu and to the Explore header. 13. **Some pages are generic.** There is no `not-found.tsx`, and an invalid product id shows the error page instead of a 404. `/sell` and `/regions/supply` have no loading state, and no page sets its own title. 14. **The account menu has only Sign out.** It needs a profile page, a display-name edit, the Sell link and account deletion (see M2).
+- **D1. Lists load everything.**
+  - **Problem:** `listProducts` loads the whole approved catalogue and every review's notes, and the home page calls it 3 times.
+  - **Fix:** paging. The grade and rating filters move into SQL; today they run in the app.
+- **D2. One 5★ review outranks 100 reviews at 4.8★.**
+  - **Fix:** a weighted score, `(v·R + m·C)/(v + m)`, with m = 5 and a 3-rating minimum for "Top rated". R is the tea's average, v its rating count and C the catalogue average.
+- **D3. Search can miss approved teas, and its escaping is incomplete.**
+  - **Cause:** it fetches 20 unordered rows, then filters in the app, and `_` and `"` are not escaped.
+  - **Fix:** filter in SQL, add a trigram index, and order by relevance.
+- **D4. Each Want-to-try button checks the sign-in separately.** That is about 36 checks on the home page. Fix: share one session context.
 
-**Operations** 15. **Migrations are run by hand.** This has already caused one wrong-project run on 2026-10-24. - **Fix:** Supabase CLI migrations, with a CI job that checks the linked project's applied migrations against the repo. - **Fix:** generated `database.types.ts` replaces the hand-written one. 16. **There is no monitoring.** Fix: error tracking, and `/api/health` checks the database.
+### UX
+
+- **U1. Phones can't reach `/sell`, `/regions` or `/regions/supply`.**
+- **U2. Some pages are generic.** There is no `not-found.tsx`. `/sell` and `/regions/supply` have no loading state. No page has its own title, Open Graph tags, sitemap or robots file.
+- **U3. Screen-reader labels are unclear.** The rating distribution and the big score read without "stars" or "out of 5".
+- **U4. The account menu has only Sign out** (see M2).
+- **U5. Rejected shops are pointed to an email that was never sent,** and they can't re-apply.
+
+### Operations (M6)
+
+- **O1. Migrations are run by hand.** That led to a run against the wrong project on 2026-10-24.
+- **O2. `database.types.ts` is hand-written** and can drift from the schema.
+- **O3. There is no monitoring.** Storage uploads and deletes aren't audited.
 
 ## 4. Milestones
 
 Each milestone ships as one or more PRs under the existing gates: tests, READMEs, changelog, audit triggers on new tables, and RLS tested in PGlite. Order matters: M0 protects the data the later milestones build on.
 
-### M0 — Integrity hardening (all of §3 items 1–8, 11)
+### M0 — Integrity hardening (§3 S1–S5, I1–I10)
 
 - **One migration:**
+  - `public_profiles` writes revoked;
+  - profile column grants, plus the new display-name default;
   - `product_ratings` counts each user's latest review per tea;
-  - profile column grants;
   - status-aware insert policies;
   - length and date checks;
-  - photo-URL and storage limits;
+  - photo-URL check, plus storage size and MIME limits and no bucket listing;
   - a unique tea index;
-  - a `product_names` security-definer view for the journal and want-to-try.
+  - a read rule so people who tasted or saved a rejected tea can still see it;
+  - indexes on `product_id`.
 - **App:**
+  - the tea page summary and card notes count latest tastings only;
   - hide offers and stock reports on non-approved teas;
-  - surface read errors instead of hiding them;
-  - label removed teas in the journal;
-  - add-tea warns on a likely duplicate.
-- **Done when:** PGlite tests prove each rule, and the existing suites still pass.
+  - read errors throw;
+  - the journal and want-to-try label teas not in the catalogue;
+  - add-tea reports a duplicate;
+  - the tasting date is always sent;
+  - photo cleanup and safe file names.
+- **Done when:** PGlite tests prove each database rule, app tests cover the rest, and the suites pass.
 
-### M1 — Catalogue care and scale (§3 items 9, 10, 12, 13; admin)
+### M1 — Catalogue care and scale (§3 D1–D4, U1–U3, U5; admin)
 
-- **Admin role:**
+- **Admin role:** admin writes go through a security-definer function that checks the admin flag. Column grants can't let only admins write `status`.
   - `profiles.is_admin`, set by SQL once;
   - RLS lets admins update `products.status`, `image_url`, `shop_url` and `vendors.status`.
 - **`/admin` review list:**
@@ -151,7 +184,10 @@ Each milestone ships as one or more PRs under the existing gates: tests, READMEs
   - edit your display name;
   - see your shop, if you have one;
   - export your data (journal, reviews, want-to-try) as JSON;
-  - delete your account. Your reviews are kept in anonymised form, as Vivino does, and your audit rows are anonymised by setting their actor to null.
+  - delete your account. Your reviews are kept in anonymised form, as Vivino does.
+  - **Deletion needs schema changes first.** Today `reviews.user_id` is `not null … on delete cascade`, so deleting an account would delete the reviews too. It becomes nullable with `on delete set null`.
+  - **Audit rows need scrubbing too.** Deletion also removes `user_id` and `display_name` from the user's audit rows, not just the actor.
+  - **Photos:** storage objects under the user's folder are removed.
 - **Rate limits** like `stock_reports`: at most 20 new teas and 60 reviews per user per day.
 
 ### M3 — Social
@@ -184,15 +220,20 @@ Each milestone ships as one or more PRs under the existing gates: tests, READMEs
   - payment held at order and taken when the vendor marks the order shipped, as Vivino does;
   - an application fee per sale.
 - **Server code:** a route handler, plus a webhook route with signature checks. Writes use a Supabase role scoped to orders only, never the service-role key in the browser. Route tests cover 401, 200 and the error paths, per the constitution.
-- **Orders:** `orders` and `order_items` with status pending → paid → shipped → delivered, or cancelled or refunded. Buyer and vendor order pages.
+- **Orders:** `orders.listing_id` gets `on delete restrict` and keeps a snapshot of name, price and currency, so deleting a listing never loses order history. `orders` and `order_items` with status pending → paid → shipped → delivered, or cancelled or refunded. Buyer and vendor order pages.
 - **Price history:** `listing_prices(listing_id, price, currency, at)`. This later allows a Value-Check-style "good price" tier once there is 3 months of data.
 - **Vendors proposing teas:** vendors can propose a new tea from the listing form, which enters the review queue (the Phase 3 spec promised this).
 
-### M6 — Operations (§3 items 15, 16)
+### M5b — Farm tools (Phase 4 rest, needs M5 orders)
+
+- **Vendor analytics:** rating trend per listed tea, plus views, clicks on "Buy from…" and orders per listing.
+- **Demand signals for growers:** what is rating well, rising in want-to-try, and reported sold out, by region and category.
+
+### M6 — Operations (§3 O1–O3)
 
 - **Migrations:** Supabase CLI (`supabase/config.toml`), `supabase db push` documented, and a CI check that fails when the repo has migrations the linked project lacks.
 - **Types:** `database.types.ts` generated in CI, with a check that it is committed fresh.
-- **Monitoring:** error tracking with a free-tier provider, and `/api/health` runs `select 1`.
+- **Monitoring:** error tracking with a free-tier provider, and `/api/health` calls a tiny `health()` database function, because PostgREST can't run `select 1` on its own.
 - **Local dev:** `supabase start` with seeds, so `pnpm dev` works without production keys.
 - **Small fixes:**
   - the OAuth callback builds redirects from `getAppOrigin`;
