@@ -4,7 +4,8 @@
 
 Journal UI: the stats strip, the month-grouped timeline (each tasting as a card with its
 tea tile), the want-to-try list with remove, and the `WantToTryButton` used on product
-pages, shelves and Explore rows.
+pages, shelves and Explore rows. Timeline cards and want-to-try rows show
+`CatalogueStatusNote` ("Awaiting review", "Not in the catalogue") next to such teas.
 
 ## Contents
 

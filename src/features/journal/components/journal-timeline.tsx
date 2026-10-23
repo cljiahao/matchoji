@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
-import { CATEGORY_STYLES, Stars, TeaTin } from '@/features/products';
-import { FLAVOR_NOTES, PrepSummary, noteLabel } from '@/features/reviews';
+import { CatalogueStatusNote, CATEGORY_STYLES, Stars, TeaTin } from '@/features/products';
+import { FLAVOR_NOTES, noteLabel, PrepSummary } from '@/features/reviews';
 import { cn } from '@/lib/utils';
 
 import { groupByMonth } from '../lib/journal-stats';
@@ -48,12 +48,15 @@ export function JournalTimeline({ entries }: { entries: JournalEntry[] }) {
                   </div>
                   <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                      <Link
-                        href={`/products/${entry.product.id}`}
-                        className="font-bold hover:underline"
-                      >
-                        {entry.product.name}
-                      </Link>
+                      <span className="flex flex-wrap items-baseline gap-x-2">
+                        <Link
+                          href={`/products/${entry.product.id}`}
+                          className="font-bold hover:underline"
+                        >
+                          {entry.product.name}
+                        </Link>
+                        <CatalogueStatusNote status={entry.product.status} />
+                      </span>
                       <time
                         dateTime={entry.tastedOn}
                         className="text-muted-foreground text-sm tabular-nums"

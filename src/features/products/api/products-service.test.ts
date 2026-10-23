@@ -33,7 +33,7 @@ describe('listProducts', () => {
         data: [{ product_id: 'b', avg_stars: 4.5, review_count: 2 }],
         error: null,
       },
-      reviews: { data: [], error: null },
+      latest_reviews: { data: [], error: null },
     });
 
     const products = await listProducts(client, { sort: 'top' });
@@ -57,7 +57,7 @@ describe('listProducts', () => {
     const { client } = createFakeSupabase({
       products: { data: [row('a')], error: null },
       product_ratings: { data: [{ product_id: 'a', avg_stars: 4, review_count: 3 }], error: null },
-      reviews: {
+      latest_reviews: {
         data: [
           { product_id: 'a', flavor_notes: ['umami', 'creamy'] },
           { product_id: 'a', flavor_notes: ['creamy', 'sweet'] },
@@ -113,6 +113,15 @@ describe('listProducts', () => {
     await listProducts(client, { sort: 'top' });
 
     expect(calls.some((c) => c.table === 'regions')).toBe(false);
+  });
+
+  it('throws when ratings fail to load instead of showing teas as unrated', async () => {
+    const error = new Error('ratings');
+    const { client } = createFakeSupabase({
+      products: { data: [row('a')], error: null },
+      product_ratings: { data: null, error },
+    });
+    await expect(listProducts(client, { sort: 'top' })).rejects.toBe(error);
   });
 
   it('throws the Supabase error', async () => {

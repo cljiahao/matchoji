@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { z } from 'zod';
 
 import { WantToTryButton } from '@/features/journal';
 import { WhereToBuy, listProductOffers } from '@/features/marketplace';
@@ -33,16 +34,26 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
+  // A malformed id would make Postgres reject the query; it is simply not a tea.
+  if (!z.uuid().safeParse(id).success) notFound();
 
   const supabase = await createClient();
-  const [product, reviews, stockReport, offers] = await Promise.all([
+  const [product, reviews, stockReport, offers, { data: auth }] = await Promise.all([
     getProduct(supabase, id),
     listReviews(supabase, id),
     getLatestStockReport(supabase, id),
     listProductOffers(supabase, id),
+    supabase.auth.getUser(),
   ]);
 
   if (!product) notFound();
+
+  // Buying and stock belong to catalogue teas. A tea awaiting review can be rated and saved
+  // only by whoever added it (the database enforces the same rule); a rejected one by nobody.
+  const listed = product.status === 'approved';
+  const canEngage =
+    listed ||
+    (product.status === 'pending' && auth.user != null && auth.user.id === product.addedBy);
 
   const summary = summarizeReviews(reviews);
   const productSummary = {
@@ -111,28 +122,32 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <div>
-                <p className="text-sm font-semibold">Rate it</p>
-                <RateThisTea product={productSummary} className="-ml-0.5" />
+            {canEngage && (
+              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <div>
+                  <p className="text-sm font-semibold">Rate it</p>
+                  <RateThisTea product={productSummary} className="-ml-0.5" />
+                </div>
+                <WantToTryButton productId={product.id} className="bg-background" />
               </div>
-              <WantToTryButton productId={product.id} className="bg-background" />
-            </div>
+            )}
 
-            <StockPanel
-              productId={product.id}
-              brand={product.brand}
-              shopUrl={product.shopUrl}
-              initialReport={stockReport}
-              className="mt-6"
-            />
+            {listed && (
+              <StockPanel
+                productId={product.id}
+                brand={product.brand}
+                shopUrl={product.shopUrl}
+                initialReport={stockReport}
+                className="mt-6"
+              />
+            )}
           </div>
         </div>
       </div>
 
       <div className="max-w-site mx-auto w-full space-y-16 px-6 py-12 sm:py-16">
         <ProductInsights summary={summary} category={product.category} productName={product.name} />
-        <WhereToBuy offers={offers} />
+        {listed && <WhereToBuy offers={offers} />}
         <ProductFacts product={product} />
         {summary.photos.length > 0 && (
           <section aria-labelledby="photos-heading">
@@ -156,6 +171,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
         <CommunityReviews
           product={productSummary}
+          canRate={canEngage}
           avgStars={product.avgStars}
           reviews={reviews}
           summary={summary}

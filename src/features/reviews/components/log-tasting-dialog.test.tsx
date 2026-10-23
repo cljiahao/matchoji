@@ -134,6 +134,25 @@ describe('LogTastingDialog', () => {
     expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument();
   });
 
+  it('says so when the tea is already on Matchoji', async () => {
+    setup({
+      products: [
+        { data: [], error: null },
+        { data: null, error: Object.assign(new Error('dup'), { code: '23505' }) },
+      ],
+    });
+
+    await openAndSearch('Sayaka');
+    await userEvent.click(await screen.findByRole('button', { name: 'Add as new product' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'That tea is already on Matchoji. Search for it by name instead.'
+      )
+    );
+  });
+
   it('resets to the search step when reopened', async () => {
     setup({ products: { data: [], error: null } });
 

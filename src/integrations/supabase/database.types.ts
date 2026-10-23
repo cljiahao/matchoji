@@ -318,6 +318,29 @@ export interface Database {
       };
     };
     Views: {
+      // Each person's latest tasting of each tea; what every public number counts.
+      latest_reviews: {
+        Row: {
+          id: string;
+          user_id: string;
+          product_id: string;
+          stars: number;
+          notes: string | null;
+          photo_url: string | null;
+          created_at: string;
+          flavor_notes: string[];
+          sweetness: number | null;
+          umami: number | null;
+          bitterness: number | null;
+          body: number | null;
+          prep_method: string | null;
+          dose_g: number | null;
+          water_ml: number | null;
+          water_temp_c: number | null;
+          tasted_on: string;
+        };
+        Relationships: [];
+      };
       product_ratings: {
         Row: {
           product_id: string;

@@ -41,9 +41,11 @@ export function mapReviewRow(r: ReviewRow, reviewerName: string): Review {
   };
 }
 
+// A tea's page shows each person's latest tasting only, so the list, distribution and taste
+// summary agree with the score (product_ratings counts the same rows).
 export async function listReviews(supabase: Client, productId: string): Promise<Review[]> {
   const { data: reviews, error } = await supabase
-    .from('reviews')
+    .from('latest_reviews')
     .select(REVIEW_COLUMNS)
     .eq('product_id', productId)
     .order('created_at', { ascending: false });
@@ -53,11 +55,12 @@ export async function listReviews(supabase: Client, productId: string): Promise<
 
   // profiles is owner-only (it holds email); public_profiles exposes just the display
   // name. Fetched separately since views carry no FK metadata for PostgREST embedding.
-  const { data: profiles } = await selectIn(
+  const { data: profiles, error: profilesError } = await selectIn(
     reviews.map((r) => r.user_id),
     (ids) => supabase.from('public_profiles').select('id, display_name').in('id', ids)
   );
 
+  if (profilesError) throw profilesError;
   const nameByUserId = new Map(profiles.map((p) => [p.id, p.display_name]));
 
   return reviews.map((r) => mapReviewRow(r, nameByUserId.get(r.user_id) ?? 'Anonymous'));

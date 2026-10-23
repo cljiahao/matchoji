@@ -66,6 +66,16 @@ describe('WishlistList', () => {
     expect(links.map((l) => l.textContent)).toEqual(['Uji Gold', 'Kyoto Bancha']);
   });
 
+  it('labels a saved tea that is no longer in the catalogue', () => {
+    const fake = createFakeBrowserClient({ session: makeSession(), results: { wishlist: saved } });
+    supabase.current = fake.client;
+    renderWithQuery(
+      <WishlistList products={[{ ...products[0], status: 'rejected' as const }, products[1]]} />
+    );
+    expect(screen.getByText('Not in the catalogue')).toBeInTheDocument();
+    expect(screen.getAllByText(/Not in the catalogue|Awaiting review/)).toHaveLength(1);
+  });
+
   it('explains how to add teas when empty', () => {
     supabase.current = createFakeBrowserClient({ session: makeSession() }).client;
     renderWithQuery(<WishlistList products={[]} />);

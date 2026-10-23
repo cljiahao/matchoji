@@ -8,7 +8,8 @@ rated product's two most-noticed flavour notes (`topNotesByProduct`); grade and 
 filtered after it, in `lib`. `listRegionSummaries` returns every region with its tea counts and supply levels; each
 product carries `supply`, its category's level in its region, and `shopUrl`. Explore, the shelves and the region counts read approved teas only;
 `searchProducts` (the "Log a tasting" picker) returns approved teas plus the searcher's own
-teas awaiting review. Region, rating and note
+teas awaiting review. Card flavour notes come from `latest_reviews`, and a failed region or
+rating lookup throws rather than showing a tea as unrated. Region, rating and note
 lookups go through `selectIn` batches, since `listProducts` loads the whole catalogue. Pure helpers
 (rating merge/sort, search-filter building) are split out
 so they can be unit-tested without a client. Services are tested against a recording

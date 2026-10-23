@@ -77,14 +77,16 @@ describe('audit log', () => {
 
     const [entry] = await entries('profiles');
     expect(entry).toMatchObject({ actor_id: null, action: 'INSERT', old_row: null });
-    expect(entry.new_row).toMatchObject({ id: other, display_name: 'other' });
+    expect(entry.new_row).toMatchObject({ id: other });
+    // No name in the sign-up metadata: the default never borrows from the email.
+    expect(entry.new_row?.display_name).toMatch(/^Tea drinker [0-9a-f]{4}$/);
     expect(entry.new_row).not.toHaveProperty('email');
   });
 
   it('logs a signed-in user’s review as theirs and an admin’s edits with no actor', async () => {
     const [{ id: productId }] = (
       await db.query<{ id: string }>(
-        `insert into public.products (name, category) values ('Uji', 'matcha') returning id`
+        `insert into public.products (name, category, status) values ('Uji', 'matcha', 'approved') returning id`
       )
     ).rows;
 
@@ -117,7 +119,7 @@ describe('audit log', () => {
   it('logs want-to-try changes', async () => {
     const [{ id: productId }] = (
       await db.query<{ id: string }>(
-        `insert into public.products (name, category) values ('Kyoto', 'hojicha') returning id`
+        `insert into public.products (name, category, status) values ('Kyoto', 'hojicha', 'approved') returning id`
       )
     ).rows;
 

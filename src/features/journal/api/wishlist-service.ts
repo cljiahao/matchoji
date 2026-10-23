@@ -62,7 +62,7 @@ export async function listWishlist(supabase: Client, userId: string): Promise<Pr
 
   const { data: products, error: productsError } = await selectIn(
     rows.map((r) => r.product_id),
-    (ids) => supabase.from('products').select('id, name, brand, category').in('id', ids)
+    (ids) => supabase.from('products').select('id, name, brand, category, status').in('id', ids)
   );
   if (productsError) throw productsError;
 

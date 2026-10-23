@@ -8,7 +8,9 @@ report and a link to the maker's shop), "What does it taste like?" (`ProductInsi
 "Where to buy" (`WhereToBuy`, approved vendors' listings), facts, photos, and `CommunityReviews` (the `#rate` anchor sign-in returns to). The product, its reviews, its latest stock report and its
 offers load from Supabase in parallel; an unknown id 404s. A tea awaiting review shows "Awaiting review"
 under its badges (like Vivino's "processing" label on an unmatched scan); a rejected one,
-visible only to the taster who added it, says it was not added to the catalogue.
+visible only to the taster who added it, says it was not added to the catalogue. Rating and want-to-try appear only on catalogue teas
+or, for a tea awaiting review, to whoever added it; stock and "Where to buy" only on catalogue
+teas. A malformed id 404s before any query.
 
 ## Contents
 
