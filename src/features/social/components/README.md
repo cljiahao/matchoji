@@ -7,7 +7,8 @@
 account page `PrivacyToggle` and `BlockedList`. `ReviewReactions` sits under each review on a
 tea page: like (instant, rolls back on refusal), comments (the commenter or the review's author
 can delete) and report. `NotificationBell` (navbar) shows the unread count and marks them read
-when opened.
+when opened. Feed tastings carry the review's edition (harvest year and flush), as every
+`Review` does.
 
 ## Contents
 
