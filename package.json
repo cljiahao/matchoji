@@ -19,6 +19,10 @@
     "check": "prettier --check . && eslint . && tsc --noEmit && node scripts/check-route-logging.mjs",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
+    "db:start": "pnpm dlx supabase start",
+    "db:push": "pnpm dlx supabase db push",
+    "db:check": "pnpm dlx supabase migration list --linked",
+    "db:types": "pnpm dlx supabase gen types typescript --linked --schema public > src/integrations/supabase/database.generated.ts",
     "prepare": "lefthook install || true"
   },
   "dependencies": {

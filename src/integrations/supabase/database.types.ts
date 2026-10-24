@@ -517,6 +517,7 @@ export interface Database {
         Returns: undefined;
       };
       reapply_as_vendor: { Args: Record<string, never>; Returns: undefined };
+      health: { Args: Record<string, never>; Returns: boolean };
       resolve_report: {
         Args: { report: string; decision: 'removed' | 'dismissed'; note?: string };
         Returns: undefined;

@@ -35,7 +35,8 @@ rejected shop can reapply once. `catalogue-discovery.test.ts` checks the weighte
 (three ratings beat one), that the view lists approved teas with their region and scarcity,
 and that `search_teas` forgives typos, treats wildcards as text and shows only the caller's
 own pending teas. `tea-taste-profiles.test.ts` checks the profile averages sliders and counts
-notes over each person's latest tasting only.
+notes over each person's latest tasting only. `health-check.test.ts` checks visitors and
+signed-in users can call `health()`.
 
 ## Contents
 
@@ -44,6 +45,7 @@ notes over each person's latest tasting only.
 - `audit-log.test.ts`
 - `catalogue-discovery.test.ts`
 - `editions-and-stash.test.ts`
+- `health-check.test.ts`
 - `integrity-hardening.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`

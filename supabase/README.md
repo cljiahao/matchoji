@@ -2,10 +2,11 @@
 
 ## Purpose
 
-Supabase Postgres schema, RLS policies, and Storage bucket setup as versioned SQL migrations. No Supabase CLI configured yet (`supabase init` not run) — these files are the schema spec, applied manually via the Supabase SQL editor or the CLI once a project is linked.
+Supabase Postgres schema, RLS policies, and Storage bucket setup as versioned SQL migrations. `config.toml` configures the Supabase CLI: `pnpm db:start` runs the stack locally (Postgres 17, Studio on port 54323) and applies the migrations and seeds; the hosted project still gets its migrations through the SQL editor, or `pnpm db:push` once linked.
 
 ## Contents
 
+- `config.toml`
 - `migrations/`
 - `seed/`
 

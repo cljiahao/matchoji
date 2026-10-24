@@ -7,6 +7,9 @@ export async function proxy(request: NextRequest) {
   return updateSession(request);
 }
 
+// The health probe needs no session, so it skips the per-request getUser() round trip.
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    '/((?!api/health|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };

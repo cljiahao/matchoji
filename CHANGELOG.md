@@ -31,6 +31,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- `/api/health` now checks the database and answers 503 when it is down, for uptime monitors.
+- Local Supabase setup (`pnpm db:start`) and scripts to check migrations and regenerate types.
 - Harvests, tea's vintages: a tasting can name its harvest year and flush, and a tea's page
   compares its harvests with a "Top rated harvest" badge, as Vivino compares vintages.
 - A stash on want-to-try: how many you have and when you opened it, shown as days since
