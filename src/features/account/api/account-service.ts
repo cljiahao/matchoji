@@ -7,16 +7,19 @@ type Client = SupabaseClient<Database>;
 export interface MyProfile {
   email: string;
   displayName: string;
+  isPublic: boolean;
 }
 
 export async function getMyProfile(supabase: Client, userId: string): Promise<MyProfile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('email, display_name')
+    .select('email, display_name, is_public')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw error;
-  return data ? { email: data.email, displayName: data.display_name } : null;
+  return data
+    ? { email: data.email, displayName: data.display_name, isPublic: data.is_public }
+    : null;
 }
 
 // The only profile field a user may change (column grants); the database caps it at 40.

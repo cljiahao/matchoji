@@ -5,6 +5,9 @@
 Rating a product: the star input, review list/item display, photo upload, and the combined
 search-or-create-then-rate dialog that drives the whole flow.
 
+`types.ts`'s `Review` carries `authorId` (null once the author deleted their account) so names
+can link to profiles.
+
 ## Contents
 
 - `api/`

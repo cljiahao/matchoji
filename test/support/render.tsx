@@ -53,6 +53,7 @@ export function makeReview(overrides: Partial<Review> = {}): Review {
     id: 'r1',
     productId: 'p1',
     reviewerName: 'taster',
+    authorId: 'u-taster',
     stars: 4,
     notes: null,
     photoUrl: null,

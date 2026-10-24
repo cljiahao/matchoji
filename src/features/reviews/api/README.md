@@ -16,7 +16,7 @@ showing "Anonymous". Photos are stored under a random name with the file's exten
 `removeReviewPhoto` deletes one whose review failed to save. `createReview` always sends the
 taster's local date. `updateReview` and `deleteReview` (which also removes the photo) edit the
 author's own tasting; `reviewPhotoPath` reads a photo's storage path from its URL. Ratings of a
-deleted account show as "Former taster".
+deleted account show as "Former taster". Each `Review` carries `authorId` for profile links.
 
 ## Contents
 

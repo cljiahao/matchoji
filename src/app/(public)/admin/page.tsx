@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
+import { cache } from 'react';
 
 import {
   ReviewQueueList,
@@ -11,16 +12,27 @@ import {
 } from '@/features/admin';
 import { createClient } from '@/integrations/supabase/server';
 
-export const metadata: Metadata = { title: 'Review queue', robots: { index: false } };
-
-export default async function AdminPage() {
-  await connection();
+// Only admins learn the page exists: everyone else gets "not found", title included.
+const canReview = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  // Not a page anyone else should know about: it 404s rather than asking to sign in.
-  if (!user || !(await isAdmin(supabase))) notFound();
+  return user !== null && (await isAdmin(supabase));
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  await connection();
+  return {
+    title: (await canReview()) ? 'Review queue' : 'Not found',
+    robots: { index: false },
+  };
+}
+
+export default async function AdminPage() {
+  await connection();
+  if (!(await canReview())) notFound();
+  const supabase = await createClient();
 
   const [queue, catalogue] = await Promise.all([
     listReviewQueue(supabase),

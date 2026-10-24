@@ -46,6 +46,7 @@ notes over each person's latest tasting only.
 - `integrity-hardening.test.ts`
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`
+- `social-profiles-follows.test.ts`
 - `marketplace.test.ts`
 - `stock-reports.test.ts`
 - `tea-review-queue.test.ts`

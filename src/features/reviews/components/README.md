@@ -22,6 +22,8 @@ Component tests run the real hooks against a fake browser Supabase client
 
 `RateProductForm` also edits an existing tasting (`review` prop): prefilled, "Save changes".
 
+`ReviewItem` links each reviewer's name to their profile.
+
 ## Contents
 
 - `community-reviews.tsx`

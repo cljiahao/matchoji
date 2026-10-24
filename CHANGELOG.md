@@ -31,6 +31,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Taster profiles (`/u/…`, linked from every review): name, teas rated, followers, their taste
+  and recent tastings, with Follow and Block. Signed-in readers see "From people you follow" on
+  the home page. Profiles are public by default; make yours private, and manage who you've
+  blocked, from Your account.
+
 - Edit or delete your own tastings from the journal; a new photo replaces the old one.
 - Your account (`/account`, linked from the account menu with Sell on Matchoji): change the
   name on your reviews, download all your data as JSON, or delete your account. Your ratings

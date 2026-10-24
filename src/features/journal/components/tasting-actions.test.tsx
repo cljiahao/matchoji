@@ -19,6 +19,7 @@ const entry = {
   id: 'r1',
   productId: 'p1',
   reviewerName: '',
+  authorId: 'user-1',
   stars: 4,
   notes: 'Nutty',
   photoUrl: null,

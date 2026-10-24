@@ -108,3 +108,23 @@ describe('ReviewList', () => {
     expect(screen.queryByRole('button', { name: /Show more reviews/ })).not.toBeInTheDocument();
   });
 });
+
+describe('ReviewItem author', () => {
+  it('links the reviewer to their profile, and not a deleted account', () => {
+    const { rerender } = render(
+      <ReviewItem
+        review={makeReview(1, { reviewerName: 'Ben', authorId: 'u2' })}
+        category="matcha"
+      />
+    );
+    expect(screen.getByRole('link', { name: 'Ben' })).toHaveAttribute('href', '/u/u2');
+    rerender(
+      <ReviewItem
+        review={makeReview(2, { reviewerName: 'Former taster', authorId: null })}
+        category="matcha"
+      />
+    );
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.getByText('Former taster')).toBeInTheDocument();
+  });
+});
