@@ -22,6 +22,7 @@
     "db:start": "pnpm dlx supabase start",
     "db:push": "pnpm dlx supabase db push",
     "db:check": "pnpm dlx supabase migration list --linked",
+    "db:drift": "node scripts/check-migration-drift.mjs",
     "db:types": "pnpm dlx supabase gen types typescript --linked --schema public > src/integrations/supabase/database.generated.ts",
     "prepare": "lefthook install || true"
   },
