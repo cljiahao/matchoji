@@ -57,10 +57,6 @@ the author; `latest_reviews` recreated to carry them), the `edition_ratings` vie
 (`owned_quantity`, `opened_on`, owner-editable). `20261028100000_health_check.sql` adds
 `health()`, a no-op anyone may call, which `/api/health` uses to prove the database answers.
 
-Each migration run by hand also needs its version recorded in
-`supabase_migrations.schema_migrations` (as `supabase db push` does), or the Migration drift
-workflow reports it as missing.
-
 ## Contents
 
 - `20260914071129_phase1_schema.sql`
