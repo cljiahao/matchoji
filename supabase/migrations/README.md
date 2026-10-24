@@ -51,7 +51,10 @@ and `following_feed()`. `20261027100000_social_reactions.sql` adds `review_likes
 can delete it; 100 comments a day), `notifications` (written only by triggers on follows, likes,
 comments and admin decisions; readers can only mark theirs read), and `content_reports` with
 the admin-only `resolve_report()`, which removes or keeps the content and tells every reporter
-why.
+why. `20261028000000_editions_and_stash.sql` adds `reviews.harvest_year` and `flush` (editable by
+the author; `latest_reviews` recreated to carry them), the `edition_ratings` view with a
+`top_harvest` flag (best edition with 3+ ratings), and the want-to-try stash
+(`owned_quantity`, `opened_on`, owner-editable).
 
 ## Contents
 
@@ -74,6 +77,7 @@ why.
 - `20261026100000_account_and_review_edits.sql`
 - `20261027000000_social_profiles_follows.sql`
 - `20261027100000_social_reactions.sql`
+- `20261028000000_editions_and_stash.sql`
 
 ## Parent
 

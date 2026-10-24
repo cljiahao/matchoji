@@ -1,4 +1,4 @@
-import type { PrepMethod, TasteAttribute } from './lib/tasting-vocab';
+import type { FlushName, PrepMethod, TasteAttribute } from './lib/tasting-vocab';
 
 export interface ReviewPrep {
   method: PrepMethod | null;
@@ -22,4 +22,6 @@ export interface Review {
   profile: Partial<Record<TasteAttribute, number>>;
   prep: ReviewPrep;
   tastedOn: string;
+  // Which harvest it was, when the taster said (tea's equivalent of a wine's vintage).
+  edition: { harvestYear: number | null; flush: FlushName | null };
 }

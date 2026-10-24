@@ -16,8 +16,10 @@ import {
 } from '@/features/products';
 import {
   CommunityReviews,
+  EditionList,
   ProductInsights,
   RateThisTea,
+  listEditions,
   listReviews,
   summarizeReviews,
 } from '@/features/reviews';
@@ -70,12 +72,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!isTeaId(id)) notFound();
 
   const supabase = await createClient();
-  const [product, reviews, stockReport, offers, { data: auth }] = await Promise.all([
+  const [product, reviews, stockReport, offers, { data: auth }, editions] = await Promise.all([
     loadProduct(id),
     listReviews(supabase, id),
     getLatestStockReport(supabase, id),
     listProductOffers(supabase, id),
     supabase.auth.getUser(),
+    listEditions(supabase, id),
   ]);
 
   if (!product) notFound();
@@ -212,6 +215,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="max-w-site mx-auto w-full space-y-16 px-6 py-12 sm:py-16">
         <ProductInsights summary={summary} category={product.category} productName={product.name} />
         {listed && <WhereToBuy offers={offers} />}
+        <EditionList editions={editions} />
         <ProductFacts product={product} />
         {summary.photos.length > 0 && (
           <section aria-labelledby="photos-heading">

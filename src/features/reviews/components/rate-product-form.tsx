@@ -19,7 +19,7 @@ import type { ProductSummary } from '@/features/products';
 import { useLogReview } from '../hooks/use-log-review.mutation';
 import { useUpdateReview } from '../hooks/use-update-review.mutation';
 import { localToday } from '../lib';
-import { TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
+import { FLUSHES, FLUSH_LABELS, TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
 import { reviewSchemaFor, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
 import type { Review } from '../types';
 import { FlavorNotePicker } from './flavor-note-picker';
@@ -42,6 +42,7 @@ function emptyReview(stars = 0): ReviewInput {
     doseG: '',
     waterMl: '',
     waterTempC: '',
+    harvestYear: '',
     tastedOn: localToday(),
   };
 }
@@ -60,6 +61,8 @@ function fromReview(review: Review): ReviewInput {
     doseG: review.prep.doseG ?? '',
     waterMl: review.prep.waterMl ?? '',
     waterTempC: review.prep.waterTempC ?? '',
+    harvestYear: review.edition.harvestYear ?? '',
+    flush: review.edition.flush ?? undefined,
     tastedOn: review.tastedOn,
   };
 }
@@ -174,6 +177,22 @@ export function RateProductForm({ product, initialStars, review, onLogged }: Rat
         </fieldset>
 
         <PrepFields category={product.category} />
+
+        <div className="grid grid-cols-2 gap-4">
+          <CustomFormField name="harvestYear" label="Harvest year (optional)">
+            <Input type="number" inputMode="numeric" placeholder="e.g. 2025" />
+          </CustomFormField>
+          <CustomFormField name="flush" label="Flush (optional)">
+            <select className="border-input bg-card h-9 w-full rounded-md border px-3 text-sm">
+              <option value="">Not sure</option>
+              {FLUSHES.map((flush) => (
+                <option key={flush} value={flush}>
+                  {FLUSH_LABELS[flush]}
+                </option>
+              ))}
+            </select>
+          </CustomFormField>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="photo">Photo (optional)</Label>

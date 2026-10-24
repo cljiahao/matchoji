@@ -14,7 +14,7 @@ teas. A malformed id 404s before any query. A merged duplicate forwards permanen
 it repeated, and a rejected tea shows the admin's reason to whoever added it. `generateMetadata` titles
 the page "Name · Brand", describes its rating, uses its photo for link previews and keeps teas
 outside the catalogue out of search engines; the product read is shared with the page through
-React `cache`. Signed-in tasters who have not rated the tea see `MatchSummary`. Each review carries
+React `cache`. Signed-in tasters who have not rated the tea see `MatchSummary`. A "Harvests" section compares editions. Each review carries
 `ReviewReactions` (likes, comments, report), loaded with the page.
 
 ## Contents

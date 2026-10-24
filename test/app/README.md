@@ -15,6 +15,8 @@ loading routes, the public error boundary, and the OAuth callback's redirect han
 
 `seo.test.ts` covers the sitemap and robots rules.
 
+Tea page tests get an empty `edition_ratings` result by default from `useServer`.
+
 ## Contents
 
 - `auth-callback.test.ts`

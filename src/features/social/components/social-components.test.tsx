@@ -125,6 +125,7 @@ describe('TastingFeed', () => {
       profile: {},
       prep: { method: null, doseG: null, waterMl: null, waterTempC: null },
       tastedOn: '2026-10-05',
+      edition: { harvestYear: null, flush: null },
       product: { id: 'p1', name: 'Sayaka', brand: null, category: 'matcha' as const },
     };
     const { rerender } = render(<TastingFeed tastings={[tasting]} />);

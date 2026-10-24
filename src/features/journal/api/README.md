@@ -7,6 +7,9 @@ batches, however long the list grows, and read each tea's `status` so a tea awai
 or no longer in the catalogue is labelled rather than dropped (the database keeps a rejected
 tea readable to anyone who tasted or saved it).
 
+`listWishlist` returns each saved tea's stash (how many you have, when you opened one) and
+`setStash` saves it.
+
 ## Contents
 
 - `index.ts`

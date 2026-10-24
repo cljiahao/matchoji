@@ -7,6 +7,7 @@ import {
   listWishlist,
   listWishlistIds,
   removeFromWishlist,
+  setStash,
 } from './wishlist-service';
 
 describe('wishlist service', () => {
@@ -86,5 +87,36 @@ describe('listWishlistIds', () => {
     const error = new Error('rls');
     const { client } = createFakeSupabase({ wishlist: { data: null, error } });
     await expect(listWishlistIds(client, 'u1')).rejects.toBe(error);
+  });
+});
+
+describe('stash', () => {
+  it('comes back with each saved tea, and saves for the owner', async () => {
+    const { client, calls } = createFakeSupabase({
+      wishlist: [
+        { data: [{ product_id: 'p1', owned_quantity: 2, opened_on: '2026-10-20' }], error: null },
+        { data: null, error: null },
+      ],
+      products: {
+        data: [{ id: 'p1', name: 'Sayaka', brand: null, category: 'matcha', status: 'approved' }],
+        error: null,
+      },
+    });
+    const [item] = await listWishlist(client, 'me');
+    expect(item.stash).toEqual({ ownedQuantity: 2, openedOn: '2026-10-20' });
+
+    await setStash(client, 'me', 'p1', { ownedQuantity: 0, openedOn: null });
+    expect(calls.find((c) => c.method === 'update')?.args[0]).toEqual({
+      owned_quantity: 0,
+      opened_on: null,
+    });
+  });
+
+  it('throws when the save is refused', async () => {
+    const error = new Error('rls');
+    const { client } = createFakeSupabase({ wishlist: { data: null, error } });
+    await expect(setStash(client, 'me', 'p1', { ownedQuantity: 1, openedOn: null })).rejects.toBe(
+      error
+    );
   });
 });

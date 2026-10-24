@@ -6,4 +6,10 @@ export {
   updateReview,
   uploadReviewPhoto,
 } from './reviews-mutations';
-export { REVIEW_COLUMNS, listReviews, mapReviewRow } from './reviews-service';
+export {
+  REVIEW_COLUMNS,
+  listEditions,
+  listReviews,
+  mapReviewRow,
+  type EditionRating,
+} from './reviews-service';

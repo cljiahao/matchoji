@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
-import { listReviews } from './reviews-service';
+import { listEditions, listReviews } from './reviews-service';
 
 const review = (id: string, userId: string) => ({
   id,
@@ -81,5 +81,38 @@ describe('listReviews', () => {
       public_profiles: { data: null, error },
     });
     await expect(listReviews(client, 'p1')).rejects.toBe(error);
+  });
+});
+
+describe('listEditions', () => {
+  it('reads a tea’s harvests newest first, coercing numbers', async () => {
+    const { client, calls } = createFakeSupabase({
+      edition_ratings: {
+        data: [
+          {
+            harvest_year: 2025,
+            flush: 'first',
+            review_count: '3',
+            avg_stars: '4.67',
+            top_harvest: true,
+          },
+        ],
+        error: null,
+      },
+    });
+    expect(await listEditions(client, 'p1')).toEqual([
+      { harvestYear: 2025, flush: 'first', reviewCount: 3, avgStars: 4.67, topHarvest: true },
+    ]);
+    expect(calls).toContainEqual({
+      table: 'edition_ratings',
+      method: 'order',
+      args: ['harvest_year', { ascending: false }],
+    });
+  });
+
+  it('throws the Supabase error', async () => {
+    const error = new Error('down');
+    const { client } = createFakeSupabase({ edition_ratings: { data: null, error } });
+    await expect(listEditions(client, 'p1')).rejects.toBe(error);
   });
 });

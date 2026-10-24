@@ -107,3 +107,20 @@ export const FLAVOR_FAMILIES: Record<ProductCategory, readonly FlavorFamily[]> =
     { id: 'nutty', name: 'nutty', notes: ['nutty', 'woody', 'earthy'] },
   ],
 };
+
+// Tea's vintages: which harvest a tasting was, as tea shops label it.
+export const FLUSHES = ['first', 'second', 'autumn'] as const;
+export type FlushName = (typeof FLUSHES)[number];
+
+export const FLUSH_LABELS: Record<FlushName | 'unspecified', string> = {
+  first: 'First flush',
+  second: 'Second flush',
+  autumn: 'Autumn flush',
+  unspecified: 'Harvest',
+};
+
+// "2025 first flush", or just the year when the flush is not known.
+export function editionLabel(year: number, flush: string | null): string {
+  if (!flush || flush === 'unspecified') return `${year} harvest`;
+  return `${year} ${FLUSH_LABELS[flush as FlushName].toLowerCase()}`;
+}

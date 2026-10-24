@@ -6,6 +6,7 @@ import { localToday } from '../lib/local-date';
 import {
   ALL_FLAVOR_NOTES,
   FLAVOR_NOTES,
+  FLUSHES,
   MAX_FLAVOR_NOTES,
   PREP_METHODS,
 } from '../lib/tasting-vocab';
@@ -57,6 +58,8 @@ function buildReviewSchema(allowedNotes: readonly string[]) {
     ),
     waterMl: optionalNumber(0, 1000, { int: true }),
     waterTempC: optionalNumber(0, 100, { int: true }),
+    harvestYear: optionalNumber(1990, new Date().getFullYear() + 1, { int: true }),
+    flush: z.preprocess(blankToUndefined, z.enum(FLUSHES).optional()),
     tastedOn: z.preprocess(
       blankToUndefined,
       z

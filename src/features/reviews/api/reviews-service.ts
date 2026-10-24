@@ -10,7 +10,7 @@ type Client = SupabaseClient<Database>;
 type ReviewRow = Database['public']['Tables']['reviews']['Row'];
 
 export const REVIEW_COLUMNS =
-  'id, product_id, user_id, stars, notes, photo_url, created_at, flavor_notes, sweetness, umami, bitterness, body, prep_method, dose_g, water_ml, water_temp_c, tasted_on';
+  'id, product_id, user_id, stars, notes, photo_url, created_at, flavor_notes, sweetness, umami, bitterness, body, prep_method, dose_g, water_ml, water_temp_c, tasted_on, harvest_year, flush';
 
 // numeric and smallint can arrive as strings depending on PostgREST settings.
 const num = (v: number | string | null) => (v === null ? null : Number(v));
@@ -39,6 +39,10 @@ export function mapReviewRow(r: ReviewRow, reviewerName: string): Review {
       waterTempC: num(r.water_temp_c),
     },
     tastedOn: r.tasted_on,
+    edition: {
+      harvestYear: r.harvest_year,
+      flush: r.flush && r.flush !== 'unspecified' ? r.flush : null,
+    },
   };
 }
 
@@ -68,4 +72,29 @@ export async function listReviews(supabase: Client, productId: string): Promise<
   return reviews.map((r) =>
     mapReviewRow(r, (r.user_id && nameByUserId.get(r.user_id)) || 'Former taster')
   );
+}
+
+export interface EditionRating {
+  harvestYear: number;
+  flush: string;
+  reviewCount: number;
+  avgStars: number;
+  topHarvest: boolean;
+}
+
+// A tea's ratings per harvest, newest harvest first.
+export async function listEditions(supabase: Client, productId: string): Promise<EditionRating[]> {
+  const { data, error } = await supabase
+    .from('edition_ratings')
+    .select('harvest_year, flush, review_count, avg_stars, top_harvest')
+    .eq('product_id', productId)
+    .order('harvest_year', { ascending: false });
+  if (error) throw error;
+  return data.map((e) => ({
+    harvestYear: e.harvest_year,
+    flush: e.flush,
+    reviewCount: Number(e.review_count),
+    avgStars: Number(e.avg_stars),
+    topHarvest: e.top_harvest,
+  }));
 }

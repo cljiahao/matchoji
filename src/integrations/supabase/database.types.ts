@@ -16,6 +16,7 @@ export type VendorStatus = 'pending' | 'approved' | 'rejected';
 export type NotificationKind =
   'follow' | 'like' | 'comment' | 'tea_reviewed' | 'shop_reviewed' | 'report_resolved';
 export type ReportTarget = 'review' | 'comment';
+export type Flush = 'first' | 'second' | 'autumn' | 'unspecified';
 export type ProductStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Database {
@@ -341,6 +342,8 @@ export interface Database {
           water_ml: number | null;
           water_temp_c: number | null;
           tasted_on: string;
+          harvest_year: number | null;
+          flush: Flush | null;
         };
         Insert: {
           id?: string;
@@ -360,6 +363,8 @@ export interface Database {
           water_ml?: number | null;
           water_temp_c?: number | null;
           tasted_on?: string;
+          harvest_year?: number | null;
+          flush?: Flush | null;
         };
         Update: {
           id?: string;
@@ -379,6 +384,8 @@ export interface Database {
           water_ml?: number | null;
           water_temp_c?: number | null;
           tasted_on?: string;
+          harvest_year?: number | null;
+          flush?: Flush | null;
         };
         Relationships: [];
       };
@@ -387,6 +394,8 @@ export interface Database {
           user_id: string;
           product_id: string;
           created_at: string;
+          owned_quantity: number;
+          opened_on: string | null;
         };
         Insert: {
           user_id: string;
@@ -397,6 +406,8 @@ export interface Database {
           user_id?: string;
           product_id?: string;
           created_at?: string;
+          owned_quantity?: number;
+          opened_on?: string | null;
         };
         Relationships: [];
       };
@@ -423,6 +434,8 @@ export interface Database {
           water_ml: number | null;
           water_temp_c: number | null;
           tasted_on: string;
+          harvest_year: number | null;
+          flush: Flush | null;
         };
         Relationships: [];
       };
@@ -458,6 +471,18 @@ export interface Database {
           bitterness: number | null;
           body: number | null;
           notes: Record<string, number>;
+        };
+        Relationships: [];
+      };
+      // Ratings per harvest year and flush; top_harvest marks a tea's best with 3+ ratings.
+      edition_ratings: {
+        Row: {
+          product_id: string;
+          harvest_year: number;
+          flush: Flush;
+          review_count: number;
+          avg_stars: number;
+          top_harvest: boolean;
         };
         Relationships: [];
       };

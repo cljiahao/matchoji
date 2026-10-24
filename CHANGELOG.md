@@ -31,6 +31,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Harvests, tea's vintages: a tasting can name its harvest year and flush, and a tea's page
+  compares its harvests with a "Top rated harvest" badge, as Vivino compares vintages.
+- A stash on want-to-try: how many you have and when you opened it, shown as days since
+  opening.
+
 - Like and comment on reviews, and report a review or comment to the admins; admins remove or
   keep it from `/admin`, and the reporter is told the outcome and why. A notification bell
   shows new followers, likes and comments, and the outcome of your tea suggestions, shop

@@ -9,6 +9,9 @@ into its distribution, average profile, note counts, typical preparation and pho
 `roving-radio` gives button-based radio groups one tab stop and wrapping arrow-key
 selection; `local-date` and `truncate-notes` format input and display.
 
+`tasting-vocab` also holds the flushes (`FLUSHES`, `FLUSH_LABELS`) and `editionLabel`
+("2025 first flush").
+
 ## Contents
 
 - `index.ts`

@@ -65,7 +65,8 @@ function useServer(
   results: Record<string, QueryResult | QueryResult[]>,
   user: { id: string } | null = null
 ) {
-  const fake = createFakeSupabase(results);
+  // Tea pages also read per-harvest ratings; most tests have none to show.
+  const fake = createFakeSupabase({ edition_ratings: { data: [], error: null }, ...results });
   server.current = {
     from: fake.client.from,
     rpc: fake.client.rpc,
