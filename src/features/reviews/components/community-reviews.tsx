@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import { ScoreNumeral, Stars, type ProductSummary } from '@/features/products';
 
 import type { ReviewSummary } from '../lib/summarize-reviews';
@@ -13,6 +15,7 @@ interface CommunityReviewsProps {
   summary: ReviewSummary;
   // False for a tea the viewer cannot rate (awaiting someone else's review, or rejected).
   canRate?: boolean;
+  footers?: Record<string, ReactNode>;
 }
 
 // Reviews on the left; the score, its spread and "add your rating" stay beside them, the
@@ -23,6 +26,7 @@ export function CommunityReviews({
   reviews,
   summary,
   canRate = true,
+  footers,
 }: CommunityReviewsProps) {
   const count = reviews.length;
 
@@ -37,7 +41,7 @@ export function CommunityReviews({
           Community reviews
         </h2>
         <div className="mt-6">
-          <ReviewList reviews={reviews} category={product.category} />
+          <ReviewList reviews={reviews} category={product.category} footers={footers} />
         </div>
       </div>
 

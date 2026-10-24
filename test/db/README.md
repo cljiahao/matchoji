@@ -47,6 +47,7 @@ notes over each person's latest tasting only.
 - `region-supply.test.ts`
 - `seed-real-teas.test.ts`
 - `social-profiles-follows.test.ts`
+- `social-reactions.test.ts`
 - `marketplace.test.ts`
 - `stock-reports.test.ts`
 - `tea-review-queue.test.ts`

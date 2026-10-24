@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AuthStatus } from '@/features/auth';
 import { SearchPill } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
+import { NotificationBell } from '@/features/social';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
@@ -83,6 +84,7 @@ export function Navbar() {
               }
             />
           </div>
+          <NotificationBell />
           <AuthStatus />
         </div>
       </div>

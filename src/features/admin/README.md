@@ -5,7 +5,8 @@
 The review queue that replaces hand-written SQL (M1 of the 2026-10-24 roadmap): admins
 approve or reject teas tasters added and shops that applied, with a reason the submitter
 sees, merge a duplicate tea into the one it repeats, and set a catalogue tea's photo and shop
-link. Every write is a database function that checks `profiles.is_admin`, so the page's own
+link, and resolve reported reviews and comments (remove or keep, with the reason the reporter
+is told). Every write is a database function that checks `profiles.is_admin`, so the page's own
 check is a convenience, not the guard.
 
 ## Contents

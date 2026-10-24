@@ -116,3 +116,88 @@ export async function uploadTeaImage(supabase: Client, tea: string, file: File):
   if (error) throw error;
   return supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl;
 }
+
+export interface OpenReport {
+  id: string;
+  targetType: 'review' | 'comment';
+  targetId: string;
+  reason: string;
+  createdAt: string;
+  reporterName: string;
+  // What was reported, for the admin to judge; null if it is already gone.
+  content: { text: string; authorName: string; productId: string | null } | null;
+}
+
+// Open reports, oldest first, with the reported text alongside (admins can read every report).
+export async function listOpenReports(supabase: Client): Promise<OpenReport[]> {
+  const { data: reports, error } = await supabase
+    .from('content_reports')
+    .select('id, reporter_id, target_type, target_id, reason, created_at')
+    .eq('status', 'open')
+    .order('created_at');
+  if (error) throw error;
+  if (reports.length === 0) return [];
+
+  const ids = (type: 'review' | 'comment') =>
+    reports.filter((r) => r.target_type === type).map((r) => r.target_id);
+  const [reviews, comments] = await Promise.all([
+    selectIn(ids('review'), (batch) =>
+      supabase.from('reviews').select('id, user_id, product_id, notes, stars').in('id', batch)
+    ),
+    selectIn(ids('comment'), (batch) =>
+      supabase.from('review_comments').select('id, user_id, review_id, body').in('id', batch)
+    ),
+  ]);
+  if (reviews.error) throw reviews.error;
+  if (comments.error) throw comments.error;
+
+  const people = [
+    ...reports.map((r) => r.reporter_id),
+    ...reviews.data.flatMap((r) => (r.user_id ? [r.user_id] : [])),
+    ...comments.data.map((c) => c.user_id),
+  ];
+  const { data: names, error: namesError } = await selectIn([...new Set(people)], (batch) =>
+    supabase.from('public_profiles').select('id, display_name').in('id', batch)
+  );
+  if (namesError) throw namesError;
+  const nameOf = (id: string | null) =>
+    (id && names.find((n) => n.id === id)?.display_name) || 'Former taster';
+  const reviewById = new Map(reviews.data.map((r) => [r.id, r]));
+  const commentById = new Map(comments.data.map((c) => [c.id, c]));
+
+  return reports.map((r) => {
+    let content: OpenReport['content'] = null;
+    if (r.target_type === 'review') {
+      const review = reviewById.get(r.target_id);
+      if (review)
+        content = {
+          text: `${review.stars}★ ${review.notes ?? ''}`.trim(),
+          authorName: nameOf(review.user_id),
+          productId: review.product_id,
+        };
+    } else {
+      const comment = commentById.get(r.target_id);
+      if (comment)
+        content = { text: comment.body, authorName: nameOf(comment.user_id), productId: null };
+    }
+    return {
+      id: r.id,
+      targetType: r.target_type,
+      targetId: r.target_id,
+      reason: r.reason,
+      createdAt: r.created_at,
+      reporterName: nameOf(r.reporter_id),
+      content,
+    };
+  });
+}
+
+export async function resolveReport(
+  supabase: Client,
+  report: string,
+  decision: 'removed' | 'dismissed',
+  note?: string
+): Promise<void> {
+  const { error } = await supabase.rpc('resolve_report', { report, decision, note });
+  if (error) throw error;
+}

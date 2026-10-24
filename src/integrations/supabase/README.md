@@ -18,7 +18,8 @@ the URL) and merges the rows; every service with an open-ended id list uses it.
 `products.shop_url`, `products.status` (`ProductStatus`) and `added_by`, the `latest_reviews`
 view, `profiles.is_admin`, `review_note` and `merged_into`, the admin functions,
 `search_teas` and `delete_my_account` under `Functions`, a nullable `reviews.user_id` (for
-deleted accounts), `profiles.is_public`, `follows`, `blocks` and `following_feed`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
+deleted accounts), `profiles.is_public`, `follows`, `blocks` and `following_feed`, `review_likes`, `review_comments`,
+`notifications` (`NotificationKind`), `content_reports` (`ReportTarget`) and `resolve_report`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
 until checkout is built.
 
 ## Contents

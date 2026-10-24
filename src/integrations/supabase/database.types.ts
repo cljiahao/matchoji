@@ -13,6 +13,9 @@ export type TeaMetric = 'cultivated_ha' | 'aracha_t' | 'tencha_t';
 export type TeaStatSource = 'maff' | 'zencharen';
 export type StockStatus = 'in_stock' | 'sold_out';
 export type VendorStatus = 'pending' | 'approved' | 'rejected';
+export type NotificationKind =
+  'follow' | 'like' | 'comment' | 'tea_reviewed' | 'shop_reviewed' | 'report_resolved';
+export type ReportTarget = 'review' | 'comment';
 export type ProductStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Database {
@@ -160,6 +163,61 @@ export interface Database {
       blocks: {
         Row: { blocker_id: string; blocked_id: string; created_at: string };
         Insert: { blocker_id: string; blocked_id: string; created_at?: string };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      review_likes: {
+        Row: { review_id: string; user_id: string; created_at: string };
+        Insert: { review_id: string; user_id: string; created_at?: string };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      review_comments: {
+        Row: { id: string; review_id: string; user_id: string; body: string; created_at: string };
+        Insert: {
+          id?: string;
+          review_id: string;
+          user_id?: string;
+          body: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: number;
+          user_id: string;
+          kind: NotificationKind;
+          actor_id: string | null;
+          review_id: string | null;
+          product_id: string | null;
+          body: string | null;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: Record<string, never>;
+        Update: { read_at?: string | null };
+        Relationships: [];
+      };
+      content_reports: {
+        Row: {
+          id: string;
+          reporter_id: string;
+          target_type: ReportTarget;
+          target_id: string;
+          reason: string;
+          status: 'open' | 'removed' | 'dismissed';
+          resolution_note: string | null;
+          created_at: string;
+          resolved_at: string | null;
+        };
+        Insert: {
+          reporter_id?: string;
+          target_type: ReportTarget;
+          target_id: string;
+          reason: string;
+        };
         Update: Record<string, never>;
         Relationships: [];
       };
@@ -434,6 +492,10 @@ export interface Database {
         Returns: undefined;
       };
       reapply_as_vendor: { Args: Record<string, never>; Returns: undefined };
+      resolve_report: {
+        Args: { report: string; decision: 'removed' | 'dismissed'; note?: string };
+        Returns: undefined;
+      };
       following_feed: {
         Args: { max_rows?: number };
         Returns: Database['public']['Tables']['reviews']['Row'][];

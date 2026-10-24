@@ -4,10 +4,12 @@ import { connection } from 'next/server';
 import { cache } from 'react';
 
 import {
+  ReportsQueue,
   ReviewQueueList,
   TeaLinksForm,
   isAdmin,
   listApprovedTeas,
+  listOpenReports,
   listReviewQueue,
 } from '@/features/admin';
 import { createClient } from '@/integrations/supabase/server';
@@ -34,9 +36,10 @@ export default async function AdminPage() {
   if (!(await canReview())) notFound();
   const supabase = await createClient();
 
-  const [queue, catalogue] = await Promise.all([
+  const [queue, catalogue, reports] = await Promise.all([
     listReviewQueue(supabase),
     listApprovedTeas(supabase),
+    listOpenReports(supabase),
   ]);
 
   return (
@@ -49,6 +52,7 @@ export default async function AdminPage() {
         </p>
       </div>
       <ReviewQueueList teas={queue.teas} shops={queue.shops} catalogue={catalogue} />
+      <ReportsQueue reports={reports} />
       <section aria-labelledby="tea-links" className="space-y-4">
         <h2 id="tea-links" className="text-2xl font-bold tracking-tight">
           Tea photo and shop link

@@ -22,7 +22,9 @@ Component tests run the real hooks against a fake browser Supabase client
 
 `RateProductForm` also edits an existing tasting (`review` prop): prefilled, "Save changes".
 
-`ReviewItem` links each reviewer's name to their profile.
+`ReviewItem` links each reviewer's name to their profile and renders an optional `footer`;
+`ReviewList` and `CommunityReviews` pass `footers` keyed by review id (elements, so a server
+page can supply another feature's client controls).
 
 ## Contents
 

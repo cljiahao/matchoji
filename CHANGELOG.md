@@ -31,6 +31,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Like and comment on reviews, and report a review or comment to the admins; admins remove or
+  keep it from `/admin`, and the reporter is told the outcome and why. A notification bell
+  shows new followers, likes and comments, and the outcome of your tea suggestions, shop
+  applications and reports.
+
 - Taster profiles (`/u/…`, linked from every review): name, teas rated, followers, their taste
   and recent tastings, with Follow and Block. Signed-in readers see "From people you follow" on
   the home page. Profiles are public by default; make yours private, and manage who you've

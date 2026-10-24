@@ -2,7 +2,7 @@
 
 import { Star } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
@@ -26,9 +26,11 @@ const formatDay = (day: string) => DAY.format(new Date(`${day}T00:00:00Z`));
 interface ReviewItemProps {
   review: Review;
   category: ProductCategory;
+  // Controls another feature renders under the review (likes, comments, report).
+  footer?: ReactNode;
 }
 
-export function ReviewItem({ review, category }: ReviewItemProps) {
+export function ReviewItem({ review, category, footer }: ReviewItemProps) {
   const [expanded, setExpanded] = useState(false);
   // Notes are free text in the DB; only the category's own vocabulary is shown.
   const notes = review.flavorNotes.filter((n) => FLAVOR_NOTES[category].includes(n));
@@ -103,6 +105,7 @@ export function ReviewItem({ review, category }: ReviewItemProps) {
           {formatDay(review.tastedOn)}
         </time>
       </footer>
+      {footer}
     </article>
   );
 }
