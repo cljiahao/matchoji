@@ -22,6 +22,7 @@ describe('GET /auth/callback', () => {
 
     expect(exchangeCodeForSession).toHaveBeenCalledWith('abc');
     expect(response.headers.get('location')).toBe('http://localhost:3000/products/p1#rate');
+    expect(response.headers.get('cache-control')).toBe('no-store');
   });
 
   it('refuses to redirect off-site', async () => {
@@ -39,5 +40,6 @@ describe('GET /auth/callback', () => {
     const response = await callback('');
     expect(exchangeCodeForSession).not.toHaveBeenCalled();
     expect(response.headers.get('location')).toBe('http://localhost:3000/auth/error');
+    expect(response.headers.get('cache-control')).toBe('no-store');
   });
 });

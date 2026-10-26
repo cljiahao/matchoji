@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import nextConfig from '../../next.config';
+import nextConfig, { imageSources } from '../../next.config';
 import { config as proxyConfig } from '../../proxy';
 
 describe('proxy matcher', () => {
@@ -14,10 +14,19 @@ describe('proxy matcher', () => {
 });
 
 describe('security headers', () => {
-  it('allow https and inline-preview images and forbid framing', async () => {
+  it('allow images only from the site and its Supabase project, and forbid framing', async () => {
     const [rule] = (await nextConfig.headers?.()) ?? [];
     const csp = rule.headers.find((h) => h.key === 'Content-Security-Policy')?.value ?? '';
-    expect(csp).toContain("img-src 'self' data: blob: https:");
+    expect(csp).toContain("img-src 'self' data: blob: http://supabase.test");
+    expect(csp).not.toContain('https:');
     expect(csp).toContain("object-src 'none'");
+  });
+
+  it('fall back to any https image host without a usable Supabase URL', () => {
+    expect(imageSources('https://abc.supabase.co/rest/v1')).toBe(
+      "img-src 'self' data: blob: https://abc.supabase.co"
+    );
+    expect(imageSources(undefined)).toBe("img-src 'self' data: blob: https:");
+    expect(imageSources('not a url')).toBe("img-src 'self' data: blob: https:");
   });
 });

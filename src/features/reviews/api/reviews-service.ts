@@ -47,13 +47,10 @@ export function mapReviewRow(r: ReviewRow, reviewerName: string): Review {
 }
 
 // A tea's page shows each person's latest tasting only, so the list, distribution and taste
-// summary agree with the score (product_ratings counts the same rows).
+// summary agree with the score (product_ratings counts the same rows). product_reviews returns
+// them newest first, with a private taster's id and photo withheld.
 export async function listReviews(supabase: Client, productId: string): Promise<Review[]> {
-  const { data: reviews, error } = await supabase
-    .from('latest_reviews')
-    .select(REVIEW_COLUMNS)
-    .eq('product_id', productId)
-    .order('created_at', { ascending: false });
+  const { data: reviews, error } = await supabase.rpc('product_reviews', { product: productId });
 
   if (error) throw error;
   if (reviews.length === 0) return [];
@@ -68,9 +65,14 @@ export async function listReviews(supabase: Client, productId: string): Promise<
   if (profilesError) throw profilesError;
   const nameByUserId = new Map(profiles.map((p) => [p.id, p.display_name]));
 
-  // A deleted account's ratings stay, without a name.
+  // A private taster's ratings show without a name; a deleted account's stay, unnamed too.
   return reviews.map((r) =>
-    mapReviewRow(r, (r.user_id && nameByUserId.get(r.user_id)) || 'Former taster')
+    mapReviewRow(
+      r,
+      r.author_private
+        ? 'Private taster'
+        : (r.user_id && nameByUserId.get(r.user_id)) || 'Former taster'
+    )
   );
 }
 

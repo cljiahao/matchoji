@@ -161,11 +161,19 @@ export async function listProducts(
   // Card notes for this page's rated teas only.
   const rated = products.filter((p) => p.reviewCount > 0).map((p) => p.id);
   if (rated.length === 0) return { products, total };
-  const { data: noteRows, error: notesError } = await selectIn(rated, (ids) =>
-    supabase.from('latest_reviews').select('product_id, flavor_notes').in('product_id', ids)
+  // tea_taste_profiles counts every taster's notes, private ones included.
+  const { data: profiles, error: notesError } = await selectIn(rated, (ids) =>
+    supabase.from('tea_taste_profiles').select('product_id, notes').in('product_id', ids)
   );
   if (notesError) throw notesError;
-  const notes = topNotesByProduct(noteRows);
+  const notes = topNotesByProduct(
+    profiles.flatMap((p) =>
+      Object.entries(p.notes).map(([note, mentions]) => ({
+        product_id: p.product_id,
+        flavor_notes: Array<string>(mentions).fill(note),
+      }))
+    )
+  );
   return { products: products.map((p) => ({ ...p, topNotes: notes.get(p.id) ?? [] })), total };
 }
 

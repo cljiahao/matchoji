@@ -26,7 +26,7 @@ const review = (id: string, userId: string) => ({
 describe('listReviews', () => {
   it('maps reviews and names reviewers from public_profiles, never profiles', async () => {
     const { client, calls } = createFakeSupabase({
-      latest_reviews: {
+      'rpc:product_reviews': {
         data: [review('r1', 'u1'), review('r2', 'u2'), { ...review('r3', 'u3'), user_id: null }],
         error: null,
       },
@@ -37,6 +37,11 @@ describe('listReviews', () => {
 
     // A deleted account's rating stays, unnamed; only real authors are looked up.
     expect(reviews.map((r) => r.reviewerName)).toEqual(['Aiko', 'Former taster', 'Former taster']);
+    expect(calls).toContainEqual({
+      table: 'rpc:product_reviews',
+      method: 'rpc',
+      args: [{ product: 'p1' }],
+    });
     expect(calls).toContainEqual({
       table: 'public_profiles',
       method: 'in',
@@ -49,7 +54,7 @@ describe('listReviews', () => {
   // numeric(4,1) can arrive as a string; unset attributes stay out of the profile.
   it('maps profile and prep, omitting unset attributes', async () => {
     const { client } = createFakeSupabase({
-      latest_reviews: { data: [review('r1', 'u1')], error: null },
+      'rpc:product_reviews': { data: [review('r1', 'u1')], error: null },
       public_profiles: { data: [], error: null },
     });
 
@@ -61,8 +66,24 @@ describe('listReviews', () => {
     expect(r.tastedOn).toBe('2026-09-01');
   });
 
+  it('names a private taster’s rating "Private taster", without a profile link', async () => {
+    const { client } = createFakeSupabase({
+      'rpc:product_reviews': {
+        data: [{ ...review('r1', 'u1'), user_id: null, author_private: true }],
+        error: null,
+      },
+    });
+
+    const [r] = await listReviews(client, 'p1');
+
+    expect(r.reviewerName).toBe('Private taster');
+    expect(r.authorId).toBeNull();
+  });
+
   it('skips the profile lookup when there are no reviews', async () => {
-    const { client, calls } = createFakeSupabase({ latest_reviews: { data: [], error: null } });
+    const { client, calls } = createFakeSupabase({
+      'rpc:product_reviews': { data: [], error: null },
+    });
 
     expect(await listReviews(client, 'p1')).toEqual([]);
     expect(calls.some((c) => c.table === 'public_profiles')).toBe(false);
@@ -70,14 +91,14 @@ describe('listReviews', () => {
 
   it('throws the Supabase error', async () => {
     const error = new Error('boom');
-    const { client } = createFakeSupabase({ latest_reviews: { data: null, error } });
+    const { client } = createFakeSupabase({ 'rpc:product_reviews': { data: null, error } });
     await expect(listReviews(client, 'p1')).rejects.toBe(error);
   });
 
   it('throws when reviewer names fail to load instead of showing "Anonymous"', async () => {
     const error = new Error('names');
     const { client } = createFakeSupabase({
-      latest_reviews: { data: [review('r1', 'u1')], error: null },
+      'rpc:product_reviews': { data: [review('r1', 'u1')], error: null },
       public_profiles: { data: null, error },
     });
     await expect(listReviews(client, 'p1')).rejects.toBe(error);
