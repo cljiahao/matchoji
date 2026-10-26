@@ -116,6 +116,15 @@ rationale): `docs/superpowers/specs/2026-09-14-matchoji-design.md`. Phase 1 only
 built now — do not build Phase 3/4 features (marketplace, vendor tools) without the user
 explicitly asking to move to that phase.
 
+Local patches to templateCentral-owned files (a harness re-sync overwrites them, so re-apply
+these afterwards and refresh their `origin_hash`):
+
+- `.github/workflows/ci.yml` — `pull_request` also runs on `labeled`/`unlabeled` (Dependabot
+  adds `skip-readme-check` after opening, and a re-run replays the label-less event); every
+  checkout sets `persist-credentials: false`; `diff-cover` is pinned (`pipx run diff-cover==10.6.0`).
+- `.gitleaks.toml` — no path allowlist for `.env.example` / `.env.default`, so a real key
+  pasted into the template is caught.
+
 ## Task Management
 
 For complex tasks (3+ files, architectural decisions): `/superpowers:brainstorm` → `/superpowers:write-plan` → `/superpowers:execute-plan`. Skip for single-file edits or quick fixes.

@@ -4,7 +4,5 @@ useDefault = true
 [[allowlists]]
 description = "Known non-secrets"
 paths = [
-  '''\.env\.example$''',
-  '''\.env\.default$''',
   '''(^|/)(pnpm-lock\.yaml|package-lock\.json|poetry\.lock|uv\.lock)$''',
 ]
