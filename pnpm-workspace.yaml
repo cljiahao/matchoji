@@ -5,6 +5,10 @@
 # Primary mitigation against dependency confusion and supply-chain attacks.
 blockExoticSubdeps: true
 
+# Resolve only package versions published at least 3 days ago (in minutes), so a hijacked
+# release is usually yanked before it can be installed. Matches Dependabot's cooldown.
+minimumReleaseAge: 4320
+
 # Explicitly allowlist packages permitted to run install-time build scripts.
 # pnpm 11 blocks all install scripts by default; add native packages here as needed.
 allowBuilds:
