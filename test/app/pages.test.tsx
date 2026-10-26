@@ -399,7 +399,7 @@ describe('Explore page', () => {
         },
         { data: [{ grade: 'Bancha' }, { grade: 'Premium' }], error: null },
       ],
-      latest_reviews: { data: [], error: null },
+      tea_taste_profiles: { data: [], error: null },
       regions: { data: [], error: null },
     });
 
@@ -975,7 +975,7 @@ describe('Product page', () => {
         error: null,
       },
       product_ratings: { data: { product_id: 'p1', avg_stars: 4, review_count: 1 }, error: null },
-      latest_reviews: {
+      'rpc:product_reviews': {
         data: [
           {
             id: 'r1',
@@ -1059,7 +1059,7 @@ describe('Product page', () => {
       },
       regions: { data: { id: REGION, name: 'Uji, Kyoto' }, error: null },
       product_ratings: { data: null, error: null },
-      latest_reviews: { data: [], error: null },
+      'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });
@@ -1086,6 +1086,7 @@ describe('Product page', () => {
       {
         products: { data: { ...productRow, status: 'pending', added_by: 'u1' }, error: null },
         product_ratings: { data: null, error: null },
+        'rpc:product_reviews': { data: [], error: null },
         latest_reviews: { data: [], error: null },
         stock_reports: { data: null, error: null },
         listings: { data: [], error: null },
@@ -1104,7 +1105,7 @@ describe('Product page', () => {
     useServer({
       products: { data: productRow, error: null },
       product_ratings: { data: null, error: null },
-      latest_reviews: { data: [], error: null },
+      'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });
@@ -1126,7 +1127,7 @@ describe('Product page', () => {
         error: null,
       },
       product_ratings: { data: null, error: null },
-      latest_reviews: { data: [], error: null },
+      'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });
@@ -1149,10 +1150,8 @@ describe('Product page', () => {
           },
         ],
         product_ratings: { data: null, error: null },
-        latest_reviews: [
-          { data: [], error: null },
-          { data: [{ product_id: 'p9', stars: 5 }], error: null },
-        ],
+        'rpc:product_reviews': { data: [], error: null },
+        latest_reviews: { data: [{ product_id: 'p9', stars: 5 }], error: null },
         tea_taste_profiles: { data: [], error: null },
         stock_reports: { data: null, error: null },
         listings: { data: [], error: null },
@@ -1191,7 +1190,7 @@ describe('Product page', () => {
     useServer({
       products: { data: { ...productRow, status: 'rejected' }, error: null },
       product_ratings: { data: null, error: null },
-      latest_reviews: { data: [], error: null },
+      'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });
@@ -1204,7 +1203,7 @@ describe('Product page', () => {
   it('404s for an unknown product', async () => {
     useServer({
       products: { data: null, error: null },
-      latest_reviews: { data: [], error: null },
+      'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
       listings: { data: [], error: null },
     });

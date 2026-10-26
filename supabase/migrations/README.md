@@ -56,6 +56,16 @@ the author; `latest_reviews` recreated to carry them), the `edition_ratings` vie
 `top_harvest` flag (best edition with 3+ ratings), and the want-to-try stash
 (`owned_quantity`, `opened_on`, owner-editable). `20261028100000_health_check.sql` adds
 `health()`, a no-op anyone may call, which `/api/health` uses to prove the database answers.
+`20261029000000_security_hardening.sql` closes the 2026-10-26 security sweep: the server stamps
+`created_at` on API inserts (backdating no longer slips the daily limits), likes and follows get
+daily limits, review photos must be a file in the author's folder on this project's storage, a
+private taster's reviews are readable only by them and admins (tea pages get them through
+`product_reviews()` without author or photo; scores read every row through the unexposed
+`internal.latest_reviews`), follows between private people are hidden, `is_blocked_between`
+answers only for pairs including the caller and reaction policies use `can_react_to` /
+`is_review_author` instead of `review_author`, account deletion also scrubs follow, block,
+report, notification and photo ids from the audit trail, suggested teas and shop applications
+cannot carry admin-only fields, and `handle_new_user` uses an empty `search_path`.
 
 ## Contents
 
@@ -80,6 +90,7 @@ the author; `latest_reviews` recreated to carry them), the `edition_ratings` vie
 - `20261027100000_social_reactions.sql`
 - `20261028000000_editions_and_stash.sql`
 - `20261028100000_health_check.sql`
+- `20261029000000_security_hardening.sql`
 
 ## Parent
 
