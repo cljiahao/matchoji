@@ -4,7 +4,7 @@
   "seeded_at": "2026-09-14",
   "seeded_files": {
     "AGENTS.md": {
-      "origin_hash": "a55d95d6e7074834ade3997413695b136869e1bc33ecdb5b67829de615ebafc0",
+      "origin_hash": "6059c07fc23e2ca8def25330cd07c83a0c55ceb5967fa104b76cccb8c0430f6d",
       "path": "AGENTS.md"
     },
     ".claude/settings.json": {
@@ -68,7 +68,7 @@
       "path": ".lefthook/commit-msg.sh"
     },
     ".gitleaks.toml": {
-      "origin_hash": "a1978b7a1e366072692ed55ab372a83b62908ccf6eaa5e2e261906c92c704e43",
+      "origin_hash": "e304640bbcf28ec91e159cde257809add0ad3f5c328c4ab7b07387d903a7b8e8",
       "path": ".gitleaks.toml"
     },
     ".claude/comment-hygiene-patterns.txt": {
@@ -76,7 +76,7 @@
       "path": ".claude/comment-hygiene-patterns.txt"
     },
     ".github/workflows/ci.yml": {
-      "origin_hash": "924cf0c60cfe5c1478b32ef2e80de6fb6e56f3f0b1f2516f0589f88ff5e76a42",
+      "origin_hash": "078dc3c603b65f612227a6b4ecbbfc95006c5638bd7e39710dd84e2ac2c6b27e",
       "path": ".github/workflows/ci.yml"
     },
     ".claude/ci-gates.sh": {
