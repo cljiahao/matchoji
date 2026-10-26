@@ -11,3 +11,8 @@ allowBuilds:
   sharp: true # Next.js image optimisation
   unrs-resolver: true # required by eslint-config-next resolver
   lefthook: false # git-hook installer; binary ships via optional deps — no build needed, but pnpm 11 still requires an explicit decision or it blocks `pnpm <script>` runs
+
+# Security floors for transitive dependencies (lift each once its parent ships the fix).
+# vite <8.3.3 (via vitest): GHSA high/moderate dev-server file exposure and launch-editor bugs.
+overrides:
+  'vite@>=8.3.0 <8.3.3': '^8.3.5'

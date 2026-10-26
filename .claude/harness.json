@@ -1,10 +1,10 @@
 {
-  "templatecentral_version": "6.0.4",
+  "templatecentral_version": "6.1.0",
   "stack": "nextjs",
   "seeded_at": "2026-09-14",
   "seeded_files": {
     "AGENTS.md": {
-      "origin_hash": "cd3b4e7329d9af61c2f60166c461a870c035615649c631cb0e653593c4e16434",
+      "origin_hash": "a55d95d6e7074834ade3997413695b136869e1bc33ecdb5b67829de615ebafc0",
       "path": "AGENTS.md"
     },
     ".claude/settings.json": {
@@ -24,11 +24,11 @@
       "path": ".claude/skills/skill-audit/SKILL.md"
     },
     ".claude/hooks/protect-files.sh": {
-      "origin_hash": "ae22546d42d4126d26bf2c27d91b9a6faa169386758840062dad40a55d3c00d1",
+      "origin_hash": "4e36c16bdd08e435a53c087e72f9406074e7c8bff9bd315eb7855c02ff08a417",
       "path": ".claude/hooks/protect-files.sh"
     },
     ".claude/hooks/block-no-verify.sh": {
-      "origin_hash": "fd913d8fab413365cf74839ee09ac5db482d112bd1f8c14676d82eae2341ff71",
+      "origin_hash": "4e8c487ba1584fd936c48ca2e94e828bd2802e14d87e32f940f7ffb1e3e6b348",
       "path": ".claude/hooks/block-no-verify.sh"
     },
     ".claude/hooks/user-prompt-guard.cjs": {
@@ -76,11 +76,11 @@
       "path": ".claude/comment-hygiene-patterns.txt"
     },
     ".github/workflows/ci.yml": {
-      "origin_hash": "3b536acf16111c5e6498f690afb77741bb803b0c3ab0de3c5dbeae34deac789f",
+      "origin_hash": "924cf0c60cfe5c1478b32ef2e80de6fb6e56f3f0b1f2516f0589f88ff5e76a42",
       "path": ".github/workflows/ci.yml"
     },
     ".claude/ci-gates.sh": {
-      "origin_hash": "ef95e0a7b0f5eab0569e897be75648e5985347799071c14b633eb391f1e09f4d",
+      "origin_hash": "3075ea70021ea319af70e0d239b8b89a49ec7d8c6abb6b3f6fb71f04298a42ac",
       "path": ".claude/ci-gates.sh"
     },
     ".claude/verify-harness.sh": {

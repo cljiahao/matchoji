@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with: { node-version: "24", cache: pnpm }
       - run: pnpm install --frozen-lockfile     # lockfile-in-sync gate
+      - name: Dependency audit (high/critical; allowlist .claude/dep-audit-allow.txt)
+        run: bash .claude/ci-gates.sh deps
       - name: Harness integrity
         run: bash .claude/verify-harness.sh
       - run: pnpm run check                      # format:check + lint + typecheck
