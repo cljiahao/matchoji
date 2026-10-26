@@ -1,12 +1,14 @@
 # Weekly update PRs, minor and patch bumps grouped into one PR per ecosystem so they stay
 # reviewable; majors arrive one per PR and are upgraded deliberately. Dependency bumps change
-# no folder docs, so they carry the README-check bypass label.
+# no folder docs, so they carry the README-check bypass label. A release must be a few days
+# old before it is proposed, so a hijacked publish is usually caught and pulled first.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule: { interval: weekly, day: monday }
     open-pull-requests-limit: 5
+    cooldown: { default-days: 3 }
     labels: [dependencies, skip-readme-check]
     commit-message: { prefix: "chore(deps)" }
     # @types/node tracks the runtime (Node 24, per engines and CI); its majors wait until the
@@ -20,6 +22,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly, day: monday }
+    cooldown: { default-days: 3 }
     labels: [dependencies, skip-readme-check]
     commit-message: { prefix: "ci(deps)" }
     groups:

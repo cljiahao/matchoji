@@ -63,3 +63,12 @@ next-env.d.ts
 
 # superpowers plan workspaces (ledgers, briefs) — local scratch
 .superpowers/
+
+# secrets and local Supabase CLI state (never committed)
+secrets/
+.secrets/
+*.key
+*.p12
+*.pfx
+supabase/.temp/
+supabase/.branches/
