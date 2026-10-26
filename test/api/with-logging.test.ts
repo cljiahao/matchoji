@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { describe, expect, it } from 'vitest';
 
-import { type RouteContext, withLogging } from '@/lib/utils/with-logging';
+import { requestIdFrom, type RouteContext, withLogging } from '@/lib/utils/with-logging';
 
 function makeRequest(url: string): NextRequest {
   return new NextRequest(url);
@@ -33,5 +33,12 @@ describe('withLogging', () => {
       params: Promise.resolve({ id: '42' }),
     });
     await expect(res.json()).resolves.toEqual({ id: '42' });
+  });
+
+  it('keeps a well-formed caller request id and replaces anything else', () => {
+    expect(requestIdFrom('req_abc-123')).toBe('req_abc-123');
+    for (const bad of [null, '', 'x'.repeat(65), 'id with spaces', 'id\nforged']) {
+      expect(requestIdFrom(bad)).toMatch(/^[0-9a-f-]{36}$/);
+    }
   });
 });

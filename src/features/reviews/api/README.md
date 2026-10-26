@@ -10,7 +10,8 @@ Reviews read and write the tasting profile and preparation columns; `mapReviewRo
 `REVIEW_COLUMNS` are shared with the journal (`features/journal`). Reviewer names are looked
 up through `selectIn`, so a product with many reviewers never builds an over-long URL.
 
-`listReviews` reads `latest_reviews` (each person's newest tasting of the tea), so the list,
+`listReviews` calls `product_reviews()` (each person's newest tasting of the tea, a private
+taster's shown as "Private taster" with no profile link or photo), so the list,
 distribution and taste summary agree with the score; a failed name lookup throws instead of
 showing "Anonymous". Photos are stored under a random name with the file's extension, and
 `removeReviewPhoto` deletes one whose review failed to save. `createReview` always sends the

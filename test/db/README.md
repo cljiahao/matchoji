@@ -36,7 +36,10 @@ rejected shop can reapply once. `catalogue-discovery.test.ts` checks the weighte
 and that `search_teas` forgives typos, treats wildcards as text and shows only the caller's
 own pending teas. `tea-taste-profiles.test.ts` checks the profile averages sliders and counts
 notes over each person's latest tasting only. `health-check.test.ts` checks visitors and
-signed-in users can call `health()`.
+signed-in users can call `health()`. `security-hardening.test.ts` proves each sweep fix: server
+timestamps, the strict photo check, private tasters' reviews hidden yet counted and listed
+anonymously, follows and feeds, block lookups, reaction policies, account-deletion scrubbing
+and admin-only fields.
 
 ## Contents
 
@@ -48,6 +51,7 @@ signed-in users can call `health()`.
 - `health-check.test.ts`
 - `integrity-hardening.test.ts`
 - `region-supply.test.ts`
+- `security-hardening.test.ts`
 - `seed-real-teas.test.ts`
 - `social-profiles-follows.test.ts`
 - `social-reactions.test.ts`

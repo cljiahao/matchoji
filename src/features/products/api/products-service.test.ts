@@ -54,7 +54,7 @@ describe('listProducts', () => {
         count: 30,
         error: null,
       },
-      latest_reviews: { data: [], error: null },
+      tea_taste_profiles: { data: [], error: null },
     });
 
     const { products, total } = await listProducts(client, { sort: 'top' });
@@ -77,12 +77,8 @@ describe('listProducts', () => {
         data: [tea('a', { review_count: 3, avg_stars: 4 }), tea('b')],
         error: null,
       },
-      latest_reviews: {
-        data: [
-          { product_id: 'a', flavor_notes: ['umami', 'creamy'] },
-          { product_id: 'a', flavor_notes: ['creamy', 'sweet'] },
-          { product_id: 'a', flavor_notes: ['creamy'] },
-        ],
+      tea_taste_profiles: {
+        data: [{ product_id: 'a', notes: { umami: 2, creamy: 3, sweet: 1 } }],
         error: null,
       },
     });
@@ -90,7 +86,7 @@ describe('listProducts', () => {
     const { products } = await listProducts(client, { sort: 'top' });
     expect(products[0].topNotes).toEqual(['creamy', 'umami']);
     expect(calls).toContainEqual({
-      table: 'latest_reviews',
+      table: 'tea_taste_profiles',
       method: 'in',
       args: ['product_id', ['a']],
     });

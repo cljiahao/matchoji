@@ -20,7 +20,8 @@ view, `profiles.is_admin`, `review_note` and `merged_into`, the admin functions,
 `search_teas` and `delete_my_account` under `Functions`, a nullable `reviews.user_id` (for
 deleted accounts), `profiles.is_public`, `follows`, `blocks` and `following_feed`, `review_likes`, `review_comments`,
 `notifications` (`NotificationKind`), `content_reports` (`ReportTarget`) and `resolve_report`, review editions (`Flush`), the
-`edition_ratings` view and the want-to-try stash columns, `health`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
+`edition_ratings` view and the want-to-try stash columns, `health`, `product_reviews` (with
+`author_private`) and `is_public_profile`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
 until checkout is built. `pnpm db:types` writes the CLI's generated types to
 `database.generated.ts` for comparing against these hand-written ones.
 

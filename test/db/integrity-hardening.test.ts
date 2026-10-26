@@ -6,7 +6,7 @@ import { createMigratedDb } from '../support/supabase-db';
 const ALICE = '11111111-1111-4111-8111-111111111111';
 const BOB = '22222222-2222-4222-8222-222222222222';
 const PHOTO = (user: string) =>
-  `https://x.supabase.co/storage/v1/object/public/review-photos/${user}/a.jpg`;
+  `https://skajpelucxgovxajlzvo.supabase.co/storage/v1/object/public/review-photos/${user}/a.jpg`;
 
 let db: PGlite;
 let approved: string;

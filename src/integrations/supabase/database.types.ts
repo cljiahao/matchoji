@@ -527,6 +527,11 @@ export interface Database {
         Returns: Database['public']['Tables']['reviews']['Row'][];
       };
       delete_my_account: { Args: Record<string, never>; Returns: undefined };
+      product_reviews: {
+        Args: { product: string };
+        Returns: (Database['public']['Tables']['reviews']['Row'] & { author_private: boolean })[];
+      };
+      is_public_profile: { Args: { person: string }; Returns: boolean };
       search_teas: {
         Args: { q: string };
         Returns: { id: string; name: string; brand: string | null; category: ProductCategory }[];

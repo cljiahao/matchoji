@@ -7,6 +7,18 @@ All notable changes to this project are documented here. Format follows
 
 ### Security
 
+- A private profile now keeps its tastings off the API: they still count towards every tea's
+  score and show on tea pages as "Private taster" (no name, link or photo), but nobody else can
+  list them, see them in a feed, or see who a private taster follows.
+- Daily limits can no longer be dodged by backdating, stock reports and feed entries can no
+  longer be dated into the future, and likes and follows have daily limits.
+- Review photos must be the author's own upload on Matchoji's storage, and pages load images
+  only from the site and its storage, so a review cannot carry a tracking image.
+- Who has blocked whom can no longer be looked up, and deleting an account also removes the
+  person's id from follows, blocks, reports and photos in the audit trail.
+- Suggested teas and shop applications cannot arrive with admin-only fields, sign-in redirects
+  are never cached, and malformed request ids are not logged.
+
 - Profiles can no longer be edited or deleted through the public profile view (closed by hand
   on 2026-10-24 and now recorded in a migration); users can change only their display name,
   and default names no longer use part of the email.
