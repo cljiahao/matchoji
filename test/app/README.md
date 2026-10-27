@@ -16,8 +16,8 @@ loading routes, the public error boundary, and the OAuth callback's redirect han
 `seo.test.ts` covers the sitemap (browse, Learn and tea pages) and robots rules. `learn.test.tsx`
 covers the Learn index, recipe pages (brew numbers, steps, tips, the pre-filled log button's
 sign-in prompt, 404s) and guide pages. `config.test.ts` checks the proxy skips
-`/api/health` and the content security policy allows images only from the site and its
-Supabase project. `auth-callback.test.ts` also checks its redirects are never cached.
+`/api/health` and the content security policy allows images only from the site, its
+Supabase project and Google profile photos. `auth-callback.test.ts` also checks its redirects are never cached.
 
 Tea page tests get an empty `edition_ratings` result by default from `useServer`.
 

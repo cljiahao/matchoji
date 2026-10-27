@@ -14,17 +14,19 @@ describe('proxy matcher', () => {
 });
 
 describe('security headers', () => {
-  it('allow images only from the site and its Supabase project, and forbid framing', async () => {
+  it('allow images only from the site, its Supabase project and Google avatars, and forbid framing', async () => {
     const [rule] = (await nextConfig.headers?.()) ?? [];
     const csp = rule.headers.find((h) => h.key === 'Content-Security-Policy')?.value ?? '';
-    expect(csp).toContain("img-src 'self' data: blob: http://supabase.test");
-    expect(csp).not.toContain('https:');
+    expect(csp).toContain(
+      "img-src 'self' data: blob: http://supabase.test https://*.googleusercontent.com"
+    );
+    expect(csp).not.toMatch(/https:(\s|$|;)/);
     expect(csp).toContain("object-src 'none'");
   });
 
   it('fall back to any https image host without a usable Supabase URL', () => {
     expect(imageSources('https://abc.supabase.co/rest/v1')).toBe(
-      "img-src 'self' data: blob: https://abc.supabase.co"
+      "img-src 'self' data: blob: https://abc.supabase.co https://*.googleusercontent.com"
     );
     expect(imageSources(undefined)).toBe("img-src 'self' data: blob: https:");
     expect(imageSources('not a url')).toBe("img-src 'self' data: blob: https:");
