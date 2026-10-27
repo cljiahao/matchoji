@@ -10,9 +10,11 @@ that matches nothing shows a no-match message with a clear-filters link; an empt
 invites the first tasting. Products and regions come from Supabase; a failed region read only
 hides the region filter.
 
-Results come 24 per page from `catalogue_teas`, filtered and sorted in SQL, with "Showing
-1–24 of N" and Previous/Next links (`?page=`); any other filter change returns to page 1. Signed-in tasters see a match badge on each
-row, and "Best match for you" ranks up to 500 matching teas by their score, paging in memory.
+Results show 12 teas at first from `catalogue_teas`, filtered and sorted in SQL, with "Showing
+X of N teas" and a "Show more" link that adds 12 (`?shown=24`, a plain server-rendered link, so
+Back and shared links restore the list); any filter or sort change returns to 12, and an old
+`?page=` is ignored. Signed-in tasters see a match badge on each row, and "Best match for you"
+ranks up to 500 matching teas by their score, trimming to the shown count in memory.
 
 ## Contents
 

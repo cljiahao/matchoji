@@ -5,6 +5,8 @@
 A course page (its outline and the signed-in learner's progress), built statically for every
 course; `[lesson]/` is one lesson. Unknown slugs 404.
 
+It opens with a `BackLink` to Learn.
+
 ## Contents
 
 - `[lesson]/`

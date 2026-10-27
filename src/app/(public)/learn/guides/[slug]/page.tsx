@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { BackLink } from '@/components/widgets';
 import { GUIDES, findGuide } from '@/features/learn';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
@@ -25,9 +26,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
 
   return (
     <article className="mx-auto w-full max-w-3xl px-6 py-10 sm:py-14">
-      <Link href={PAGE_ROUTES.LEARN} className="text-muted-foreground text-sm hover:underline">
-        ← Learn
-      </Link>
+      <BackLink href={PAGE_ROUTES.LEARN} label="Learn" />
       <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{guide.title}</h1>
       <p className="text-muted-foreground mt-2 text-lg">{guide.summary}</p>
 

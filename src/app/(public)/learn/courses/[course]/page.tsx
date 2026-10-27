@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { BackLink } from '@/components/widgets';
 import { COURSES, CourseLessonList, courseMinutes, findCourse } from '@/features/learn';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
@@ -25,9 +25,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   return (
     <article className="mx-auto w-full max-w-3xl px-6 py-10 sm:py-14">
-      <Link href={PAGE_ROUTES.LEARN} className="text-muted-foreground text-sm hover:underline">
-        ← Learn
-      </Link>
+      <BackLink href={PAGE_ROUTES.LEARN} label="Learn" />
       <p className="text-brand mt-3 text-sm font-semibold">
         {course.level} · {course.lessons.length} lessons · about {courseMinutes(course)} min
       </p>
