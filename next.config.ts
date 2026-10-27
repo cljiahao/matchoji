@@ -1,7 +1,8 @@
 import type { NextConfig } from 'next';
 
-// Images come only from this site and the project's Supabase Storage (review photos, tea
-// photos). Without a Supabase URL at build time (CI's blank-env build) any https host is allowed.
+// Images come only from this site, the project's Supabase Storage (review photos, tea photos)
+// and Google's profile-photo host (the signed-in avatar). Without a Supabase URL at build time
+// (CI's blank-env build) any https host is allowed.
 export function imageSources(supabaseUrl: string | undefined): string {
   let storage = 'https:';
   try {
@@ -9,7 +10,8 @@ export function imageSources(supabaseUrl: string | undefined): string {
   } catch {
     // An unparsable URL keeps the permissive fallback; the app itself refuses to start without one.
   }
-  return `img-src 'self' data: blob: ${storage}`;
+  const hosts = storage === 'https:' ? storage : `${storage} https://*.googleusercontent.com`;
+  return `img-src 'self' data: blob: ${hosts}`;
 }
 
 const nextConfig: NextConfig = {
