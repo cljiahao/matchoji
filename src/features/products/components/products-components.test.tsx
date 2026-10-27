@@ -13,6 +13,7 @@ import { CategoryCircles } from './category-circles';
 import { ExploreFilters } from './explore-filters';
 import { ExploreSort } from './explore-sort';
 import { FilterDisclosure } from './filter-disclosure';
+import { PriceInline } from './price-inline';
 import { ProductFacts } from './product-facts';
 import { ProductGrid } from './product-grid';
 import { ProductImageWell } from './product-image-well';
@@ -488,5 +489,37 @@ describe('ProductFacts', () => {
     expect(screen.queryByText('Grade')).not.toBeInTheDocument();
     expect(screen.queryByText('Region')).not.toBeInTheDocument();
     expect(screen.getByText('Tea')).toBeInTheDocument();
+  });
+});
+
+describe('PriceInline', () => {
+  it('shows the price per gram and band, and nothing for an unpriced tea', () => {
+    const { rerender, container } = render(
+      <PriceInline price={{ sgd: 32, packGrams: 40, perGram: 0.8, band: 'mid' }} />
+    );
+    expect(container).toHaveTextContent('S$0.80/g · Mid-range');
+    rerender(<PriceInline price={{ sgd: 12, packGrams: 100, perGram: 0.12, band: null }} />);
+    expect(container).toHaveTextContent(/^S\$0\.12\/g$/);
+    rerender(<PriceInline price={null} />);
+    expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe('ProductFacts price', () => {
+  it('gives the matcha cost per usucha and koicha', () => {
+    render(
+      <ProductFacts
+        product={makeProduct({ price: { sgd: 30, packGrams: 30, perGram: 1, band: 'premium' } })}
+      />
+    );
+    const price = screen.getByText('Price').nextElementSibling;
+    expect(price).toHaveTextContent('S$30.00 for 30 g · S$1.00/g');
+    expect(price).toHaveTextContent('≈ S$2.00 per usucha (2 g) · S$4.00 per koicha (4 g)');
+    expect(price).toHaveTextContent('Premium for matcha');
+  });
+
+  it('leaves the row out for an unpriced tea', () => {
+    render(<ProductFacts product={makeProduct()} />);
+    expect(screen.queryByText('Price')).not.toBeInTheDocument();
   });
 });

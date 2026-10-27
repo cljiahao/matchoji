@@ -107,6 +107,20 @@ export async function setTeaLinks(
   if (error) throw error;
 }
 
+// A tea's reference price for one pack, or null to clear it.
+export async function setTeaPrice(
+  supabase: Client,
+  tea: string,
+  price: { price: number; grams: number } | null
+): Promise<void> {
+  const { error } = await supabase.rpc('set_tea_price', {
+    tea,
+    price: price?.price ?? null,
+    grams: price?.grams ?? null,
+  });
+  if (error) throw error;
+}
+
 // Tea photos live in their own admin-only bucket, under the tea's id with a random name.
 export async function uploadTeaImage(supabase: Client, tea: string, file: File): Promise<string> {
   const ext = /\.([a-z0-9]{1,5})$/i.exec(file.name)?.[1]?.toLowerCase();

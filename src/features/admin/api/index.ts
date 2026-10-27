@@ -8,6 +8,7 @@ export {
   reviewShop,
   reviewTea,
   setTeaLinks,
+  setTeaPrice,
   uploadTeaImage,
   type OpenReport,
 } from './admin-service';

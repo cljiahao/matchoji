@@ -13,7 +13,9 @@ the rail behind a "Filters" button below `lg`; `ProductFacts` is the product pag
 awaiting review or no longer in the catalogue in lists that can include one. Cards
 and rows take an optional `action` (the want-to-try toggle), kept outside the link because
 controls can't nest inside it. `products-components.test.tsx` builds full `Product`
-objects, so a new `Product` field (most recently `status`, `reviewNote` and `mergedInto`) is added to its fixtures too.
+objects, so a new `Product` field (most recently `price`) is added to its fixtures too. `PriceInline`
+("S$0.80/g · Mid-range") sits on cards and rows of priced teas, and `ProductFacts` adds a Price row:
+pack price and size, price per gram, cost per cup and the band within the tea's category.
 
 ## Contents
 
@@ -24,6 +26,7 @@ objects, so a new `Product` field (most recently `status`, `reviewNote` and `mer
 - `explore-sort.tsx`
 - `filter-disclosure.tsx`
 - `index.ts`
+- `price-inline.tsx`
 - `product-card.tsx`
 - `product-facts.tsx`
 - `product-grid.tsx`

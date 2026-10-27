@@ -4,6 +4,8 @@ import type {
   SupplyLevel,
 } from '@/integrations/supabase/database.types';
 
+import type { TeaPrice } from './lib/pricing';
+
 export type { ProductCategory, ProductStatus };
 
 export interface Product {
@@ -32,6 +34,8 @@ export interface Product {
   reviewCount: number;
   // The feed's two most-noticed flavour notes; empty where not loaded or unrated.
   topNotes: string[];
+  // Reference price, per gram and its band; null until an admin prices the tea.
+  price: TeaPrice | null;
 }
 
 export interface ProductSummary {

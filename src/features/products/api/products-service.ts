@@ -11,6 +11,7 @@ import type { Product, ProductSummary } from '../types';
 
 import type { DiscoverFilters } from '../lib/discover-params';
 import { gradeOptions } from '../lib/filter-products';
+import { toTeaPrice } from '../lib/pricing';
 import { summarizeRegions, type RegionSummary } from '../lib/summarize-regions';
 import { applyRating, topNotesByProduct } from './product-ratings';
 import { buildSearchFilter } from './search-filter';
@@ -31,6 +32,8 @@ interface ProductRow {
   review_note: string | null;
   merged_into: string | null;
   created_at: string;
+  price_sgd: number | string | null;
+  pack_grams: number | string | null;
 }
 
 // product_ratings is a view and regions is a separate table — neither is embedded via
@@ -38,7 +41,7 @@ interface ProductRow {
 // Database type doesn't carry), so both are fetched separately and merged in code. Used for a
 // single tea's page, which (unlike the lists) may be one awaiting review.
 async function hydrateProduct(supabase: Client, row: ProductRow): Promise<Product> {
-  const [regionResult, ratingResult] = await Promise.all([
+  const [regionResult, ratingResult, priceResult] = await Promise.all([
     row.region_id
       ? supabase
           .from('regions')
@@ -47,11 +50,16 @@ async function hydrateProduct(supabase: Client, row: ProductRow): Promise<Produc
           .maybeSingle()
       : Promise.resolve({ data: null, error: null }),
     supabase.from('product_ratings').select('*').eq('product_id', row.id).maybeSingle(),
+    // The band compares approved teas only, so an unpriced or pending tea has none to read.
+    row.price_sgd !== null && row.status === 'approved'
+      ? supabase.from('tea_prices').select('price_band').eq('product_id', row.id).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
   ]);
 
   // A failed lookup must not look like "unrated" or "no region"; let the page's error state show.
   if (regionResult.error) throw regionResult.error;
   if (ratingResult.error) throw ratingResult.error;
+  if (priceResult.error) throw priceResult.error;
   const region = regionResult.data;
 
   return applyRating(
@@ -70,13 +78,14 @@ async function hydrateProduct(supabase: Client, row: ProductRow): Promise<Produc
       reviewNote: row.review_note,
       mergedInto: row.merged_into,
       createdAt: row.created_at,
+      price: toTeaPrice({ ...row, price_band: priceResult.data?.price_band ?? null }),
     },
     ratingResult.data ?? undefined
   );
 }
 
 const CATALOGUE_COLUMNS =
-  'id, name, brand, category, grade, region_name, supply, image_url, shop_url, created_at, review_count, avg_stars';
+  'id, name, brand, category, grade, region_name, supply, image_url, shop_url, created_at, review_count, avg_stars, price_sgd, pack_grams, price_band';
 
 type CatalogueRow = Pick<
   Database['public']['Views']['catalogue_teas']['Row'],
@@ -92,6 +101,9 @@ type CatalogueRow = Pick<
   | 'created_at'
   | 'review_count'
   | 'avg_stars'
+  | 'price_sgd'
+  | 'pack_grams'
+  | 'price_band'
 >;
 
 // Lists show approved teas only (catalogue_teas filters them), so the review fields are fixed.
@@ -115,6 +127,7 @@ function fromCatalogue(row: CatalogueRow): Product {
     avgStars: row.avg_stars === null ? null : Number(row.avg_stars),
     reviewCount: Number(row.review_count),
     topNotes: [],
+    price: toTeaPrice(row),
   };
 }
 
@@ -147,6 +160,10 @@ export async function listProducts(
     query = query.order('review_count', DESC).order('avg_stars', DESC);
   } else if (filters.sort === 'newest') {
     query = query.order('created_at', DESC);
+  } else if (filters.sort === 'value') {
+    query = query
+      .order('price_per_gram', { ascending: true, nullsFirst: false })
+      .order('created_at', DESC);
   } else {
     if (filters.sort === 'scarce') query = query.order('supply_rank');
     query = query.order('top_rank').order('weighted_score', DESC).order('created_at', DESC);
@@ -197,7 +214,7 @@ export async function getProduct(supabase: Client, id: string): Promise<Product 
   const { data, error } = await supabase
     .from('products')
     .select(
-      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, review_note, merged_into, created_at'
+      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, review_note, merged_into, created_at, price_sgd, pack_grams'
     )
     .eq('id', id)
     .maybeSingle();

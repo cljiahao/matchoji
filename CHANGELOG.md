@@ -44,6 +44,10 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Tea prices: each tea can show its pack price in Singapore dollars, price per gram, what a cup
+  costs (usucha, koicha or a hojicha cup) and whether it is budget, mid-range or premium among
+  teas of its kind. Explore can sort by lowest price per gram, and admins set prices on the
+  review page.
 - A Learn tab with recipes (usucha, koicha, iced matcha, matcha and hojicha lattes, steeped
   hojicha) giving dose, water, temperature, steps and tips, plus guides to grades, tools,
   storage and why matcha sells out. "Log a tasting with this recipe" fills in its brew settings.

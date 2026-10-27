@@ -7,6 +7,9 @@
 `TeaLinksForm`: pick a catalogue tea, optionally upload its photo, set its shop link. Both
 refresh the server page after an action and show the database's refusal as the error.
 
+`TeaPriceForm`: pick a catalogue tea and set its pack price (S$) and pack size (g), or clear both;
+validated by `teaPriceSchema` (both above zero, or both empty).
+
 `ReportsQueue`: open reports, each with the reported text, a reason box, "Remove" and "Keep it".
 
 ## Contents
@@ -17,6 +20,8 @@ refresh the server page after an action and show the database's refusal as the e
 - `review-queue.test.tsx`
 - `review-queue.tsx`
 - `tea-links-form.tsx`
+- `tea-price-form.test.tsx`
+- `tea-price-form.tsx`
 
 ## Parent
 

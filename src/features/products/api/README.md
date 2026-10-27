@@ -11,7 +11,9 @@ floor); it returns the page and the total, plus each rated tea's two most-notice
 `search_teas` database function, which ranks typo-tolerant matches. `listRegionSummaries` returns every region with its tea counts and supply levels; each
 product carries `supply`, its category's level in its region, and `shopUrl`. Explore, the shelves and the region counts read approved teas only;
 `searchProducts` (the "Log a tasting" picker) returns approved teas plus the searcher's own
-teas awaiting review. Card flavour notes come from `tea_taste_profiles` (which counts private tasters too), and a failed region or
+teas awaiting review. Every product carries its reference `price` (from `catalogue_teas` for lists; for a tea's page,
+the pack price on `products` and its band from `tea_prices`, read only for an approved priced
+tea). Card flavour notes come from `tea_taste_profiles` (which counts private tasters too), and a failed region or
 rating lookup throws rather than showing a tea as unrated. `getProduct` also reads
 `review_note` and `merged_into`. Region, rating and note
 lookups go through `selectIn` batches, since `listProducts` loads the whole catalogue. Pure helpers

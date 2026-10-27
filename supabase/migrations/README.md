@@ -66,6 +66,10 @@ answers only for pairs including the caller and reaction policies use `can_react
 `is_review_author` instead of `review_author`, account deletion also scrubs follow, block,
 report, notification and photo ids from the audit trail, suggested teas and shop applications
 cannot carry admin-only fields, and `handle_new_user` uses an empty `search_path`.
+`20261030000000_tea_prices.sql` adds a tea's reference price (`products.price_sgd`, `pack_grams`,
+both or neither, set only through the admin `set_tea_price()`; suggested teas arrive unpriced), the
+`tea_prices` view (price per gram and a budget / mid / premium band by thirds among approved teas
+of the category, once at least 3 are priced), and the same columns appended to `catalogue_teas`.
 
 ## Contents
 
@@ -91,6 +95,7 @@ cannot carry admin-only fields, and `handle_new_user` uses an empty `search_path
 - `20261028000000_editions_and_stash.sql`
 - `20261028100000_health_check.sql`
 - `20261029000000_security_hardening.sql`
+- `20261030000000_tea_prices.sql`
 
 ## Parent
 

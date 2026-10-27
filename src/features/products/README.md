@@ -3,7 +3,8 @@
 ## Purpose
 
 The product catalog: listing, searching, and creating hojicha/matcha products, plus the
-discover-feed UI (cards, category tabs, empty state).
+discover-feed UI (cards, category tabs, empty state). `types.ts`'s `Product` carries a reference
+`price` (`TeaPrice`: pack price in SGD, pack size, price per gram and budget/mid/premium band).
 
 ## Contents
 

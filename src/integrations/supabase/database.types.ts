@@ -9,6 +9,8 @@
 export type ProductCategory = 'hojicha' | 'matcha';
 export type ProfileRole = 'consumer' | 'vendor';
 export type SupplyLevel = 'scarce' | 'tight' | 'plentiful';
+// Where a tea's price per gram sits among priced teas of its category.
+export type PriceBand = 'budget' | 'mid' | 'premium';
 export type TeaMetric = 'cultivated_ha' | 'aracha_t' | 'tencha_t';
 export type TeaStatSource = 'maff' | 'zencharen';
 export type StockStatus = 'in_stock' | 'sold_out';
@@ -286,6 +288,9 @@ export interface Database {
           reviewed_at: string | null;
           review_note: string | null;
           merged_into: string | null;
+          // Reference price in SGD for one pack, set by admins; both or neither.
+          price_sgd: number | null;
+          pack_grams: number | null;
           created_at: string;
         };
         Insert: {
@@ -302,6 +307,8 @@ export interface Database {
           reviewed_at?: string | null;
           review_note?: string | null;
           merged_into?: string | null;
+          price_sgd?: number | null;
+          pack_grams?: number | null;
           created_at?: string;
         };
         Update: {
@@ -318,6 +325,8 @@ export interface Database {
           reviewed_at?: string | null;
           review_note?: string | null;
           merged_into?: string | null;
+          price_sgd?: number | null;
+          pack_grams?: number | null;
           created_at?: string;
         };
         Relationships: [];
@@ -459,6 +468,21 @@ export interface Database {
           avg_stars: number | null;
           weighted_score: number | null;
           top_rank: number;
+          price_sgd: number | null;
+          pack_grams: number | null;
+          price_per_gram: number | null;
+          price_band: PriceBand | null;
+        };
+        Relationships: [];
+      };
+      // Approved priced teas: price per gram and its band within the category.
+      tea_prices: {
+        Row: {
+          product_id: string;
+          price_sgd: number;
+          pack_grams: number;
+          price_per_gram: number;
+          price_band: PriceBand | null;
         };
         Relationships: [];
       };
@@ -511,6 +535,10 @@ export interface Database {
         Returns: undefined;
       };
       set_tea_links: { Args: { tea: string; image: string; shop: string }; Returns: undefined };
+      set_tea_price: {
+        Args: { tea: string; price: number | null; grams: number | null };
+        Returns: undefined;
+      };
       merge_tea: { Args: { duplicate: string; keep: string }; Returns: undefined };
       review_vendor: {
         Args: { vendor: string; decision: 'approved' | 'rejected'; note?: string };

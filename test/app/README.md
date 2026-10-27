@@ -10,7 +10,7 @@ tiles, prefecture cards, sources, empty state), the sell page (signed out, apply
 pending, rejected with its reason, approved with listings), the admin page (404 for
 non-admins, the queue and reports for admins), the account page (signed out and signed in, privacy and blocks), taster profiles (public,
 private, unknown), the product page (taste,
-facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions), the journal's signed-out, empty and filled states (with Your taste),
+facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row), the journal's signed-out, empty and filled states (with Your taste),
 loading routes, the public error boundary, and the OAuth callback's redirect handling.
 
 `seo.test.ts` covers the sitemap (browse, Learn and tea pages) and robots rules. `learn.test.tsx`

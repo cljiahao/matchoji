@@ -10,6 +10,7 @@ import {
   reviewShop,
   reviewTea,
   setTeaLinks,
+  setTeaPrice,
 } from './admin-service';
 
 describe('isAdmin', () => {
@@ -172,5 +173,24 @@ describe('listOpenReports and resolveReport', () => {
     });
     await resolveReport(client, 'rep1', 'removed', 'Spam');
     expect(calls[0].args).toEqual([{ report: 'rep1', decision: 'removed', note: 'Spam' }]);
+  });
+});
+
+describe('setTeaPrice', () => {
+  it('sends the price and pack size, or nulls to clear, and throws a refusal', async () => {
+    const { client, calls } = createFakeSupabase({
+      'rpc:set_tea_price': [
+        { data: null, error: null },
+        { data: null, error: null },
+        { data: null, error: new Error('denied') },
+      ],
+    });
+    await setTeaPrice(client, 't1', { price: 32, grams: 40 });
+    await setTeaPrice(client, 't1', null);
+    expect(calls.filter((c) => c.table === 'rpc:set_tea_price').map((c) => c.args[0])).toEqual([
+      { tea: 't1', price: 32, grams: 40 },
+      { tea: 't1', price: null, grams: null },
+    ]);
+    await expect(setTeaPrice(client, 't1', null)).rejects.toThrow('denied');
   });
 });

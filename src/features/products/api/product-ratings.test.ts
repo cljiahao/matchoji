@@ -17,6 +17,7 @@ const base = {
   mergedInto: null,
   imageUrl: null,
   createdAt: '2026-09-01T00:00:00Z',
+  price: null,
 };
 
 describe('applyRating', () => {

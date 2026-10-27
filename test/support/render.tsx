@@ -44,6 +44,7 @@ export function makeProduct(overrides: Partial<Product> = {}): Product {
     avgStars: 4.5,
     reviewCount: 12,
     topNotes: [],
+    price: null,
     ...overrides,
   };
 }
