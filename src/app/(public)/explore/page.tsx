@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Button } from '@/components/ui/button';
 import { WantToTryButton } from '@/features/journal';
 import {
   CATEGORY_STYLES,
@@ -10,7 +11,7 @@ import {
   PAGE_SIZE,
   ProductRow,
   SearchPill,
-  discoverHref,
+  discoverProgress,
   listGradeOptions,
   listProducts,
   listRegions,
@@ -47,14 +48,14 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
     data: { user },
   } = await supabase.auth.getUser();
   // "Best match" ranks by a score computed per taster, so it reads the matching teas (up to
-  // MATCH_POOL, ample for this catalogue) and pages in memory; every other sort pages in SQL.
+  // MATCH_POOL, ample for this catalogue) and trims in memory; every other sort pages in SQL.
   const byMatch = filters.sort === 'match' && user !== null;
-  const page = filters.page ?? 1;
+  const shown = filters.shown ?? PAGE_SIZE;
 
   // Regions only feed the filter; losing them hides the rail section, not the results.
   const [listing, grades, regions] = await Promise.all([
     byMatch
-      ? listProducts(supabase, { ...filters, sort: 'top', page: 1 }, { limit: MATCH_POOL })
+      ? listProducts(supabase, { ...filters, sort: 'top' }, { limit: MATCH_POOL })
       : listProducts(supabase, filters),
     listGradeOptions(supabase, filters),
     listRegions(supabase).catch(() => []),
@@ -68,17 +69,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
     : null;
   const scoreOf = (id: string) => taste?.matches.get(id)?.score ?? -1;
   const products = byMatch
-    ? [...listing.products]
-        .sort((a, b) => scoreOf(b.id) - scoreOf(a.id))
-        .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    ? [...listing.products].sort((a, b) => scoreOf(b.id) - scoreOf(a.id)).slice(0, shown)
     : listing.products;
   const total = byMatch ? listing.products.length : listing.total;
-  const first = (page - 1) * PAGE_SIZE + 1;
-  const last = first + products.length - 1;
-  const pages = Math.ceil(total / PAGE_SIZE);
-  const teaWord = total === 1 ? 'tea' : 'teas';
-  const countLabel =
-    products.length === 0 ? 'No teas' : `Showing ${first}–${last} of ${total} ${teaWord}`;
+  const { countLabel, moreHref } = discoverProgress(filters, products.length, total);
 
   // Any narrowing that leaves nothing is "no match", not an empty catalogue.
   const narrowed = Boolean(filters.q || filters.regionId || filters.grade || filters.minRating);
@@ -122,34 +116,15 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 ))}
               </ul>
             )}
-            {pages > 1 && (
-              <nav aria-label="Pages" className="mt-6 flex items-center justify-between text-sm">
-                {page > 1 ? (
-                  <Link
-                    href={discoverHref(filters, { page: page - 1 })}
-                    className="font-semibold hover:underline"
-                    rel="prev"
-                  >
-                    ← Previous
+            {moreHref && (
+              <div className="mt-6 flex justify-center">
+                {/* A plain link, so the list grows without client JS and the URL keeps the count. */}
+                <Button asChild variant="outline" size="lg" className="rounded-full">
+                  <Link href={moreHref} scroll={false}>
+                    Show more
                   </Link>
-                ) : (
-                  <span />
-                )}
-                <span className="text-muted-foreground">
-                  Page {page} of {pages}
-                </span>
-                {page < pages ? (
-                  <Link
-                    href={discoverHref(filters, { page: page + 1 })}
-                    className="font-semibold hover:underline"
-                    rel="next"
-                  >
-                    Next →
-                  </Link>
-                ) : (
-                  <span />
-                )}
-              </nav>
+                </Button>
+              </div>
             )}
             {products.length === 0 && narrowed && (
               <div className="bg-muted flex-center flex-col gap-3 rounded-3xl py-16 text-center">

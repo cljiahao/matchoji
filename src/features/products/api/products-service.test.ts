@@ -124,7 +124,7 @@ describe('listProducts', () => {
       grade: ' Ceremonial ',
       minRating: 4,
       sort: 'newest',
-      page: 3,
+      shown: 36,
     });
 
     const of = (method: string) => calls.filter((c) => c.method === method).map((c) => c.args);
@@ -136,7 +136,7 @@ describe('listProducts', () => {
     ]);
     expect(of('gte')).toEqual([['avg_stars', 4]]);
     expect(of('order')).toEqual([['created_at', { ascending: false, nullsFirst: false }]]);
-    expect(of('range')).toEqual([[48, 71]]);
+    expect(of('range')).toEqual([[0, 35]]);
   });
 
   it('ranks "top" by weighted score and "scarce" by supply first', async () => {

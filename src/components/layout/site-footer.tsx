@@ -11,67 +11,62 @@ interface SiteFooterProps {
   links?: LinkItem[];
 }
 
+const LINK_CLASS = 'inline-block py-1.5 font-semibold hover:underline';
+
 export function SiteFooter({ links = [] }: SiteFooterProps) {
   return (
-    // One quiet row under a hairline: the page's content ends the page, not the footer.
     <footer className="border-border w-full border-t">
-      <div className="max-w-site mx-auto flex flex-col gap-2 px-6 py-5 text-sm sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-muted-foreground">
-          <span className="text-brand font-extrabold tracking-tight">Matchoji</span>
-          <span className="hidden sm:inline"> · </span>
-          <span className="block sm:inline">
+      <div className="max-w-site mx-auto flex flex-col gap-8 px-6 pt-10 pb-6 sm:flex-row sm:justify-between">
+        <div className="max-w-xs">
+          <p className="text-brand text-lg font-extrabold tracking-tight">Matchoji</p>
+          <p className="text-muted-foreground mt-1 text-sm">
             Rate and discover matcha and hojicha, one cup at a time.
-          </span>
-        </p>
-        <p className="text-muted-foreground">
-          Is one of these photos yours?{' '}
-          <a
-            href={PHOTO_REMOVAL_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:no-underline"
-          >
-            Ask us to take it down.
-          </a>
-        </p>
-        {/* Shown on phones too: the tab bar has no room for Regions, the supply figures or Sell. */}
-        <ul className="flex flex-wrap gap-x-6 gap-y-2 font-semibold">
-          <li>
-            <Link href={PAGE_ROUTES.EXPLORE} className="hover:underline">
-              Explore
-            </Link>
-          </li>
-          <li>
-            <Link href={PAGE_ROUTES.REGIONS} className="hover:underline">
-              Regions
-            </Link>
-          </li>
-          <li>
-            <Link href={PAGE_ROUTES.SUPPLY} className="hover:underline">
-              Tea supply
-            </Link>
-          </li>
-          <li>
-            <Link href={PAGE_ROUTES.LEARN} className="hover:underline">
-              Learn
-            </Link>
-          </li>
-          <li>
-            <Link href={PAGE_ROUTES.JOURNAL} className="hover:underline">
-              Journal
-            </Link>
-          </li>
-          <li>
-            <Link href={PAGE_ROUTES.SELL} className="hover:underline">
-              Sell on Matchoji
-            </Link>
-          </li>
-          {links.length > 0 && (
-            <li>
-              <LinkList links={links} className="text-muted-foreground" />
+          </p>
+        </div>
+
+        {/* The navbar (sm and up) already has Explore, Regions, Learn and Journal, and the
+            phone tab bar has all but Regions, so only that one repeats, on phones only. */}
+        <nav aria-label="More from Matchoji" className="text-sm">
+          <ul className="flex flex-col sm:items-end">
+            <li className="sm:hidden">
+              <Link href={PAGE_ROUTES.REGIONS} className={LINK_CLASS}>
+                Regions
+              </Link>
             </li>
-          )}
-        </ul>
+            <li>
+              <Link href={PAGE_ROUTES.SUPPLY} className={LINK_CLASS}>
+                Tea supply
+              </Link>
+            </li>
+            <li>
+              <Link href={PAGE_ROUTES.SELL} className={LINK_CLASS}>
+                Sell on Matchoji
+              </Link>
+            </li>
+            {links.length > 0 && (
+              <li className="py-1.5">
+                <LinkList links={links} className="text-muted-foreground" />
+              </li>
+            )}
+          </ul>
+        </nav>
+      </div>
+
+      <div className="max-w-site mx-auto px-6">
+        <div className="border-border text-muted-foreground flex flex-col gap-1 border-t py-5 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Matchoji · A hobby project</p>
+          <p>
+            Is one of these photos yours?{' '}
+            <a
+              href={PHOTO_REMOVAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:no-underline"
+            >
+              Ask us to take it down.
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

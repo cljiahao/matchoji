@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { discoverHref, parseDiscoverParams } from './discover-params';
+import { discoverHref, discoverProgress, parseDiscoverParams } from './discover-params';
 
 const REGION = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
 
@@ -61,16 +61,45 @@ describe('discoverHref', () => {
     expect(discoverHref({ sort: 'top' }, {})).toBe('/explore');
   });
 
-  it('reads a page from 2 up, dropping page 1 and nonsense', () => {
-    expect(parseDiscoverParams({ page: '3' })).toEqual({ sort: 'top', page: 3 });
-    for (const page of ['1', '0', '-2', '1.5', 'x', '1001'])
-      expect(parseDiscoverParams({ page })).toEqual({ sort: 'top' });
+  it('reads a shown count in steps of 12 up to 500, dropping the first step and nonsense', () => {
+    expect(parseDiscoverParams({ shown: '24' })).toEqual({ sort: 'top', shown: 24 });
+    expect(parseDiscoverParams({ shown: '492' })).toEqual({ sort: 'top', shown: 492 });
+    for (const shown of ['12', '0', '-12', '13', '30', '1.5', 'x', '504', '1000'])
+      expect(parseDiscoverParams({ shown })).toEqual({ sort: 'top' });
   });
 
-  it('keeps the page only when the change is the page itself', () => {
-    const current = { q: 'uji', sort: 'top' as const, page: 4 };
-    expect(discoverHref(current, { page: 5 })).toBe('/explore?q=uji&page=5');
-    expect(discoverHref(current, { page: 1 })).toBe('/explore?q=uji');
+  it('ignores an old ?page= link', () => {
+    expect(parseDiscoverParams({ page: '3', q: 'uji' })).toEqual({ q: 'uji', sort: 'top' });
+  });
+
+  it('keeps the shown count only when the change is the count itself', () => {
+    const current = { q: 'uji', sort: 'top' as const, shown: 24 };
+    expect(discoverHref(current, { shown: 36 })).toBe('/explore?q=uji&shown=36');
+    expect(discoverHref(current, { shown: 12 })).toBe('/explore?q=uji');
     expect(discoverHref(current, { category: 'matcha' })).toBe('/explore?q=uji&category=matcha');
+    expect(discoverHref(current, { sort: 'newest' })).toBe('/explore?q=uji&sort=newest');
+  });
+});
+
+describe('discoverProgress', () => {
+  it('counts what is shown and links to 12 more', () => {
+    expect(discoverProgress({ q: 'uji', sort: 'top' }, 12, 30)).toEqual({
+      countLabel: 'Showing 12 of 30 teas',
+      moreHref: '/explore?q=uji&shown=24',
+    });
+    expect(discoverProgress({ sort: 'top', shown: 24 }, 24, 30).moreHref).toBe('/explore?shown=36');
+  });
+
+  it('drops the link once every tea is shown, and words one tea and none', () => {
+    expect(discoverProgress({ sort: 'top', shown: 36 }, 30, 30)).toEqual({
+      countLabel: 'Showing 30 of 30 teas',
+      moreHref: null,
+    });
+    expect(discoverProgress({ sort: 'top' }, 1, 1).countLabel).toBe('Showing 1 of 1 tea');
+    expect(discoverProgress({ sort: 'top' }, 0, 0).countLabel).toBe('No teas');
+  });
+
+  it('stops offering more at the URL cap', () => {
+    expect(discoverProgress({ sort: 'top', shown: 492 }, 492, 600).moreHref).toBeNull();
   });
 });
