@@ -6,7 +6,7 @@ The public route group, all readable without signing in: the home page (`page.ts
 search, category circles and shelves), Explore (`explore/`: the filtered list, filters in
 the URL as `?q=&category=&region=&grade=&rating=&sort=`), the regions page (`regions/`:
 every region with its tea counts, each linking to Explore, and `regions/supply/` with the
-official harvest figures), product pages, the journal and `sell/` (vendor applications and listings), `account/` (your name, data and account deletion) and `admin/` (the review queue, admins
+official harvest figures), `learn/` (recipes and guides), product pages, the journal and `sell/` (vendor applications and listings), `account/` (your name, data and account deletion) and `admin/` (the review queue, admins
 only).
 Every page sets its own title. `not-found.tsx` answers an unknown or hidden tea (and any
 `notFound()` here) inside the shell. `error.tsx` catches a failed read inside the layout, so the navbar stays and the visitor
@@ -23,6 +23,7 @@ can retry or go to Explore. Every page reads Supabase directly; there is no mock
 - `page.tsx`
 - `explore/`
 - `journal/`
+- `learn/`
 - `products/`
 - `regions/`
 - `sell/`

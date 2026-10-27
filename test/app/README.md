@@ -13,9 +13,11 @@ private, unknown), the product page (taste,
 facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row), the journal's signed-out, empty and filled states (with Your taste),
 loading routes, the public error boundary, and the OAuth callback's redirect handling.
 
-`seo.test.ts` covers the sitemap and robots rules. `config.test.ts` checks the proxy skips
-`/api/health` and the content security policy allows images only from the site and its
-Supabase project. `auth-callback.test.ts` also checks its redirects are never cached.
+`seo.test.ts` covers the sitemap (browse, Learn and tea pages) and robots rules. `learn.test.tsx`
+covers the Learn index, recipe pages (brew numbers, steps, tips, the pre-filled log button's
+sign-in prompt, 404s) and guide pages. `config.test.ts` checks the proxy skips
+`/api/health` and the content security policy allows images only from the site, its
+Supabase project and Google profile photos. `auth-callback.test.ts` also checks its redirects are never cached.
 
 Tea page tests get an empty `edition_ratings` result by default from `useServer`.
 
@@ -23,6 +25,7 @@ Tea page tests get an empty `edition_ratings` result by default from `useServer`
 
 - `auth-callback.test.ts`
 - `config.test.ts`
+- `learn.test.tsx`
 - `pages.test.tsx`
 - `seo.test.ts`
 

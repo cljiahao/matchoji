@@ -21,7 +21,7 @@ import { useUpdateReview } from '../hooks/use-update-review.mutation';
 import { localToday } from '../lib';
 import { FLUSHES, FLUSH_LABELS, TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
 import { reviewSchemaFor, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
-import type { Review } from '../types';
+import type { PrepPreset, Review } from '../types';
 import { FlavorNotePicker } from './flavor-note-picker';
 import { PrepFields } from './prep-fields';
 import { StarRatingInput } from './star-rating-input';
@@ -34,14 +34,15 @@ const NOTES_PLACEHOLDER = {
 
 // Every field the form renders gets a defined value, so inputs stay controlled and a reset
 // after logging actually clears them on screen.
-function emptyReview(stars = 0): ReviewInput {
+function emptyReview(stars = 0, prep?: PrepPreset): ReviewInput {
   return {
     stars,
     notes: '',
     flavorNotes: [],
-    doseG: '',
-    waterMl: '',
-    waterTempC: '',
+    prepMethod: prep?.method,
+    doseG: prep?.doseG ?? '',
+    waterMl: prep?.waterMl ?? '',
+    waterTempC: prep?.waterTempC ?? '',
     harvestYear: '',
     tastedOn: localToday(),
   };
@@ -73,12 +74,20 @@ interface RateProductFormProps {
   initialStars?: number;
   // Set to edit this tasting instead of logging a new one.
   review?: Review;
+  // Set when logging from a recipe, so its brew settings are filled in.
+  initialPrep?: PrepPreset;
   onLogged?: () => void;
 }
 
 // Opened only for signed-in visitors (the entry points ask for sign-in first). A session
 // that lapses while the form is open sends the visitor to sign in rather than failing.
-export function RateProductForm({ product, initialStars, review, onLogged }: RateProductFormProps) {
+export function RateProductForm({
+  product,
+  initialStars,
+  review,
+  initialPrep,
+  onLogged,
+}: RateProductFormProps) {
   const [photo, setPhoto] = useState<File | null>(null);
   const { session, isLoading: sessionLoading } = useSession();
   const promptSignIn = useSignInPrompt();
@@ -88,7 +97,7 @@ export function RateProductForm({ product, initialStars, review, onLogged }: Rat
 
   const form = useForm<ReviewInput, unknown, ReviewOutput>({
     resolver: zodResolver(reviewSchemaFor(product.category)),
-    defaultValues: review ? fromReview(review) : emptyReview(initialStars),
+    defaultValues: review ? fromReview(review) : emptyReview(initialStars, initialPrep),
   });
 
   async function handleSubmit(values: ReviewOutput) {

@@ -17,17 +17,27 @@ vi.mock('sonner', () => ({ toast }));
 
 import { SignInPromptProvider } from '@/features/auth';
 
+import type { PrepPreset } from '../types';
 import { RateProductForm } from './rate-product-form';
 
 const PRODUCT = { id: 'p1', name: 'Uji Ceremonial', brand: null, category: 'matcha' as const };
 
-function setup(options: Parameters<typeof createFakeBrowserClient>[0] = {}, initialStars?: number) {
+function setup(
+  options: Parameters<typeof createFakeBrowserClient>[0] = {},
+  initialStars?: number,
+  initialPrep?: PrepPreset
+) {
   const fake = createFakeBrowserClient(options);
   supabase.current = fake.client;
   const onLogged = vi.fn();
   renderWithQuery(
     <SignInPromptProvider>
-      <RateProductForm product={PRODUCT} initialStars={initialStars} onLogged={onLogged} />
+      <RateProductForm
+        product={PRODUCT}
+        initialStars={initialStars}
+        initialPrep={initialPrep}
+        onLogged={onLogged}
+      />
     </SignInPromptProvider>
   );
   return { ...fake, onLogged };
@@ -38,6 +48,25 @@ beforeEach(() => {
 });
 
 describe('RateProductForm, signed in', () => {
+  it('fills in a recipe’s brew settings when logging from it', async () => {
+    const { calls, onLogged } = setup(
+      { session: makeSession(), results: { reviews: { data: null, error: null } } },
+      undefined,
+      { method: 'koicha', doseG: 4, waterMl: 30, waterTempC: 80 }
+    );
+
+    await userEvent.click(await screen.findByRole('radio', { name: '4 stars' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
+
+    await waitFor(() => expect(onLogged).toHaveBeenCalled());
+    expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
+      prep_method: 'koicha',
+      dose_g: 4,
+      water_ml: 30,
+      water_temp_c: 80,
+    });
+  });
+
   it('requires a star rating', async () => {
     const { calls } = setup({ session: makeSession() });
 

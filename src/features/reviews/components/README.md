@@ -23,6 +23,8 @@ Component tests run the real hooks against a fake browser Supabase client
 `EditionList` ("Harvests") shows a tea's ratings per harvest with a "Top rated harvest" badge;
 the tasting form takes an optional harvest year and flush, and `ReviewItem` shows them.
 `RateProductForm` also edits an existing tasting (`review` prop): prefilled, "Save changes".
+`LogTastingDialog` and `RateProductForm` take a recipe's `PrepPreset` (`prep` / `initialPrep`) to
+fill in its method, dose, water and temperature.
 
 `ReviewItem` links each reviewer's name to their profile and renders an optional `footer`;
 `ReviewList` and `CommunityReviews` pass `footers` keyed by review id (elements, so a server

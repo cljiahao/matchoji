@@ -1,0 +1,163 @@
+import type { Recipe } from '../types';
+
+// Doses and temperatures are common starting points, not rules: each recipe says how to adjust.
+export const RECIPES: Recipe[] = [
+  {
+    slug: 'usucha',
+    title: 'Usucha (thin matcha)',
+    summary: 'The everyday bowl: light, frothy and the best way to taste a new matcha.',
+    category: 'matcha',
+    prepMethod: 'usucha',
+    minutes: 3,
+    doseG: 2,
+    waterMl: 70,
+    waterTempC: 80,
+    ingredients: [
+      '2 g matcha (about 1 level teaspoon, or 2 scoops with a chashaku)',
+      '70 ml water',
+    ],
+    tools: ['Bowl (chawan) or wide mug', 'Bamboo whisk (chasen)', 'Fine sieve'],
+    steps: [
+      'Warm the bowl with hot water, then tip it out and dry it.',
+      'Sift the matcha into the bowl so it has no lumps.',
+      'Heat the water to about 80°C. Off the boil and left for a minute or two is close enough.',
+      'Pour in a splash of the water and mix it with the matcha into a smooth paste.',
+      'Add the rest of the water and whisk briskly in a zigzag (M or W) from the wrist for 15–20 seconds, until a fine foam covers the top.',
+      'Lift the whisk out from the centre of the bowl and drink straight away.',
+    ],
+    tips: [
+      'Bitter? Use cooler water (70–75°C) or a little less matcha.',
+      'Big bubbles? Whisk faster with a looser wrist, then slow down near the surface to break them up.',
+    ],
+  },
+  {
+    slug: 'koicha',
+    title: 'Koicha (thick matcha)',
+    summary:
+      'Twice the matcha, half the water, kneaded rather than whisked: rich, smooth and intense.',
+    category: 'matcha',
+    prepMethod: 'koicha',
+    minutes: 4,
+    doseG: 4,
+    waterMl: 30,
+    waterTempC: 80,
+    ingredients: [
+      '4 g matcha suited to koicha (about 2 level teaspoons, or 4 scoops)',
+      '30 ml water',
+    ],
+    tools: ['Bowl (chawan)', 'Bamboo whisk (chasen)', 'Fine sieve'],
+    steps: [
+      'Warm and dry the bowl.',
+      'Sift the matcha into the bowl.',
+      'Add about half the water at around 80°C.',
+      'Knead slowly with the whisk in circles and folds, keeping the tines on the bottom, until there are no lumps. There should be no foam.',
+      'Add the rest of the water and keep kneading until it is glossy and pours like thick paint.',
+    ],
+    tips: [
+      'Only use a matcha its maker recommends for koicha: a sharp or bitter one gets worse at this strength.',
+      'Too thick to move? Add water a teaspoon at a time.',
+    ],
+  },
+  {
+    slug: 'iced-matcha',
+    title: 'Iced matcha',
+    summary: 'A whisked shot of matcha over ice and cold water: crisp and quick for warm days.',
+    category: 'matcha',
+    prepMethod: 'iced',
+    minutes: 3,
+    doseG: 2,
+    waterMl: 60,
+    waterTempC: 80,
+    ingredients: ['2 g matcha', '60 ml water at about 80°C', '100 ml cold water', 'A glass of ice'],
+    tools: ['Bamboo whisk or small frother', 'Fine sieve', 'Tall glass'],
+    steps: [
+      'Sift the matcha into a bowl or jug.',
+      'Add the warm water and whisk until smooth and frothy.',
+      'Fill a glass with ice and pour in the cold water.',
+      'Pour the matcha over the top and stir before drinking.',
+    ],
+    tips: [
+      'Shake everything in a lidded jar with the ice instead of whisking if you have no whisk.',
+      'Cold water dulls sweetness, so a brighter usucha-grade matcha works best.',
+    ],
+  },
+  {
+    slug: 'matcha-latte',
+    title: 'Matcha latte',
+    summary: 'A whisked matcha base topped with warm milk: the gentlest way into matcha.',
+    category: 'matcha',
+    prepMethod: 'latte',
+    minutes: 5,
+    doseG: 2,
+    waterMl: 40,
+    waterTempC: 80,
+    milkMl: 150,
+    ingredients: [
+      '2 g matcha (use 3 g for a stronger latte)',
+      '40 ml water',
+      '150 ml milk or plant milk',
+      'Sweetener to taste (optional)',
+    ],
+    tools: ['Bamboo whisk or frother', 'Fine sieve', 'Milk jug or small pan'],
+    steps: [
+      'Sift the matcha into a cup.',
+      'Add the water at about 80°C and whisk into a smooth, frothy base.',
+      'Warm the milk to about 60–65°C (hot to touch, not boiling) and froth it if you like.',
+      'Pour the milk over the matcha base. Sweeten if you want to.',
+    ],
+    tips: [
+      'Oat and soy milk froth well; milk much hotter than 65°C tastes flat and cooked.',
+      'For an iced latte, pour the base over ice and cold milk instead.',
+    ],
+  },
+  {
+    slug: 'hojicha-latte',
+    title: 'Hojicha latte',
+    summary: 'Roasted green tea powder and milk: toasty, caramel-sweet and low in caffeine.',
+    category: 'hojicha',
+    prepMethod: 'latte',
+    minutes: 5,
+    doseG: 3,
+    waterMl: 40,
+    waterTempC: 90,
+    milkMl: 150,
+    ingredients: ['3 g hojicha powder', '40 ml water', '150 ml milk or plant milk'],
+    tools: ['Whisk or frother', 'Fine sieve', 'Milk jug or small pan'],
+    steps: [
+      'Sift the hojicha powder into a cup.',
+      'Add the water at about 90°C and whisk until smooth.',
+      'Warm and froth the milk, then pour it over.',
+    ],
+    tips: [
+      'Roasted tea takes hotter water than matcha without turning bitter.',
+      'A little brown sugar or honey brings out the roast.',
+    ],
+  },
+  {
+    slug: 'steeped-hojicha',
+    title: 'Steeped hojicha',
+    summary: 'Loose roasted leaves in near-boiling water: clean, nutty and easy to refill.',
+    category: 'hojicha',
+    prepMethod: 'steeped',
+    minutes: 3,
+    doseG: 5,
+    waterMl: 300,
+    waterTempC: 95,
+    ingredients: ['5 g hojicha leaves (about 2 tablespoons)', '300 ml water'],
+    tools: ['Teapot (kyusu) or any pot with a strainer'],
+    steps: [
+      'Warm the teapot with hot water and tip it out.',
+      'Add the leaves and pour in water just off the boil (around 95°C).',
+      'Steep for 30 seconds, then pour out every drop.',
+      'Steep the same leaves again, a little longer each time, for two or three more pots.',
+    ],
+    tips: [
+      'Pouring out every drop stops the leaves stewing between pots.',
+      'For cold brew, steep the same leaves in cold water in the fridge for 3–6 hours.',
+    ],
+  },
+];
+
+export function findRecipe(slug: string): Recipe | undefined {
+  return RECIPES.find((recipe) => recipe.slug === slug);
+}

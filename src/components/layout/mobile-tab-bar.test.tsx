@@ -23,12 +23,13 @@ beforeEach(() => {
 });
 
 describe('MobileTabBar', () => {
-  it('links Home, Explore and Journal and marks the current one', () => {
+  it('links Home, Explore, Learn and Journal and marks the current one', () => {
     renderWithQuery(<MobileTabBar />);
     const nav = screen.getByRole('navigation', { name: 'Sections' });
     expect(nav).toHaveClass('sm:hidden');
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
+    expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');
     expect(screen.getByRole('link', { name: 'Journal' })).not.toHaveAttribute('aria-current');
   });
 
@@ -39,8 +40,13 @@ describe('MobileTabBar', () => {
     unmount();
 
     pathname.current = '/journal';
-    renderWithQuery(<MobileTabBar />);
+    const { unmount: unmountJournal } = renderWithQuery(<MobileTabBar />);
     expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('aria-current', 'page');
+    unmountJournal();
+
+    pathname.current = '/learn/recipes/usucha';
+    renderWithQuery(<MobileTabBar />);
+    expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('logs a tasting from the middle tab, asking a signed-out visitor to sign in', async () => {
