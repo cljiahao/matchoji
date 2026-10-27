@@ -127,16 +127,16 @@ export function LogTastingDialog({ trigger, prep }: LogTastingDialogProps) {
           <Form {...productForm}>
             <form onSubmit={productForm.handleSubmit(handleAddProductSubmit)} className="space-y-4">
               <CustomFormField name="name" label="Name">
-                <Input />
+                <Input className="h-10" />
               </CustomFormField>
               <CustomFormField name="brand" label="Brand (optional)">
-                <Input />
+                <Input className="h-10" />
               </CustomFormField>
               <CustomFormField name="category" label="Category">
                 <CategorySelect />
               </CustomFormField>
               <CustomFormField name="grade" label="Grade (optional)">
-                <Input placeholder="Ceremonial, culinary, first flush…" />
+                <Input className="h-10" placeholder="Ceremonial, culinary, first flush…" />
               </CustomFormField>
               {regions && regions.length > 0 && (
                 <CustomFormField name="regionId" label="Region (optional)">
@@ -153,6 +153,15 @@ export function LogTastingDialog({ trigger, prep }: LogTastingDialogProps) {
                   <Loader2 className="animate-spin" aria-hidden="true" />
                 )}
                 Continue
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="w-full"
+                onClick={() => setStep('search')}
+              >
+                Back to search
               </Button>
             </form>
           </Form>

@@ -11,6 +11,8 @@ import {
 } from '@/components/ui/select';
 import { CATEGORY_STYLES, type ProductCategory } from '@/features/products';
 
+import { FLUSHES, FLUSH_LABELS } from '../lib/tasting-vocab';
+
 // Radix Select speaks onValueChange, not onChange; these adapters take the props
 // CustomFormField injects so selects get the same label, id and inline errors as inputs.
 interface FieldSelectProps<T extends string> {
@@ -25,7 +27,7 @@ export const CategorySelect = forwardRef<HTMLButtonElement, FieldSelectProps<Pro
   function CategorySelect({ id, value, onChange, onBlur, ...aria }, ref) {
     return (
       <Select value={value} onValueChange={(v) => onChange?.(v as ProductCategory)}>
-        <SelectTrigger ref={ref} id={id} onBlur={onBlur} className="w-full" {...aria}>
+        <SelectTrigger ref={ref} id={id} onBlur={onBlur} className="h-10 w-full" {...aria}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -50,7 +52,7 @@ export const RegionSelect = forwardRef<HTMLButtonElement, RegionSelectProps>(fun
 ) {
   return (
     <Select value={value ?? ''} onValueChange={(v) => onChange?.(v)}>
-      <SelectTrigger ref={ref} id={id} onBlur={onBlur} className="w-full" {...aria}>
+      <SelectTrigger ref={ref} id={id} onBlur={onBlur} className="h-10 w-full" {...aria}>
         <SelectValue placeholder="No region" />
       </SelectTrigger>
       <SelectContent>
@@ -63,3 +65,27 @@ export const RegionSelect = forwardRef<HTMLButtonElement, RegionSelectProps>(fun
     </Select>
   );
 });
+
+// Radix items cannot carry an empty value, so "Not sure" is a sentinel the form never sees:
+// the field gets '' back, which the review schema reads as no flush.
+const NO_FLUSH = 'unsure';
+
+export const FlushSelect = forwardRef<HTMLButtonElement, FieldSelectProps<string>>(
+  function FlushSelect({ id, value, onChange, onBlur, ...aria }, ref) {
+    return (
+      <Select value={value || NO_FLUSH} onValueChange={(v) => onChange?.(v === NO_FLUSH ? '' : v)}>
+        <SelectTrigger ref={ref} id={id} onBlur={onBlur} className="h-10 w-full" {...aria}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={NO_FLUSH}>Not sure</SelectItem>
+          {FLUSHES.map((flush) => (
+            <SelectItem key={flush} value={flush}>
+              {FLUSH_LABELS[flush]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  }
+);

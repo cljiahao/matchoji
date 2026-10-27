@@ -134,6 +134,43 @@ describe('RateProductForm, signed in', () => {
     });
   });
 
+  it('submits the edition: a harvest year and a flush picked from the select', async () => {
+    const { calls, onLogged } = setup({
+      session: makeSession(),
+      results: { reviews: { data: null, error: null } },
+    });
+
+    await userEvent.click(await screen.findByRole('radio', { name: '4 stars' }));
+    await userEvent.type(screen.getByLabelText('Harvest year (optional)'), '2025');
+    await userEvent.click(screen.getByRole('combobox', { name: 'Flush (optional)' }));
+    await userEvent.click(await screen.findByRole('option', { name: 'Autumn flush' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
+
+    await waitFor(() => expect(onLogged).toHaveBeenCalled());
+    expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
+      harvest_year: 2025,
+      flush: 'autumn',
+    });
+  });
+
+  it('puts the flush back to "Not sure" without sending one', async () => {
+    const { calls, onLogged } = setup({
+      session: makeSession(),
+      results: { reviews: { data: null, error: null } },
+    });
+
+    await userEvent.click(await screen.findByRole('radio', { name: '4 stars' }));
+    const flush = screen.getByRole('combobox', { name: 'Flush (optional)' });
+    await userEvent.click(flush);
+    await userEvent.click(await screen.findByRole('option', { name: 'Autumn flush' }));
+    await userEvent.click(flush);
+    await userEvent.click(await screen.findByRole('option', { name: 'Not sure' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save rating' }));
+
+    await waitFor(() => expect(onLogged).toHaveBeenCalled());
+    expect(calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({ flush: null });
+  });
+
   it('opens with stars, notes and the date, then the taste group, then collapsed prep', async () => {
     setup({ session: makeSession() });
     const notes = await screen.findByLabelText('Tasting notes (optional)');

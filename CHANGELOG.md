@@ -173,6 +173,12 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- Forms and editing pages got a tidy-up. Account settings sit in sections with a one-line
+  purpose; the admin page is tabs (Review queue, Reports, Tea photo, Tea price) with counts, and
+  its tea pickers are selects. The photo form shows the tea's current photo and credit. Prices,
+  grams, millilitres and temperatures show their unit inside the field, flavour is a select,
+  and buttons and taps are at least 40px high with a stated reason when Save is off. New copy:
+  "Back to search", "Reset", character counters, and short purpose lines.
 - The footer is one slim row under a hairline (61px instead of a 152px grey block); on
   phones its section links give way to the tab bar.
 - Logging a tasting, rating and saving to "Want to try" now need an account, as on Vivino:

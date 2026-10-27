@@ -34,13 +34,13 @@ function ReportItem({ report }: { report: OpenReport }) {
   }
 
   return (
-    <li className="space-y-3 px-5 py-4 text-sm">
+    <li className="space-y-3 px-4 py-4 text-sm sm:px-5">
       <p>
-        <span className="font-semibold">{report.reporterName}</span> reported a {report.targetType}:
-        “{report.reason}”
+        <span className="font-semibold break-words">{report.reporterName}</span> reported a{' '}
+        {report.targetType}: “{report.reason}”
       </p>
       {report.content ? (
-        <blockquote className="bg-muted rounded-xl px-3 py-2">
+        <blockquote className="bg-muted rounded-xl px-3 py-2 break-words">
           <span className="font-semibold">{report.content.authorName}:</span> {report.content.text}
           {report.content.productId && (
             <>
@@ -61,10 +61,10 @@ function ReportItem({ report }: { report: OpenReport }) {
         maxLength={500}
         onChange={(e) => setNote(e.target.value)}
       />
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button
           type="button"
-          size="sm"
+          size="lg"
           variant="destructive"
           disabled={busy}
           onClick={() => decide('removed')}
@@ -73,7 +73,7 @@ function ReportItem({ report }: { report: OpenReport }) {
         </Button>
         <Button
           type="button"
-          size="sm"
+          size="lg"
           variant="outline"
           disabled={busy}
           onClick={() => decide('dismissed')}

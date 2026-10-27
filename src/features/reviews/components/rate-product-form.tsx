@@ -19,10 +19,11 @@ import type { ProductSummary } from '@/features/products';
 import { useLogReview } from '../hooks/use-log-review.mutation';
 import { useUpdateReview } from '../hooks/use-update-review.mutation';
 import { localToday } from '../lib';
-import { FLUSHES, FLUSH_LABELS, TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
+import { TASTE_ATTRIBUTES } from '../lib/tasting-vocab';
 import { reviewSchemaFor, type ReviewInput, type ReviewOutput } from '../schemas/review.schema';
 import type { PrepPreset, Review } from '../types';
 import { FlavorNotePicker } from './flavor-note-picker';
+import { FlushSelect } from './form-selects';
 import { PrepFields } from './prep-fields';
 import { StarRatingInput } from './star-rating-input';
 import { TasteProfileInput } from './taste-profile-input';
@@ -153,13 +154,16 @@ export function RateProductForm({
           <Textarea placeholder={NOTES_PLACEHOLDER[product.category]} />
         </CustomFormField>
         <CustomFormField name="tastedOn" label="Tasted on">
-          <Input type="date" max={localToday()} className="w-44" />
+          <Input type="date" max={localToday()} className="h-10 w-44" />
         </CustomFormField>
 
         <fieldset className="border-border space-y-4 border-t pt-4">
-          <legend className="float-left mb-3 w-full text-sm font-medium">
+          <legend className="float-left mb-1 w-full text-sm font-medium">
             What did you taste? (optional)
           </legend>
+          <p className="text-muted-foreground clear-both text-xs">
+            Pick up to six notes and rate each side of the taste.
+          </p>
           <CustomFormField name="flavorNotes" label="Flavour notes">
             <FlavorNotePicker category={product.category} />
           </CustomFormField>
@@ -187,20 +191,22 @@ export function RateProductForm({
 
         <PrepFields category={product.category} />
 
-        <div className="grid grid-cols-2 gap-4">
-          <CustomFormField name="harvestYear" label="Harvest year (optional)">
-            <Input type="number" inputMode="numeric" placeholder="e.g. 2025" />
-          </CustomFormField>
-          <CustomFormField name="flush" label="Flush (optional)">
-            <select className="border-input bg-card h-9 w-full rounded-md border px-3 text-sm">
-              <option value="">Not sure</option>
-              {FLUSHES.map((flush) => (
-                <option key={flush} value={flush}>
-                  {FLUSH_LABELS[flush]}
-                </option>
-              ))}
-            </select>
-          </CustomFormField>
+        <div className="flex flex-wrap gap-4">
+          <div className="w-36">
+            <CustomFormField name="harvestYear" label="Harvest year (optional)">
+              <Input
+                type="number"
+                inputMode="numeric"
+                placeholder="e.g. 2025"
+                className="h-10 tabular-nums"
+              />
+            </CustomFormField>
+          </div>
+          <div className="min-w-36 flex-1">
+            <CustomFormField name="flush" label="Flush (optional)">
+              <FlushSelect />
+            </CustomFormField>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -216,10 +222,10 @@ export function RateProductForm({
           />
           <label
             htmlFor="photo"
-            className="border-input bg-card peer-focus-visible:ring-ring flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm peer-focus-visible:ring-2"
+            className="border-input bg-card peer-focus-visible:ring-ring flex min-h-10 cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm peer-focus-visible:ring-2"
           >
             <ImagePlus aria-hidden="true" className="text-muted-foreground h-4 w-4" />
-            <span className={photo ? 'truncate' : 'text-muted-foreground'}>
+            <span className={photo ? 'truncate' : 'text-muted-foreground'} title={photo?.name}>
               {photo?.name ?? (review?.photoUrl ? 'Replace your photo' : 'Add a photo of your cup')}
             </span>
           </label>
@@ -229,6 +235,11 @@ export function RateProductForm({
           {pending && <Loader2 className="animate-spin" aria-hidden="true" />}
           {review ? 'Save changes' : 'Save rating'}
         </Button>
+        {sessionLoading && (
+          <p className="text-muted-foreground -mt-2 text-center text-sm">
+            Checking you are signed in…
+          </p>
+        )}
       </form>
     </Form>
   );

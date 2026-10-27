@@ -6,6 +6,7 @@ export interface CatalogueTea {
   name: string;
   brand: string | null;
   category: ProductCategory;
+  imageUrl: string | null;
   imageCredit: string | null;
   shopUrl: string | null;
 }

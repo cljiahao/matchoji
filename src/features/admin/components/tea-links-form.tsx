@@ -8,13 +8,20 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ProductImageWell } from '@/features/products';
 import { createClient } from '@/integrations/supabase/client';
 
 import { setTeaLinks, uploadTeaImage } from '../api/admin-service';
 import type { CatalogueTea } from '../types';
+import { TeaSelect } from './tea-select';
 
 // Matches the products.image_credit check, so a long credit is refused before the upload.
 export const teaCreditSchema = z.string().trim().max(120);
+
+function photoStatus({ imageUrl, imageCredit }: CatalogueTea) {
+  if (!imageUrl) return 'No photo yet; the drawn tin shows.';
+  return imageCredit ? `Photo: ${imageCredit}` : 'Photo, no credit';
+}
 
 // Sets a catalogue tea's photo (a packshot the maker allows us to use), who it is credited to
 // and its shop link. Choosing no file keeps the current photo; "Remove photo" brings back the
@@ -68,71 +75,111 @@ export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
     }
   }
 
+  const picked = catalogue.find((p) => p.id === tea);
+
   return (
-    <form onSubmit={submit} className="max-w-xl space-y-4" aria-label="Tea photo and shop link">
+    <form onSubmit={submit} className="max-w-xl space-y-6" aria-label="Tea photo and shop link">
       <div className="space-y-2">
         <Label htmlFor="links-tea">Tea</Label>
-        <select
+        <TeaSelect
           id="links-tea"
-          className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm"
+          teas={catalogue}
           value={tea}
-          onChange={(e) => pick(e.target.value)}
-        >
-          <option value="">Pick a tea</option>
-          {catalogue.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.brand ? `${p.name} · ${p.brand}` : p.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="links-photo">Photo (optional)</Label>
-        <Input
-          id="links-photo"
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/avif"
-          disabled={remove}
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          onChange={pick}
+          placeholder="Pick a tea"
         />
-        <div className="flex items-center gap-2">
-          <input
-            id="links-remove"
-            type="checkbox"
-            checked={remove}
-            onChange={(e) => setRemove(e.target.checked)}
+      </div>
+
+      {picked && (
+        <div className="bg-muted flex items-center gap-4 rounded-2xl p-3">
+          <ProductImageWell
+            imageUrl={picked.imageUrl}
+            category={picked.category}
+            name={`Current photo of ${picked.name}`}
+            seed={picked.id}
+            className="size-20 shrink-0"
           />
-          <Label htmlFor="links-remove">Remove photo</Label>
+          <div className="min-w-0 text-sm">
+            <p className="font-semibold break-words" title={picked.name}>
+              {picked.name}
+            </p>
+            <p className="text-muted-foreground break-words">{photoStatus(picked)}</p>
+          </div>
         </div>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="links-credit">Photo credit (optional)</Label>
-        <Input
-          id="links-credit"
-          maxLength={120}
-          placeholder="Marukyu Koyamaen"
-          value={credit}
-          onChange={(e) => setCredit(e.target.value)}
-        />
-      </div>
+      )}
+
+      <fieldset className="space-y-4">
+        <legend className="mb-3 text-sm font-semibold">Photo and credit</legend>
+        <div className="space-y-2">
+          <Label htmlFor="links-photo">Photo (optional)</Label>
+          <Input
+            id="links-photo"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            className="h-10 py-1.5"
+            disabled={remove}
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          />
+          <div className="flex items-center gap-2">
+            <input
+              id="links-remove"
+              type="checkbox"
+              className="size-4"
+              checked={remove}
+              onChange={(e) => setRemove(e.target.checked)}
+            />
+            <Label htmlFor="links-remove" className="min-h-10 flex-1">
+              Remove photo
+            </Label>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="links-credit">Photo credit (optional)</Label>
+          <Input
+            id="links-credit"
+            className="h-10"
+            maxLength={120}
+            placeholder="Marukyu Koyamaen"
+            aria-describedby="links-credit-count"
+            value={credit}
+            onChange={(e) => setCredit(e.target.value)}
+          />
+          <p
+            id="links-credit-count"
+            className="text-muted-foreground text-right text-sm tabular-nums"
+          >
+            {credit.length}/120
+          </p>
+        </div>
+      </fieldset>
+
       <div className="space-y-2">
         <Label htmlFor="links-shop">Shop link (optional)</Label>
         <Input
           id="links-shop"
           type="url"
+          className="h-10"
           placeholder="https://"
+          aria-describedby="links-help"
           value={shop}
           onChange={(e) => setShop(e.target.value)}
         />
+        <p id="links-help" className="text-muted-foreground text-sm">
+          Saving replaces the credit and the shop link with what the fields show (empty removes
+          them). No file keeps the current photo; Remove photo clears it and its credit, and the
+          drawn tin shows again.
+        </p>
       </div>
-      <p className="text-muted-foreground text-sm">
-        Saving replaces the credit and the shop link with what the fields show (empty removes them).
-        No file keeps the current photo; Remove photo clears it and its credit, and the drawn tin
-        shows again.
-      </p>
-      <Button type="submit" disabled={busy || !tea}>
-        Save tea
-      </Button>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Button type="submit" size="lg" disabled={busy || !tea}>
+          {busy ? 'Saving…' : 'Save tea'}
+        </Button>
+        <Button type="button" size="lg" variant="outline" disabled={!tea} onClick={() => pick(tea)}>
+          Reset
+        </Button>
+        {!tea && <p className="text-muted-foreground text-sm">Pick a tea to edit it.</p>}
+      </div>
     </form>
   );
 }

@@ -4,6 +4,7 @@ import { connection } from 'next/server';
 import { cache } from 'react';
 
 import {
+  AdminTabs,
   ReportsQueue,
   ReviewQueueList,
   TeaLinksForm,
@@ -44,7 +45,7 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="max-w-site mx-auto w-full space-y-12 px-6 py-10 sm:py-14">
+    <div className="max-w-site mx-auto w-full space-y-8 px-6 py-10 sm:py-14">
       <div>
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Review queue</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl">
@@ -52,20 +53,34 @@ export default async function AdminPage() {
           submitted it; merging moves a duplicate&apos;s tastings onto the tea it repeats.
         </p>
       </div>
-      <ReviewQueueList teas={queue.teas} shops={queue.shops} catalogue={catalogue} />
-      <ReportsQueue reports={reports} />
-      <section aria-labelledby="tea-links" className="space-y-4">
-        <h2 id="tea-links" className="text-2xl font-bold tracking-tight">
-          Tea photo and shop link
-        </h2>
-        <TeaLinksForm catalogue={catalogue} />
-      </section>
-      <section aria-labelledby="tea-price" className="space-y-4">
-        <h2 id="tea-price" className="text-2xl font-bold tracking-tight">
-          Tea price
-        </h2>
-        <TeaPriceForm catalogue={catalogue} />
-      </section>
+      <AdminTabs
+        queueCount={queue.teas.length + queue.shops.length}
+        reportCount={reports.length}
+        queue={<ReviewQueueList teas={queue.teas} shops={queue.shops} catalogue={catalogue} />}
+        reports={<ReportsQueue reports={reports} />}
+        photo={
+          <section aria-labelledby="tea-links" className="space-y-1">
+            <h2 id="tea-links" className="text-2xl font-bold tracking-tight">
+              Tea photo and shop link
+            </h2>
+            <p className="text-muted-foreground mb-5 text-sm">
+              Set the packshot, who it is credited to, and where to buy the tea.
+            </p>
+            <TeaLinksForm catalogue={catalogue} />
+          </section>
+        }
+        price={
+          <section aria-labelledby="tea-price" className="space-y-1">
+            <h2 id="tea-price" className="text-2xl font-bold tracking-tight">
+              Tea price
+            </h2>
+            <p className="text-muted-foreground mb-5 text-sm">
+              The reference price behind each tea&apos;s price per gram and band.
+            </p>
+            <TeaPriceForm catalogue={catalogue} />
+          </section>
+        }
+      />
     </div>
   );
 }

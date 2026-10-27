@@ -28,12 +28,12 @@ export function PrivacyToggle({ userId, isPublic }: { userId: string; isPublic: 
 
   return (
     <div className="max-w-xl space-y-3 text-sm">
-      <p>
+      <p className="max-w-prose">
         {isPublic
           ? 'Your profile is public: anyone can see your recent tastings, taste and followers.'
           : 'Your profile is private: others see only your name. Your ratings still appear on tea pages.'}
       </p>
-      <Button type="button" variant="outline" disabled={busy} onClick={toggle}>
+      <Button type="button" variant="outline" size="lg" disabled={busy} onClick={toggle}>
         {isPublic ? 'Make my profile private' : 'Make my profile public'}
       </Button>
     </div>
@@ -69,12 +69,15 @@ export function BlockedList({
   return (
     <ul className="max-w-md divide-y rounded-2xl border">
       {blocked.map((person) => (
-        <li key={person.id} className="flex items-center justify-between px-4 py-2 text-sm">
-          <span>{person.name}</span>
+        <li key={person.id} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
+          <span className="min-w-0 truncate" title={person.name}>
+            {person.name}
+          </span>
           <Button
             type="button"
-            size="sm"
+            size="lg"
             variant="outline"
+            className="shrink-0"
             disabled={busy === person.id}
             onClick={() => unblock(person.id, person.name)}
           >

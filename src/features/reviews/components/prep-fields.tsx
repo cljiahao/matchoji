@@ -4,8 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { Input } from '@/components/ui/input';
-import { CustomFormField } from '@/components/widgets';
+import { CustomFormField, UnitInput } from '@/components/widgets';
 import type { ProductCategory } from '@/features/products';
 import { cn } from '@/lib/utils';
 
@@ -31,8 +30,13 @@ export function PrepFields({ category }: PrepFieldsProps) {
       onToggle={(e) => setUserOpen(e.currentTarget.open)}
       className="group border-border rounded-2xl border"
     >
-      <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-medium select-none">
-        How you made it
+      <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-medium select-none">
+        <span className="flex flex-col">
+          How you made it
+          <span className="text-muted-foreground text-xs font-normal">
+            Optional. Helps you repeat a good cup.
+          </span>
+        </span>
         <ChevronDown
           aria-hidden="true"
           className="text-muted-foreground h-4 w-4 group-open:rotate-180 motion-safe:transition-transform"
@@ -58,7 +62,7 @@ export function PrepFields({ category }: PrepFieldsProps) {
                       onKeyDown={(e) => handleRadioKeyDown(e, index, PREP_METHODS.length, select)}
                       onClick={() => field.onChange(checked ? undefined : method)}
                       className={cn(
-                        'rounded-full border px-3 py-1 text-sm transition-colors',
+                        'min-h-10 rounded-full border px-4 py-1 text-sm transition-colors',
                         checked
                           ? 'bg-primary text-primary-foreground border-transparent'
                           : 'border-border hover:border-neutral-400'
@@ -72,15 +76,15 @@ export function PrepFields({ category }: PrepFieldsProps) {
             );
           }}
         />
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 items-start gap-3">
           <CustomFormField name="doseG" label={category === 'matcha' ? 'Matcha (g)' : 'Tea (g)'}>
-            <Input type="number" inputMode="decimal" step="0.1" min={0} max={50} />
+            <UnitInput unit="g" type="number" inputMode="decimal" step="0.1" min={0} max={50} />
           </CustomFormField>
           <CustomFormField name="waterMl" label="Water (ml)">
-            <Input type="number" inputMode="numeric" min={0} max={1000} />
+            <UnitInput unit="ml" type="number" inputMode="numeric" min={0} max={1000} />
           </CustomFormField>
           <CustomFormField name="waterTempC" label="Water temp (°C)">
-            <Input type="number" inputMode="numeric" min={0} max={100} />
+            <UnitInput unit="°C" type="number" inputMode="numeric" min={0} max={100} />
           </CustomFormField>
         </div>
       </div>

@@ -21,6 +21,7 @@ const catalogue = [
     name: 'Sayaka',
     brand: 'Ippodo',
     category: 'matcha' as const,
+    imageUrl: null,
     imageCredit: null,
     shopUrl: null,
   },
@@ -29,10 +30,17 @@ const catalogue = [
     name: 'Uji Gold',
     brand: 'Marukyu',
     category: 'matcha' as const,
+    imageUrl: 'https://cdn.test/gold.webp',
     imageCredit: 'Marukyu Koyamaen',
     shopUrl: 'https://shop.example/gold',
   },
 ];
+
+// The catalogue picker is a Radix select, so a pick is a click on the trigger then an option.
+async function pickTea(label: string, option: string) {
+  await userEvent.click(screen.getByRole('combobox', { name: label }));
+  await userEvent.click(await screen.findByRole('option', { name: option }));
+}
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -48,7 +56,7 @@ describe('TeaLinksForm', () => {
 
     const save = screen.getByRole('button', { name: 'Save tea' });
     expect(save).toBeDisabled();
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.upload(
       screen.getByLabelText('Photo (optional)'),
       new File(['x'], 'Tin Shot.WEBP', { type: 'image/webp' })
@@ -85,7 +93,7 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.type(screen.getByLabelText('Photo credit (optional)'), 'Ippodo');
     await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
 
@@ -105,13 +113,13 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't2');
+    await pickTea('Tea', 'Uji Gold · Marukyu');
     expect(screen.getByLabelText('Photo credit (optional)')).toHaveValue('Marukyu Koyamaen');
     expect(screen.getByLabelText('Shop link (optional)')).toHaveValue('https://shop.example/gold');
 
     await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
     await waitFor(() => expect(toast.success).toHaveBeenCalled());
-    expect(screen.getByLabelText('Tea')).toHaveValue('');
+    expect(screen.getByRole('combobox', { name: 'Tea' })).toHaveTextContent('Pick a tea');
     expect(screen.getByLabelText('Photo credit (optional)')).toHaveValue('');
     expect(screen.getByLabelText('Shop link (optional)')).toHaveValue('');
   });
@@ -123,7 +131,7 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't2');
+    await pickTea('Tea', 'Uji Gold · Marukyu');
     const shop = screen.getByLabelText('Shop link (optional)');
     await userEvent.clear(shop);
     await userEvent.type(shop, 'https://shop.example/new');
@@ -146,7 +154,7 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't2');
+    await pickTea('Tea', 'Uji Gold · Marukyu');
     const credit = screen.getByLabelText('Photo credit (optional)');
     await userEvent.clear(credit);
     await userEvent.type(credit, 'Ippodo');
@@ -167,7 +175,7 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.click(screen.getByLabelText('Remove photo'));
     expect(screen.getByLabelText('Photo (optional)')).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
@@ -186,7 +194,7 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     fireEvent.change(screen.getByLabelText('Photo credit (optional)'), {
       target: { value: 'x'.repeat(121) },
     });
@@ -201,7 +209,7 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.type(screen.getByLabelText('Shop link (optional)'), 'http://shop.example');
     await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
 
@@ -218,12 +226,41 @@ describe('TeaLinksForm', () => {
     supabase.current = fake.client;
     renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith('Could not update the tea. Try again.')
     );
     expect(fake.upload).not.toHaveBeenCalled();
+  });
+
+  it('shows the picked tea’s current photo and credit, or says it has none', async () => {
+    supabase.current = createFakeBrowserClient().client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    expect(screen.getByText('Pick a tea to edit it.')).toBeInTheDocument();
+    await pickTea('Tea', 'Uji Gold · Marukyu');
+    expect(screen.getByRole('img', { name: 'Current photo of Uji Gold' })).toHaveAttribute(
+      'src',
+      'https://cdn.test/gold.webp'
+    );
+    expect(screen.getByText('Photo: Marukyu Koyamaen')).toBeInTheDocument();
+
+    await pickTea('Tea', 'Sayaka · Ippodo');
+    expect(screen.getByText('No photo yet; the drawn tin shows.')).toBeInTheDocument();
+  });
+
+  it('Reset puts the tea’s saved credit and link back', async () => {
+    supabase.current = createFakeBrowserClient().client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    await pickTea('Tea', 'Uji Gold · Marukyu');
+    const credit = screen.getByLabelText('Photo credit (optional)');
+    await userEvent.clear(credit);
+    expect(screen.getByText('0/120')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+    expect(credit).toHaveValue('Marukyu Koyamaen');
   });
 });

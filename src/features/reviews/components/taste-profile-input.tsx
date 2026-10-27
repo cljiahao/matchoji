@@ -44,7 +44,7 @@ export function TasteProfileInput({
             }
             aria-label={`${label} ${step} of 5`}
             onClick={() => onChange?.(value === step ? undefined : step)}
-            className="group flex h-7 flex-1 items-center"
+            className="group flex h-10 flex-1 items-center"
           >
             <span
               className={cn(

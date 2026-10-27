@@ -75,38 +75,49 @@ export function StashEditor({
       {open ? (
         <form
           onSubmit={save}
-          className="mt-2 flex flex-wrap items-end gap-2"
+          className="bg-muted mt-2 space-y-3 rounded-2xl p-3"
           aria-label={`Stash for ${name}`}
         >
-          <div className="space-y-1">
-            <Label htmlFor={`qty-${productId}`}>How many</Label>
-            <Input
-              id={`qty-${productId}`}
-              inputMode="numeric"
-              className="h-8 w-16"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-            />
+          <div className="flex flex-wrap gap-3">
+            <div className="space-y-1">
+              <Label htmlFor={`qty-${productId}`}>How many</Label>
+              <Input
+                id={`qty-${productId}`}
+                inputMode="numeric"
+                className="bg-background h-10 w-20 tabular-nums"
+                aria-describedby={`stash-help-${productId}`}
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor={`opened-${productId}`}>Opened on</Label>
+              <Input
+                id={`opened-${productId}`}
+                type="date"
+                max={today}
+                className="bg-background h-10 w-44"
+                value={openedOn}
+                onChange={(e) => setOpenedOn(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor={`opened-${productId}`}>Opened on</Label>
-            <Input
-              id={`opened-${productId}`}
-              type="date"
-              max={today}
-              className="h-8 w-40"
-              value={openedOn}
-              onChange={(e) => setOpenedOn(e.target.value)}
-            />
+          <p id={`stash-help-${productId}`} className="text-muted-foreground">
+            Tins you own, 0 to 99. Leave the date empty if none is open.
+          </p>
+          <div className="flex gap-2">
+            <Button type="submit" size="lg" disabled={busy}>
+              {busy ? 'Saving…' : 'Save'}
+            </Button>
+            <Button type="button" size="lg" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
           </div>
-          <Button type="submit" size="sm" disabled={busy}>
-            Save
-          </Button>
         </form>
       ) : (
         <button
           type="button"
-          className="text-brand font-semibold hover:underline"
+          className="text-brand inline-flex min-h-10 items-center font-semibold hover:underline"
           onClick={() => setOpen(true)}
         >
           {summary ? 'Edit stash' : 'I have this'}

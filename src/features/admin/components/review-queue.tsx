@@ -12,11 +12,10 @@ import { createClient } from '@/integrations/supabase/client';
 
 import { mergeTea, reviewShop, reviewTea } from '../api/admin-service';
 import type { PendingShop, PendingTea, ReviewDecision } from '../types';
+import { TeaSelect } from './tea-select';
 
 const dateLabel = (iso: string) =>
   new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-
-const selectClass = 'border-input h-9 min-w-0 flex-1 rounded-md border bg-transparent px-3 text-sm';
 
 // Runs one admin action, then re-renders the server page so the item leaves the queue.
 function useAction() {
@@ -60,29 +59,38 @@ function Decision({
           maxLength={500}
           onChange={(e) => setNote(e.target.value)}
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
-            size="sm"
+            size="lg"
             variant="destructive"
+            className="max-w-full"
             disabled={busy || !note.trim()}
             onClick={() => onDecide('rejected', note)}
           >
-            Reject {label}
+            <span className="truncate">Reject {label}</span>
           </Button>
-          <Button type="button" size="sm" variant="outline" onClick={() => setRejecting(false)}>
+          <Button type="button" size="lg" variant="outline" onClick={() => setRejecting(false)}>
             Cancel
           </Button>
+          {!note.trim() && <p className="text-muted-foreground text-sm">A reason is needed.</p>}
         </div>
       </div>
     );
   }
   return (
-    <div className="flex gap-2">
-      <Button type="button" size="sm" disabled={busy} onClick={() => onDecide('approved')}>
-        Approve {label}
+    <div className="flex flex-wrap gap-2">
+      <Button
+        type="button"
+        size="lg"
+        className="max-w-full"
+        title={label}
+        disabled={busy}
+        onClick={() => onDecide('approved')}
+      >
+        <span className="truncate">Approve {label}</span>
       </Button>
-      <Button type="button" size="sm" variant="outline" onClick={() => setRejecting(true)}>
+      <Button type="button" size="lg" variant="outline" onClick={() => setRejecting(true)}>
         Reject…
       </Button>
     </div>
@@ -95,10 +103,10 @@ function TeaItem({ tea, catalogue }: { tea: PendingTea; catalogue: ProductSummar
   const supabase = createClient();
 
   return (
-    <li className="space-y-3 px-5 py-4">
+    <li className="space-y-3 px-4 py-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <Link href={`/products/${tea.id}`} className="font-semibold hover:underline">
+          <Link href={`/products/${tea.id}`} className="font-semibold break-words hover:underline">
             {tea.name}
           </Link>
           <p className="text-muted-foreground text-sm">
@@ -121,22 +129,17 @@ function TeaItem({ tea, catalogue }: { tea: PendingTea; catalogue: ProductSummar
         }
       />
       <div className="flex flex-wrap items-center gap-2">
-        <select
+        <TeaSelect
           aria-label={`Tea that ${tea.name} duplicates`}
-          className={selectClass}
+          className="h-10 min-w-0 flex-1"
+          teas={catalogue}
           value={keep}
-          onChange={(e) => setKeep(e.target.value)}
-        >
-          <option value="">Duplicate of…</option>
-          {catalogue.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.brand ? `${p.name} · ${p.brand}` : p.name}
-            </option>
-          ))}
-        </select>
+          onChange={setKeep}
+          placeholder="Duplicate of…"
+        />
         <Button
           type="button"
-          size="sm"
+          size="lg"
           variant="outline"
           disabled={busy || !keep}
           onClick={() =>
@@ -154,9 +157,9 @@ function ShopItem({ shop }: { shop: PendingShop }) {
   const { busy, run } = useAction();
   const supabase = createClient();
   return (
-    <li className="space-y-3 px-5 py-4">
+    <li className="space-y-3 px-4 py-4 sm:px-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-semibold">{shop.name}</p>
+        <p className="font-semibold break-words">{shop.name}</p>
         <p className="text-muted-foreground text-sm">Applied {dateLabel(shop.createdAt)}</p>
       </div>
       <p className="text-muted-foreground text-sm">
@@ -164,13 +167,19 @@ function ShopItem({ shop }: { shop: PendingShop }) {
         {shop.website && (
           <>
             {' · '}
-            <a href={shop.website} target="_blank" rel="noopener noreferrer" className="underline">
+            <a
+              href={shop.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={shop.website}
+              className="break-all underline"
+            >
               {shop.website}
             </a>
           </>
         )}
       </p>
-      {shop.profileInfo && <p className="text-sm">{shop.profileInfo}</p>}
+      {shop.profileInfo && <p className="text-sm break-words">{shop.profileInfo}</p>}
       <Decision
         label={shop.name}
         busy={busy}
