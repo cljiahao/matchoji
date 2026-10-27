@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { connection } from 'next/server';
 
+import { BackLink } from '@/components/widgets';
 import { discoverHref } from '@/features/products';
 import {
   Sparkline,
@@ -199,12 +200,7 @@ export default async function SupplyPage() {
 
   return (
     <div className="max-w-site mx-auto w-full px-6 py-10 sm:py-14">
-      <Link
-        href={PAGE_ROUTES.REGIONS}
-        className="text-muted-foreground hover:text-foreground text-sm"
-      >
-        ← Tea regions
-      </Link>
+      <BackLink href={PAGE_ROUTES.REGIONS} label="Tea regions" />
       <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Tea supply in numbers</h1>
       <p className="text-muted-foreground mt-2 max-w-2xl">
         Official harvest figures for the prefectures our regions are in. Tea fields are shrinking in

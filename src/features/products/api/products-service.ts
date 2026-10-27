@@ -9,7 +9,7 @@ import { selectIn } from '@/integrations/supabase/select-in';
 
 import type { Product, ProductSummary } from '../types';
 
-import type { DiscoverFilters } from '../lib/discover-params';
+import { SHOW_MORE_STEP, type DiscoverFilters } from '../lib/discover-params';
 import { gradeOptions } from '../lib/filter-products';
 import { toTeaPrice } from '../lib/pricing';
 import { summarizeRegions, type RegionSummary } from '../lib/summarize-regions';
@@ -134,11 +134,11 @@ function fromCatalogue(row: CatalogueRow): Product {
   };
 }
 
-export const PAGE_SIZE = 24;
+export const PAGE_SIZE = SHOW_MORE_STEP;
 
 export interface ProductPage {
   products: Product[];
-  // Every match, not just this page: "Showing 1–24 of N".
+  // Every match, not just the ones returned: "Showing 12 of N".
   total: number;
 }
 
@@ -147,7 +147,7 @@ const DESC = { ascending: false, nullsFirst: false } as const;
 export async function listProducts(
   supabase: Client,
   filters: DiscoverFilters,
-  { limit = PAGE_SIZE } = {}
+  { limit = filters.shown ?? PAGE_SIZE } = {}
 ): Promise<ProductPage> {
   let query = supabase.from('catalogue_teas').select(CATALOGUE_COLUMNS, { count: 'exact' });
 
@@ -172,13 +172,12 @@ export async function listProducts(
     query = query.order('top_rank').order('weighted_score', DESC).order('created_at', DESC);
   }
 
-  const from = ((filters.page ?? 1) - 1) * limit;
-  const { data, error, count } = await query.range(from, from + limit - 1);
+  const { data, error, count } = await query.range(0, limit - 1);
   if (error) throw error;
   const products = data.map(fromCatalogue);
   const total = count ?? products.length;
 
-  // Card notes for this page's rated teas only.
+  // Card notes for the listed rated teas only.
   const rated = products.filter((p) => p.reviewCount > 0).map((p) => p.id);
   if (rated.length === 0) return { products, total };
   // tea_taste_profiles counts every taster's notes, private ones included.

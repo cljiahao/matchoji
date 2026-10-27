@@ -179,8 +179,14 @@ All notable changes to this project are documented here. Format follows
   grams, millilitres and temperatures show their unit inside the field, flavour is a select,
   and buttons and taps are at least 40px high with a stated reason when Save is off. New copy:
   "Back to search", "Reset", character counters, and short purpose lines.
-- The footer is one slim row under a hairline (61px instead of a 152px grey block); on
-  phones its section links give way to the tab bar.
+- The footer is grouped again: the wordmark and tagline, the links the navbar does not have
+  (Tea supply, Sell on Matchoji; Regions too on phones, which have no Regions tab), and a
+  fine-print row with the year, "A hobby project" and the photo takedown link.
+- Back links on Learn, supply and sign-in error pages share one widget with a chevron, a
+  40px hit area and a focus ring; the lesson's previous and next links match.
+- Explore shows 12 teas with a "Show more" button instead of Previous and Next. The count is
+  in the URL (`shown=`), so Back and shared links restore the same list; changing a filter or
+  the sort starts again at 12. Old `?page=` links still open the first 12.
 - Logging a tasting, rating and saving to "Want to try" now need an account, as on Vivino:
   signed out, each opens a "Join Matchoji" sign-in dialog first. Signed-out ratings and new
   products are no longer kept across sign-in.

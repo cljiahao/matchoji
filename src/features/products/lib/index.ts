@@ -2,7 +2,9 @@ export { CATEGORY_STYLES } from './category-styles';
 export {
   DISCOVER_SORTS,
   MIN_RATINGS,
+  SHOW_MORE_STEP,
   discoverHref,
+  discoverProgress,
   parseDiscoverParams,
   type DiscoverFilters,
   type DiscoverSort,

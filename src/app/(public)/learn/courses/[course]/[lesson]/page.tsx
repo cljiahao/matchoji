@@ -1,7 +1,9 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { BackLink } from '@/components/widgets';
 import {
   COURSES,
   LessonCompleteButton,
@@ -11,6 +13,11 @@ import {
   lessonHref,
   recipeHref,
 } from '@/features/learn';
+import { cn } from '@/lib/utils';
+
+// Same 40px hit area and focus ring as BackLink, so the navigation links on a lesson read as a set.
+const LESSON_LINK =
+  'focus-visible:ring-ring/50 focus-visible:border-ring inline-flex min-h-10 items-center gap-1 rounded-full border border-transparent px-2 py-2 font-semibold outline-none hover:underline focus-visible:ring-[3px]';
 
 interface LessonPageProps {
   params: Promise<{ course: string; lesson: string }>;
@@ -40,12 +47,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <article className="mx-auto w-full max-w-3xl px-6 py-10 sm:py-14">
-      <Link
-        href={courseHref(course.slug)}
-        className="text-muted-foreground text-sm hover:underline"
-      >
-        ← {course.title}
-      </Link>
+      <BackLink href={courseHref(course.slug)} label={course.title} />
       <p className="text-brand mt-3 text-sm font-semibold">
         Lesson {index + 1} of {course.lessons.length} · {lesson.minutes} min
       </p>
@@ -83,11 +85,15 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
       <nav
         aria-label="Lessons"
-        className="border-border mt-10 flex justify-between gap-4 border-t pt-6 text-sm"
+        className="border-border mt-10 flex justify-between gap-4 border-t pt-4 text-sm"
       >
         {previous ? (
-          <Link href={lessonHref(course.slug, previous.slug)} className="hover:underline">
-            ← {previous.title}
+          <Link
+            href={lessonHref(course.slug, previous.slug)}
+            className={cn(LESSON_LINK, 'text-muted-foreground hover:text-foreground')}
+          >
+            <ChevronLeft aria-hidden="true" className="size-4 shrink-0" />
+            {previous.title}
           </Link>
         ) : (
           <span />
@@ -95,12 +101,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
         {next ? (
           <Link
             href={lessonHref(course.slug, next.slug)}
-            className="text-right font-semibold hover:underline"
+            className={cn(LESSON_LINK, 'text-foreground ml-auto text-right')}
           >
-            Next: {next.title} →
+            Next: {next.title}
+            <ChevronRight aria-hidden="true" className="size-4 shrink-0" />
           </Link>
         ) : (
-          <Link href={courseHref(course.slug)} className="text-right font-semibold hover:underline">
+          <Link
+            href={courseHref(course.slug)}
+            className={cn(LESSON_LINK, 'text-foreground ml-auto text-right')}
+          >
+            <ChevronLeft aria-hidden="true" className="size-4 shrink-0" />
             Back to the course
           </Link>
         )}

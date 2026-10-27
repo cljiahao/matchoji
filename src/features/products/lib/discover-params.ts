@@ -11,6 +11,12 @@ export type DiscoverSort = (typeof DISCOVER_SORTS)[number];
 export const MIN_RATINGS = [4.5, 4, 3.5, 3] as const;
 export type MinRating = (typeof MIN_RATINGS)[number];
 
+// How many teas Explore shows at first, and how many each "Show more" adds.
+export const SHOW_MORE_STEP = 12;
+// Caps the list a URL can ask for. Zod's multipleOf(12) makes 492 the real maximum; 500 is
+// also the size of the "Best match" pool.
+const MAX_SHOWN = 500;
+
 export interface DiscoverFilters {
   q?: string;
   category?: ProductCategory;
@@ -18,8 +24,8 @@ export interface DiscoverFilters {
   grade?: string;
   minRating?: MinRating;
   sort: DiscoverSort;
-  // 1-based; absent means the first page.
-  page?: number;
+  // How many teas to show, a multiple of SHOW_MORE_STEP above it; absent means the first step.
+  shown?: number;
 }
 
 type RawParams = Record<string, string | string[] | undefined>;
@@ -50,16 +56,23 @@ export function parseDiscoverParams(params: RawParams): DiscoverFilters {
   const sort = z.enum(DISCOVER_SORTS).safeParse(first(params.sort));
   if (sort.success) filters.sort = sort.data;
 
-  const page = z.coerce.number().int().min(2).max(1000).safeParse(first(params.page));
-  if (page.success) filters.page = page.data;
+  // An old `?page=` link has no counterpart here and falls through to the first step.
+  const shown = z.coerce
+    .number()
+    .int()
+    .min(SHOW_MORE_STEP * 2)
+    .max(MAX_SHOWN)
+    .multipleOf(SHOW_MORE_STEP)
+    .safeParse(first(params.shown));
+  if (shown.success) filters.shown = shown.data;
 
   return filters;
 }
 
 // Builds an Explore URL from the current filters plus a change, so every control (tea, region,
 // grade, rating, sort) keeps the others. The default sort is left out to keep URLs short.
-// Any change other than the page goes back to page 1, since the results it pages through
-// have changed.
+// Any change other than `shown` goes back to the first step, since the list it extends has
+// changed.
 export function discoverHref(current: DiscoverFilters, patch: Partial<DiscoverFilters>): string {
   const next = { ...current, ...patch };
   const params = new URLSearchParams();
@@ -69,7 +82,24 @@ export function discoverHref(current: DiscoverFilters, patch: Partial<DiscoverFi
   if (next.grade) params.set('grade', next.grade);
   if (next.minRating) params.set('rating', String(next.minRating));
   if (next.sort && next.sort !== 'top') params.set('sort', next.sort);
-  if (patch.page && patch.page > 1) params.set('page', String(patch.page));
+  if (patch.shown && patch.shown > SHOW_MORE_STEP) params.set('shown', String(patch.shown));
   const query = params.toString();
   return query ? `/explore?${query}` : '/explore';
+}
+
+// The count line and the "Show more" target for a list of `shown` teas out of `total`;
+// `moreHref` is null once every tea is on screen or the URL cap is reached.
+export function discoverProgress(
+  filters: DiscoverFilters,
+  visible: number,
+  total: number
+): { countLabel: string; moreHref: string | null } {
+  const limit = filters.shown ?? SHOW_MORE_STEP;
+  const nextLimit = limit + SHOW_MORE_STEP;
+  const teaWord = total === 1 ? 'tea' : 'teas';
+  const canShowMore = visible < total && nextLimit <= MAX_SHOWN;
+  return {
+    countLabel: visible === 0 ? 'No teas' : `Showing ${visible} of ${total} ${teaWord}`,
+    moreHref: canShowMore ? discoverHref(filters, { shown: nextLimit }) : null,
+  };
 }

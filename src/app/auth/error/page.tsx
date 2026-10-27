@@ -1,6 +1,4 @@
-import Link from 'next/link';
-
-import { Button } from '@/components/ui/button';
+import { BackLink } from '@/components/widgets';
 
 export default function AuthErrorPage() {
   return (
@@ -9,9 +7,7 @@ export default function AuthErrorPage() {
       <p className="text-muted-foreground max-w-sm">
         Something went wrong signing you in. Please try again.
       </p>
-      <Button asChild>
-        <Link href="/">Back to Matchoji</Link>
-      </Button>
+      <BackLink href="/" label="Matchoji" className="mx-auto" />
     </div>
   );
 }

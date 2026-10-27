@@ -268,7 +268,7 @@ describe('Explore page', () => {
       'href',
       '/products/p1'
     );
-    expect(screen.getByText('Showing 1–1 of 1 tea')).toBeInTheDocument();
+    expect(screen.getByText('Showing 1 of 1 tea')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Want to try' })).toBeInTheDocument();
     expect(calls).toContainEqual({
       table: 'catalogue_teas',
@@ -291,8 +291,8 @@ describe('Explore page', () => {
     expect(screen.queryByRole('navigation', { name: 'Pages' })).not.toBeInTheDocument();
   });
 
-  it('titles a search, counts the matches and pages through them', async () => {
-    useServer({
+  it('titles a search, counts the matches and offers 12 more', async () => {
+    const { calls } = useServer({
       catalogue_teas: {
         data: [bancha, row('p2', 'Kyoto Gold', 'hojicha', '2026-09-03T00:00:00Z')],
         count: 50,
@@ -302,23 +302,40 @@ describe('Explore page', () => {
     });
 
     renderWithQuery(
-      await ExplorePage({ searchParams: Promise.resolve({ q: 'kyoto', page: '2' }) })
+      await ExplorePage({ searchParams: Promise.resolve({ q: 'kyoto', shown: '24' }) })
     );
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'Results for “kyoto”' })
     ).toBeInTheDocument();
-    expect(screen.getByText('Showing 25–26 of 50 teas')).toBeInTheDocument();
-    const pages = screen.getByRole('navigation', { name: 'Pages' });
-    expect(within(pages).getByText('Page 2 of 3')).toBeInTheDocument();
-    expect(within(pages).getByRole('link', { name: '← Previous' })).toHaveAttribute(
+    expect(screen.getByText('Showing 2 of 50 teas')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Show more' })).toHaveAttribute(
       'href',
-      '/explore?q=kyoto'
+      '/explore?q=kyoto&shown=36'
     );
-    expect(within(pages).getByRole('link', { name: 'Next →' })).toHaveAttribute(
+    expect(calls.find((c) => c.method === 'range')?.args).toEqual([0, 23]);
+  });
+
+  it('shows 12 for an old ?page= link and resets the count when a filter changes', async () => {
+    const { calls } = useServer({
+      catalogue_teas: { data: [bancha], count: 30, error: null },
+      regions: { data: [], error: null },
+    });
+
+    renderWithQuery(
+      await ExplorePage({ searchParams: Promise.resolve({ page: '3', shown: '24' }) })
+    );
+
+    const filters = screen.getByRole('complementary', { name: 'Filters' });
+    expect(within(filters).getByRole('link', { name: 'Matcha' })).toHaveAttribute(
       'href',
-      '/explore?q=kyoto&page=3'
+      '/explore?category=matcha'
     );
+    expect(screen.getByRole('link', { name: 'Show more' })).toHaveAttribute(
+      'href',
+      '/explore?shown=36'
+    );
+    expect(calls.find((c) => c.method === 'range')?.args).toEqual([0, 23]);
   });
 
   it('still shows the feed when regions fail to load', async () => {
@@ -410,7 +427,7 @@ describe('Explore page', () => {
     );
 
     expect(screen.getByRole('link', { name: 'Kyoto Gold' })).toBeInTheDocument();
-    expect(screen.getByText('Showing 1–1 of 1 tea')).toBeInTheDocument();
+    expect(screen.getByText('Showing 1 of 1 tea')).toBeInTheDocument();
     expect(calls).toContainEqual({
       table: 'catalogue_teas',
       method: 'eq',
@@ -1402,29 +1419,19 @@ describe('static routes', () => {
     expect(screen.getByRole('link', { name: 'Back to Matchoji' })).toHaveAttribute('href', '/');
   });
 
-  it('footer shows the wordmark, tagline, section links and only real extra links', () => {
+  it('footer shows the wordmark, tagline, the links the navbar lacks and only real extra links', () => {
     const { rerender } = render(<SiteFooter />);
     expect(screen.getByText('Matchoji')).toBeInTheDocument();
     expect(
       screen.getByText('Rate and discover matcha and hojicha, one cup at a time.')
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
-    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
     expect(screen.getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute('href', '/sell');
     expect(screen.getByRole('link', { name: 'Regions' })).toHaveAttribute('href', '/regions');
     expect(screen.getByRole('link', { name: 'Tea supply' })).toHaveAttribute(
       'href',
       '/regions/supply'
     );
-    expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');
-    expect(screen.getAllByRole('link')).toHaveLength(7);
-    const takedown = screen.getByRole('link', { name: 'Ask us to take it down.' });
-    expect(takedown).toHaveAttribute(
-      'href',
-      'https://github.com/cljiahao/matchoji/issues/new?title=Photo%20removal%20request'
-    );
-    expect(takedown).toHaveAttribute('target', '_blank');
-    expect(takedown).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(screen.getAllByRole('link')).toHaveLength(4);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');

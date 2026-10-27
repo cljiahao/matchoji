@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`/regions/supply`: "Tea supply in numbers". National tiles (tea fields, raw tea made,
+`/regions/supply`: "Tea supply in numbers", with a `BackLink` to the regions. National tiles (tea fields, raw tea made,
 tencha and its share), a card per prefecture that has a Matchoji region or official figures
 (tencha, tea-field and raw-tea trends, links to its regions on Explore), an "All figures"
 table, and the source credits the e-Stat and MAFF terms require. Rendered per request from
