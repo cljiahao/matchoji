@@ -1,11 +1,12 @@
 import type { MetadataRoute } from 'next';
 import { connection } from 'next/server';
 
+import { GUIDES, RECIPES, guideHref, recipeHref } from '@/features/learn';
 import { createClient } from '@/integrations/supabase/server';
 import { SITE_URL } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
-// Catalogue teas plus the public browse pages. Read per request so builds need no database.
+// Catalogue teas plus the public browse and Learn pages. Read per request so builds need no database.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
   const supabase = await createClient();
@@ -17,6 +18,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.EXPLORE,
     PAGE_ROUTES.REGIONS,
     PAGE_ROUTES.SUPPLY,
+    PAGE_ROUTES.LEARN,
+    ...RECIPES.map((recipe) => recipeHref(recipe.slug)),
+    ...GUIDES.map((guide) => guideHref(guide.slug)),
   ].map((path) => ({ url: `${SITE_URL}${path}` }));
   const teas = data.map((tea) => ({
     url: `${SITE_URL}/products/${tea.id}`,

@@ -28,6 +28,7 @@ import {
 
 import { useCreateProduct } from '../hooks/use-create-product.mutation';
 import { useRegions } from '../hooks/use-regions.query';
+import type { PrepPreset } from '../types';
 import { CategorySelect, RegionSelect } from './form-selects';
 import { ProductSearchCombobox } from './product-search-combobox';
 import { RateProductForm } from './rate-product-form';
@@ -38,11 +39,13 @@ const EMPTY_PRODUCT: ProductInput = { name: '', category: 'matcha' };
 
 interface LogTastingDialogProps {
   trigger?: ReactNode;
+  // A recipe's brew settings, filled into the rating step.
+  prep?: PrepPreset;
 }
 
 // The app-wide entry point: find or add a product, then rate it. Like Vivino, logging needs
 // an account, so a signed-out visitor gets the sign-in dialog instead of the form.
-export function LogTastingDialog({ trigger }: LogTastingDialogProps) {
+export function LogTastingDialog({ trigger, prep }: LogTastingDialogProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('search');
   const [product, setProduct] = useState<ProductSummary | undefined>();
@@ -156,7 +159,11 @@ export function LogTastingDialog({ trigger }: LogTastingDialogProps) {
         )}
 
         {step === 'rate' && product && (
-          <RateProductForm product={product} onLogged={() => handleOpenChange(false)} />
+          <RateProductForm
+            product={product}
+            initialPrep={prep}
+            onLogged={() => handleOpenChange(false)}
+          />
         )}
       </DialogContent>
     </Dialog>

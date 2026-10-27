@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Compass, Home, Plus, type LucideIcon } from 'lucide-react';
+import { BookOpen, Compass, GraduationCap, Home, Plus, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -69,6 +69,12 @@ export function MobileTabBar() {
             }
           />
         </li>
+        <Tab
+          href={PAGE_ROUTES.LEARN}
+          label="Learn"
+          icon={GraduationCap}
+          active={pathname.startsWith(PAGE_ROUTES.LEARN)}
+        />
         <Tab
           href={PAGE_ROUTES.JOURNAL}
           label="Journal"

@@ -25,3 +25,11 @@ export interface Review {
   // Which harvest it was, when the taster said (tea's equivalent of a wine's vintage).
   edition: { harvestYear: number | null; flush: FlushName | null };
 }
+
+// Brew settings a recipe hands to the tasting form.
+export interface PrepPreset {
+  method: PrepMethod;
+  doseG: number;
+  waterMl: number;
+  waterTempC: number;
+}

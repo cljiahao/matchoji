@@ -37,6 +37,11 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
             </Link>
           </li>
           <li>
+            <Link href={PAGE_ROUTES.LEARN} className="hover:underline">
+              Learn
+            </Link>
+          </li>
+          <li>
             <Link href={PAGE_ROUTES.JOURNAL} className="hover:underline">
               Journal
             </Link>

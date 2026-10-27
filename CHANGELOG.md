@@ -43,6 +43,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- A Learn tab with recipes (usucha, koicha, iced matcha, matcha and hojicha lattes, steeped
+  hojicha) giving dose, water, temperature, steps and tips, plus guides to grades, tools,
+  storage and why matcha sells out. "Log a tasting with this recipe" fills in its brew settings.
 - `/api/health` now checks the database and answers 503 when it is down, for uptime monitors.
 - Local Supabase setup (`pnpm db:start`) and scripts to check migrations and regenerate types.
 - Harvests, tea's vintages: a tasting can name its harvest year and flush, and a tea's page
