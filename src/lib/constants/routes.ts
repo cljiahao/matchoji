@@ -4,6 +4,7 @@ export const PAGE_ROUTES = {
   REGIONS: '/regions',
   SUPPLY: '/regions/supply',
   JOURNAL: '/journal',
+  LEARN: '/learn',
   SELL: '/sell',
   ACCOUNT: '/account',
 } as const;

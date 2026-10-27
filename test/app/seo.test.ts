@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { GUIDES, RECIPES } from '@/features/learn';
+
 import { createFakeSupabase, type QueryResult } from '../support/fake-supabase';
 
 const server = vi.hoisted(() => ({ current: null as unknown }));
@@ -20,7 +22,7 @@ beforeEach(() => {
 });
 
 describe('sitemap', () => {
-  it('lists the browse pages and every catalogue tea', async () => {
+  it('lists the browse and Learn pages and every catalogue tea', async () => {
     useServer({
       catalogue_teas: { data: [{ id: 't1', created_at: '2026-10-01T00:00:00Z' }], error: null },
     });
@@ -30,6 +32,9 @@ describe('sitemap', () => {
       'http://localhost:3000/explore',
       'http://localhost:3000/regions',
       'http://localhost:3000/regions/supply',
+      'http://localhost:3000/learn',
+      ...RECIPES.map((r) => `http://localhost:3000/learn/recipes/${r.slug}`),
+      ...GUIDES.map((g) => `http://localhost:3000/learn/guides/${g.slug}`),
       'http://localhost:3000/products/t1',
     ]);
   });

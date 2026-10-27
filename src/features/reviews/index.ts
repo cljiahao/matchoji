@@ -3,4 +3,4 @@ export * from './components';
 export * from './hooks';
 export * from './lib';
 export * from './schemas';
-export type { Review } from './types';
+export type { PrepPreset, Review } from './types';

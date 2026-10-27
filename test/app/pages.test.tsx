@@ -1355,7 +1355,8 @@ describe('static routes', () => {
       'href',
       '/regions/supply'
     );
-    expect(screen.getAllByRole('link')).toHaveLength(5);
+    expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');
+    expect(screen.getAllByRole('link')).toHaveLength(6);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
