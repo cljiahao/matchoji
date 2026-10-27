@@ -2,7 +2,8 @@
 
 ## Purpose
 
-`recipeHref` and `guideHref`: the `/learn/recipes/<slug>` and `/learn/guides/<slug>` paths.
+`recipeHref`, `guideHref`, `courseHref` and `lessonHref`: the `/learn/recipes/<slug>`,
+`/learn/guides/<slug>`, `/learn/courses/<course>` and `/learn/courses/<course>/<lesson>` paths.
 
 ## Contents
 

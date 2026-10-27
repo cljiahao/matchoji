@@ -36,3 +36,25 @@ export interface Guide {
   sections: GuideSection[];
   related: GuideLink[];
 }
+
+export interface LessonPractice {
+  // The recipe to make; its page has the "Log a tasting with this recipe" button.
+  recipeSlug: string;
+  prompt: string;
+}
+
+export interface Lesson {
+  slug: string;
+  title: string;
+  minutes: number;
+  sections: GuideSection[];
+  practice?: LessonPractice;
+}
+
+export interface Course {
+  slug: string;
+  title: string;
+  summary: string;
+  level: 'Beginner' | 'Next steps';
+  lessons: Lesson[];
+}

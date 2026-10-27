@@ -331,6 +331,21 @@ export interface Database {
         };
         Relationships: [];
       };
+      // Learn tab lessons each person has finished; slugs of repo content, private to the learner.
+      lesson_progress: {
+        Row: {
+          user_id: string;
+          course_slug: string;
+          lesson_slug: string;
+          created_at: string;
+        };
+        Insert: {
+          course_slug: string;
+          lesson_slug: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       reviews: {
         Row: {
           id: string;

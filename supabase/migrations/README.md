@@ -70,6 +70,9 @@ cannot carry admin-only fields, and `handle_new_user` uses an empty `search_path
 both or neither, set only through the admin `set_tea_price()`; suggested teas arrive unpriced), the
 `tea_prices` view (price per gram and a budget / mid / premium band by thirds among approved teas
 of the category, once at least 3 are priced), and the same columns appended to `catalogue_teas`.
+`20261031000000_lesson_progress.sql` records which Learn lessons each person finished (course and
+lesson slugs; only the slugs are client-writable, the learner and time are the server's), private to
+the learner, audited, 200 a day at most, and gone with the account.
 
 ## Contents
 
@@ -96,6 +99,7 @@ of the category, once at least 3 are priced), and the same columns appended to `
 - `20261028100000_health_check.sql`
 - `20261029000000_security_hardening.sql`
 - `20261030000000_tea_prices.sql`
+- `20261031000000_lesson_progress.sql`
 
 ## Parent
 

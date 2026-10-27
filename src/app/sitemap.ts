@@ -1,7 +1,15 @@
 import type { MetadataRoute } from 'next';
 import { connection } from 'next/server';
 
-import { GUIDES, RECIPES, guideHref, recipeHref } from '@/features/learn';
+import {
+  COURSES,
+  GUIDES,
+  RECIPES,
+  courseHref,
+  guideHref,
+  lessonHref,
+  recipeHref,
+} from '@/features/learn';
 import { createClient } from '@/integrations/supabase/server';
 import { SITE_URL } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
@@ -21,6 +29,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.LEARN,
     ...RECIPES.map((recipe) => recipeHref(recipe.slug)),
     ...GUIDES.map((guide) => guideHref(guide.slug)),
+    ...COURSES.flatMap((course) => [
+      courseHref(course.slug),
+      ...course.lessons.map((lesson) => lessonHref(course.slug, lesson.slug)),
+    ]),
   ].map((path) => ({ url: `${SITE_URL}${path}` }));
   const teas = data.map((tea) => ({
     url: `${SITE_URL}/products/${tea.id}`,

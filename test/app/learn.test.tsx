@@ -16,6 +16,14 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
+import LessonPage, {
+  generateMetadata as lessonMetadata,
+  generateStaticParams as lessonParams,
+} from '@/app/(public)/learn/courses/[course]/[lesson]/page';
+import CoursePage, {
+  generateMetadata as courseMetadata,
+  generateStaticParams as courseParams,
+} from '@/app/(public)/learn/courses/[course]/page';
 import GuidePage, {
   generateMetadata as guideMetadata,
   generateStaticParams as guideParams,
@@ -25,8 +33,8 @@ import RecipePage, {
   generateMetadata as recipeMetadata,
   generateStaticParams as recipeParams,
 } from '@/app/(public)/learn/recipes/[slug]/page';
-import { SignInPromptProvider } from '@/features/auth';
-import { GUIDES, RECIPES } from '@/features/learn';
+import { SessionProvider, SignInPromptProvider } from '@/features/auth';
+import { COURSES, GUIDES, RECIPES } from '@/features/learn';
 
 const params = (slug: string) => ({ params: Promise.resolve({ slug }) });
 
@@ -35,8 +43,15 @@ beforeEach(() => {
 });
 
 describe('Learn page', () => {
-  it('lists every recipe with its brew numbers, and every guide', () => {
+  it('lists every course, every recipe with its brew numbers, and every guide', () => {
     renderWithQuery(<LearnPage />);
+
+    const courses = within(screen.getByRole('region', { name: 'Courses' }));
+    expect(courses.getAllByRole('link')).toHaveLength(COURSES.length);
+    expect(courses.getByRole('link', { name: /Matcha 101/ })).toHaveAttribute(
+      'href',
+      '/learn/courses/matcha-101'
+    );
 
     const recipes = within(screen.getByRole('region', { name: 'Recipes' }));
     expect(recipes.getAllByRole('link')).toHaveLength(RECIPES.length);
@@ -119,5 +134,80 @@ describe('Guide page', () => {
       description: expect.stringContaining('whisk'),
     });
     expect(guideParams()).toEqual(GUIDES.map((g) => ({ slug: g.slug })));
+  });
+});
+
+const withProviders = (ui: React.ReactElement) =>
+  renderWithQuery(
+    <SessionProvider>
+      <SignInPromptProvider>{ui}</SignInPromptProvider>
+    </SessionProvider>
+  );
+const courseParam = (course: string) => ({ params: Promise.resolve({ course }) });
+const lessonParam = (course: string, lesson: string) => ({
+  params: Promise.resolve({ course, lesson }),
+});
+
+describe('Course page', () => {
+  it('shows the course and links every lesson in order', async () => {
+    withProviders(await CoursePage(courseParam('hojicha-at-home')));
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Hojicha at home');
+    expect(screen.getByText(/Next steps · 3 lessons · about 11 min/)).toBeInTheDocument();
+    const lessons = within(screen.getByRole('region', { name: 'Lessons' })).getAllByRole('link');
+    expect(lessons.map((l) => l.getAttribute('href'))).toEqual([
+      '/learn/courses/hojicha-at-home/what-hojicha-is',
+      '/learn/courses/hojicha-at-home/brewing-leaves',
+      '/learn/courses/hojicha-at-home/hojicha-latte',
+    ]);
+  });
+
+  it('is 404 for an unknown course, and builds a page per course', async () => {
+    await expect(CoursePage(courseParam('nope'))).rejects.toThrow('NEXT_NOT_FOUND');
+    expect(await courseMetadata(courseParam('nope'))).toMatchObject({ robots: { index: false } });
+    expect(await courseMetadata(courseParam('matcha-101'))).toMatchObject({
+      title: 'Matcha 101',
+    });
+    expect(courseParams()).toEqual(COURSES.map((c) => ({ course: c.slug })));
+  });
+});
+
+describe('Lesson page', () => {
+  it('shows the lesson, its practice recipe, the done button and the next lesson', async () => {
+    withProviders(await LessonPage(lessonParam('matcha-101', 'first-usucha')));
+    expect(screen.getByText('Lesson 3 of 5 · 6 min')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Your first usucha');
+    expect(
+      within(screen.getByRole('region', { name: 'Practice' })).getByRole('link')
+    ).toHaveAttribute('href', '/learn/recipes/usucha');
+    expect(screen.getByRole('button', { name: 'Mark lesson as done' })).toBeInTheDocument();
+    const nav = within(screen.getByRole('navigation', { name: 'Lessons' }));
+    expect(nav.getByRole('link', { name: /Tools and setup/ })).toHaveAttribute(
+      'href',
+      '/learn/courses/matcha-101/tools-and-setup'
+    );
+    expect(nav.getByRole('link', { name: /Next: Tasting it properly/ })).toHaveAttribute(
+      'href',
+      '/learn/courses/matcha-101/tasting-it'
+    );
+  });
+
+  it('ends the course with a link back, and has no practice where none is set', async () => {
+    withProviders(await LessonPage(lessonParam('matcha-101', 'buying-your-next-tin')));
+    expect(screen.queryByRole('region', { name: 'Practice' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to the course' })).toHaveAttribute(
+      'href',
+      '/learn/courses/matcha-101'
+    );
+  });
+
+  it('is 404 for an unknown lesson, and builds a page per lesson', async () => {
+    await expect(LessonPage(lessonParam('matcha-101', 'nope'))).rejects.toThrow('NEXT_NOT_FOUND');
+    expect(await lessonMetadata(lessonParam('nope', 'x'))).toMatchObject({
+      robots: { index: false },
+    });
+    expect(await lessonMetadata(lessonParam('matcha-101', 'tools-and-setup'))).toMatchObject({
+      title: 'Tools and setup · Matcha 101',
+    });
+    expect(lessonParams()).toHaveLength(8);
   });
 });

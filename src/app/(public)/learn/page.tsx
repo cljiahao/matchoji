@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { GUIDES, RECIPES, RecipeCard, guideHref } from '@/features/learn';
+import { COURSES, CourseCard, GUIDES, RECIPES, RecipeCard, guideHref } from '@/features/learn';
 
 export const metadata: Metadata = {
   title: 'Learn',
-  description: 'Recipes and guides for making matcha and hojicha at home.',
+  description: 'Courses, recipes and guides for making matcha and hojicha at home.',
 };
 
 export default function LearnPage() {
@@ -17,7 +17,20 @@ export default function LearnPage() {
         gives a starting dose, water and temperature you can log your tastings against.
       </p>
 
-      <section aria-labelledby="recipes-heading" className="mt-10">
+      <section aria-labelledby="courses-heading" className="mt-10">
+        <h2 id="courses-heading" className="text-xl font-bold tracking-tight">
+          Courses
+        </h2>
+        <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {COURSES.map((course) => (
+            <li key={course.slug}>
+              <CourseCard course={course} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="recipes-heading" className="mt-12">
         <h2 id="recipes-heading" className="text-xl font-bold tracking-tight">
           Recipes
         </h2>

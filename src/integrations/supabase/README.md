@@ -22,7 +22,7 @@ deleted accounts), `profiles.is_public`, `follows`, `blocks` and `following_feed
 `notifications` (`NotificationKind`), `content_reports` (`ReportTarget`) and `resolve_report`, review editions (`Flush`), the
 `edition_ratings` view and the want-to-try stash columns, `health`, `product_reviews` (with
 `author_private`) and `is_public_profile`, product prices (`price_sgd`, `pack_grams`, `PriceBand`),
-the `tea_prices` view and `set_tea_price`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
+the `tea_prices` view and `set_tea_price`, `lesson_progress`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
 until checkout is built. `pnpm db:types` writes the CLI's generated types to
 `database.generated.ts` for comparing against these hand-written ones.
 

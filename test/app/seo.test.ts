@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { GUIDES, RECIPES } from '@/features/learn';
+import { COURSES, GUIDES, RECIPES } from '@/features/learn';
 
 import { createFakeSupabase, type QueryResult } from '../support/fake-supabase';
 
@@ -35,6 +35,10 @@ describe('sitemap', () => {
       'http://localhost:3000/learn',
       ...RECIPES.map((r) => `http://localhost:3000/learn/recipes/${r.slug}`),
       ...GUIDES.map((g) => `http://localhost:3000/learn/guides/${g.slug}`),
+      ...COURSES.flatMap((c) => [
+        `http://localhost:3000/learn/courses/${c.slug}`,
+        ...c.lessons.map((l) => `http://localhost:3000/learn/courses/${c.slug}/${l.slug}`),
+      ]),
       'http://localhost:3000/products/t1',
     ]);
   });
