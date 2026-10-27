@@ -39,7 +39,9 @@ notes over each person's latest tasting only. `health-check.test.ts` checks visi
 signed-in users can call `health()`. `security-hardening.test.ts` proves each sweep fix: server
 timestamps, the strict photo check, private tasters' reviews hidden yet counted and listed
 anonymously, follows and feeds, block lookups, reaction policies, account-deletion scrubbing
-and admin-only fields. `tea-prices.test.ts` checks only admins set prices (both values or neither,
+and admin-only fields. `lesson-progress.test.ts` checks lesson progress is private, recorded only for the
+signed-in learner with a server time and valid slugs, unmarkable only by its owner, audited and
+deleted with the account. `tea-prices.test.ts` checks only admins set prices (both values or neither,
 within range), suggested teas arrive unpriced, the per-gram figure and bands (none until 3 teas of a
 category are priced), pending teas left out of the comparison, and that price changes are audited.
 
@@ -52,6 +54,7 @@ category are priced), pending teas left out of the comparison, and that price ch
 - `editions-and-stash.test.ts`
 - `health-check.test.ts`
 - `integrity-hardening.test.ts`
+- `lesson-progress.test.ts`
 - `region-supply.test.ts`
 - `security-hardening.test.ts`
 - `seed-real-teas.test.ts`

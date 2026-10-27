@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { PREP_METHODS } from '@/features/reviews';
 
+import { COURSES, findCourse, findLesson } from './courses';
 import { GUIDES, findGuide } from './guides';
 import { RECIPES, findRecipe } from './recipes';
 
@@ -48,5 +49,33 @@ describe('guides', () => {
       for (const section of guide.sections) expect(section.paragraphs.length).toBeGreaterThan(0);
       for (const link of guide.related) expect(link.href).toMatch(/^\/[a-z]/);
     }
+  });
+});
+
+describe('courses', () => {
+  it('have unique course and lesson slugs that the progress table accepts', () => {
+    expect(new Set(COURSES.map((c) => c.slug)).size).toBe(COURSES.length);
+    for (const course of COURSES) {
+      expect(course.slug).toMatch(/^[a-z0-9-]{1,60}$/);
+      expect(findCourse(course.slug)).toBe(course);
+      expect(new Set(course.lessons.map((l) => l.slug)).size).toBe(course.lessons.length);
+      for (const lesson of course.lessons) expect(lesson.slug).toMatch(/^[a-z0-9-]{1,60}$/);
+    }
+  });
+
+  it('give every lesson text, and practice only with recipes that exist', () => {
+    for (const course of COURSES) {
+      expect(course.lessons.length).toBeGreaterThan(0);
+      for (const lesson of course.lessons) {
+        expect(lesson.sections.length).toBeGreaterThan(0);
+        if (lesson.practice) expect(findRecipe(lesson.practice.recipeSlug)).toBeDefined();
+      }
+    }
+  });
+
+  it('find a lesson with its place in the course', () => {
+    expect(findLesson('matcha-101', 'first-usucha')).toMatchObject({ index: 2 });
+    expect(findLesson('matcha-101', 'nope')).toBeUndefined();
+    expect(findLesson('nope', 'first-usucha')).toBeUndefined();
   });
 });

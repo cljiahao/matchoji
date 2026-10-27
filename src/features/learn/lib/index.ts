@@ -1,1 +1,1 @@
-export { guideHref, recipeHref } from './hrefs';
+export { courseHref, guideHref, lessonHref, recipeHref } from './hrefs';

@@ -44,6 +44,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Courses in the Learn tab: Matcha 101 (five lessons, from what matcha is to buying your next
+  tin) and Hojicha at home (three), each lesson ending in a recipe to make and log. Signed-in
+  learners can mark lessons done and see their progress.
 - Tea prices: each tea can show its pack price in Singapore dollars, price per gram, what a cup
   costs (usucha, koicha or a hojicha cup) and whether it is budget, mid-range or premium among
   teas of its kind. Explore can sort by lowest price per gram, and admins set prices on the
