@@ -28,6 +28,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- Signed-in users' Google profile pictures show again in the navbar.
 - A tea's score, rating spread, taste summary and flavour notes count each person's latest
   tasting, so logging a tea repeatedly no longer moves them; the journal keeps every tasting.
 - The same tea cannot be added twice; "Log a tasting" says so and points to search.

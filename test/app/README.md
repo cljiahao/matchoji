@@ -14,8 +14,8 @@ facts, photos, community reviews, stock report and shop link, where to buy, awai
 loading routes, the public error boundary, and the OAuth callback's redirect handling.
 
 `seo.test.ts` covers the sitemap and robots rules. `config.test.ts` checks the proxy skips
-`/api/health` and the content security policy allows images only from the site and its
-Supabase project. `auth-callback.test.ts` also checks its redirects are never cached.
+`/api/health` and the content security policy allows images only from the site, its
+Supabase project and Google profile photos. `auth-callback.test.ts` also checks its redirects are never cached.
 
 Tea page tests get an empty `edition_ratings` result by default from `useServer`.
 
