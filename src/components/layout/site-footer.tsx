@@ -3,6 +3,10 @@ import Link from 'next/link';
 import { LinkList, type LinkItem } from '@/components/widgets';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
+// Photos are packshots shared with the makers' leave; a GitHub issue is the takedown route.
+const PHOTO_REMOVAL_URL =
+  'https://github.com/cljiahao/matchoji/issues/new?title=Photo%20removal%20request';
+
 interface SiteFooterProps {
   links?: LinkItem[];
 }
@@ -18,6 +22,17 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
           <span className="block sm:inline">
             Rate and discover matcha and hojicha, one cup at a time.
           </span>
+        </p>
+        <p className="text-muted-foreground">
+          Is one of these photos yours?{' '}
+          <a
+            href={PHOTO_REMOVAL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:no-underline"
+          >
+            Ask us to take it down.
+          </a>
         </p>
         {/* Shown on phones too: the tab bar has no room for Regions, the supply figures or Sell. */}
         <ul className="flex flex-wrap gap-x-6 gap-y-2 font-semibold">

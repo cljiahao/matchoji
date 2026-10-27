@@ -12,6 +12,8 @@ wordmark and tagline, and section links (Explore, Regions, Tea supply, Learn, Jo
 since the phone tab bar has no room for them. `Providers` wraps the app in `SessionProvider`,
 so every component shares one sign-in session.
 
+The footer also carries "Is one of these photos yours? Ask us to take it down.", a link (new tab) to a prefilled GitHub issue for photo removal requests.
+
 ## Contents
 
 - `index.ts`

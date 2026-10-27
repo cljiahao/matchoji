@@ -45,6 +45,8 @@ deleted with the account. `tea-prices.test.ts` checks only admins set prices (bo
 within range), suggested teas arrive unpriced, the per-gram figure and bands (none until 3 teas of a
 category are priced), pending teas left out of the comparison, and that price changes are audited.
 
+`admin-review.test.ts` also covers photo credits: set, kept on a null image, cleared with the photo, the 120-character limit, admin-only, and refused on a suggested tea.
+
 ## Contents
 
 - `account-and-review-edits.test.ts`

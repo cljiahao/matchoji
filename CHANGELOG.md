@@ -44,6 +44,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Photo credits: a tea's photo can name who it is from, shown as "Photo: …" under it, and
+  admins can now keep the current photo while editing a tea, or remove it. The footer says
+  how to ask for a photo to be taken down.
 - Courses in the Learn tab: Matcha 101 (five lessons, from what matcha is to buying your next
   tin) and Hojicha at home (three), each lesson ending in a recipe to make and log. Signed-in
   learners can mark lessons done and see their progress.

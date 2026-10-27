@@ -204,6 +204,14 @@ describe('getProduct', () => {
     expect(await getProduct(client, 'a')).toMatchObject({ id: 'a', avgStars: 3 });
   });
 
+  it('carries the photo credit', async () => {
+    const { client } = createFakeSupabase({
+      products: { data: row('a', { image_credit: 'Marukyu Koyamaen' }), error: null },
+      product_ratings: { data: null, error: null },
+    });
+    expect(await getProduct(client, 'a')).toMatchObject({ imageCredit: 'Marukyu Koyamaen' });
+  });
+
   it('throws the Supabase error', async () => {
     const error = new Error('boom');
     const { client } = createFakeSupabase({ products: { data: null, error } });

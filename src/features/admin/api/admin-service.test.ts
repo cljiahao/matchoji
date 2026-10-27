@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
   isAdmin,
+  listApprovedTeas,
   listOpenReports,
   listReviewQueue,
   mergeTea,
@@ -27,6 +28,42 @@ describe('isAdmin', () => {
     const error = new Error('down');
     const { client } = createFakeSupabase({ 'rpc:is_admin': { data: null, error } });
     await expect(isAdmin(client)).rejects.toBe(error);
+  });
+});
+
+describe('listApprovedTeas', () => {
+  it('returns approved teas with their saved credit and shop link', async () => {
+    const { client } = createFakeSupabase({
+      products: {
+        data: [
+          {
+            id: 't1',
+            name: 'Sayaka',
+            brand: 'Ippodo',
+            category: 'matcha',
+            image_credit: 'Ippodo',
+            shop_url: 'https://shop.example/s',
+          },
+        ],
+        error: null,
+      },
+    });
+    expect(await listApprovedTeas(client)).toEqual([
+      {
+        id: 't1',
+        name: 'Sayaka',
+        brand: 'Ippodo',
+        category: 'matcha',
+        imageCredit: 'Ippodo',
+        shopUrl: 'https://shop.example/s',
+      },
+    ]);
+  });
+
+  it('throws the Supabase error', async () => {
+    const error = new Error('boom');
+    const { client } = createFakeSupabase({ products: { data: null, error } });
+    await expect(listApprovedTeas(client)).rejects.toBe(error);
   });
 });
 
@@ -99,13 +136,20 @@ describe('admin actions', () => {
     await reviewTea(client, 't1', 'rejected', 'Duplicate');
     await mergeTea(client, 't1', 't2');
     await reviewShop(client, 'v1', 'approved');
-    await setTeaLinks(client, 't2', { image: '', shop: 'https://shop.example' });
+    await setTeaLinks(client, 't2', {
+      image: null,
+      shop: 'https://shop.example',
+      credit: 'Ippodo',
+    });
 
     expect(calls.map((c) => [c.table, c.args[0]])).toEqual([
       ['rpc:review_tea', { tea: 't1', decision: 'rejected', note: 'Duplicate' }],
       ['rpc:merge_tea', { duplicate: 't1', keep: 't2' }],
       ['rpc:review_vendor', { vendor: 'v1', decision: 'approved', note: undefined }],
-      ['rpc:set_tea_links', { tea: 't2', image: '', shop: 'https://shop.example' }],
+      [
+        'rpc:set_tea_links',
+        { tea: 't2', image: null, shop: 'https://shop.example', credit: 'Ippodo' },
+      ],
     ]);
   });
 

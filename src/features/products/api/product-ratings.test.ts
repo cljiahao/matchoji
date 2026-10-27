@@ -16,6 +16,7 @@ const base = {
   reviewNote: null,
   mergedInto: null,
   imageUrl: null,
+  imageCredit: null,
   createdAt: '2026-09-01T00:00:00Z',
   price: null,
 };

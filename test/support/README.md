@@ -12,6 +12,8 @@ component tests;
 `render.tsx` wraps renders in a fresh TanStack Query client and provides `makeProduct` (unpriced by default) /
 `makeReview` fixtures (`makeReview` has an `authorId` and no edition) (`makeProduct` is an approved tea with no supply level or shop link unless a test sets one).
 
+`makeProduct` includes `imageCredit`.
+
 ## Contents
 
 - `fake-browser-client.ts`

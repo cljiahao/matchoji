@@ -8,7 +8,7 @@ everywhere. `discover-params` turns the Explore URL into validated filters (inva
 are dropped, `page` from 2 up; the sorts include `match`, which Explore ranks per taster) and back into `/explore` links via `discoverHref`; the sorts now run in SQL (see `api`); `filter-products`'s `gradeOptions` dedupes grades
 for the filter rail. `supply` ranks the supply levels (scarce,
 tight, plentiful, then unknown). The tests' `Product` fixtures carry every field, including
-`supply`, `shopUrl`, `status`, `addedBy`, `reviewNote` and `mergedInto`, which these helpers
+`supply`, `imageCredit`, `shopUrl`, `status`, `addedBy`, `reviewNote` and `mergedInto`, which these helpers
 ignore. `filter-products` applies the grade and minimum-rating filters after the
 query and lists the grade options; `summarize-regions` counts each region's matcha and
 hojicha for the regions page and `sortRegionsByScarcity` reorders them, scarcest first. `pricing` maps a

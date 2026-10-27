@@ -3,23 +3,41 @@
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { ProductSummary } from '@/features/products';
 import { createClient } from '@/integrations/supabase/client';
 
 import { setTeaLinks, uploadTeaImage } from '../api/admin-service';
+import type { CatalogueTea } from '../types';
 
-// Sets a catalogue tea's photo (a packshot the maker allows us to use) and its shop link.
-// Leaving the photo empty keeps the drawn tin.
-export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
+// Matches the products.image_credit check, so a long credit is refused before the upload.
+export const teaCreditSchema = z.string().trim().max(120);
+
+// Sets a catalogue tea's photo (a packshot the maker allows us to use), who it is credited to
+// and its shop link. Choosing no file keeps the current photo; "Remove photo" brings back the
+// drawn tin.
+export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
   const router = useRouter();
   const [tea, setTea] = useState('');
   const [shop, setShop] = useState('');
+  const [credit, setCredit] = useState('');
+  const [remove, setRemove] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // The credit and shop link are saved as typed, so the form starts from the tea's current
+  // values: leaving one untouched keeps it.
+  function pick(id: string) {
+    const picked = catalogue.find((p) => p.id === id);
+    setTea(id);
+    setCredit(picked?.imageCredit ?? '');
+    setShop(picked?.shopUrl ?? '');
+    setRemove(false);
+    setFile(null);
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -28,13 +46,20 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
       toast.error('Use an https:// shop link.');
       return;
     }
+    const parsedCredit = teaCreditSchema.safeParse(credit);
+    if (!parsedCredit.success) {
+      toast.error('Keep the photo credit to 120 characters.');
+      return;
+    }
     setBusy(true);
     try {
       const supabase = createClient();
-      const image = file ? await uploadTeaImage(supabase, tea, file) : '';
-      await setTeaLinks(supabase, tea, { image, shop });
+      let image: string | null = null;
+      if (remove) image = '';
+      else if (file) image = await uploadTeaImage(supabase, tea, file);
+      await setTeaLinks(supabase, tea, { image, shop, credit: parsedCredit.data });
       toast.success('Tea updated.');
-      setFile(null);
+      pick('');
       router.refresh();
     } catch {
       toast.error('Could not update the tea. Try again.');
@@ -51,7 +76,7 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
           id="links-tea"
           className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm"
           value={tea}
-          onChange={(e) => setTea(e.target.value)}
+          onChange={(e) => pick(e.target.value)}
         >
           <option value="">Pick a tea</option>
           {catalogue.map((p) => (
@@ -67,7 +92,27 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
           id="links-photo"
           type="file"
           accept="image/jpeg,image/png,image/webp,image/avif"
+          disabled={remove}
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+        />
+        <div className="flex items-center gap-2">
+          <input
+            id="links-remove"
+            type="checkbox"
+            checked={remove}
+            onChange={(e) => setRemove(e.target.checked)}
+          />
+          <Label htmlFor="links-remove">Remove photo</Label>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="links-credit">Photo credit (optional)</Label>
+        <Input
+          id="links-credit"
+          maxLength={120}
+          placeholder="Marukyu Koyamaen"
+          value={credit}
+          onChange={(e) => setCredit(e.target.value)}
         />
       </div>
       <div className="space-y-2">
@@ -81,7 +126,9 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
         />
       </div>
       <p className="text-muted-foreground text-sm">
-        Saving replaces both: an empty photo shows the drawn tin, an empty link removes it.
+        Saving replaces the credit and the shop link with what the fields show (empty removes them).
+        No file keeps the current photo; Remove photo clears it and its credit, and the drawn tin
+        shows again.
       </p>
       <Button type="submit" disabled={busy || !tea}>
         Save tea

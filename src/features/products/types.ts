@@ -18,6 +18,8 @@ export interface Product {
   // How scarce this tea's category is in its region; null without a region or a sourced level.
   supply: SupplyLevel | null;
   imageUrl: string | null;
+  // Who the photo comes from; only read on the tea's own page, so lists leave it null.
+  imageCredit: string | null;
   // The tea's page on its maker's own shop, where people check stock.
   shopUrl: string | null;
   // Teas added by tasters stay 'pending' until an admin reviews them; see the review-queue
