@@ -39,7 +39,9 @@ notes over each person's latest tasting only. `health-check.test.ts` checks visi
 signed-in users can call `health()`. `security-hardening.test.ts` proves each sweep fix: server
 timestamps, the strict photo check, private tasters' reviews hidden yet counted and listed
 anonymously, follows and feeds, block lookups, reaction policies, account-deletion scrubbing
-and admin-only fields.
+and admin-only fields. `tea-prices.test.ts` checks only admins set prices (both values or neither,
+within range), suggested teas arrive unpriced, the per-gram figure and bands (none until 3 teas of a
+category are priced), pending teas left out of the comparison, and that price changes are audited.
 
 ## Contents
 
@@ -55,6 +57,7 @@ and admin-only fields.
 - `seed-real-teas.test.ts`
 - `social-profiles-follows.test.ts`
 - `social-reactions.test.ts`
+- `tea-prices.test.ts`
 - `marketplace.test.ts`
 - `stock-reports.test.ts`
 - `tea-review-queue.test.ts`

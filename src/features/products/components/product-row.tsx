@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { CATEGORY_STYLES } from '../lib';
 import type { Product } from '../types';
 import { CategoryBadge } from './category-badge';
+import { PriceInline } from './price-inline';
 import { ProductImageWell } from './product-image-well';
 import { ScoreNumeral } from './score-numeral';
 import { Stars } from './star-rating-display';
@@ -53,6 +54,7 @@ export function ProductRow({ product, action, badge }: ProductRowProps) {
           <CategoryBadge category={product.category} />
           {meta && <span className="text-muted-foreground text-sm">{meta}</span>}
         </div>
+        <PriceInline price={product.price} />
         {badge}
         {product.topNotes.length > 0 && (
           <ul className="mt-1 hidden flex-wrap gap-1.5 sm:flex">

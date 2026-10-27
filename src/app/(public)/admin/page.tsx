@@ -7,6 +7,7 @@ import {
   ReportsQueue,
   ReviewQueueList,
   TeaLinksForm,
+  TeaPriceForm,
   isAdmin,
   listApprovedTeas,
   listOpenReports,
@@ -58,6 +59,12 @@ export default async function AdminPage() {
           Tea photo and shop link
         </h2>
         <TeaLinksForm catalogue={catalogue} />
+      </section>
+      <section aria-labelledby="tea-price" className="space-y-4">
+        <h2 id="tea-price" className="text-2xl font-bold tracking-tight">
+          Tea price
+        </h2>
+        <TeaPriceForm catalogue={catalogue} />
       </section>
     </div>
   );

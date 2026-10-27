@@ -68,7 +68,28 @@ describe('listProducts', () => {
       reviewCount: 2,
       status: 'approved',
     });
-    expect(products[1]).toMatchObject({ avgStars: null, reviewCount: 0 });
+    expect(products[1]).toMatchObject({ avgStars: null, reviewCount: 0, price: null });
+  });
+
+  it('carries each tea’s price per gram and band', async () => {
+    const { client } = createFakeSupabase({
+      catalogue_teas: {
+        data: [tea('a', { price_sgd: '32.00', pack_grams: '40.0', price_band: 'premium' })],
+        error: null,
+      },
+    });
+    const { products } = await listProducts(client, { sort: 'top' });
+    expect(products[0].price).toEqual({ sgd: 32, packGrams: 40, perGram: 0.8, band: 'premium' });
+  });
+
+  it('sorts by lowest price per gram, unpriced teas last', async () => {
+    const { client, calls } = createFakeSupabase({ catalogue_teas: { data: [], error: null } });
+    await listProducts(client, { sort: 'value' });
+    expect(calls).toContainEqual({
+      table: 'catalogue_teas',
+      method: 'order',
+      args: ['price_per_gram', { ascending: true, nullsFirst: false }],
+    });
   });
 
   it('adds each rated tea’s two most-noticed flavour notes, reading this page only', async () => {

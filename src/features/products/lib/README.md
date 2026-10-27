@@ -11,7 +11,10 @@ tight, plentiful, then unknown). The tests' `Product` fixtures carry every field
 `supply`, `shopUrl`, `status`, `addedBy`, `reviewNote` and `mergedInto`, which these helpers
 ignore. `filter-products` applies the grade and minimum-rating filters after the
 query and lists the grade options; `summarize-regions` counts each region's matcha and
-hojicha for the regions page and `sortRegionsByScarcity` reorders them, scarcest first.
+hojicha for the regions page and `sortRegionsByScarcity` reorders them, scarcest first. `pricing` maps a
+tea's reference price (`toTeaPrice`: pack price in SGD, pack size, price per gram, band), formats
+it, and holds `CUP_DOSES` (usucha 2 g, koicha 4 g, a hojicha cup 3 g, as in the Learn recipes) and
+the band labels; `discover-params` includes the `value` sort (lowest price per gram).
 
 ## Contents
 
@@ -21,6 +24,8 @@ hojicha for the regions page and `sortRegionsByScarcity` reorders them, scarcest
 - `filter-products.test.ts`
 - `filter-products.ts`
 - `index.ts`
+- `pricing.test.ts`
+- `pricing.ts`
 - `summarize-regions.test.ts`
 - `summarize-regions.ts`
 - `supply.test.ts`

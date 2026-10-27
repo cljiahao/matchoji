@@ -9,7 +9,7 @@ queued as `rpc:<name>`, and a result may carry `count`) (a queued result may be 
 observe state while a request is in flight);
 `fake-browser-client.ts` adds steerable auth and storage (upload, remove and list) on top for
 component tests;
-`render.tsx` wraps renders in a fresh TanStack Query client and provides `makeProduct` /
+`render.tsx` wraps renders in a fresh TanStack Query client and provides `makeProduct` (unpriced by default) /
 `makeReview` fixtures (`makeReview` has an `authorId` and no edition) (`makeProduct` is an approved tea with no supply level or shop link unless a test sets one).
 
 ## Contents

@@ -1,9 +1,16 @@
-import { Award, Leaf, MapPin, Store, type LucideIcon } from 'lucide-react';
+import { Award, Leaf, MapPin, Store, Tag, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { CATEGORY_STYLES } from '../lib';
-import type { Product } from '../types';
+import {
+  CATEGORY_STYLES,
+  CUP_DOSES,
+  PRICE_BAND_LABELS,
+  formatGrams,
+  formatSgd,
+  type TeaPrice,
+} from '../lib';
+import type { Product, ProductCategory } from '../types';
 
 interface ProductFactsProps {
   product: Product;
@@ -24,6 +31,27 @@ function Fact({
       <dt className="text-muted-foreground">{label}</dt>
       <dd>{children}</dd>
     </div>
+  );
+}
+
+// "S$32.00 for 40 g · S$0.80/g", then what a cup costs at the Learn recipes' doses and the
+// band among teas of its kind.
+function PriceFact({ price, category }: { price: TeaPrice; category: ProductCategory }) {
+  const cups = CUP_DOSES[category]
+    .map((dose) => `${formatSgd(price.perGram * dose.grams)} per ${dose.label} (${dose.grams} g)`)
+    .join(' · ');
+  return (
+    <>
+      <span className="block tabular-nums">
+        {formatSgd(price.sgd)} for {formatGrams(price.packGrams)} · {formatSgd(price.perGram)}/g
+      </span>
+      <span className="text-muted-foreground block tabular-nums">≈ {cups}</span>
+      {price.band && (
+        <span className="mt-0.5 block font-semibold">
+          {PRICE_BAND_LABELS[price.band]} for {CATEGORY_STYLES[category].label.toLowerCase()}
+        </span>
+      )}
+    </>
   );
 }
 
@@ -53,6 +81,11 @@ export function ProductFacts({ product }: ProductFactsProps) {
         {product.regionName && (
           <Fact icon={MapPin} label="Region">
             {product.regionName}
+          </Fact>
+        )}
+        {product.price && (
+          <Fact icon={Tag} label="Price">
+            <PriceFact price={product.price} category={product.category} />
           </Fact>
         )}
       </dl>

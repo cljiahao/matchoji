@@ -43,6 +43,10 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Tea prices: each tea can show its pack price in Singapore dollars, price per gram, what a cup
+  costs (usucha, koicha or a hojicha cup) and whether it is budget, mid-range or premium among
+  teas of its kind. Explore can sort by lowest price per gram, and admins set prices on the
+  review page.
 - `/api/health` now checks the database and answers 503 when it is down, for uptime monitors.
 - Local Supabase setup (`pnpm db:start`) and scripts to check migrations and regenerate types.
 - Harvests, tea's vintages: a tasting can name its harvest year and flush, and a tea's page

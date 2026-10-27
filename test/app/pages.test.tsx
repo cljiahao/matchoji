@@ -59,6 +59,8 @@ const productRow = {
   image_url: null,
   status: 'approved',
   created_at: '2026-09-01T00:00:00Z',
+  price_sgd: null,
+  pack_grams: null,
 };
 
 function useServer(
@@ -1118,6 +1120,25 @@ describe('Product page', () => {
       '/sell'
     );
     expect(screen.queryByRole('link', { name: /shop/ })).not.toBeInTheDocument();
+  });
+
+  it('shows a priced tea’s pack price, price per gram, cost per cup and band', async () => {
+    const { calls } = useServer({
+      products: { data: { ...productRow, price_sgd: '24.00', pack_grams: '80.0' }, error: null },
+      product_ratings: { data: null, error: null },
+      tea_prices: { data: { price_band: 'budget' }, error: null },
+      'rpc:product_reviews': { data: [], error: null },
+      stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
+    });
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+
+    const price = screen.getByText('Price').nextElementSibling;
+    expect(price).toHaveTextContent('S$24.00 for 80 g · S$0.30/g');
+    expect(price).toHaveTextContent('≈ S$0.90 per cup (3 g)');
+    expect(price).toHaveTextContent('Budget for hojicha');
+    expect(calls).toContainEqual({ table: 'tea_prices', method: 'eq', args: ['product_id', 'p1'] });
   });
 
   it('forwards a merged duplicate to the tea it repeated', async () => {

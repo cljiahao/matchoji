@@ -17,6 +17,7 @@ const SORT_LABELS: Record<DiscoverSort, string> = {
   reviewed: 'Most rated',
   newest: 'Newest',
   scarce: 'Scarcest first',
+  value: 'Lowest price per gram',
   match: 'Best match for you',
 };
 

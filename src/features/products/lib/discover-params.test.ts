@@ -9,6 +9,7 @@ describe('parseDiscoverParams', () => {
     expect(
       parseDiscoverParams({ q: ' uji ', category: 'matcha', region: REGION, sort: 'newest' })
     ).toEqual({ q: 'uji', category: 'matcha', regionId: REGION, sort: 'newest' });
+    expect(parseDiscoverParams({ sort: 'value' })).toEqual({ sort: 'value' });
   });
 
   it('ignores invalid values', () => {

@@ -22,6 +22,7 @@ const product = (id: string, grade: string | null, avgStars: number | null): Pro
   avgStars,
   reviewCount: avgStars === null ? 0 : 1,
   topNotes: [],
+  price: null,
 });
 
 const products = [

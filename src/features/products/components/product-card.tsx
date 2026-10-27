@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 
 import type { Product } from '../types';
 import { CategoryBadge } from './category-badge';
+import { PriceInline } from './price-inline';
 import { ProductImageWell } from './product-image-well';
 import { RatingInline } from './rating-inline';
 
@@ -44,6 +45,7 @@ export function ProductCard({ product, action }: ProductCardProps) {
             category={product.category}
             className="mt-1"
           />
+          <PriceInline price={product.price} className="mt-0.5" />
         </div>
       </Link>
       {action && <div className="absolute top-2.5 right-2.5">{action}</div>}
