@@ -7,6 +7,8 @@ tea tile), the want-to-try list with remove, and the `WantToTryButton` used on p
 pages, shelves and Explore rows. Timeline cards and want-to-try rows show
 `CatalogueStatusNote` ("Awaiting review", "Not in the catalogue") next to such teas.
 
+`StashEditor` opens a small panel (how many, opened on) with Save and Cancel; Cancel drops unsaved edits.
+
 Each timeline card has `TastingActions`: Edit (the tasting form, prefilled) and Delete (after a
 confirmation; the photo goes too).
 

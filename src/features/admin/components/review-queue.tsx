@@ -65,6 +65,7 @@ function Decision({
             size="lg"
             variant="destructive"
             className="max-w-full"
+            title={label}
             disabled={busy || !note.trim()}
             onClick={() => onDecide('rejected', note)}
           >

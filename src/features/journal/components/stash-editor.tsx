@@ -69,6 +69,12 @@ export function StashEditor({
     }
   }
 
+  function cancel() {
+    setQuantity(String(stash.ownedQuantity));
+    setOpenedOn(stash.openedOn ?? '');
+    setOpen(false);
+  }
+
   return (
     <div className="text-xs">
       {summary && <p className="text-muted-foreground">{summary}</p>}
@@ -109,7 +115,7 @@ export function StashEditor({
             <Button type="submit" size="lg" disabled={busy}>
               {busy ? 'Saving…' : 'Save'}
             </Button>
-            <Button type="button" size="lg" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" size="lg" variant="outline" onClick={cancel}>
               Cancel
             </Button>
           </div>

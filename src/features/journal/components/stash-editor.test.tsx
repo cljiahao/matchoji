@@ -67,10 +67,14 @@ describe('StashEditor', () => {
     );
 
     await userEvent.click(screen.getByRole('button', { name: 'I have this' }));
+    await userEvent.type(screen.getByLabelText('How many'), '5');
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(screen.queryByLabelText('How many')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'I have this' })).toBeInTheDocument();
     expect(fake.calls.find((c) => c.method === 'update')).toBeUndefined();
+
+    await userEvent.click(screen.getByRole('button', { name: 'I have this' }));
+    expect(screen.getByLabelText('How many')).toHaveValue('0');
   });
 });
