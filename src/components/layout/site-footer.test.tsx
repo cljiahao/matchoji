@@ -34,7 +34,9 @@ describe('SiteFooter', () => {
 
   it('carries the fine print and the photo takedown link', () => {
     render(<SiteFooter />);
-    expect(screen.getByText(/© \d{4} Matchoji · A hobby project/)).toBeInTheDocument();
+    expect(
+      screen.getByText(`© ${new Date().getFullYear()} Matchoji · A hobby project`)
+    ).toBeInTheDocument();
     const link = screen.getByRole('link', { name: 'Ask us to take it down.' });
     expect(link).toHaveAttribute('href', expect.stringContaining('github.com/cljiahao/matchoji'));
     expect(link).toHaveAttribute('target', '_blank');

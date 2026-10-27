@@ -15,8 +15,9 @@ import {
 } from '@/features/learn';
 import { cn } from '@/lib/utils';
 
-// Same 40px hit area as BackLink, so the three navigation links on a lesson read as a set.
-const LESSON_LINK = 'inline-flex min-h-10 items-center gap-1 py-2 font-semibold hover:underline';
+// Same 40px hit area and focus ring as BackLink, so the navigation links on a lesson read as a set.
+const LESSON_LINK =
+  'focus-visible:ring-ring/50 focus-visible:border-ring inline-flex min-h-10 items-center gap-1 rounded-full border border-transparent px-2 py-2 font-semibold outline-none hover:underline focus-visible:ring-[3px]';
 
 interface LessonPageProps {
   params: Promise<{ course: string; lesson: string }>;
@@ -110,8 +111,8 @@ export default async function LessonPage({ params }: LessonPageProps) {
             href={courseHref(course.slug)}
             className={cn(LESSON_LINK, 'text-foreground ml-auto text-right')}
           >
+            <ChevronLeft aria-hidden="true" className="size-4 shrink-0" />
             Back to the course
-            <ChevronRight aria-hidden="true" className="size-4 shrink-0" />
           </Link>
         )}
       </nav>

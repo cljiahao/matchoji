@@ -13,7 +13,8 @@ export type MinRating = (typeof MIN_RATINGS)[number];
 
 // How many teas Explore shows at first, and how many each "Show more" adds.
 export const SHOW_MORE_STEP = 12;
-// Caps the list a URL can ask for; 500 is also the size of the "Best match" pool.
+// Caps the list a URL can ask for. Zod's multipleOf(12) makes 492 the real maximum; 500 is
+// also the size of the "Best match" pool.
 const MAX_SHOWN = 500;
 
 export interface DiscoverFilters {
