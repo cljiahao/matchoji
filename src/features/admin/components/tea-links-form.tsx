@@ -8,10 +8,10 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { ProductSummary } from '@/features/products';
 import { createClient } from '@/integrations/supabase/client';
 
 import { setTeaLinks, uploadTeaImage } from '../api/admin-service';
+import type { CatalogueTea } from '../types';
 
 // Matches the products.image_credit check, so a long credit is refused before the upload.
 export const teaCreditSchema = z.string().trim().max(120);
@@ -19,7 +19,7 @@ export const teaCreditSchema = z.string().trim().max(120);
 // Sets a catalogue tea's photo (a packshot the maker allows us to use), who it is credited to
 // and its shop link. Choosing no file keeps the current photo; "Remove photo" brings back the
 // drawn tin.
-export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
+export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
   const router = useRouter();
   const [tea, setTea] = useState('');
   const [shop, setShop] = useState('');
@@ -27,6 +27,17 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
   const [remove, setRemove] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // The credit and shop link are saved as typed, so the form starts from the tea's current
+  // values: leaving one untouched keeps it.
+  function pick(id: string) {
+    const picked = catalogue.find((p) => p.id === id);
+    setTea(id);
+    setCredit(picked?.imageCredit ?? '');
+    setShop(picked?.shopUrl ?? '');
+    setRemove(false);
+    setFile(null);
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -48,8 +59,7 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
       else if (file) image = await uploadTeaImage(supabase, tea, file);
       await setTeaLinks(supabase, tea, { image, shop, credit: parsedCredit.data });
       toast.success('Tea updated.');
-      setFile(null);
-      setRemove(false);
+      pick('');
       router.refresh();
     } catch {
       toast.error('Could not update the tea. Try again.');
@@ -66,7 +76,7 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
           id="links-tea"
           className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm"
           value={tea}
-          onChange={(e) => setTea(e.target.value)}
+          onChange={(e) => pick(e.target.value)}
         >
           <option value="">Pick a tea</option>
           {catalogue.map((p) => (
@@ -116,8 +126,9 @@ export function TeaLinksForm({ catalogue }: { catalogue: ProductSummary[] }) {
         />
       </div>
       <p className="text-muted-foreground text-sm">
-        Saving replaces the credit and the shop link (empty removes them). No file keeps the current
-        photo; Remove photo clears it and its credit, and the drawn tin shows again.
+        Saving replaces the credit and the shop link with what the fields show (empty removes them).
+        No file keeps the current photo; Remove photo clears it and its credit, and the drawn tin
+        shows again.
       </p>
       <Button type="submit" disabled={busy || !tea}>
         Save tea

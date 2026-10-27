@@ -1,10 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { ProductSummary } from '@/features/products';
 import type { Database } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
-import type { ReviewDecision, ReviewQueue } from '../types';
+import type { CatalogueTea, ReviewDecision, ReviewQueue } from '../types';
 
 type Client = SupabaseClient<Database>;
 
@@ -63,14 +62,18 @@ export async function listReviewQueue(supabase: Client): Promise<ReviewQueue> {
   };
 }
 
-export async function listApprovedTeas(supabase: Client): Promise<ProductSummary[]> {
+export async function listApprovedTeas(supabase: Client): Promise<CatalogueTea[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, brand, category')
+    .select('id, name, brand, category, image_credit, shop_url')
     .eq('status', 'approved')
     .order('name');
   if (error) throw error;
-  return data;
+  return data.map(({ image_credit, shop_url, ...tea }) => ({
+    ...tea,
+    imageCredit: image_credit,
+    shopUrl: shop_url,
+  }));
 }
 
 export async function reviewTea(

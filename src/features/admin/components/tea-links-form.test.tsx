@@ -15,7 +15,24 @@ vi.mock('sonner', () => ({ toast }));
 
 import { TeaLinksForm } from './tea-links-form';
 
-const catalogue = [{ id: 't1', name: 'Sayaka', brand: 'Ippodo', category: 'matcha' as const }];
+const catalogue = [
+  {
+    id: 't1',
+    name: 'Sayaka',
+    brand: 'Ippodo',
+    category: 'matcha' as const,
+    imageCredit: null,
+    shopUrl: null,
+  },
+  {
+    id: 't2',
+    name: 'Uji Gold',
+    brand: 'Marukyu',
+    category: 'matcha' as const,
+    imageCredit: 'Marukyu Koyamaen',
+    shopUrl: 'https://shop.example/gold',
+  },
+];
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -78,6 +95,68 @@ describe('TeaLinksForm', () => {
       table: 'rpc:set_tea_links',
       method: 'rpc',
       args: [{ tea: 't1', image: null, shop: '', credit: 'Ippodo' }],
+    });
+  });
+
+  it('shows the tea’s saved credit and shop link, and clears them after saving', async () => {
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:set_tea_links': { data: null, error: null } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't2');
+    expect(screen.getByLabelText('Photo credit (optional)')).toHaveValue('Marukyu Koyamaen');
+    expect(screen.getByLabelText('Shop link (optional)')).toHaveValue('https://shop.example/gold');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
+    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    expect(screen.getByLabelText('Tea')).toHaveValue('');
+    expect(screen.getByLabelText('Photo credit (optional)')).toHaveValue('');
+    expect(screen.getByLabelText('Shop link (optional)')).toHaveValue('');
+  });
+
+  it('editing only the shop link keeps the credit', async () => {
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:set_tea_links': { data: null, error: null } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't2');
+    const shop = screen.getByLabelText('Shop link (optional)');
+    await userEvent.clear(shop);
+    await userEvent.type(shop, 'https://shop.example/new');
+    await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    expect(fake.calls).toContainEqual({
+      table: 'rpc:set_tea_links',
+      method: 'rpc',
+      args: [
+        { tea: 't2', image: null, shop: 'https://shop.example/new', credit: 'Marukyu Koyamaen' },
+      ],
+    });
+  });
+
+  it('editing only the credit keeps the shop link', async () => {
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:set_tea_links': { data: null, error: null } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't2');
+    const credit = screen.getByLabelText('Photo credit (optional)');
+    await userEvent.clear(credit);
+    await userEvent.type(credit, 'Ippodo');
+    await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    expect(fake.calls).toContainEqual({
+      table: 'rpc:set_tea_links',
+      method: 'rpc',
+      args: [{ tea: 't2', image: null, shop: 'https://shop.example/gold', credit: 'Ippodo' }],
     });
   });
 

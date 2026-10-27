@@ -12,7 +12,7 @@ validated by `teaPriceSchema` (both above zero, or both empty).
 
 `ReportsQueue`: open reports, each with the reported text, a reason box, "Remove" and "Keep it".
 
-`TeaLinksForm` also takes an optional photo credit (at most 120 characters, checked by `teaCreditSchema`) and a "Remove photo" checkbox; with no file and no removal the current photo stays.
+`TeaLinksForm` also takes an optional photo credit (at most 120 characters, checked by `teaCreditSchema`) and a "Remove photo" checkbox; with no file and no removal the current photo stays. Picking a tea prefills the credit and shop link from its saved values, so editing one never wipes the other; the form clears after a save.
 
 ## Contents
 
