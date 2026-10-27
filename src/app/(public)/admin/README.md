@@ -6,7 +6,7 @@
 `is_admin` (set once by hand in SQL), and is excluded from search engines; only admins see its "Review queue" title. Rendered per
 request.
 
-It lists teas and shops to review and open reports, and has forms for a tea's photo and shop
+It is four tabs (review queue, reports, tea photo, tea price), kept in the URL hash. It lists teas and shops to review and open reports, and has forms for a tea's photo and shop
 link and its reference price.
 
 ## Contents

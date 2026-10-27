@@ -9,7 +9,7 @@ tea added there awaits review before it joins Explore, and the dialog says so; a
 an existing tea is named as such. `CommunityReviews` hides "Add your rating" when the page says
 the viewer cannot rate the tea. The
 form adds `FlavorNotePicker`, `TasteProfileInput` and the collapsed `PrepFields` (a 16px panel, like the other tiles); star and
-taste inputs follow the radiogroup keyboard pattern via `lib/roving-radio`.
+taste inputs follow the radiogroup keyboard pattern via `lib/roving-radio`. `FlushSelect` (in `form-selects`) is the flush picker; dose, water and temperature use `UnitInput` so units sit inside the field. The new-product step has a "Back to search" button.
 
 The product page shows `ProductInsights` ("What does it taste like?": `TasteStructure`
 sliders between two poles, `FlavorFamilies` cards, the typical prep) and

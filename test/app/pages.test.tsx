@@ -924,10 +924,15 @@ describe('Admin page', () => {
     expect(screen.getByRole('heading', { name: 'Teas awaiting review (1)' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Approve Hoshi' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Shop applications (0)' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Review queue, 1 waiting' })).toBeInTheDocument();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('combobox', { name: 'Tea that Hoshi duplicates' }));
+    expect(await screen.findAllByRole('option')).toHaveLength(1);
+    await user.keyboard('{Escape}');
+
+    await user.click(screen.getByRole('tab', { name: 'Reports' }));
     expect(screen.getByRole('heading', { name: 'Reports (0)' })).toBeInTheDocument();
-    expect(
-      within(screen.getByLabelText('Tea that Hoshi duplicates')).getAllByRole('option')
-    ).toHaveLength(2);
   });
 });
 

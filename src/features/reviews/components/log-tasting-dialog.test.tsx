@@ -182,4 +182,13 @@ describe('LogTastingDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Log a tasting' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  it('goes back from the new-product step to the search, keeping the typed name', async () => {
+    setup({ 'rpc:search_teas': { data: [], error: null } });
+    await openAndSearch('Kagoshima Gold');
+    await userEvent.click(await screen.findByRole('button', { name: 'Add as new product' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to search' }));
+
+    expect(screen.getByRole('combobox', { name: 'Search products' })).toHaveValue('Kagoshima Gold');
+  });
 });

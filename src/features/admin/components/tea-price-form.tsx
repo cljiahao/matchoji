@@ -6,12 +6,13 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { UnitInput } from '@/components/widgets';
 import type { ProductSummary } from '@/features/products';
 import { createClient } from '@/integrations/supabase/client';
 
 import { setTeaPrice } from '../api/admin-service';
+import { TeaSelect } from './tea-select';
 
 // Both empty clears the price; otherwise both must be positive and within the columns' range.
 export const teaPriceSchema = z.union([
@@ -52,51 +53,53 @@ export function TeaPriceForm({ catalogue }: { catalogue: ProductSummary[] }) {
   }
 
   return (
-    <form onSubmit={submit} className="max-w-xl space-y-4" aria-label="Tea price">
+    <form onSubmit={submit} className="max-w-xl space-y-6" aria-label="Tea price">
       <div className="space-y-2">
         <Label htmlFor="price-tea">Tea</Label>
-        <select
+        <TeaSelect
           id="price-tea"
-          className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm"
+          teas={catalogue}
           value={tea}
-          onChange={(e) => setTea(e.target.value)}
-        >
-          <option value="">Pick a tea</option>
-          {catalogue.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.brand ? `${p.name} · ${p.brand}` : p.name}
-            </option>
-          ))}
-        </select>
+          onChange={setTea}
+          placeholder="Pick a tea"
+        />
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
+      <div className="flex flex-wrap gap-4">
+        <div className="w-36 space-y-2">
           <Label htmlFor="price-sgd">Price (S$)</Label>
-          <Input
+          <UnitInput
             id="price-sgd"
+            unit="S$"
+            unitPosition="start"
             inputMode="decimal"
             placeholder="32.00"
+            aria-describedby="price-help"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
         </div>
-        <div className="space-y-2">
+        <div className="w-32 space-y-2">
           <Label htmlFor="price-grams">Pack size (g)</Label>
-          <Input
+          <UnitInput
             id="price-grams"
+            unit="g"
             inputMode="decimal"
             placeholder="40"
+            aria-describedby="price-help"
             value={grams}
             onChange={(e) => setGrams(e.target.value)}
           />
         </div>
       </div>
-      <p className="text-muted-foreground text-sm">
+      <p id="price-help" className="text-muted-foreground -mt-2 text-sm">
         The maker&apos;s price for one pack, in Singapore dollars. Leave both empty to remove it.
       </p>
-      <Button type="submit" disabled={busy || !tea}>
-        Save price
-      </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button type="submit" size="lg" disabled={busy || !tea}>
+          {busy ? 'Saving…' : 'Save price'}
+        </Button>
+        {!tea && <p className="text-muted-foreground text-sm">Pick a tea to set its price.</p>}
+      </div>
     </form>
   );
 }

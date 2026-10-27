@@ -65,12 +65,13 @@ export async function listReviewQueue(supabase: Client): Promise<ReviewQueue> {
 export async function listApprovedTeas(supabase: Client): Promise<CatalogueTea[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, brand, category, image_credit, shop_url')
+    .select('id, name, brand, category, image_url, image_credit, shop_url')
     .eq('status', 'approved')
     .order('name');
   if (error) throw error;
-  return data.map(({ image_credit, shop_url, ...tea }) => ({
+  return data.map(({ image_url, image_credit, shop_url, ...tea }) => ({
     ...tea,
+    imageUrl: image_url,
     imageCredit: image_credit,
     shopUrl: shop_url,
   }));

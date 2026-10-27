@@ -24,6 +24,12 @@ function setup(error: unknown = null) {
   return fake;
 }
 
+// The catalogue picker is a Radix select, so a pick is a click on the trigger then an option.
+async function pickTea(label: string, option: string) {
+  await userEvent.click(screen.getByRole('combobox', { name: label }));
+  await userEvent.click(await screen.findByRole('option', { name: option }));
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -52,7 +58,7 @@ describe('TeaPriceForm', () => {
     const save = screen.getByRole('button', { name: 'Save price' });
     expect(save).toBeDisabled();
 
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.type(screen.getByLabelText('Price (S$)'), '32');
     await userEvent.type(screen.getByLabelText('Pack size (g)'), '40');
     await userEvent.click(save);
@@ -68,7 +74,7 @@ describe('TeaPriceForm', () => {
 
   it('clears the price when both fields are empty', async () => {
     const fake = setup();
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.click(screen.getByRole('button', { name: 'Save price' }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Price cleared.'));
@@ -81,7 +87,7 @@ describe('TeaPriceForm', () => {
 
   it('refuses half a price without saving, and reports a failed save', async () => {
     const fake = setup(new Error('denied'));
-    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await pickTea('Tea', 'Sayaka · Ippodo');
     await userEvent.type(screen.getByLabelText('Price (S$)'), '32');
     await userEvent.click(screen.getByRole('button', { name: 'Save price' }));
     expect(toast.error).toHaveBeenCalledWith(
@@ -95,5 +101,13 @@ describe('TeaPriceForm', () => {
       expect(toast.error).toHaveBeenCalledWith('Could not save the price. Try again.')
     );
     expect(router.refresh).not.toHaveBeenCalled();
+  });
+
+  it('says why Save is off until a tea is picked, and shows the units beside the numbers', () => {
+    setup();
+
+    expect(screen.getByText('Pick a tea to set its price.')).toBeInTheDocument();
+    expect(screen.getByText('S$')).toBeInTheDocument();
+    expect(screen.getByText('g')).toBeInTheDocument();
   });
 });

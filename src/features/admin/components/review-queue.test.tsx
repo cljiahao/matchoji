@@ -33,6 +33,12 @@ function setup(results: Parameters<typeof createFakeSupabase>[0]) {
   return fake;
 }
 
+// The catalogue picker is a Radix select, so a pick is a click on the trigger then an option.
+async function pickTea(label: string, option: string) {
+  await userEvent.click(screen.getByRole('combobox', { name: label }));
+  await userEvent.click(await screen.findByRole('option', { name: option }));
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -70,7 +76,7 @@ describe('ReviewQueueList', () => {
 
     const merge = screen.getByRole('button', { name: 'Merge' });
     expect(merge).toBeDisabled();
-    await userEvent.selectOptions(screen.getByLabelText('Tea that Hoshi duplicates'), 'keep');
+    await pickTea('Tea that Hoshi duplicates', 'Sayaka · Ippodo');
     await userEvent.click(merge);
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Merge into an approved tea.'));

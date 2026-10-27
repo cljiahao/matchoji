@@ -37,6 +37,18 @@ describe('DisplayNameForm', () => {
     expect(fake.calls.find((c) => c.method === 'update')?.args[0]).toEqual({
       display_name: 'Aiko T',
     });
+    expect(screen.getByRole('status')).toHaveTextContent('Saved');
+    await userEvent.type(input, '!');
+    expect(screen.getByRole('status')).not.toHaveTextContent('Saved');
+  });
+
+  it('says why Save is off while the name is blank, and counts the characters', async () => {
+    renderWithQuery(<DisplayNameForm userId="u1" current="Aiko" />);
+
+    expect(screen.getByText('4/40')).toBeInTheDocument();
+    await userEvent.clear(screen.getByLabelText('Name shown on your reviews'));
+    expect(screen.getByText('A name is needed to save.')).toBeInTheDocument();
+    expect(screen.getByText('0/40')).toBeInTheDocument();
   });
 });
 
@@ -50,6 +62,7 @@ describe('DeleteAccountSection', () => {
 
     const remove = screen.getByRole('button', { name: 'Delete my account' });
     expect(remove).toBeDisabled();
+    expect(screen.getByText('The button unlocks once you type it.')).toBeInTheDocument();
     await userEvent.type(screen.getByLabelText('Type “delete” to confirm'), 'Delete');
     await userEvent.click(remove);
 
