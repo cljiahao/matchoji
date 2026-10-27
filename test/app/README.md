@@ -4,7 +4,7 @@
 
 Route-level tests for `src/app/`, rendered as async Server Components against a fake
 Supabase client: the home page (the following feed, its three shelves, empty shelves and empty catalogue),
-Explore (SQL filters including grade and minimum rating, sort, search, paging, the match sort and badges, no-results
+Explore (SQL filters including grade and minimum rating, sort, search, "Show more" and the shown count, the match sort and badges, no-results
 and empty states), the regions page (counts, supply levels, both sorts, links), the supply page (national
 tiles, prefecture cards, sources, empty state), the sell page (signed out, applying,
 pending, rejected with its reason, approved with listings), the admin page (404 for
@@ -22,7 +22,7 @@ Supabase project and Google profile photos. `auth-callback.test.ts` also checks 
 
 Tea page tests get an empty `edition_ratings` result by default from `useServer`.
 
-The tea page tests cover the photo credit caption and the footer's photo takedown link.
+The tea page tests cover the photo credit caption; the footer's links and photo takedown link are tested with the footer in `src/components/layout`.
 
 ## Contents
 
