@@ -125,14 +125,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <>
       <div className={cn(CATEGORY_STYLES[product.category].band)}>
         <div className="max-w-site mx-auto grid w-full gap-8 px-6 py-10 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-12 sm:py-14 lg:grid-cols-[minmax(0,22rem)_1fr]">
-          <ProductImageWell
-            imageUrl={product.imageUrl}
-            category={product.category}
-            name={product.name}
-            seed={product.id}
-            mark={product.brand ?? product.name}
-            className="bg-background/70 mx-auto aspect-square w-full max-w-60 sm:mx-0 sm:max-w-none"
-          />
+          <div>
+            <ProductImageWell
+              imageUrl={product.imageUrl}
+              category={product.category}
+              name={product.name}
+              seed={product.id}
+              mark={product.brand ?? product.name}
+              className="bg-background/70 mx-auto aspect-square w-full max-w-60 sm:mx-0 sm:max-w-none"
+            />
+            {product.imageUrl && product.imageCredit && (
+              <p className="text-muted-foreground mx-auto mt-2 max-w-60 text-xs sm:mx-0 sm:max-w-none">
+                Photo: {product.imageCredit}
+              </p>
+            )}
+          </div>
           <div className="flex flex-col justify-center">
             {product.brand && <p className="text-lg font-medium">{product.brand}</p>}
             <h1 className="mt-1 text-4xl font-bold tracking-tight text-balance sm:text-5xl">

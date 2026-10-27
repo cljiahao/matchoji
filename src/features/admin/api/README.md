@@ -9,6 +9,8 @@ reported text and who wrote it) and `resolveReport`, plus `setTeaPrice` (a tea's
 or null to clear it).
 Tested against the recording fake client, whose `rpc` calls are queued as `rpc:<name>`.
 
+`setTeaLinks` takes `image` (null keeps the current photo, `''` removes it and its credit), `shop` and `credit`.
+
 ## Contents
 
 - `admin-service.test.ts`

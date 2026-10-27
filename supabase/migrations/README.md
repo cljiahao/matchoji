@@ -74,6 +74,8 @@ of the category, once at least 3 are priced), and the same columns appended to `
 lesson slugs; only the slugs are client-writable, the learner and time are the server's), private to
 the learner, audited, 200 a day at most, and gone with the account.
 
+`20261101000000_tea_image_credit.sql` adds `products.image_credit` (1–120 characters, admin-only: suggested teas cannot carry one) and replaces `set_tea_links` with a four-argument version where a null image keeps the photo and an empty one clears it and its credit.
+
 ## Contents
 
 - `20260914071129_phase1_schema.sql`
@@ -100,6 +102,7 @@ the learner, audited, 200 a day at most, and gone with the account.
 - `20261029000000_security_hardening.sql`
 - `20261030000000_tea_prices.sql`
 - `20261031000000_lesson_progress.sql`
+- `20261101000000_tea_image_credit.sql`
 
 ## Parent
 

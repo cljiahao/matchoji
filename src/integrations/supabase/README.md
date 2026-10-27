@@ -26,6 +26,8 @@ the `tea_prices` view and `set_tea_price`, `lesson_progress`, the `catalogue_tea
 until checkout is built. `pnpm db:types` writes the CLI's generated types to
 `database.generated.ts` for comparing against these hand-written ones.
 
+`database.types.ts` also has `products.image_credit` and the four-argument `set_tea_links` (a null image keeps the photo).
+
 ## Contents
 
 - `client.ts`

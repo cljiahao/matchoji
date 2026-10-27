@@ -22,6 +22,8 @@ Supabase project and Google profile photos. `auth-callback.test.ts` also checks 
 
 Tea page tests get an empty `edition_ratings` result by default from `useServer`.
 
+The tea page tests cover the photo credit caption and the footer's photo takedown link.
+
 ## Contents
 
 - `auth-callback.test.ts`

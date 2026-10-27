@@ -91,18 +91,69 @@ describe('reviewing teas', () => {
     const t = await tea('Linked', 'approved');
     await call(
       ADMIN,
-      `select public.set_tea_links ($1, 'https://img.example/a.webp', 'https://shop.example/a')`,
+      `select public.set_tea_links ($1, 'https://img.example/a.webp', 'https://shop.example/a', '')`,
       [t]
     );
     expect(
       await rows('select image_url, shop_url from public.products where id = $1', [t])
     ).toEqual([{ image_url: 'https://img.example/a.webp', shop_url: 'https://shop.example/a' }]);
     await expect(
-      call(ADMIN, `select public.set_tea_links ($1, 'http://img.example/a.webp', '')`, [t])
+      call(ADMIN, `select public.set_tea_links ($1, 'http://img.example/a.webp', '', '')`, [t])
     ).rejects.toThrow(/products_image_url_https/);
-    await expect(call(TASTER, `select public.set_tea_links ($1, '', '')`, [t])).rejects.toThrow(
+    await expect(call(TASTER, `select public.set_tea_links ($1, '', '', '')`, [t])).rejects.toThrow(
       /Only admins/
     );
+  });
+
+  it('credits the photo, keeps it on a null image, and clears both on an empty one', async () => {
+    const t = await tea('Credited', 'approved');
+    const state = () =>
+      rows('select image_url, image_credit from public.products where id = $1', [t]);
+    await call(
+      ADMIN,
+      `select public.set_tea_links ($1, 'https://img.example/c.webp', '', ' Marukyu Koyamaen ')`,
+      [t]
+    );
+    expect(await state()).toEqual([
+      { image_url: 'https://img.example/c.webp', image_credit: 'Marukyu Koyamaen' },
+    ]);
+
+    await call(ADMIN, `select public.set_tea_links ($1, null, '', 'Ippodo')`, [t]);
+    expect(await state()).toEqual([
+      { image_url: 'https://img.example/c.webp', image_credit: 'Ippodo' },
+    ]);
+
+    await call(ADMIN, `select public.set_tea_links ($1, null, '', '  ')`, [t]);
+    expect(await state()).toEqual([
+      { image_url: 'https://img.example/c.webp', image_credit: null },
+    ]);
+
+    await call(ADMIN, `select public.set_tea_links ($1, 'https://img.example/c.webp', '', 'X')`, [
+      t,
+    ]);
+    await call(ADMIN, `select public.set_tea_links ($1, '', '', 'Ignored')`, [t]);
+    expect(await state()).toEqual([{ image_url: null, image_credit: null }]);
+  });
+
+  it('refuses a credit over 120 characters', async () => {
+    const t = await tea('Long credit', 'approved');
+    await expect(
+      call(ADMIN, `select public.set_tea_links ($1, null, '', $2)`, [t, 'x'.repeat(121)])
+    ).rejects.toThrow(/products_image_credit_check/);
+  });
+
+  it('refuses a suggested tea that arrives with a credit, and a non-admin writing one', async () => {
+    await expect(
+      call(
+        TASTER,
+        `insert into public.products (name, category, status, added_by, image_credit)
+         values ('Fake credit', 'matcha', 'pending', auth.uid (), 'Ippodo')`
+      )
+    ).rejects.toThrow(/row-level security/);
+    const t = await tea('Taster credit', 'approved');
+    await expect(
+      call(TASTER, `select public.set_tea_links ($1, null, '', 'Mine')`, [t])
+    ).rejects.toThrow(/Only admins/);
   });
 });
 

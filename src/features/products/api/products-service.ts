@@ -26,6 +26,7 @@ interface ProductRow {
   grade: string | null;
   region_id: string | null;
   image_url: string | null;
+  image_credit: string | null;
   shop_url: string | null;
   status: ProductStatus;
   added_by: string | null;
@@ -72,6 +73,7 @@ async function hydrateProduct(supabase: Client, row: ProductRow): Promise<Produc
       regionName: region?.name ?? null,
       supply: region?.[`${row.category}_supply`] ?? null,
       imageUrl: row.image_url,
+      imageCredit: row.image_credit,
       shopUrl: row.shop_url,
       status: row.status,
       addedBy: row.added_by,
@@ -117,6 +119,7 @@ function fromCatalogue(row: CatalogueRow): Product {
     regionName: row.region_name,
     supply: row.supply,
     imageUrl: row.image_url,
+    imageCredit: null,
     shopUrl: row.shop_url,
     status: 'approved',
     addedBy: null,
@@ -214,7 +217,7 @@ export async function getProduct(supabase: Client, id: string): Promise<Product 
   const { data, error } = await supabase
     .from('products')
     .select(
-      'id, name, brand, category, grade, region_id, image_url, shop_url, status, added_by, review_note, merged_into, created_at, price_sgd, pack_grams'
+      'id, name, brand, category, grade, region_id, image_url, image_credit, shop_url, status, added_by, review_note, merged_into, created_at, price_sgd, pack_grams'
     )
     .eq('id', id)
     .maybeSingle();

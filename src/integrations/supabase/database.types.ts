@@ -282,6 +282,8 @@ export interface Database {
           grade: string | null;
           region_id: string | null;
           image_url: string | null;
+          // Who the photo comes from, shown under it; set by admins with the photo.
+          image_credit: string | null;
           shop_url: string | null;
           status: ProductStatus;
           added_by: string | null;
@@ -301,6 +303,7 @@ export interface Database {
           grade?: string | null;
           region_id?: string | null;
           image_url?: string | null;
+          image_credit?: string | null;
           shop_url?: string | null;
           status?: ProductStatus;
           added_by?: string | null;
@@ -319,6 +322,7 @@ export interface Database {
           grade?: string | null;
           region_id?: string | null;
           image_url?: string | null;
+          image_credit?: string | null;
           shop_url?: string | null;
           status?: ProductStatus;
           added_by?: string | null;
@@ -549,7 +553,11 @@ export interface Database {
         Args: { tea: string; decision: 'approved' | 'rejected'; note?: string };
         Returns: undefined;
       };
-      set_tea_links: { Args: { tea: string; image: string; shop: string }; Returns: undefined };
+      // image null keeps the current photo; '' clears it and its credit.
+      set_tea_links: {
+        Args: { tea: string; image: string | null; shop: string; credit: string };
+        Returns: undefined;
+      };
       set_tea_price: {
         Args: { tea: string; price: number | null; grams: number | null };
         Returns: undefined;

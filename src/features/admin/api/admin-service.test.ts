@@ -99,13 +99,20 @@ describe('admin actions', () => {
     await reviewTea(client, 't1', 'rejected', 'Duplicate');
     await mergeTea(client, 't1', 't2');
     await reviewShop(client, 'v1', 'approved');
-    await setTeaLinks(client, 't2', { image: '', shop: 'https://shop.example' });
+    await setTeaLinks(client, 't2', {
+      image: null,
+      shop: 'https://shop.example',
+      credit: 'Ippodo',
+    });
 
     expect(calls.map((c) => [c.table, c.args[0]])).toEqual([
       ['rpc:review_tea', { tea: 't1', decision: 'rejected', note: 'Duplicate' }],
       ['rpc:merge_tea', { duplicate: 't1', keep: 't2' }],
       ['rpc:review_vendor', { vendor: 'v1', decision: 'approved', note: undefined }],
-      ['rpc:set_tea_links', { tea: 't2', image: '', shop: 'https://shop.example' }],
+      [
+        'rpc:set_tea_links',
+        { tea: 't2', image: null, shop: 'https://shop.example', credit: 'Ippodo' },
+      ],
     ]);
   });
 

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 describe('TeaLinksForm', () => {
-  it('uploads the photo under the tea, then saves it with the shop link', async () => {
+  it('uploads the photo under the tea, then saves it with the credit and shop link', async () => {
     const fake = createFakeBrowserClient({
       results: { 'rpc:set_tea_links': { data: null, error: null } },
     });
@@ -36,6 +36,7 @@ describe('TeaLinksForm', () => {
       screen.getByLabelText('Photo (optional)'),
       new File(['x'], 'Tin Shot.WEBP', { type: 'image/webp' })
     );
+    await userEvent.type(screen.getByLabelText('Photo credit (optional)'), ' Marukyu Koyamaen ');
     await userEvent.type(
       screen.getByLabelText('Shop link (optional)'),
       'https://shop.example/sayaka'
@@ -48,9 +49,72 @@ describe('TeaLinksForm', () => {
     expect(fake.calls).toContainEqual({
       table: 'rpc:set_tea_links',
       method: 'rpc',
-      args: [{ tea: 't1', image: `https://cdn.test/${path}`, shop: 'https://shop.example/sayaka' }],
+      args: [
+        {
+          tea: 't1',
+          image: `https://cdn.test/${path}`,
+          shop: 'https://shop.example/sayaka',
+          credit: 'Marukyu Koyamaen',
+        },
+      ],
     });
     expect(router.refresh).toHaveBeenCalled();
+  });
+
+  it('keeps the current photo when no file is chosen', async () => {
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:set_tea_links': { data: null, error: null } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await userEvent.type(screen.getByLabelText('Photo credit (optional)'), 'Ippodo');
+    await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    expect(fake.upload).not.toHaveBeenCalled();
+    expect(fake.calls).toContainEqual({
+      table: 'rpc:set_tea_links',
+      method: 'rpc',
+      args: [{ tea: 't1', image: null, shop: '', credit: 'Ippodo' }],
+    });
+  });
+
+  it('removes the photo, and its credit, when asked', async () => {
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:set_tea_links': { data: null, error: null } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    await userEvent.click(screen.getByLabelText('Remove photo'));
+    expect(screen.getByLabelText('Photo (optional)')).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    expect(fake.upload).not.toHaveBeenCalled();
+    expect(fake.calls).toContainEqual({
+      table: 'rpc:set_tea_links',
+      method: 'rpc',
+      args: [{ tea: 't1', image: '', shop: '', credit: '' }],
+    });
+  });
+
+  it('refuses a credit over 120 characters before saving anything', async () => {
+    const fake = createFakeBrowserClient({});
+    supabase.current = fake.client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    await userEvent.selectOptions(screen.getByLabelText('Tea'), 't1');
+    fireEvent.change(screen.getByLabelText('Photo credit (optional)'), {
+      target: { value: 'x'.repeat(121) },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Save tea' }));
+
+    expect(toast.error).toHaveBeenCalledWith('Keep the photo credit to 120 characters.');
+    expect(fake.calls).toEqual([]);
   });
 
   it('refuses an http shop link before saving anything', async () => {

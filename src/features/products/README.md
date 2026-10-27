@@ -6,6 +6,8 @@ The product catalog: listing, searching, and creating hojicha/matcha products, p
 discover-feed UI (cards, category tabs, empty state). `types.ts`'s `Product` carries a reference
 `price` (`TeaPrice`: pack price in SGD, pack size, price per gram and budget/mid/premium band).
 
+A `Product` carries `imageCredit` (who the photo is from), read on the tea's own page and left null in lists.
+
 ## Contents
 
 - `api/`

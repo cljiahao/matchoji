@@ -21,6 +21,8 @@ lookups go through `selectIn` batches, since `listProducts` loads the whole cata
 so they can be unit-tested without a client. Services are tested against a recording
 fake Supabase client (`test/support/fake-supabase.ts`).
 
+`getProduct` reads `products.image_credit` into `imageCredit`; list rows leave it null.
+
 ## Contents
 
 - `index.ts`

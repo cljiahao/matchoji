@@ -17,6 +17,8 @@ outside the catalogue out of search engines; the product read is shared with the
 React `cache`. Signed-in tasters who have not rated the tea see `MatchSummary`. A "Harvests" section compares editions. Each review carries
 `ReviewReactions` (likes, comments, report), loaded with the page.
 
+Under the photo, a muted "Photo: <credit>" caption shows when the tea has both a photo and a credit.
+
 ## Contents
 
 - `loading.tsx`

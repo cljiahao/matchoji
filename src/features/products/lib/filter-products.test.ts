@@ -18,6 +18,7 @@ const product = (id: string, grade: string | null, avgStars: number | null): Pro
   reviewNote: null,
   mergedInto: null,
   imageUrl: null,
+  imageCredit: null,
   createdAt: '2026-09-01T00:00:00Z',
   avgStars,
   reviewCount: avgStars === null ? 0 : 1,

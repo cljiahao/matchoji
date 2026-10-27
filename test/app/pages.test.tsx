@@ -1103,6 +1103,41 @@ describe('Product page', () => {
     expect(screen.queryByRole('heading', { name: 'Where to buy' })).not.toBeInTheDocument();
   });
 
+  it('credits the photo under the image when the tea has both', async () => {
+    useServer({
+      products: {
+        data: {
+          ...productRow,
+          image_url: 'https://cdn.test/tin.webp',
+          image_credit: 'Marukyu Koyamaen',
+        },
+        error: null,
+      },
+      product_ratings: { data: null, error: null },
+      'rpc:product_reviews': { data: [], error: null },
+      stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
+    });
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+
+    expect(screen.getByText('Photo: Marukyu Koyamaen')).toBeInTheDocument();
+  });
+
+  it('shows no credit without a photo, even if one is stored', async () => {
+    useServer({
+      products: { data: { ...productRow, image_credit: 'Marukyu Koyamaen' }, error: null },
+      product_ratings: { data: null, error: null },
+      'rpc:product_reviews': { data: [], error: null },
+      stock_reports: { data: null, error: null },
+      listings: { data: [], error: null },
+    });
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+
+    expect(screen.queryByText(/^Photo:/)).not.toBeInTheDocument();
+  });
+
   it('invites sellers and stock reports on an approved tea nobody sells yet', async () => {
     useServer({
       products: { data: productRow, error: null },
@@ -1377,7 +1412,14 @@ describe('static routes', () => {
       '/regions/supply'
     );
     expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');
-    expect(screen.getAllByRole('link')).toHaveLength(6);
+    expect(screen.getAllByRole('link')).toHaveLength(7);
+    const takedown = screen.getByRole('link', { name: 'Ask us to take it down.' });
+    expect(takedown).toHaveAttribute(
+      'href',
+      'https://github.com/cljiahao/matchoji/issues/new?title=Photo%20removal%20request'
+    );
+    expect(takedown).toHaveAttribute('target', '_blank');
+    expect(takedown).toHaveAttribute('rel', 'noopener noreferrer');
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');

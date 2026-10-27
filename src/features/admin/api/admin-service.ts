@@ -98,10 +98,11 @@ export async function reviewShop(
   if (error) throw error;
 }
 
+// image null keeps the current photo; '' removes it and its credit.
 export async function setTeaLinks(
   supabase: Client,
   tea: string,
-  links: { image: string; shop: string }
+  links: { image: string | null; shop: string; credit: string }
 ): Promise<void> {
   const { error } = await supabase.rpc('set_tea_links', { tea, ...links });
   if (error) throw error;
