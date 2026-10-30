@@ -1,6 +1,7 @@
 # Matchoji — Vivino Parity Roadmap
 
-Status: Draft for review
+Status: M0–M4 and M6 shipped, except what the user skipped (the CI migration-drift check, the
+types-freshness check and error tracking). M5 and M5b are parked; label scanning is deferred.
 Date: 2026-10-24
 Inputs: a read-only audit of this repository (2026-10-24) and an inventory of how Vivino works
 today, built from Vivino's own articles and legal centre (May–June 2026). Sources are listed at
@@ -206,8 +207,8 @@ Each milestone ships as one or more PRs under the existing gates: tests, READMEs
 
 - **Editions:** `product_editions(product_id, harvest_year, flush)`, where flush is one of first, second, autumn or unspecified. A tasting may name an edition.
 - **Roll-up:** a tea's score stays the roll-up across editions, and each edition shows its own score once it has 3 ratings.
-- **Badges** follow Vivino's vintage badges: "Top rated harvest" and "Popular: more than 30 ratings".
-- **Cellar / stash:** an optional quantity on want-to-try entries you own, with an "opened on" date. Matcha goes stale after opening, so the tea page shows a freshness hint taken from that maker's own storage guidance, checked per maker before it ships.
+- **Badges** follow Vivino's vintage badges: "Top rated harvest" and "Popular: more than 30 ratings". _Done._
+- **Cellar / stash:** an optional quantity on want-to-try entries you own, with an "opened on" date. Matcha goes stale after opening, so the tea page shows a freshness hint taken from that maker's own storage guidance, checked per maker before it ships. _Done: Ippodo and Aiya state a figure on their own sites; any other maker gets general advice._
 
 ### M5 — Commerce (Phase 3 rest)
 

@@ -5,6 +5,13 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- Harvests with more than 30 ratings show a "Popular" badge beside "Top rated harvest".
+- A tea you have opened shows a freshness hint on its page: days since opening and, for makers
+  whose own site states a figure (Ippodo, Aiya), their guidance with a source link; other makers
+  get general advice and a link to "Keeping matcha fresh".
+
 ### Security
 
 - The sign-in callback no longer trusts a forwarded host that is not the site's own when

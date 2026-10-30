@@ -101,3 +101,19 @@ export async function setStash(
     .eq('product_id', productId);
   if (error) throw error;
 }
+
+// The signed-in user's stash for one tea; null when it is not on their want-to-try list.
+export async function getStash(
+  supabase: Client,
+  userId: string,
+  productId: string
+): Promise<Stash | null> {
+  const { data, error } = await supabase
+    .from('wishlist')
+    .select('owned_quantity, opened_on')
+    .eq('user_id', userId)
+    .eq('product_id', productId)
+    .maybeSingle();
+  if (error) throw error;
+  return data && { ownedQuantity: data.owned_quantity ?? 0, openedOn: data.opened_on ?? null };
+}

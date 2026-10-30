@@ -1,6 +1,9 @@
 import type { EditionRating } from '../api/reviews-service';
 import { editionLabel } from '../lib/tasting-vocab';
 
+// Vivino's vintage badge: a harvest needs more than this many ratings to count as popular.
+export const POPULAR_HARVEST_RATINGS = 30;
+
 // "Compare harvests", like Vivino's vintages on a wine page.
 export function EditionList({ editions }: { editions: EditionRating[] }) {
   if (editions.length === 0) return null;
@@ -20,6 +23,11 @@ export function EditionList({ editions }: { editions: EditionRating[] }) {
               {e.topHarvest && (
                 <span className="bg-brand/10 text-brand rounded-full px-2.5 py-0.5 text-xs font-semibold">
                   Top rated harvest
+                </span>
+              )}
+              {e.reviewCount > POPULAR_HARVEST_RATINGS && (
+                <span className="bg-muted rounded-full px-2.5 py-0.5 text-xs font-semibold">
+                  Popular
                 </span>
               )}
               <span className="tabular-nums">

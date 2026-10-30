@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { makeReview } from '../../../../test/support/render';
 import { editionLabel } from '../lib';
 import { reviewSchema } from '../schemas/review.schema';
-import { EditionList } from './edition-list';
+import { EditionList, POPULAR_HARVEST_RATINGS } from './edition-list';
 import { ReviewItem } from './review-item';
 
 describe('editions', () => {
@@ -33,6 +33,28 @@ describe('editions', () => {
     const rows = screen.getAllByRole('listitem');
     expect(rows[0]).toHaveTextContent('2025 first flushTop rated harvest4.7 out of 53 ratings');
     expect(rows[1]).toHaveTextContent('2024 harvest3.0 out of 51 rating');
+  });
+
+  it('badge a harvest as Popular only above the rating threshold', () => {
+    const edition = (reviewCount: number, harvestYear: number) => ({
+      harvestYear,
+      flush: 'first',
+      reviewCount,
+      avgStars: 4,
+      topHarvest: false,
+    });
+    render(
+      <EditionList
+        editions={[
+          edition(POPULAR_HARVEST_RATINGS + 1, 2025),
+          edition(POPULAR_HARVEST_RATINGS, 2024),
+        ]}
+      />
+    );
+    const rows = screen.getAllByRole('listitem');
+    expect(POPULAR_HARVEST_RATINGS).toBe(30);
+    expect(rows[0]).toHaveTextContent('Popular');
+    expect(rows[1]).not.toHaveTextContent('Popular');
   });
 
   it('render nothing without editions', () => {
