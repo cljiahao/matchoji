@@ -5,7 +5,7 @@
 Dated design documents, one per feature/project brainstorming session. The 2026-09-14 spec
 carries dated notes on how Phase 4's scarcity dashboard was actually built why the
 retailer stock scrape became community stock reports, what Phase 3's first slice built, and the review queue for taster-added teas. The 2026-10-24 roadmap compares the whole flow
-with Vivino, lists the audit's fixes, and orders the remaining work into milestones M0–M6.
+with Vivino, lists the audit's fixes, and orders the remaining work into milestones M0–M6; its status line records what has shipped.
 
 ## Contents
 

@@ -14,7 +14,7 @@
 - `.prettierignore`
 - `.prettierrc`
 - `AGENTS.md`
-- `CHANGELOG.md`
+- `CHANGELOG.md` (unreleased changes, newest first)
 - `CLAUDE.md`
 - `components.json`
 - `DESIGN.md`
