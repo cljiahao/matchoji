@@ -7,7 +7,7 @@ middleware and hand-written database types. All three clients read their setting
 `env.ts`'s `supabaseEnv()`, which throws a clear "Supabase is not configured" error when the
 URL or key is missing; there is no offline fallback, so local dev needs `.env.local`. Clients authenticate with the publishable key
 (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `sb_publishable_...`), Supabase's replacement for
-the legacy anon key; no secret key is used. `clients.test.ts` checks the cookie
+the legacy anon key; no secret key is used. `middleware.ts`'s `updateSession` is called from `src/proxy.ts`. `clients.test.ts` checks the cookie
 wiring with `@supabase/ssr` mocked.
 
 `select-in.ts` splits a long `.in()` id list into batches of 100 (PostgREST puts the list in
