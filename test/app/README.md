@@ -17,8 +17,7 @@ loading routes, the public error boundary, and the OAuth callback's redirect han
 covers the Learn index (courses, recipes, guides), course and lesson pages (outline, practice,
 previous/next, the done button, 404s), recipe pages (brew numbers, steps, tips, the pre-filled log button's
 sign-in prompt, 404s) and guide pages. `config.test.ts` checks the proxy skips
-`/api/health` and the content security policy allows images only from the site, its
-Supabase project and Google profile photos. `auth-callback.test.ts` also checks its redirects are never cached and ignore a spoofed forwarded host.
+`/api/health`, that it sets a fresh nonce-based content security policy on each request (scripts, framing and the other directives), and that `next.config.ts` leaves the CSP to it but keeps `X-Frame-Options`. `auth-callback.test.ts` also checks its redirects are never cached and ignore a spoofed forwarded host.
 
 Tea page tests get an empty `edition_ratings` result by default from `useServer`.
 
