@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import type { Database } from './database.types';
 import { supabaseEnv } from './env';
 
-// Refreshes the Supabase session cookie on every request. Called from proxy.ts
+// Refreshes the Supabase session cookie on every request. Called from src/proxy.ts
 // (Next.js 16's replacement for middleware.ts).
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
