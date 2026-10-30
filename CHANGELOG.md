@@ -7,6 +7,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Security
 
+- The sign-in callback no longer trusts a forwarded host that is not the site's own when
+  building its redirects.
 - A private profile now keeps its tastings off the API: they still count towards every tea's
   score and show on tea pages as "Private taster" (no name, link or photo), but nobody else can
   list them, see them in a feed, or see who a private taster follows.
