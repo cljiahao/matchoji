@@ -236,6 +236,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
+                    loading="lazy"
+                    decoding="async"
                     alt={`Tasting photo ${i + 1}`}
                     className="h-36 w-36 rounded-2xl object-cover"
                   />

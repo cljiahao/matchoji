@@ -42,7 +42,7 @@ export const StarRatingInput = forwardRef<HTMLDivElement, StarRatingInputProps>(
               onClick={() => onChange?.(starValue)}
               onMouseEnter={() => setHovered(starValue)}
               onMouseLeave={() => setHovered(null)}
-              className="p-0.5"
+              className="p-2"
             >
               <Star
                 className={cn(

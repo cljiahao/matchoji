@@ -17,6 +17,8 @@ Component tests build `Review` objects with every field, including `authorId`.
 Want-to-try rows carry `StashEditor`: "I have this", how many and when opened (shown as days
 since opening, since matcha fades once opened).
 
+The compact want-to-try button extends its hit area to 44px without growing visually.
+
 ## Contents
 
 - `index.ts`

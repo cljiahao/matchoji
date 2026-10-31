@@ -19,6 +19,8 @@ React `cache`. Signed-in tasters who have not rated the tea see `MatchSummary`. 
 
 Under the photo, a muted "Photo: <credit>" caption shows when the tea has both a photo and a credit.
 
+Tasting photos load lazily.
+
 ## Contents
 
 - `loading.tsx`

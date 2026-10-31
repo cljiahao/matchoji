@@ -34,7 +34,7 @@ export function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full" aria-label="Account menu">
+      <DropdownMenuTrigger className="rounded-full p-1.5" aria-label="Account menu">
         <Avatar>
           <AvatarImage src={avatarUrl} alt={email} />
           <AvatarFallback>{initial}</AvatarFallback>
