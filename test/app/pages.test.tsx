@@ -1112,6 +1112,7 @@ describe('Product page', () => {
         product_ratings: { data: null, error: null },
         'rpc:product_reviews': { data: [], error: null },
         latest_reviews: { data: [], error: null },
+        wishlist: { data: null, error: null },
         stock_reports: { data: null, error: null },
         listings: { data: [], error: null },
       },
@@ -1123,6 +1124,30 @@ describe('Product page', () => {
     expect(screen.getByText('Rate it')).toBeInTheDocument();
     expect(screen.getByText('Add your rating')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Where to buy' })).not.toBeInTheDocument();
+  });
+
+  it('shows the freshness hint to a signed-in taster who opened this tea', async () => {
+    const opened = new Date(Date.now() - 12 * 86_400_000);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const openedOn = `${opened.getFullYear()}-${pad(opened.getMonth() + 1)}-${pad(opened.getDate())}`;
+    useServer(
+      {
+        products: { data: productRow, error: null },
+        product_ratings: { data: null, error: null },
+        'rpc:product_reviews': { data: [], error: null },
+        latest_reviews: { data: [], error: null },
+        tea_taste_profiles: { data: [], error: null },
+        wishlist: { data: { owned_quantity: 1, opened_on: openedOn }, error: null },
+        stock_reports: { data: null, error: null },
+        listings: { data: [], error: null },
+      },
+      { id: 'u1' }
+    );
+
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+
+    expect(screen.getByText(/Opened 12 days ago/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ippodo suggests' })).toBeInTheDocument();
   });
 
   it('credits the photo under the image when the tea has both', async () => {
@@ -1231,6 +1256,7 @@ describe('Product page', () => {
         'rpc:product_reviews': { data: [], error: null },
         latest_reviews: { data: [{ product_id: 'p9', stars: 5 }], error: null },
         tea_taste_profiles: { data: [], error: null },
+        wishlist: { data: null, error: null },
         stock_reports: { data: null, error: null },
         listings: { data: [], error: null },
       },

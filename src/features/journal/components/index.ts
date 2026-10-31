@@ -1,3 +1,4 @@
+export { FreshnessHint } from './freshness-hint';
 export { JournalStatsStrip } from './journal-stats-strip';
 export { JournalTimeline } from './journal-timeline';
 export { StashEditor } from './stash-editor';

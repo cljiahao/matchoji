@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
   addToWishlist,
+  getStash,
   isWishlisted,
   listWishlist,
   listWishlistIds,
@@ -41,6 +42,18 @@ describe('wishlist service', () => {
     expect(await isWishlisted(saved.client, 'u1', 'p1')).toBe(true);
     const missing = createFakeSupabase({ wishlist: { data: null, error: null } });
     expect(await isWishlisted(missing.client, 'u1', 'p1')).toBe(false);
+  });
+
+  it('getStash reads the stash, or null when the tea is not saved', async () => {
+    const saved = createFakeSupabase({
+      wishlist: { data: { owned_quantity: 2, opened_on: '2026-10-19' }, error: null },
+    });
+    expect(await getStash(saved.client, 'u1', 'p1')).toEqual({
+      ownedQuantity: 2,
+      openedOn: '2026-10-19',
+    });
+    const missing = createFakeSupabase({ wishlist: { data: null, error: null } });
+    expect(await getStash(missing.client, 'u1', 'p1')).toBeNull();
   });
 
   it('listWishlist returns products in saved order, newest first', async () => {
