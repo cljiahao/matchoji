@@ -33,6 +33,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- Touch targets on phones are now at least 44px: the navbar search and account buttons, the
+  notification bell, star-rating inputs, the Explore filter options and the footer links.
+  Navbar section links, the card bookmark button and the notification count badge were also
+  enlarged or made legible.
+- Tasting photos and tea images load lazily and decode off the main thread.
 - Signed-in users' Google profile pictures show again in the navbar.
 - A tea's score, rating spread, taste summary and flavour notes count each person's latest
   tasting, so logging a tea repeatedly no longer moves them; the journal keeps every tasting.

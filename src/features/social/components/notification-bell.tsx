@@ -45,7 +45,7 @@ export function NotificationBell() {
   return (
     <DropdownMenu onOpenChange={(open) => open && unread > 0 && markRead.mutate()}>
       <DropdownMenuTrigger
-        className="hover:bg-muted relative rounded-full p-2"
+        className="hover:bg-muted relative rounded-full p-3"
         aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
       >
         <Bell aria-hidden="true" className="h-5 w-5" />
