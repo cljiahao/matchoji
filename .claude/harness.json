@@ -76,7 +76,7 @@
       "path": ".claude/comment-hygiene-patterns.txt"
     },
     ".github/workflows/ci.yml": {
-      "origin_hash": "078dc3c603b65f612227a6b4ecbbfc95006c5638bd7e39710dd84e2ac2c6b27e",
+      "origin_hash": "1fb1b164a27fe54c7c96727c6794c3e43b5378f23b77d483dccba048b8680a1d",
       "path": ".github/workflows/ci.yml"
     },
     ".claude/ci-gates.sh": {
