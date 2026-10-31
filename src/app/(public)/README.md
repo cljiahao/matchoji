@@ -10,7 +10,7 @@ official harvest figures), `learn/` (recipes and guides), product pages, the jou
 only).
 Every page sets its own title. `not-found.tsx` answers an unknown or hidden tea (and any
 `notFound()` here) inside the shell. `error.tsx` catches a failed read inside the layout, so the navbar stays and the visitor
-can retry or go to Explore. Every page reads Supabase directly; there is no mock fallback.
+can retry or go to Explore. Every page reads Supabase directly; there is no mock fallback. Its `loading.tsx` skeleton is announced as a busy `status`.
 
 ## Contents
 

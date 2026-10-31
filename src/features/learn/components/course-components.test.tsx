@@ -54,7 +54,7 @@ describe('CourseLessonList', () => {
     expect(await screen.findByText('1 of 5 lessons done')).toBeInTheDocument();
     const second = screen.getByRole('link', { name: /Tools and setup/ });
     expect(second).toHaveAttribute('href', '/learn/courses/matcha-101/tools-and-setup');
-    expect(screen.getByLabelText('Done')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Done' })).toBeInTheDocument();
   });
 
   it('shows the plain outline to a visitor', async () => {

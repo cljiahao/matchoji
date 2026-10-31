@@ -37,7 +37,7 @@ function FilterLink({ href, active, label, swatch }: FilterLinkProps) {
           aria-hidden="true"
           className={cn(
             'flex-center bg-background h-4.5 w-4.5 shrink-0 rounded-full border',
-            active ? 'border-brand border-[5px]' : 'border-neutral-300'
+            active ? 'border-brand border-[5px]' : 'border-input'
           )}
         />
         {swatch && <span aria-hidden="true" className={cn('h-2.5 w-2.5 rounded-full', swatch)} />}

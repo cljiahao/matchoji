@@ -76,7 +76,7 @@ export function ListingForm({
       >
         {!listing && (
           <CustomFormField name="productId" label="Tea">
-            <select className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm">
+            <select className="border-input h-11 w-full rounded-md border bg-transparent px-3 text-sm sm:h-9">
               <option value="">Pick a tea from the catalogue</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>

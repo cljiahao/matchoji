@@ -12,6 +12,15 @@ All notable changes to this project are documented here. Format follows
   whose own site states a figure (Ippodo, Aiya), their guidance with a source link; other makers
   get general advice and a link to "Keeping matcha fresh".
 
+### Fixed
+
+- Accessibility pass from a token and source audit: form field edges are now 3:1 against the page
+  (they were 1.6:1), the dark theme's green is lifted so brand text and buttons clear 4.5:1 on
+  black, the course tick and the tab-bar badge follow the brand foreground token, loading
+  skeletons announce as a busy status, the "Done" tick has an image role, the standalone error
+  and sign-in-failed pages have a main landmark and one h1, and the listing form's tea picker
+  has a 44px tap target on mobile.
+
 ### Security
 
 - Updated a transitive HTTP redirect library (`follow-redirects`) to 1.16.2, which fixes a
