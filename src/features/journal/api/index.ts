@@ -1,6 +1,7 @@
 export { listMyReviews } from './journal-service';
 export {
   addToWishlist,
+  getStash,
   isWishlisted,
   listWishlist,
   listWishlistIds,

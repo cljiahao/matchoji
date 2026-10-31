@@ -88,6 +88,8 @@ export function ReviewItem({ review, category, footer }: ReviewItemProps) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={review.photoUrl}
+          loading="lazy"
+          decoding="async"
           alt="Review"
           className="mt-3 h-40 w-40 rounded-xl object-cover"
         />

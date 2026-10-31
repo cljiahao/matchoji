@@ -3,7 +3,7 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
 
-import { WantToTryButton } from '@/features/journal';
+import { FreshnessHint, WantToTryButton, getStash } from '@/features/journal';
 import { WhereToBuy, listProductOffers } from '@/features/marketplace';
 import {
   CATEGORY_STYLES,
@@ -21,6 +21,7 @@ import {
   RateThisTea,
   listEditions,
   listReviews,
+  localToday,
   summarizeReviews,
 } from '@/features/reviews';
 import { ReviewReactions, loadReactions } from '@/features/social';
@@ -90,6 +91,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Signed-in tasters see how well the tea suits them, unless they've rated it themselves.
   const taste = auth.user ? await loadMatches(supabase, auth.user.id, [product.id]) : null;
   const rated = taste?.ownStars.has(product.id) ?? false;
+  const stash = auth.user ? await getStash(supabase, auth.user.id, product.id) : null;
 
   const listed = product.status === 'approved';
   const canEngage =
@@ -206,6 +208,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             )}
 
+            {stash?.openedOn && (
+              <div className="mt-4">
+                <FreshnessHint
+                  brand={product.brand}
+                  openedOn={stash.openedOn}
+                  today={localToday()}
+                />
+              </div>
+            )}
+
             {listed && (
               <StockPanel
                 productId={product.id}
@@ -236,6 +248,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
+                    loading="lazy"
+                    decoding="async"
                     alt={`Tasting photo ${i + 1}`}
                     className="h-36 w-36 rounded-2xl object-cover"
                   />

@@ -10,6 +10,8 @@ can delete) and report. `NotificationBell` (navbar) shows the unread count and m
 when opened. Feed tastings carry the review's edition (harvest year and flush), as every
 `Review` does.
 
+The notification bell has a 44px touch target and its count badge is 12px, the smallest type step.
+
 ## Contents
 
 - `block-button.tsx`

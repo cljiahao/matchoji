@@ -8,7 +8,7 @@ or no longer in the catalogue is labelled rather than dropped (the database keep
 tea readable to anyone who tasted or saved it).
 
 `listWishlist` returns each saved tea's stash (how many you have, when you opened one) and
-`setStash` saves it.
+`setStash` saves it; `getStash` reads one tea's stash for the tea page.
 
 ## Contents
 

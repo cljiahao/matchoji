@@ -5,8 +5,17 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- Harvests with more than 30 ratings show a "Popular" badge beside "Top rated harvest".
+- A tea you have opened shows a freshness hint on its page: days since opening and, for makers
+  whose own site states a figure (Ippodo, Aiya), their guidance with a source link; other makers
+  get general advice and a link to "Keeping matcha fresh".
+
 ### Security
 
+- Updated a transitive HTTP redirect library (`follow-redirects`) to 1.16.2, which fixes a
+  high-severity advisory.
 - The sign-in callback no longer trusts a forwarded host that is not the site's own when
   building its redirects.
 - The content security policy now restricts scripts: only this site's own files and scripts carrying
@@ -33,6 +42,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- Touch targets on phones are now at least 44px: the navbar search and account buttons, the
+  notification bell, star-rating inputs, the Explore filter options and the footer links.
+  Navbar section links, the card bookmark button and the notification count badge were also
+  enlarged or made legible.
+- Tasting photos and tea images load lazily and decode off the main thread.
 - Signed-in users' Google profile pictures show again in the navbar.
 - A tea's score, rating spread, taste summary and flavour notes count each person's latest
   tasting, so logging a tea repeatedly no longer moves them; the journal keeps every tasting.

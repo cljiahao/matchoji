@@ -23,3 +23,5 @@ overrides:
   # @tailwindcss/typography 0.5.20 pins 6.0.10 (GHSA moderate: quadratic selector parsing); the
   # plugin only uses parse/walk/stringify, unchanged in 7.x, and the built CSS is byte-identical.
   '@tailwindcss/typography>postcss-selector-parser': '^7.1.7'
+  # follow-redirects 1.16.1 (via axios): GHSA-mrwp-f3q8-3g9p high; patched in 1.16.2.
+  'follow-redirects@<1.16.2': '^1.16.2'

@@ -17,8 +17,15 @@ Component tests build `Review` objects with every field, including `authorId`.
 Want-to-try rows carry `StashEditor`: "I have this", how many and when opened (shown as days
 since opening, since matcha fades once opened).
 
+`FreshnessHint` shows on the tea page for a signed-in user whose stash has an opened date: days
+open, the maker's own guidance where published, else general advice, and a link to the Learn guide.
+
+The compact want-to-try button extends its hit area to 44px without growing visually.
+
 ## Contents
 
+- `freshness-hint.test.tsx`
+- `freshness-hint.tsx`
 - `index.ts`
 - `journal-stats-strip.tsx`
 - `journal-timeline.tsx`
