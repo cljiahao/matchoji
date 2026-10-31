@@ -14,7 +14,7 @@ so every component shares one sign-in session.
 
 The fine print also has "Is one of these photos yours? Ask us to take it down.", a link (new tab) to a prefilled GitHub issue for photo removal requests.
 
-Navbar, footer and tab-bar controls keep a 44px minimum touch target.
+Navbar, footer and tab-bar controls keep a 44px minimum touch target. The tab bar's active badge uses the `brand-foreground` token so it stays legible in dark mode.
 
 ## Contents
 

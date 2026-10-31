@@ -14,7 +14,7 @@ Results show 12 teas at first from `catalogue_teas`, filtered and sorted in SQL,
 X of N teas" and a "Show more" link that adds 12 (`?shown=24`, a plain server-rendered link, so
 Back and shared links restore the list); any filter or sort change returns to 12, and an old
 `?page=` is ignored. Signed-in tasters see a match badge on each row, and "Best match for you"
-ranks up to 500 matching teas by their score, trimming to the shown count in memory.
+ranks up to 500 matching teas by their score, trimming to the shown count in memory. Its `loading.tsx` skeleton is announced as a busy `status`.
 
 ## Contents
 
