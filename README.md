@@ -2,6 +2,8 @@
 
 Interactive controls keep a 44px minimum touch target on phones (padding or an invisible hit area, not a bigger glyph).
 
+Theme colours are held to WCAG AA by `src/app/globals.test.ts`: field edges 3:1, muted and brand text 4.5:1, in light and dark.
+
 ## Structure
 
 ### Contents
