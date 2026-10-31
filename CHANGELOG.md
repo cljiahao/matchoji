@@ -7,6 +7,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Security
 
+- Updated a transitive HTTP redirect library (`follow-redirects`) to 1.16.2, which fixes a
+  high-severity advisory.
 - The sign-in callback no longer trusts a forwarded host that is not the site's own when
   building its redirects.
 - The content security policy now restricts scripts: only this site's own files and scripts carrying
