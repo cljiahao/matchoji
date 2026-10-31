@@ -4,6 +4,7 @@ export default function HomeLoading() {
   return (
     <div
       className="max-w-site mx-auto w-full px-6 pt-12 sm:pt-20"
+      role="status"
       aria-busy="true"
       aria-label="Loading"
     >

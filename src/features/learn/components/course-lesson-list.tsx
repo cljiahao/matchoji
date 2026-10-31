@@ -33,10 +33,16 @@ export function CourseLessonList({ course }: { course: Course }) {
                 <span
                   className={cn(
                     'flex-center h-8 w-8 shrink-0 rounded-full text-sm font-bold',
-                    complete ? 'bg-brand text-white' : 'bg-background text-muted-foreground'
+                    complete
+                      ? 'bg-brand text-brand-foreground'
+                      : 'bg-background text-muted-foreground'
                   )}
                 >
-                  {complete ? <Check aria-label="Done" className="h-4 w-4" /> : index + 1}
+                  {complete ? (
+                    <Check role="img" aria-label="Done" className="h-4 w-4" />
+                  ) : (
+                    index + 1
+                  )}
                 </span>
                 <span className="flex-1 font-semibold">{lesson.title}</span>
                 <span className="text-muted-foreground text-sm">{lesson.minutes} min</span>

@@ -4,6 +4,7 @@ export default function SupplyLoading() {
   return (
     <div
       className="max-w-site mx-auto w-full px-6 py-10 sm:py-14"
+      role="status"
       aria-busy="true"
       aria-label="Loading"
     >

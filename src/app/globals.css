@@ -41,6 +41,7 @@
   /* Product tiles and hero bands */
   --color-tile: var(--tile);
   --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
 
   /* Category identity — fixed brand colors, same in light and dark */
   --color-matcha: var(--matcha);
@@ -69,6 +70,7 @@
 
   /* Deep matcha green carries actions; jade and amber stay reserved for category data. */
   --brand: #2f5233;
+  --brand-foreground: #ffffff;
   --primary: var(--brand);
   --primary-foreground: #ffffff;
   --secondary: var(--color-neutral-100);
@@ -82,8 +84,8 @@
   --destructive: oklch(0.577 0.245 27.325);
 
   --border: #e6e4df;
-  /* Field edges and the focus ring must read against white and paper (≥3:1 for the ring). */
-  --input: oklch(0.8 0 0);
+  /* Field edges and the focus ring must read against white and paper (≥3:1). */
+  --input: #858585;
   --ring: oklch(0.35 0 0);
 
   /* Category identity (see DESIGN.md, Category Is Data) — fixed, not theme-adaptive.
@@ -102,8 +104,11 @@
   --popover: var(--black);
   --popover-foreground: var(--white);
 
+  /* The light-mode brand green is 2.15:1 on black, so dark mode lifts it and flips the text on it. */
+  --brand: #86b48a;
+  --brand-foreground: #101010;
   --primary: var(--brand);
-  --primary-foreground: #ffffff;
+  --primary-foreground: #101010;
   --secondary: var(--color-neutral-800);
   --secondary-foreground: var(--color-neutral-100);
   --accent: var(--color-neutral-800);
@@ -115,7 +120,7 @@
   --destructive: oklch(0.704 0.191 22.216);
 
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --input: #707070;
   --ring: oklch(0.556 0 0);
 }
 

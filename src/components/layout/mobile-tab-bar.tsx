@@ -61,7 +61,7 @@ export function MobileTabBar() {
                 type="button"
                 className="text-brand flex w-full flex-col items-center gap-0.5 py-2 text-[11px] font-semibold"
               >
-                <span className="bg-brand flex-center h-6 w-6 rounded-full text-white">
+                <span className="bg-brand text-brand-foreground flex-center h-6 w-6 rounded-full">
                   <Plus aria-hidden="true" className="h-4 w-4" />
                 </span>
                 Log
