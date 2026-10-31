@@ -56,7 +56,7 @@ export function Navbar() {
                   href={link.href}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'text-sm font-semibold transition-colors',
+                    'inline-block py-3 text-sm font-semibold transition-colors',
                     active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
@@ -71,7 +71,7 @@ export function Navbar() {
           <Link
             href={PAGE_ROUTES.EXPLORE}
             aria-label="Search teas"
-            className="hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full md:hidden"
+            className="hover:bg-muted flex h-11 w-11 items-center justify-center rounded-full md:hidden"
           >
             <Search aria-hidden="true" className="h-5 w-5" />
           </Link>

@@ -60,7 +60,7 @@ export function RateThisTea({ product, className }: RateThisTeaProps) {
               onMouseEnter={() => setHovered(value)}
               onFocus={() => setHovered(value)}
               onBlur={() => setHovered(0)}
-              className="rounded-full p-0.5 transition-transform hover:scale-110"
+              className="rounded-full p-1.5 transition-transform hover:scale-110"
             >
               <Star
                 aria-hidden="true"

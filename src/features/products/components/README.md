@@ -17,6 +17,8 @@ objects, so a new `Product` field (most recently `price`) is added to its fixtur
 ("S$0.80/g · Mid-range") sits on cards and rows of priced teas, and `ProductFacts` adds a Price row:
 pack price and size, price per gram, cost per cup and the band within the tea's category.
 
+Explore filter options are 44px tall on phones, and tea images load lazily.
+
 ## Contents
 
 - `category-badge.tsx`

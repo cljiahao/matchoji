@@ -11,7 +11,7 @@ interface SiteFooterProps {
   links?: LinkItem[];
 }
 
-const LINK_CLASS = 'inline-block py-1.5 font-semibold hover:underline';
+const LINK_CLASS = 'inline-block py-3 font-semibold hover:underline';
 
 export function SiteFooter({ links = [] }: SiteFooterProps) {
   return (

@@ -11,6 +11,8 @@ only account actions. Tests run the real hooks against a fake browser Supabase c
 
 `UserMenu` links to Your account and Sell on Matchoji above Sign out.
 
+The account menu trigger has a 44px touch target.
+
 ## Contents
 
 - `auth-components.test.tsx`

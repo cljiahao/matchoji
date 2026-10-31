@@ -28,7 +28,7 @@ function FilterLink({ href, active, label, swatch }: FilterLinkProps) {
         href={href}
         aria-current={active ? 'true' : undefined}
         className={cn(
-          'flex items-center gap-2.5 rounded-lg py-1.5 text-sm transition-colors',
+          'flex min-h-11 items-center gap-2.5 rounded-lg text-sm transition-colors lg:min-h-0 lg:py-1.5',
           active ? 'font-semibold' : 'text-muted-foreground hover:text-foreground'
         )}
       >

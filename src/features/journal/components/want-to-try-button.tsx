@@ -29,7 +29,11 @@ export function WantToTryButton({ productId, compact = false, className }: WantT
       title={compact ? 'Want to try' : undefined}
       disabled={pending}
       onClick={toggle}
-      className={cn('bg-card', compact && 'h-8 w-8 rounded-full', className)}
+      className={cn(
+        'bg-card',
+        compact && 'relative h-8 w-8 rounded-full after:absolute after:-inset-1.5',
+        className
+      )}
     >
       <Bookmark aria-hidden="true" className={cn(saved && 'fill-current')} />
       {!compact && 'Want to try'}
