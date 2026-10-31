@@ -30,6 +30,8 @@ fill in its method, dose, water and temperature.
 `ReviewList` and `CommunityReviews` pass `footers` keyed by review id (elements, so a server
 page can supply another feature's client controls).
 
+Star inputs have 44px touch targets, and review photos load lazily.
+
 ## Contents
 
 - `community-reviews.tsx`

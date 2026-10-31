@@ -1,5 +1,7 @@
 # Matchoji
 
+Interactive controls keep a 44px minimum touch target on phones (padding or an invisible hit area, not a bigger glyph).
+
 ## Structure
 
 ### Contents

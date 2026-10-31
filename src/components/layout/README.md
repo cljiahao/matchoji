@@ -14,6 +14,8 @@ so every component shares one sign-in session.
 
 The fine print also has "Is one of these photos yours? Ask us to take it down.", a link (new tab) to a prefilled GitHub issue for photo removal requests.
 
+Navbar, footer and tab-bar controls keep a 44px minimum touch target.
+
 ## Contents
 
 - `index.ts`
