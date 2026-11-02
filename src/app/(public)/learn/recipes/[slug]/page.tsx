@@ -85,7 +85,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
         <LogRecipeButton recipe={recipe} />
         <Link
           href={discoverHref({ sort: 'top' }, { category: recipe.category })}
-          className="text-sm font-semibold underline underline-offset-2"
+          className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-2 md:min-h-0"
         >
           Top-rated {category.label.toLowerCase()}
         </Link>

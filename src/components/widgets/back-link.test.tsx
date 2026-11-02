@@ -10,7 +10,7 @@ describe('BackLink', () => {
     const link = screen.getByRole('link', { name: 'Back to Learn' });
     expect(link).toHaveAttribute('href', '/learn');
     expect(link).toHaveTextContent('Learn');
-    expect(link).toHaveClass('min-h-10');
+    expect(link).toHaveClass('min-h-11');
   });
 
   it('hides the chevron from assistive tech', () => {

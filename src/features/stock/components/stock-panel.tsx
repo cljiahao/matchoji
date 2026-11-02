@@ -61,7 +61,7 @@ export function StockPanel({
             href={shopUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground flex items-center gap-1 underline underline-offset-2"
+            className="text-muted-foreground hover:text-foreground flex min-h-11 items-center gap-1 underline underline-offset-2 md:min-h-0"
           >
             Check {brand ? `${brand}’s` : 'the'} shop
             <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
@@ -79,7 +79,7 @@ export function StockPanel({
             size="sm"
             disabled={pending}
             onClick={() => report(value)}
-            className="bg-background rounded-full"
+            className="bg-background min-h-11 rounded-full md:min-h-0"
           >
             {STATUS[value].label}
           </Button>

@@ -14,7 +14,12 @@ interface SignInButtonProps {
 export function SignInButton({ variant = 'default', label = 'Sign in' }: SignInButtonProps) {
   const prompt = useSignInPrompt();
   return (
-    <Button type="button" variant={variant} onClick={() => prompt()}>
+    <Button
+      type="button"
+      variant={variant}
+      onClick={() => prompt()}
+      className="min-h-11 md:min-h-0"
+    >
       {label}
     </Button>
   );
