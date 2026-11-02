@@ -13,6 +13,8 @@ only account actions. Tests run the real hooks against a fake browser Supabase c
 
 The account menu trigger has a 44px touch target.
 
+`SignInButton` keeps a 44px minimum height on phones.
+
 ## Contents
 
 - `auth-components.test.tsx`

@@ -16,6 +16,8 @@ Back and shared links restore the list); any filter or sort change returns to 12
 `?page=` is ignored. Signed-in tasters see a match badge on each row, and "Best match for you"
 ranks up to 500 matching teas by their score, trimming to the shown count in memory. Its `loading.tsx` skeleton is announced as a busy `status`.
 
+On phones the filters button, search field, sort select and Show more link keep a 44px minimum height.
+
 ## Contents
 
 - `loading.tsx`

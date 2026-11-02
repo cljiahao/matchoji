@@ -12,6 +12,8 @@ Every page sets its own title. `not-found.tsx` answers an unknown or hidden tea 
 `notFound()` here) inside the shell. `error.tsx` catches a failed read inside the layout, so the navbar stays and the visitor
 can retry or go to Explore. Every page reads Supabase directly; there is no mock fallback. Its `loading.tsx` skeleton is announced as a busy `status`.
 
+The layout renders its pages inside `SiteShell`, whose `main` is the skip link's target.
+
 ## Contents
 
 - `account/`

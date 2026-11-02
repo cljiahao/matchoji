@@ -10,6 +10,8 @@ Explore filtered to that region. Rendered per request, since counts are live, fr
 
 Titled "Tea regions". Its `loading.tsx` skeleton is announced as a busy `status`.
 
+The sort pills keep a 44px minimum height on phones.
+
 ## Contents
 
 - `loading.tsx`

@@ -53,6 +53,14 @@ describe('theme tokens meet WCAG AA', () => {
     expect(ratio(token(dark, 'brand'), token(light, 'black'))).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('keeps the category colours at 4.5:1 as text on the page and on muted tiles', () => {
+    for (const name of ['matcha', 'hojicha']) {
+      expect(ratio(token(light, name), token(light, 'background'))).toBeGreaterThanOrEqual(4.5);
+      expect(ratio(token(light, name), token(light, 'muted'))).toBeGreaterThanOrEqual(4.5);
+      expect(ratio(token(light, name), token(light, 'tile'))).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it('keeps white text on the category badges at 4.5:1', () => {
     for (const name of ['matcha', 'hojicha']) {
       expect(ratio(token(light, `${name}-foreground`), token(light, name))).toBeGreaterThanOrEqual(

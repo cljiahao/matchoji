@@ -7,6 +7,8 @@ report (an icon and a word, never colour alone) and its age, links to the maker'
 new tab, and offers "In stock" / "Sold out" buttons. Its tests cover display, staleness,
 reporting, the rate-limit message and the signed-out prompt.
 
+The stock buttons and shop link keep a 44px minimum height on phones.
+
 ## Contents
 
 - `index.ts`

@@ -19,6 +19,8 @@ pack price and size, price per gram, cost per cup and the band within the tea's 
 
 Explore filter options are 44px tall on phones, and tea images load lazily. The explore filter's unselected radio marker uses the `input` border token (3:1).
 
+The filters button, search field, sort select, See all link and category link keep a 44px minimum height on phones; matcha text uses the AA-checked `--matcha` token.
+
 ## Contents
 
 - `category-badge.tsx`

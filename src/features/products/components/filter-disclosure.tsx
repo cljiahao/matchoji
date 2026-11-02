@@ -23,7 +23,7 @@ export function FilterDisclosure({ activeCount, children }: FilterDisclosureProp
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className="border-border hover:bg-muted flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold lg:hidden"
+        className="border-border hover:bg-muted flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold lg:hidden"
       >
         <SlidersHorizontal aria-hidden="true" className="h-4 w-4" />
         Filters

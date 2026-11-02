@@ -47,7 +47,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="bg-muted hover:text-foreground text-muted-foreground rounded-full px-4 py-1.5 text-sm font-semibold transition-colors"
+              className="bg-muted hover:text-foreground text-muted-foreground inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-semibold transition-colors md:min-h-0"
             >
               {link.label}
             </Link>

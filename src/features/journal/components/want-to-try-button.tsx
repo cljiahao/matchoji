@@ -31,6 +31,7 @@ export function WantToTryButton({ productId, compact = false, className }: WantT
       onClick={toggle}
       className={cn(
         'bg-card',
+        !compact && 'min-h-11 md:min-h-0',
         compact && 'relative h-8 w-8 rounded-full after:absolute after:-inset-1.5',
         className
       )}

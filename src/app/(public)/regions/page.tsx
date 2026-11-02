@@ -93,7 +93,7 @@ export default async function RegionsPage({ searchParams }: RegionsPageProps) {
               href={sort.href}
               aria-current={active ? 'true' : undefined}
               className={cn(
-                'rounded-full px-4 py-1.5 text-sm transition-colors',
+                'inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm transition-colors md:min-h-0',
                 active
                   ? 'bg-foreground text-background font-semibold'
                   : 'bg-muted text-muted-foreground hover:text-foreground'

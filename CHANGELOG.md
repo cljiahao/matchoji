@@ -20,6 +20,12 @@ All notable changes to this project are documented here. Format follows
   skeletons announce as a busy status, the "Done" tick has an image role, the standalone error
   and sign-in-failed pages have a main landmark and one h1, and the listing form's tea picker
   has a 44px tap target on mobile.
+- Real-browser audit fixes: the matcha green is a shade darker so its text clears 4.5:1 on grey tiles
+  (the supply page's tencha figures were 4.35:1); unknown URLs now keep the navbar and footer, get
+  a "Page not found" title and Explore and Home links; a "Skip to content" link is the first
+  focusable element of the site shell; and controls that measured under 44px on phones (sign in,
+  filters, search, sort, show more, want to try, stock buttons, lesson and recipe buttons, guide and
+  region pills, back links and several text links) now reach 44px there.
 
 ### Security
 
