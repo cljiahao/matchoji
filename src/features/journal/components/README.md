@@ -22,6 +22,8 @@ open, the maker's own guidance where published, else general advice, and a link 
 
 The compact want-to-try button extends its hit area to 44px without growing visually.
 
+`WantToTryButton` keeps a 44px minimum height on phones in its labelled form.
+
 ## Contents
 
 - `freshness-hint.test.tsx`

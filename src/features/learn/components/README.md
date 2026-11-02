@@ -9,6 +9,8 @@ lessons and counting them for a signed-in learner), `LessonCompleteButton` ("Mar
 and `LogRecipeButton` (the tasting dialog pre-filled with a recipe's prep; signed-out visitors
 are asked to sign in, as with every log button). The lesson list's completed tick is an `img` named "Done" on a `brand-foreground` fill.
 
+The lesson-complete and log-recipe buttons keep a 44px minimum height on phones.
+
 ## Contents
 
 - `brew-facts.tsx`
