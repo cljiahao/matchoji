@@ -9,7 +9,7 @@ theme tokens and the few global rules (focus outline, pill buttons, number and d
 catalogue teas (read per request) and `robots.ts` keeps admin, account, journal, sell and auth pages
 out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks (field edges 3:1, muted, brand and category text 4.5:1 in both themes); the dark block is opt-in through the footer's theme toggle, with Light the default and `enableSystem` on; `error.tsx` and `auth/error/` render a `main` landmark with one h1.
 
-Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the tea and profile pages have their own), `manifest.ts` makes the site installable as a standalone app (name, `/` start URL, brand-green theme, white background) and `icons/` serves its icons; `layout.tsx` adds the Apple web-app tags, icon links and a light/dark `themeColor`. There is no service worker, so nothing works offline.
+Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the tea and profile pages have their own), `manifest.ts` makes the site installable as a standalone app (name, `/` start URL, brand-green theme, white background) and `icons/` serves its icons; `layout.tsx` adds the Apple web-app tags, icon links and a light/dark `themeColor`. `offline/` is the page the service worker (`public/sw.js`, see `features/offline`) precaches and shows when a page can't be loaded; `layout.tsx` registers the worker in production.
 
 `sitemap.ts` also lists `/shops`.
 
@@ -29,6 +29,7 @@ Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the te
 - `layout.tsx`
 - `manifest.test.ts`
 - `manifest.ts`
+- `offline/`
 - `not-found.test.tsx`
 - `not-found.tsx`
 - `opengraph-image.tsx`
