@@ -25,23 +25,24 @@ describe('regionPins', () => {
 
   it('counts teas, tones by the larger category and links to the region', () => {
     const [pin] = regionPins([region({ counts: { matcha: 8, hojicha: 3 } })]);
-    expect(pin).toMatchObject({ text: '11', tone: 'matcha', name: 'Uji, Kyoto' });
+    expect(pin).toMatchObject({ text: '11', tone: 'matcha', name: 'Uji, Kyoto', flagged: false });
     expect(pin.description).toBe('8 matcha, 3 hojicha');
     expect(pin.href).toContain('region');
   });
 
-  it('flags scarce supply on the pin and in its name', () => {
+  it('keeps the pin a compact count and flags scarce supply in its description', () => {
     const [pin] = regionPins([
       region({ counts: { matcha: 1, hojicha: 2 }, supply: { matcha: 'scarce', hojicha: 'tight' } }),
     ]);
-    expect(pin.text).toBe('3 · Scarce');
+    expect(pin.text).toBe('3');
+    expect(pin.flagged).toBe(true);
     expect(pin.tone).toBe('hojicha');
     expect(pin.description).toContain('Matcha supply scarce');
   });
 
   it('stays neutral on a tie and says when a region has no teas', () => {
     const [pin] = regionPins([region({})]);
-    expect(pin).toMatchObject({ text: '0', tone: 'neutral' });
+    expect(pin).toMatchObject({ text: '0', tone: 'neutral', flagged: false });
     expect(pin.description).toBe('No teas yet');
   });
 
