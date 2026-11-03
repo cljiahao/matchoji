@@ -4,7 +4,8 @@
 // every table's Relationships array, every view's Relationships array) — omitting any of these
 // silently collapses row/insert/update types to `never` throughout the client.
 //
-// orders is not modeled yet: nothing in the app queries it until checkout is built.
+// `pnpm schema:check` compares this file's tables, columns, nullability and enums with the live
+// database's `supabase gen types` output, so a migration needs its types updated here too.
 
 export type ProductCategory = 'hojicha' | 'matcha';
 export type ProfileRole = 'consumer' | 'vendor';
@@ -24,6 +25,51 @@ export type ProductStatus = 'pending' | 'approved' | 'rejected';
 export interface Database {
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          id: number;
+          occurred_at: string;
+          actor_id: string | null;
+          table_name: string;
+          action: string;
+          old_row: Record<string, unknown> | null;
+          new_row: Record<string, unknown> | null;
+        };
+        // Written only by the audit triggers; the app never inserts or updates it.
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      orders: {
+        Row: {
+          id: string;
+          buyer_user_id: string;
+          listing_id: string;
+          qty: number;
+          status: string;
+          payment_ref: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          buyer_user_id: string;
+          listing_id: string;
+          qty?: number;
+          status?: string;
+          payment_ref?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          buyer_user_id?: string;
+          listing_id?: string;
+          qty?: number;
+          status?: string;
+          payment_ref?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;
