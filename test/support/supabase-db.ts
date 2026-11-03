@@ -22,6 +22,10 @@ const SUPABASE_STUB = `
   alter default privileges in schema public grant all on tables to anon, authenticated;
 `;
 
+// Data-only migrations that tests run themselves, so every other test starts from an empty
+// catalogue.
+const DATA_MIGRATIONS = ['catalogue_expansion'];
+
 // An in-process Postgres with every migration applied in filename order. Storage migrations
 // are skipped: PGlite has no storage schema.
 export async function createMigratedDb(): Promise<PGlite> {
@@ -29,7 +33,10 @@ export async function createMigratedDb(): Promise<PGlite> {
   await db.exec(SUPABASE_STUB);
   const dir = path.join(SUPABASE_DIR, 'migrations');
   for (const file of readdirSync(dir)
-    .filter((f) => f.endsWith('.sql') && !f.includes('storage'))
+    .filter(
+      (f) =>
+        f.endsWith('.sql') && !f.includes('storage') && !DATA_MIGRATIONS.some((m) => f.includes(m))
+    )
     .sort())
     await db.exec(readFileSync(path.join(dir, file), 'utf8'));
   return db;
