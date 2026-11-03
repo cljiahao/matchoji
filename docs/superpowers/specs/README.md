@@ -7,6 +7,8 @@ carries dated notes on how Phase 4's scarcity dashboard was actually built why t
 retailer stock scrape became community stock reports, what Phase 3's first slice built, and the review queue for taster-added teas. The 2026-10-24 roadmap compares the whole flow
 with Vivino, lists the audit's fixes, and orders the remaining work into milestones M0–M6; its status line records what has shipped.
 
+`2026-11-03-impeccable-critique.md` scores the main surfaces, ranks the UI/UX findings and lists what was left undone.
+
 ## Contents
 
 - `2026-09-14-matchoji-design.md`

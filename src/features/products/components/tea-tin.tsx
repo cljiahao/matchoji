@@ -83,7 +83,7 @@ export function TeaTin({ category, seed = '', mark, className }: TeaTinProps) {
       viewBox="0 0 120 160"
       aria-hidden="true"
       // Dark tiles swallow the mid-tone bodies, so dark lifts the whole drawing.
-      className={cn('h-auto w-full dark:brightness-150', className)}
+      className={cn('h-auto w-full dark:brightness-125 dark:saturate-90', className)}
       data-tin={category}
     >
       <ellipse cx="60" cy="150" rx="40" ry="5" fill="#000" opacity="0.08" />

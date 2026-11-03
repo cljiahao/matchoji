@@ -7,6 +7,8 @@ panel and 16px rows. The signed-in user comes from the server Supabase client's 
 
 Titled "Your journal". Below the stats, `YourTaste` shows the taster's profile. Its `loading.tsx` skeleton is announced as a busy `status`.
 
+The page heading uses the same `text-3xl sm:text-4xl` size as the other pages, and the empty panel is shorter on phones.
+
 ## Contents
 
 - `loading.tsx`

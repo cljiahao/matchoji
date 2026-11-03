@@ -412,5 +412,5 @@ Stands in for any product photo on tiles, in category circles and in the journal
 - **Don't** use flavour-family colours anywhere outside the flavour cards.
 - **Don't** add drop shadows to product tiles or cards.
 - **Don't** introduce a second display face, uppercase tracked labels or kickers above headings.
-- **Don't** show invented scores: an unrated tea shows an en dash numeral and "Not yet rated".
+- **Don't** show invented scores: an unrated tea shows an en dash numeral and "Not yet rated" (on a phone-width Explore row the dash drops and the label stands alone), and a shelf of unrated teas is titled "to try", never "Top-rated".
 - **Don't** square off buttons or chips with small radii.

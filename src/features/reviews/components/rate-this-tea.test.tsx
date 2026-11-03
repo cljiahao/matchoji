@@ -163,10 +163,10 @@ describe('CommunityReviews', () => {
     expect(screen.getByText('1 rating')).toBeInTheDocument();
   });
 
-  it('shows only the invitation and the rate action without reviews', () => {
+  it('shows only the invitation without reviews, leaving rating to the hero', () => {
     renderReviews([], null);
     expect(screen.getByText('No reviews yet. Be the first to rate it.')).toBeInTheDocument();
     expect(screen.queryByRole('list', { name: 'Rating distribution' })).not.toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Rate Uji Ceremonial' })).toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'Rate Uji Ceremonial' })).not.toBeInTheDocument();
   });
 });

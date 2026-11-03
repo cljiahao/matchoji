@@ -11,7 +11,7 @@ export function CourseCard({ course }: { course: Course }) {
   return (
     <Link
       href={courseHref(course.slug)}
-      className="bg-brand/10 hover:bg-brand/15 flex h-full flex-col rounded-2xl px-5 py-4 transition-colors"
+      className="bg-muted hover:bg-muted/70 flex h-full flex-col rounded-2xl px-5 py-4 transition-colors"
     >
       <span className="text-brand text-sm font-semibold">{course.level}</span>
       <span className="mt-1 text-lg font-bold tracking-tight">{course.title}</span>

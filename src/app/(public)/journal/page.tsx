@@ -19,7 +19,7 @@ export const metadata: Metadata = { title: 'Your journal' };
 function Header({ children }: { children?: React.ReactNode }) {
   return (
     <>
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Your journal</h1>
+      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Your journal</h1>
       <p className="text-muted-foreground mt-2">
         {children ?? 'Every tasting you log, and the teas you want to try next.'}
       </p>
@@ -58,7 +58,7 @@ export default async function JournalPage() {
       <Header />
 
       {entries.length === 0 ? (
-        <div className="bg-muted flex-center mt-8 flex-col gap-4 rounded-3xl py-16 text-center">
+        <div className="bg-muted flex-center mt-8 flex-col gap-4 rounded-3xl px-6 py-10 text-center sm:py-16">
           <p className="text-muted-foreground max-w-sm">
             No tastings yet. Log your first one and it will show up here.
           </p>

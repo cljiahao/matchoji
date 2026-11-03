@@ -23,6 +23,8 @@ Tea page tests get an empty `edition_ratings` result by default from `useServer`
 
 The tea page tests cover the photo credit caption; the footer's links and photo takedown link are tested with the footer in `src/components/layout`.
 
+The home page tests expect the "to try" shelf titles while the fixtures are unrated, and the product page test expects no second "Add your rating" card on an unreviewed tea.
+
 ## Contents
 
 - `auth-callback.test.ts`

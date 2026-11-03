@@ -11,6 +11,8 @@ are asked to sign in, as with every log button). The lesson list's completed tic
 
 The lesson-complete and log-recipe buttons keep a 44px minimum height on phones.
 
+`CourseCard` uses the neutral `muted` tile; the brand green is kept for the level label.
+
 ## Contents
 
 - `brew-facts.tsx`

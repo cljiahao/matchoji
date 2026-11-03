@@ -18,6 +18,15 @@ All notable changes to this project are documented here. Format follows
   whose own site states a figure (Ippodo, Aiya), their guidance with a source link; other makers
   get general advice and a link to "Keeping matcha fresh".
 
+### Changed
+
+- UI polish from an impeccable critique (`docs/superpowers/specs/2026-11-03-impeccable-critique.md`):
+  home shelves read "Matcha to try" / "Hojicha to try" while nothing is rated, Explore rows drop the
+  empty score dash on phones, the product page hero is shorter on phones, the second "Add your
+  rating" card shows only once a tea has reviews, the stock prompt says what it asks, region cards
+  stop repeating the prefecture and label supply, Journal and Account headings match the other
+  pages, Learn course cards use the neutral tile, and dark-mode tins are less blown out.
+
 ### Fixed
 
 - The account page's "Make my profile private" / "Make my profile public" button and the blocked-list "Unblock" buttons now meet the 44px tap-target standard (they were 40px).

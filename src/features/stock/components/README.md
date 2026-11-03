@@ -9,6 +9,8 @@ reporting, the rate-limit message and the signed-out prompt.
 
 The stock buttons and shop link keep a 44px minimum height on phones.
 
+The report prompt reads "Seen it in stock lately? Tell others:".
+
 ## Contents
 
 - `index.ts`

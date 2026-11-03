@@ -73,7 +73,12 @@ export function ProductRow({ product, action, badge }: ProductRowProps) {
         )}
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1 pb-8 text-right sm:justify-center sm:pb-0">
-        <ScoreNumeral value={product.avgStars} size="md" />
+        {/* An unrated tea's dash is a heavy empty column on a phone; the label says enough. */}
+        <ScoreNumeral
+          value={product.avgStars}
+          size="md"
+          className={product.avgStars === null ? 'hidden sm:block' : undefined}
+        />
         {product.avgStars !== null ? (
           <>
             <Stars value={product.avgStars} category={product.category} size="sm" />

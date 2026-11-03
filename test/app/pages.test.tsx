@@ -154,7 +154,7 @@ describe('Home page', () => {
       '/explore?category=matcha'
     );
 
-    const matcha = screen.getByRole('region', { name: 'Top-rated matcha' });
+    const matcha = screen.getByRole('region', { name: 'Matcha to try' });
     expect(within(matcha).getByRole('link', { name: /See all/ })).toHaveAttribute(
       'href',
       '/explore?category=matcha'
@@ -163,7 +163,7 @@ describe('Home page', () => {
       'href',
       '/products/m1'
     );
-    const hojicha = screen.getByRole('region', { name: 'Top-rated hojicha' });
+    const hojicha = screen.getByRole('region', { name: 'Hojicha to try' });
     expect(within(hojicha).getByRole('link', { name: /See all/ })).toHaveAttribute(
       'href',
       '/explore?category=hojicha'
@@ -236,8 +236,8 @@ describe('Home page', () => {
 
     renderWithQuery(await Home());
 
-    expect(screen.getByRole('region', { name: 'Top-rated matcha' })).toBeInTheDocument();
-    expect(screen.queryByRole('region', { name: 'Top-rated hojicha' })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Matcha to try' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Hojicha to try' })).not.toBeInTheDocument();
     expect(screen.queryByText('No teas rated yet')).not.toBeInTheDocument();
   });
 
@@ -1122,7 +1122,7 @@ describe('Product page', () => {
     renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
 
     expect(screen.getByText('Rate it')).toBeInTheDocument();
-    expect(screen.getByText('Add your rating')).toBeInTheDocument();
+    expect(screen.queryByText('Add your rating')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Where to buy' })).not.toBeInTheDocument();
   });
 
