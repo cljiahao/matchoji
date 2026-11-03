@@ -22,9 +22,10 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-// The health probe needs no session, so it skips the per-request getUser() round trip.
+// The health probe and the Sentry tunnel carry no session, so they skip the per-request getUser()
+// round trip (the tunnel is a same-origin rewrite to Sentry's ingest, never an app page).
 export const config = {
   matcher: [
-    '/((?!api/health|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api/health|monitoring|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

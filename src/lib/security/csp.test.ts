@@ -28,6 +28,14 @@ describe('buildCsp', () => {
   });
 });
 
+describe('buildCsp with Sentry', () => {
+  it('needs no Sentry host: events go through the same-origin tunnel', () => {
+    const csp = buildCsp({ nonce: 'abc123', isDev: false, supabaseUrl });
+    expect(csp).not.toMatch(/sentry/i);
+    expect(csp).not.toContain('connect-src');
+  });
+});
+
 describe('generateNonce', () => {
   it('returns a fresh base64 value each call', () => {
     const a = generateNonce();

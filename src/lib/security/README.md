@@ -8,7 +8,7 @@ React's debug stacks), `base-uri`, `object-src`, `form-action`, `frame-ancestors
 IDE preview panes can embed the app) and `imageSources`, which allows images only from the site,
 the Supabase project and Google profile photos (any https host when there is no Supabase URL).
 `generateNonce` makes the per-request nonce. `src/proxy.ts` calls both. `csp.test.ts` covers the
-production and dev variants.
+production and dev variants and that no Sentry host is needed, since browsers report through the same-origin `/monitoring` tunnel.
 
 ## Contents
 
