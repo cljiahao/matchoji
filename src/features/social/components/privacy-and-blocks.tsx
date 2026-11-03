@@ -33,7 +33,14 @@ export function PrivacyToggle({ userId, isPublic }: { userId: string; isPublic: 
           ? 'Your profile is public: anyone can see your recent tastings, taste and followers.'
           : 'Your profile is private: others see only your name. Your ratings still appear on tea pages.'}
       </p>
-      <Button type="button" variant="outline" size="lg" disabled={busy} onClick={toggle}>
+      <Button
+        type="button"
+        variant="outline"
+        size="lg"
+        className="min-h-11"
+        disabled={busy}
+        onClick={toggle}
+      >
         {isPublic ? 'Make my profile private' : 'Make my profile public'}
       </Button>
     </div>
@@ -77,7 +84,7 @@ export function BlockedList({
             type="button"
             size="lg"
             variant="outline"
-            className="shrink-0"
+            className="min-h-11 shrink-0"
             disabled={busy === person.id}
             onClick={() => unblock(person.id, person.name)}
           >

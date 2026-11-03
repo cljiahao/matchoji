@@ -104,6 +104,17 @@ describe('PrivacyToggle and BlockedList', () => {
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Spammy unblocked.'));
   });
 
+  it('keeps the privacy button, in both states, and Unblock at least 44px tall', () => {
+    const { unmount } = render(<PrivacyToggle userId="me" isPublic />);
+    expect(screen.getByRole('button', { name: 'Make my profile private' })).toHaveClass('min-h-11');
+    unmount();
+    const { unmount: unmountPrivate } = render(<PrivacyToggle userId="me" isPublic={false} />);
+    expect(screen.getByRole('button', { name: 'Make my profile public' })).toHaveClass('min-h-11');
+    unmountPrivate();
+    render(<BlockedList userId="me" blocked={[{ id: 'u9', name: 'Spammy' }]} />);
+    expect(screen.getByRole('button', { name: 'Unblock' })).toHaveClass('min-h-11');
+  });
+
   it('says when nobody is blocked', () => {
     render(<BlockedList userId="me" blocked={[]} />);
     expect(screen.getByText(/haven.t blocked anyone/)).toBeInTheDocument();
