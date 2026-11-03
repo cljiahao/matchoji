@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import { OG } from '@/features/share';
 
-// Installable, nothing more: no service worker, so there is no offline mode.
+// Installable; public/sw.js adds only an offline fallback page, not offline browsing.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Matchoji',

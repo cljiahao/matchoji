@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Providers, ThemeProvider } from '@/components/layout';
+import { RegisterServiceWorker } from '@/features/offline';
 import { SITE_URL } from '@/lib/constants/env';
 import type { Metadata, Viewport } from 'next';
 import { Figtree } from 'next/font/google';
@@ -56,6 +57,7 @@ export default async function RootLayout({
           nonce={nonce}
         >
           <Providers>{children}</Providers>
+          <RegisterServiceWorker />
         </ThemeProvider>
       </body>
     </html>
