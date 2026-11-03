@@ -9,6 +9,8 @@ link, and resolve reported reviews and comments (remove or keep, with the reason
 is told). Every write is a database function that checks `profiles.is_admin`, so the page's own
 check is a convenience, not the guard. The links form starts from the tea's saved credit and shop link, so editing one leaves the other as it was. The page is tabs (Review queue, Reports, Tea photo, Tea price) and the photo form shows the tea's current photo and credit.
 
+The Shops tab lists and edits `shop_locations` through the `shops` feature's public API.
+
 ## Contents
 
 - `api/`

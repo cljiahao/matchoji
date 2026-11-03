@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.TOP,
     PAGE_ROUTES.REGIONS,
     PAGE_ROUTES.SUPPLY,
+    PAGE_ROUTES.SHOPS,
     PAGE_ROUTES.LEARN,
     // Only lists with enough rated teas exist; the rest return not-found and stay out.
     ...buildTopLists(catalogue).map((list) => `${PAGE_ROUTES.TOP}/${list.slug}`),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildCsp, generateNonce, imageSources } from './csp';
+import { OSM_TILE_HOST, buildCsp, generateNonce, imageSources } from './csp';
 
 const supabaseUrl = 'https://abc.supabase.co';
 
@@ -33,6 +33,21 @@ describe('buildCsp with Sentry', () => {
     const csp = buildCsp({ nonce: 'abc123', isDev: false, supabaseUrl });
     expect(csp).not.toMatch(/sentry/i);
     expect(csp).not.toContain('connect-src');
+  });
+});
+
+describe('buildCsp with maps', () => {
+  it('allows OpenStreetMap tiles as images and nothing wider', () => {
+    const csp = buildCsp({ nonce: 'abc123', isDev: false, supabaseUrl });
+    expect(csp).toContain(
+      `img-src 'self' data: blob: ${supabaseUrl} https://*.googleusercontent.com ${OSM_TILE_HOST}`
+    );
+    expect(csp).toContain("script-src 'self' 'nonce-abc123' 'strict-dynamic'");
+    expect(csp).not.toMatch(/style-src|connect-src|default-src/);
+  });
+
+  it('keeps the permissive https fallback when there is no Supabase URL', () => {
+    expect(imageSources(undefined)).toBe("img-src 'self' data: blob: https:");
   });
 });
 

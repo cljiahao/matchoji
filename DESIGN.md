@@ -391,6 +391,10 @@ Five rows (5 to 1 stars) with an 8px track and a category-filled bar that grows 
 
 Five 32px outline stars in the empty-star colour that fill in the category colour up to the hovered or focused star and scale 110% on hover. One tap opens the rating dialog (24px radius) with that star set; signed out, the tap opens the sign-in dialog instead.
 
+### Maps
+
+OpenStreetMap tiles through Leaflet on `/regions` and `/shops`, in a 16px-rounded, hairline-bordered container 320px tall on phones and 448px from `sm`. Pins are pills: matcha or hojicha fill for the larger category, brand green for an even split or a shop, white 2px edge, 32px tall inside a 44px hit area, label in white or black per the token's `-foreground`. Zoom and popup-close controls are 44px on `--background`, popups use `--popover`, attribution sits on a translucent `--background`. In dark mode only the tile layer is dimmed (`brightness(0.72) contrast(1.05) saturate(0.85)`), never inverted. A list of the same items always follows the map as its accessible equivalent. Region pins carry no farm locations, by design.
+
 ### Drawn Tin
 
 Stands in for any product photo on tiles, in category circles and in the journal. See Shapes for its anatomy and Colors for its tones.

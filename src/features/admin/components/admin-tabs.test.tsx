@@ -17,6 +17,7 @@ function setup(counts = { queueCount: 3, reportCount: 0 }) {
       reports={<p>reports body</p>}
       photo={<p>photo body</p>}
       price={<p>price body</p>}
+      shops={<p>shops body</p>}
     />
   );
 }
@@ -76,6 +77,7 @@ describe('AdminTabs', () => {
         reports={<p>reports body</p>}
         photo={<input aria-label="Credit" />}
         price={<p>price body</p>}
+        shops={<p>shops body</p>}
       />
     );
 

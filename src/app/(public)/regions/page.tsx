@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { connection } from 'next/server';
 
+import { TeaMap } from '@/components/widgets';
 import {
   CATEGORY_STYLES,
   SUPPLY_LABELS,
   discoverHref,
   listRegionSummaries,
+  regionPins,
   sortRegionsByScarcity,
   type ProductCategory,
   type RegionSummary,
@@ -71,6 +73,7 @@ export default async function RegionsPage({ searchParams }: RegionsPageProps) {
   await connection();
   const scarcest = (await searchParams).sort === 'scarce';
   const summaries = await listRegionSummaries(await createClient());
+  const pins = regionPins(summaries);
   const regions = scarcest ? sortRegionsByScarcity(summaries) : summaries;
 
   return (
@@ -104,6 +107,17 @@ export default async function RegionsPage({ searchParams }: RegionsPageProps) {
           );
         })}
       </nav>
+
+      {pins.length > 0 && (
+        <div className="mt-6">
+          <TeaMap label="Map of tea-growing regions" pins={pins} />
+          <p className="text-muted-foreground mt-2 text-sm">
+            Number = teas from the region, coloured by which tea there is more of: green matcha,
+            amber hojicha, brand colour for an even split. Choose a pin to see its teas; the list
+            below has the same regions.
+          </p>
+        </div>
+      )}
 
       {regions.length > 0 ? (
         <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

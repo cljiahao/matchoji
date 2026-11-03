@@ -943,6 +943,7 @@ describe('Admin page', () => {
         ],
         vendors: { data: [], error: null },
         content_reports: { data: [], error: null },
+        shop_locations: { data: [], error: null },
       },
       { id: 'admin' }
     );
@@ -995,6 +996,7 @@ describe('Product page', () => {
         error: null,
       },
       stock_reports: { data: { status: 'sold_out', created_at: twoDaysAgo }, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       review_likes: { data: [{ review_id: 'r1', user_id: 'someone' }], error: null },
       review_comments: { data: [], error: null },
       listings: {
@@ -1113,6 +1115,7 @@ describe('Product page', () => {
       product_ratings: { data: null, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
 
@@ -1133,6 +1136,32 @@ describe('Product page', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('links a maker with listed shops to the in-person map, and shows no link without them', async () => {
+    const useShops = (count: number) =>
+      useServer({
+        products: { data: { ...productRow, brand: 'Ippodo' }, error: null },
+        product_ratings: { data: null, error: null },
+        'rpc:product_reviews': { data: [], error: null },
+        stock_reports: { data: null, error: null },
+        shop_locations: { data: null, error: null, count },
+        listings: { data: [], error: null },
+      });
+
+    useShops(2);
+    const { unmount } = renderWithQuery(
+      await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) })
+    );
+    expect(screen.getByRole('link', { name: 'Where to buy in person' })).toHaveAttribute(
+      'href',
+      '/shops?brand=Ippodo'
+    );
+    unmount();
+
+    useShops(0);
+    renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
+    expect(screen.queryByRole('link', { name: 'Where to buy in person' })).not.toBeInTheDocument();
+  });
+
   it('lets whoever added a tea awaiting review rate it', async () => {
     useServer(
       {
@@ -1142,6 +1171,7 @@ describe('Product page', () => {
         latest_reviews: { data: [], error: null },
         wishlist: { data: null, error: null },
         stock_reports: { data: null, error: null },
+        shop_locations: { data: null, error: null, count: 0 },
         listings: { data: [], error: null },
       },
       { id: 'u1' }
@@ -1167,6 +1197,7 @@ describe('Product page', () => {
         tea_taste_profiles: { data: [], error: null },
         wishlist: { data: { owned_quantity: 1, opened_on: openedOn }, error: null },
         stock_reports: { data: null, error: null },
+        shop_locations: { data: null, error: null, count: 0 },
         listings: { data: [], error: null },
       },
       { id: 'u1' }
@@ -1191,6 +1222,7 @@ describe('Product page', () => {
       product_ratings: { data: null, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
 
@@ -1205,6 +1237,7 @@ describe('Product page', () => {
       product_ratings: { data: null, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
 
@@ -1219,6 +1252,7 @@ describe('Product page', () => {
       product_ratings: { data: null, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
 
@@ -1239,6 +1273,7 @@ describe('Product page', () => {
       tea_prices: { data: { price_band: 'budget' }, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
 
@@ -1260,6 +1295,7 @@ describe('Product page', () => {
       product_ratings: { data: null, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
     await expect(ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) })).rejects.toThrow(
@@ -1286,6 +1322,7 @@ describe('Product page', () => {
         tea_taste_profiles: { data: [], error: null },
         wishlist: { data: null, error: null },
         stock_reports: { data: null, error: null },
+        shop_locations: { data: null, error: null, count: 0 },
         listings: { data: [], error: null },
       },
       { id: 'u1' }
@@ -1324,6 +1361,7 @@ describe('Product page', () => {
       product_ratings: { data: null, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
 
@@ -1337,6 +1375,7 @@ describe('Product page', () => {
       products: { data: null, error: null },
       'rpc:product_reviews': { data: [], error: null },
       stock_reports: { data: null, error: null },
+      shop_locations: { data: null, error: null, count: 0 },
       listings: { data: [], error: null },
     });
     await expect(ProductPage({ params: Promise.resolve({ id: 'nope' }) })).rejects.toThrow(
@@ -1486,6 +1525,10 @@ describe('static routes', () => {
       '/regions/supply'
     );
     expect(screen.getByRole('link', { name: 'Top lists' })).toHaveAttribute('href', '/top');
+    expect(screen.getByRole('link', { name: 'Where to buy in person' })).toHaveAttribute(
+      'href',
+      '/shops'
+    );
     expect(screen.getAllByRole('link')).toHaveLength(5);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);

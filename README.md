@@ -14,6 +14,10 @@ Error tracking is off until you give it a DSN; with none set, nothing is initial
 
 Browsers post events to the same-origin `/monitoring` tunnel, so the content security policy needs no Sentry host. Reports are scrubbed of emails, cookies, auth headers and Supabase tokens, with no session replay and 10% trace sampling.
 
+## Maps
+
+`/regions` maps the growing regions and `/shops` maps real shop locations, with free OpenStreetMap tiles through Leaflet: no key, no account. Region pins use fixed town-centre coordinates (`src/features/products/lib/region-pins.ts`); there are no farm pins, since makers rarely publish their farms and a farm can be someone's home. Shops live in the `shop_locations` table (migration `20261103000000_shop_locations.sql`, applied by hand in the Supabase SQL editor; until it is, `/shops` shows no shops), managed in the admin Shops tab. Every shop needs an address read from its own official site, kept as `source_url`; coordinates are approximate to the building. Tiles follow OSM's tile usage policy (default max zoom, attribution, no prefetching) and the CSP allows `https://tile.openstreetmap.org` for images.
+
 ## Structure
 
 The 2026-11-03 impeccable critique (`docs/superpowers/specs/`) tuned empty-state copy and mobile spacing; `DESIGN.md` records the unrated-shelf rule.

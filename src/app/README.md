@@ -9,6 +9,8 @@ theme tokens and the few global rules (focus outline, pill buttons, number and d
 catalogue teas (read per request) and `robots.ts` keeps admin, account, journal, sell and auth pages
 out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks (field edges 3:1, muted, brand and category text 4.5:1 in both themes); the dark block is opt-in through the footer's theme toggle, with Light the default and `enableSystem` on; `error.tsx` and `auth/error/` render a `main` landmark with one h1.
 
+`sitemap.ts` also lists `/shops`.
+
 ## Contents
 
 - `(public)/`

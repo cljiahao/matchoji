@@ -22,6 +22,8 @@ The fine print also has "Is one of these photos yours? Ask us to take it down.",
 
 Navbar, footer and tab-bar controls keep a 44px minimum touch target, including the "Log a tasting" button. The nav links, Log button and tab bar switch at `md` (768px), the wordmark is `shrink-0` so it never runs into the first link, and the search pill waits for `lg` so the row fits at every width. The tab bar's active badge uses the `brand-foreground` token so it stays legible in dark mode.
 
+The footer links `/shops` ("Where to buy in person") on every screen size; the navbar stays unchanged.
+
 ## Contents
 
 - `index.ts`

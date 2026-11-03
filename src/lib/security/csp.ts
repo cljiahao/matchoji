@@ -1,6 +1,9 @@
-// Images come only from this site, the project's Supabase Storage (review photos, tea photos)
-// and Google's profile-photo host (the signed-in avatar). Without a Supabase URL at build time
+// Images come only from this site, the project's Supabase Storage (review photos, tea photos),
+// Google's profile-photo host (the signed-in avatar) and OpenStreetMap's tile server (the maps). Without a Supabase URL at build time
 // (CI's blank-env build) any https host is allowed.
+// Leaflet loads tiles as <img>; the policy's one third-party map host.
+export const OSM_TILE_HOST = 'https://tile.openstreetmap.org';
+
 export function imageSources(supabaseUrl: string | undefined): string {
   let storage = 'https:';
   try {
@@ -8,7 +11,8 @@ export function imageSources(supabaseUrl: string | undefined): string {
   } catch {
     // An unparsable URL keeps the permissive fallback; the app itself refuses to start without one.
   }
-  const hosts = storage === 'https:' ? storage : `${storage} https://*.googleusercontent.com`;
+  const hosts =
+    storage === 'https:' ? storage : `${storage} https://*.googleusercontent.com ${OSM_TILE_HOST}`;
   return `img-src 'self' data: blob: ${hosts}`;
 }
 

@@ -20,6 +20,7 @@ export {
   type PriceBand,
   type TeaPrice,
 } from './pricing';
+export { REGION_COORDINATES, regionPins } from './region-pins';
 export { sortRegionsByScarcity, summarizeRegions, type RegionSummary } from './summarize-regions';
 export { SUPPLY_LABELS, SUPPLY_LEVELS, supplyRank, type SupplyLevel } from './supply';
 export {
