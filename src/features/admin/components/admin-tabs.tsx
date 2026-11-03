@@ -38,7 +38,7 @@ export function AdminTabs({
   photo,
   price,
 }: AdminTabsProps) {
-  const trigger = 'h-10 flex-none px-3';
+  const trigger = 'h-11 flex-none px-3';
   // The hash is read after mount so the server render and first client render agree.
   const [tab, setTab] = useState<Tab>('queue');
   useEffect(() => {

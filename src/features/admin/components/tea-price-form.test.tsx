@@ -111,3 +111,17 @@ describe('TeaPriceForm', () => {
     expect(screen.getByText('g')).toBeInTheDocument();
   });
 });
+
+describe('TeaPriceForm tap targets', () => {
+  it('keeps every control at least 44px tall', () => {
+    setup();
+    for (const control of [
+      screen.getByRole('combobox', { name: 'Tea' }),
+      screen.getByLabelText('Price (S$)'),
+      screen.getByLabelText('Pack size (g)'),
+      screen.getByRole('button', { name: 'Save price' }),
+    ]) {
+      expect(control.className).toMatch(/(^|\s)(min-)?h-11(\s|$)/);
+    }
+  });
+});

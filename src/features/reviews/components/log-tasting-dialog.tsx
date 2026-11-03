@@ -94,7 +94,9 @@ export function LogTastingDialog({ trigger, prep }: LogTastingDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{trigger ?? <Button>Log a tasting</Button>}</DialogTrigger>
+      <DialogTrigger asChild>
+        {trigger ?? <Button className="min-h-11">Log a tasting</Button>}
+      </DialogTrigger>
       <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-3xl sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>

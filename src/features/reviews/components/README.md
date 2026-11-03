@@ -35,6 +35,8 @@ ratings, "Popular".
 
 Star inputs have 44px touch targets, and review photos load lazily. Empty stars, hover borders and slider tracks use theme tokens, so they hold up in dark mode.
 
+The default `LogTastingDialog` trigger button keeps a 44px minimum height.
+
 ## Contents
 
 - `community-reviews.tsx`

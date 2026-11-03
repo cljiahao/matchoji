@@ -65,6 +65,7 @@ function ReportItem({ report }: { report: OpenReport }) {
         <Button
           type="button"
           size="lg"
+          className="min-h-11"
           variant="destructive"
           disabled={busy}
           onClick={() => decide('removed')}
@@ -74,6 +75,7 @@ function ReportItem({ report }: { report: OpenReport }) {
         <Button
           type="button"
           size="lg"
+          className="min-h-11"
           variant="outline"
           disabled={busy}
           onClick={() => decide('dismissed')}

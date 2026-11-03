@@ -19,6 +19,13 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- The navbar wordmark no longer overlaps "Explore" at tablet widths: it keeps its width, the nav
+  links, Log button and bottom tab bar switch at 768px, the header search pill waits for 1024px,
+  and gaps tighten below that.
+- Controls that were 36–40px tall now meet the 44px tap-target standard: the navbar and empty-state
+  "Log a tasting" buttons, the account name, delete-confirm, Save, download and delete controls, the
+  admin tabs, tea pickers, photo, credit, shop-link and price fields and buttons, and the "Remove
+  photo" row.
 - Accessibility pass from a token and source audit: form field edges are now 3:1 against the page
   (they were 1.6:1), the dark theme's green is lifted so brand text and buttons clear 4.5:1 on
   black, the course tick and the tab-bar badge follow the brand foreground token, loading

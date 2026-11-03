@@ -263,4 +263,22 @@ describe('TeaLinksForm', () => {
 
     expect(credit).toHaveValue('Marukyu Koyamaen');
   });
+
+  it('keeps every control, and the whole Remove photo row, at least 44px tall', () => {
+    supabase.current = createFakeBrowserClient().client;
+    renderWithQuery(<TeaLinksForm catalogue={catalogue} />);
+
+    for (const control of [
+      screen.getByRole('combobox', { name: 'Tea' }),
+      screen.getByLabelText('Photo (optional)'),
+      screen.getByLabelText('Photo credit (optional)'),
+      screen.getByLabelText('Shop link (optional)'),
+      screen.getByRole('button', { name: 'Save tea' }),
+      screen.getByRole('button', { name: 'Reset' }),
+    ]) {
+      expect(control.className).toMatch(/(^|\s)(min-)?h-11(\s|$)/);
+    }
+    expect(screen.getByText('Remove photo')).toHaveClass('min-h-11');
+    expect(screen.getByLabelText('Remove photo').parentElement).toHaveClass('min-h-11');
+  });
 });

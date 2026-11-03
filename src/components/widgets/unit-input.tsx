@@ -25,7 +25,7 @@ export const UnitInput = forwardRef<HTMLInputElement, UnitInputProps>(function U
         ref={ref}
         className={cn(
           // The unit sits where a number input's spin buttons would, so they are dropped.
-          'h-10 [appearance:textfield] tabular-nums [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+          'h-11 [appearance:textfield] tabular-nums [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
           atStart ? 'pl-9' : 'pr-9'
         )}
         {...props}

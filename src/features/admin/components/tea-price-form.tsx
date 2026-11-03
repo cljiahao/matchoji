@@ -95,7 +95,7 @@ export function TeaPriceForm({ catalogue }: { catalogue: ProductSummary[] }) {
         The maker&apos;s price for one pack, in Singapore dollars. Leave both empty to remove it.
       </p>
       <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" size="lg" disabled={busy || !tea}>
+        <Button type="submit" size="lg" className="min-h-11" disabled={busy || !tea}>
           {busy ? 'Saving…' : 'Save price'}
         </Button>
         {!tea && <p className="text-muted-foreground text-sm">Pick a tea to set its price.</p>}

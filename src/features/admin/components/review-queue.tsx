@@ -64,14 +64,20 @@ function Decision({
             type="button"
             size="lg"
             variant="destructive"
-            className="max-w-full"
+            className="min-h-11 max-w-full"
             title={label}
             disabled={busy || !note.trim()}
             onClick={() => onDecide('rejected', note)}
           >
             <span className="truncate">Reject {label}</span>
           </Button>
-          <Button type="button" size="lg" variant="outline" onClick={() => setRejecting(false)}>
+          <Button
+            type="button"
+            size="lg"
+            className="min-h-11"
+            variant="outline"
+            onClick={() => setRejecting(false)}
+          >
             Cancel
           </Button>
           {!note.trim() && <p className="text-muted-foreground text-sm">A reason is needed.</p>}
@@ -84,14 +90,20 @@ function Decision({
       <Button
         type="button"
         size="lg"
-        className="max-w-full"
+        className="min-h-11 max-w-full"
         title={label}
         disabled={busy}
         onClick={() => onDecide('approved')}
       >
         <span className="truncate">Approve {label}</span>
       </Button>
-      <Button type="button" size="lg" variant="outline" onClick={() => setRejecting(true)}>
+      <Button
+        type="button"
+        size="lg"
+        className="min-h-11"
+        variant="outline"
+        onClick={() => setRejecting(true)}
+      >
         Reject…
       </Button>
     </div>
@@ -132,7 +144,7 @@ function TeaItem({ tea, catalogue }: { tea: PendingTea; catalogue: ProductSummar
       <div className="flex flex-wrap items-center gap-2">
         <TeaSelect
           aria-label={`Tea that ${tea.name} duplicates`}
-          className="h-10 min-w-0 flex-1"
+          className="h-11 min-w-0 flex-1"
           teas={catalogue}
           value={keep}
           onChange={setKeep}
@@ -141,6 +153,7 @@ function TeaItem({ tea, catalogue }: { tea: PendingTea; catalogue: ProductSummar
         <Button
           type="button"
           size="lg"
+          className="min-h-11"
           variant="outline"
           disabled={busy || !keep}
           onClick={() =>

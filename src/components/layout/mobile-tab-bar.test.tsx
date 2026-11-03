@@ -26,7 +26,7 @@ describe('MobileTabBar', () => {
   it('links Home, Explore, Learn and Journal and marks the current one', () => {
     renderWithQuery(<MobileTabBar />);
     const nav = screen.getByRole('navigation', { name: 'Sections' });
-    expect(nav).toHaveClass('sm:hidden');
+    expect(nav).toHaveClass('md:hidden');
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
     expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');

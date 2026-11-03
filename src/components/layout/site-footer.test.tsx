@@ -24,7 +24,7 @@ describe('SiteFooter', () => {
   // The phone tab bar has Home, Explore, Learn and Journal but not Regions.
   it('shows Regions on phones only', () => {
     render(<SiteFooter />);
-    expect(screen.getByRole('link', { name: 'Regions' }).closest('li')).toHaveClass('sm:hidden');
+    expect(screen.getByRole('link', { name: 'Regions' }).closest('li')).toHaveClass('md:hidden');
   });
 
   it('renders extra links from the prop', () => {

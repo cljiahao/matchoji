@@ -13,7 +13,7 @@ vi.mock('next/navigation', () => ({ useRouter: () => router }));
 const toast = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
-import { DeleteAccountSection, DisplayNameForm } from './account-sections';
+import { DeleteAccountSection, DisplayNameForm, ExportDataButton } from './account-sections';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -86,5 +86,26 @@ describe('DeleteAccountSection', () => {
       )
     );
     expect(router.replace).not.toHaveBeenCalled();
+  });
+});
+
+describe('account tap targets', () => {
+  it('keeps every control at least 44px tall', () => {
+    renderWithQuery(
+      <>
+        <DisplayNameForm userId="u1" current="Aiko" />
+        <ExportDataButton userId="u1" />
+        <DeleteAccountSection userId="u1" />
+      </>
+    );
+    for (const control of [
+      screen.getByLabelText('Name shown on your reviews'),
+      screen.getByRole('button', { name: 'Save' }),
+      screen.getByRole('button', { name: 'Download my data' }),
+      screen.getByLabelText(/Type .delete. to confirm/),
+      screen.getByRole('button', { name: 'Delete my account' }),
+    ]) {
+      expect(control.className).toMatch(/(^|\s)(min-)?h-11(\s|$)/);
+    }
   });
 });
