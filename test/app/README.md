@@ -9,8 +9,8 @@ and empty states), the regions page (counts, supply levels, both sorts, links), 
 tiles, prefecture cards, sources, empty state), the sell page (signed out, applying,
 pending, rejected with its reason, approved with listings), the admin page (404 for
 non-admins, the tabs, queue and reports for admins), the account page (signed out and signed in, privacy and blocks), taster profiles (public,
-private, unknown), the product page (taste,
-facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row, the freshness hint for an opened tea), the journal's signed-out, empty and filled states (with Your taste),
+private, unknown, and their stats strip: shown to visitors of a public profile and to the owner, never read for a visitor of a private one), the product page (taste,
+facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row, the freshness hint for an opened tea), the journal's signed-out, empty and filled states (with the stats strip's tasting count and Your taste),
 loading routes, the public error boundary, and the OAuth callback's redirect handling.
 
 `seo.test.ts` covers the sitemap (browse, `/top`, Learn, course and tea pages, and a top list only once enough teas are rated) and robots rules. `learn.test.tsx`
