@@ -8,7 +8,7 @@
 refresh the server page after an action and show the database's refusal as the error.
 
 `TeaPriceForm`: pick a catalogue tea and set its pack price (S$) and pack size (g), or clear both;
-validated by `teaPriceSchema` (both above zero, or both empty).
+validated by `teaPriceSchema` (both above zero, or both empty); it lists the picked tea's last five recorded prices.
 
 `AdminTabs`: the four admin jobs as tabs, with counts on the two queues. Panels stay mounted so a half-filled form survives a tab switch, and the active tab is kept in the URL hash (`#queue`, `#reports`, `#photo`, `#price`). `TeaSelect`: the catalogue picker the forms share. `TeaLinksForm` shows the picked tea's current photo and credit, and has a Reset button.
 

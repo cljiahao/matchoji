@@ -17,6 +17,7 @@ import {
   ValueBadge,
   getProduct,
   listCatalogue,
+  listPriceHistory,
   valueScoresFor,
 } from '@/features/products';
 import {
@@ -63,7 +64,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!isTeaId(id)) notFound();
 
   const supabase = await createClient();
-  const [product, reviews, stockReport, offers, { data: auth }, editions, catalogue] =
+  const [product, reviews, stockReport, offers, { data: auth }, editions, catalogue, priceHistory] =
     await Promise.all([
       loadProduct(id),
       listReviews(supabase, id),
@@ -73,6 +74,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       listEditions(supabase, id),
       // Comparisons with other teas are extras: if the read fails the page just omits them.
       listCatalogue(supabase).catch(() => []),
+      // The trend is an extra too: no history shows no trend.
+      listPriceHistory(supabase, id).catch(() => []),
     ]);
 
   if (!product) notFound();
@@ -250,7 +253,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </p>
         )}
         <EditionList editions={editions} />
-        <ProductFacts product={product} />
+        <ProductFacts product={product} priceHistory={priceHistory} />
         {summary.photos.length > 0 && (
           <section aria-labelledby="photos-heading">
             <h2 id="photos-heading" className="text-2xl font-bold tracking-tight">

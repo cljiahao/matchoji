@@ -8,12 +8,16 @@ import {
   PRICE_BAND_LABELS,
   formatGrams,
   formatSgd,
+  type PricePoint,
   type TeaPrice,
 } from '../lib';
 import type { Product, ProductCategory } from '../types';
+import { PriceTrend } from './price-trend';
 
 interface ProductFactsProps {
   product: Product;
+  // The tea's recorded prices, oldest first; the trend shows once there are two.
+  priceHistory?: PricePoint[];
 }
 
 function Fact({
@@ -36,7 +40,15 @@ function Fact({
 
 // "S$32.00 for 40 g · S$0.80/g", then what a cup costs at the Learn recipes' doses and the
 // band among teas of its kind.
-function PriceFact({ price, category }: { price: TeaPrice; category: ProductCategory }) {
+function PriceFact({
+  price,
+  category,
+  history,
+}: {
+  price: TeaPrice;
+  category: ProductCategory;
+  history: PricePoint[];
+}) {
   const cups = CUP_DOSES[category]
     .map((dose) => `${formatSgd(price.perGram * dose.grams)} per ${dose.label} (${dose.grams} g)`)
     .join(' · ');
@@ -51,12 +63,13 @@ function PriceFact({ price, category }: { price: TeaPrice; category: ProductCate
           {PRICE_BAND_LABELS[price.band]} for {CATEGORY_STYLES[category].label.toLowerCase()}
         </span>
       )}
+      <PriceTrend history={history} />
     </>
   );
 }
 
 // Vivino's "Facts about the wine" table, for tea.
-export function ProductFacts({ product }: ProductFactsProps) {
+export function ProductFacts({ product, priceHistory = [] }: ProductFactsProps) {
   return (
     <section aria-labelledby="facts-heading">
       <h2 id="facts-heading" className="text-2xl font-bold tracking-tight">
@@ -88,7 +101,7 @@ export function ProductFacts({ product }: ProductFactsProps) {
         )}
         {product.price && (
           <Fact icon={Tag} label="Price">
-            <PriceFact price={product.price} category={product.category} />
+            <PriceFact price={product.price} category={product.category} history={priceHistory} />
           </Fact>
         )}
       </dl>

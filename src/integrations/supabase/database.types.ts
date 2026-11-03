@@ -341,6 +341,33 @@ export interface Database {
         };
         Relationships: [];
       };
+      tea_price_history: {
+        Row: {
+          id: string;
+          product_id: string;
+          price: number;
+          pack_grams: number;
+          currency: string;
+          recorded_at: string;
+        };
+        Insert: {
+          id?: string;
+          product_id: string;
+          price: number;
+          pack_grams: number;
+          currency?: string;
+          recorded_at?: string;
+        };
+        Update: {
+          id?: string;
+          product_id?: string;
+          price?: number;
+          pack_grams?: number;
+          currency?: string;
+          recorded_at?: string;
+        };
+        Relationships: [];
+      };
       tea_production_stats: {
         Row: {
           prefecture: string;

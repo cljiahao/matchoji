@@ -43,7 +43,7 @@ and admin-only fields. `lesson-progress.test.ts` checks lesson progress is priva
 signed-in learner with a server time and valid slugs, unmarkable only by its owner, audited and
 deleted with the account. `tea-prices.test.ts` checks only admins set prices (both values or neither,
 within range), suggested teas arrive unpriced, the per-gram figure and bands (none until 3 teas of a
-category are priced), pending teas left out of the comparison, and that price changes are audited.
+category are priced), pending teas left out of the comparison, and that price changes are audited. `tea-price-history.test.ts` checks the trigger records a priced insert and each price or pack-size change but not a no-change or clearing update, history goes with the tea, everyone can read it, no client can write it, and it is audited.
 
 `admin-review.test.ts` also covers photo credits: set, kept on a null image, cleared with the photo, the 120-character limit, admin-only, and refused on a suggested tea.
 
@@ -63,6 +63,7 @@ category are priced), pending teas left out of the comparison, and that price ch
 - `seed-real-teas.test.ts`
 - `social-profiles-follows.test.ts`
 - `social-reactions.test.ts`
+- `tea-price-history.test.ts`
 - `tea-prices.test.ts`
 - `marketplace.test.ts`
 - `stock-reports.test.ts`

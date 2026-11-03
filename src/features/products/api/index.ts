@@ -1,3 +1,4 @@
+export { listPriceHistory } from './price-history-service';
 export { createProduct } from './products-mutations';
 export {
   PAGE_SIZE,
