@@ -25,6 +25,7 @@ The hero is compact on phones (a 160px image well, tighter gaps) and the content
 
 For catalogue teas the page adds a "Great value" badge under the rating, a row of data-backed highlights ("Highest rated from Uji") above the insights and a "Similar teas" shelf at the end; each is absent when the data is too thin.
 When the maker has any row in `shop_locations`, a small "Where to buy in person" link to `/shops?brand=<maker>` follows the online offers; without a shop it is absent.
+The Price fact in the facts table carries a price trend when `tea_price_history` holds two or more prices for the tea: a sparkline of price per gram and a line such as "Up 12% since Mar 2026". The history read is an extra: a failed read or a missing table shows no trend.
 
 ## Contents
 
