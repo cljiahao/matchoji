@@ -70,7 +70,7 @@ describe('Navbar', () => {
     renderWithQuery(<Navbar />);
     expect(screen.getByRole('link', { name: 'Journal' }).closest('ul')).toHaveClass(
       'hidden',
-      'sm:flex'
+      'md:flex'
     );
   });
 
@@ -90,5 +90,11 @@ describe('Navbar', () => {
     renderWithQuery(<Navbar />);
 
     expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('keeps the wordmark from shrinking into the first link, and the log button 44px tall', () => {
+    renderWithQuery(<Navbar />);
+    expect(screen.getByRole('link', { name: 'Matchoji' })).toHaveClass('shrink-0', 'min-h-11');
+    expect(screen.getByRole('button', { name: 'Log a tasting' })).toHaveClass('min-h-11');
   });
 });

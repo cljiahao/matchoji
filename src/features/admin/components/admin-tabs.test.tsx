@@ -86,4 +86,9 @@ describe('AdminTabs', () => {
 
     expect(screen.getByLabelText('Credit')).toHaveValue('Ippodo');
   });
+
+  it('keeps the tab buttons 44px tall', () => {
+    setup();
+    for (const tab of screen.getAllByRole('tab')) expect(tab).toHaveClass('h-11');
+  });
 });

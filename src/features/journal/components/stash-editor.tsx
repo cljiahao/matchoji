@@ -90,7 +90,7 @@ export function StashEditor({
               <Input
                 id={`qty-${productId}`}
                 inputMode="numeric"
-                className="bg-background h-10 w-20 tabular-nums"
+                className="bg-background h-11 w-20 tabular-nums"
                 aria-describedby={`stash-help-${productId}`}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
@@ -102,7 +102,7 @@ export function StashEditor({
                 id={`opened-${productId}`}
                 type="date"
                 max={today}
-                className="bg-background h-10 w-44"
+                className="bg-background h-11 w-44"
                 value={openedOn}
                 onChange={(e) => setOpenedOn(e.target.value)}
               />
@@ -112,10 +112,10 @@ export function StashEditor({
             Tins you own, 0 to 99. Leave the date empty if none is open.
           </p>
           <div className="flex gap-2">
-            <Button type="submit" size="lg" disabled={busy}>
+            <Button type="submit" size="lg" className="min-h-11" disabled={busy}>
               {busy ? 'Saving…' : 'Save'}
             </Button>
-            <Button type="button" size="lg" variant="outline" onClick={cancel}>
+            <Button type="button" size="lg" className="min-h-11" variant="outline" onClick={cancel}>
               Cancel
             </Button>
           </div>
@@ -123,7 +123,7 @@ export function StashEditor({
       ) : (
         <button
           type="button"
-          className="text-brand inline-flex min-h-10 items-center font-semibold hover:underline"
+          className="text-brand inline-flex min-h-11 items-center font-semibold hover:underline"
           onClick={() => setOpen(true)}
         >
           {summary ? 'Edit stash' : 'I have this'}

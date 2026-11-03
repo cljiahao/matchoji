@@ -116,11 +116,11 @@ export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
             id="links-photo"
             type="file"
             accept="image/jpeg,image/png,image/webp,image/avif"
-            className="h-10 py-1.5"
+            className="h-11 py-1.5"
             disabled={remove}
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex min-h-11 items-center gap-2">
             <input
               id="links-remove"
               type="checkbox"
@@ -128,7 +128,7 @@ export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
               checked={remove}
               onChange={(e) => setRemove(e.target.checked)}
             />
-            <Label htmlFor="links-remove" className="min-h-10 flex-1">
+            <Label htmlFor="links-remove" className="min-h-11 flex-1">
               Remove photo
             </Label>
           </div>
@@ -137,7 +137,7 @@ export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
           <Label htmlFor="links-credit">Photo credit (optional)</Label>
           <Input
             id="links-credit"
-            className="h-10"
+            className="h-11"
             maxLength={120}
             placeholder="Marukyu Koyamaen"
             aria-describedby="links-credit-count"
@@ -158,7 +158,7 @@ export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
         <Input
           id="links-shop"
           type="url"
-          className="h-10"
+          className="h-11"
           placeholder="https://"
           aria-describedby="links-help"
           value={shop}
@@ -172,10 +172,17 @@ export function TeaLinksForm({ catalogue }: { catalogue: CatalogueTea[] }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="submit" size="lg" disabled={busy || !tea}>
+        <Button type="submit" size="lg" className="min-h-11" disabled={busy || !tea}>
           {busy ? 'Saving…' : 'Save tea'}
         </Button>
-        <Button type="button" size="lg" variant="outline" disabled={!tea} onClick={() => pick(tea)}>
+        <Button
+          type="button"
+          size="lg"
+          className="min-h-11"
+          variant="outline"
+          disabled={!tea}
+          onClick={() => pick(tea)}
+        >
           Reset
         </Button>
         {!tea && <p className="text-muted-foreground text-sm">Pick a tea to edit it.</p>}

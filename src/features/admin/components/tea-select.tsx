@@ -36,7 +36,7 @@ export const TeaSelect = forwardRef<HTMLButtonElement, TeaSelectProps>(function 
 ) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger ref={ref} id={id} className={className ?? 'h-10 w-full'} {...aria}>
+      <SelectTrigger ref={ref} id={id} className={className ?? 'min-h-11 w-full'} {...aria}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent className="max-w-[calc(100vw-3rem)]">

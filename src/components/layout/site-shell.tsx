@@ -21,7 +21,7 @@ function SkipLink() {
 export function SiteShell({ children }: { children: ReactNode }) {
   return (
     // Bottom padding below sm keeps the footer clear of the fixed tab bar.
-    <div className="flex min-h-screen flex-col pb-16 sm:pb-0">
+    <div className="flex min-h-screen flex-col pb-16 md:pb-0">
       <SkipLink />
       <Navbar />
       <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex flex-1 flex-col outline-none">

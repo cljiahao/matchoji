@@ -31,10 +31,10 @@ export function Navbar() {
 
   return (
     <nav className="border-border bg-background/95 sticky top-0 z-50 w-full border-b backdrop-blur-sm">
-      <div className="max-w-site mx-auto flex h-16 items-center gap-6 px-6">
+      <div className="max-w-site mx-auto flex h-16 items-center gap-4 px-6 lg:gap-6">
         <Link
           href={PAGE_ROUTES.HOME}
-          className="text-brand flex min-h-11 items-center gap-2 text-xl font-extrabold tracking-tight"
+          className="text-brand flex min-h-11 shrink-0 items-center gap-2 text-xl font-extrabold tracking-tight"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/image_assets/logo.svg" alt="" className="h-8 w-8" />
@@ -43,11 +43,11 @@ export function Navbar() {
 
         {/* Home and Explore have their own search, so the bar's only shows elsewhere. */}
         {pathname !== PAGE_ROUTES.HOME && !pathname.startsWith(PAGE_ROUTES.EXPLORE) && (
-          <SearchPill className="hidden w-64 md:block lg:w-72" />
+          <SearchPill className="hidden lg:block lg:w-48 xl:w-72" />
         )}
 
         {/* Phones reach these through the bottom tab bar instead. */}
-        <ul className="hidden items-center gap-6 sm:flex">
+        <ul className="hidden items-center gap-4 md:flex lg:gap-6">
           {NAV_LINKS.map((link) => {
             const active = isActive(link.href, pathname);
             return (
@@ -67,7 +67,7 @@ export function Navbar() {
           })}
         </ul>
 
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-2 lg:gap-3">
           <Link
             href={PAGE_ROUTES.EXPLORE}
             aria-label="Search teas"
@@ -75,10 +75,10 @@ export function Navbar() {
           >
             <Search aria-hidden="true" className="h-5 w-5" />
           </Link>
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <LogTastingDialog
               trigger={
-                <Button>
+                <Button className="min-h-11">
                   <Plus aria-hidden="true" />
                   Log a tasting
                 </Button>

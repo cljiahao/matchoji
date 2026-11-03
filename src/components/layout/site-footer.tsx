@@ -25,11 +25,11 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
           </p>
         </div>
 
-        {/* The navbar (sm and up) already has Explore, Regions, Learn and Journal, and the
-            phone tab bar has all but Regions, so only that one repeats, on phones only. */}
+        {/* The navbar (md and up) already has Explore, Regions, Learn and Journal, and the
+            phone tab bar has all but Regions, so only that one repeats, where the tab bar shows. */}
         <nav aria-label="More from Matchoji" className="text-sm">
           <ul className="flex flex-col sm:items-end">
-            <li className="sm:hidden">
+            <li className="md:hidden">
               <Link href={PAGE_ROUTES.REGIONS} className={LINK_CLASS}>
                 Regions
               </Link>

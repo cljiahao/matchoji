@@ -317,7 +317,7 @@ A centred container (1184px max) with 24px side gutters on every surface. Home o
 
 The product page runs a two-column hero inside its tinted band (tile column 18rem from sm, 22rem from lg; 48px gap), then sections stacked 64px apart. Taste sliders use a three-column grid (pole word, track, pole word) beside a 16rem caption from md. Flavour cards scroll sideways on phones (224px each) and become a three-column grid from sm. Explore has a left filter rail that wraps into inline rows on smaller screens.
 
-Below 640px the header drops its nav links and Log button, and a fixed bottom tab bar (Home, Explore, Log, Journal) takes over, padded for the safe area.
+Below 768px the header drops its nav links and Log button, and a fixed bottom tab bar (Home, Explore, Log, Journal) takes over, padded for the safe area. From 768px the header shows the links and the Log button, with the wordmark held at its full width; the search pill joins from 1024px (below that the Explore link is the way in), and the search icon shows on phones only.
 
 ## Elevation & Depth
 
@@ -346,7 +346,7 @@ The drawn tin is the signature silhouette: a rounded body with a darker right-si
 Pill-shaped and compact, like an app's.
 
 - **Shape:** full pill (9999px), applied to every button globally.
-- **Primary:** deep matcha green, white 14px 500-weight text, 36px tall, 16px side padding (12px with an icon).
+- **Primary:** deep matcha green, white 14px 500-weight text, 36px tall, 16px side padding (12px with an icon). Wherever a button is a standalone tap target (navbar "Log a tasting", account and admin forms, journal empty state) it keeps a 44px minimum height through `min-h-11`; the drawn height is only for buttons inside a denser control.
 - **Hover / Focus:** 90% green on hover; a 2px focus outline in the focus-ring grey, offset 2px.
 - **Outline:** white with a hairline border and hairline shadow; hover fills neutral-100. Used for "Want to try" (white on the hero band) and "Continue with Google" (48px, full width).
 - **Compact icon:** a 32px white circle in a card's top-right corner for save-to-try; the bookmark fills when saved.

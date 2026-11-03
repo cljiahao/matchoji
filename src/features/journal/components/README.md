@@ -24,6 +24,8 @@ The compact want-to-try button extends its hit area to 44px without growing visu
 
 `WantToTryButton` keeps a 44px minimum height on phones in its labelled form.
 
+`StashEditor` fields and buttons are 44px tall.
+
 ## Contents
 
 - `freshness-hint.test.tsx`

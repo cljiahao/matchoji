@@ -42,7 +42,7 @@ export function DisplayNameForm({ userId, current }: { userId: string; current: 
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input
           id="display-name"
-          className="h-10"
+          className="h-11"
           value={name}
           maxLength={MAX_NAME}
           aria-describedby="display-name-help"
@@ -55,7 +55,7 @@ export function DisplayNameForm({ userId, current }: { userId: string; current: 
           type="submit"
           size="lg"
           disabled={saving || !trimmed || trimmed === current}
-          className="sm:w-auto"
+          className="min-h-11 sm:w-auto"
         >
           {saving ? 'Saving…' : 'Save'}
         </Button>
@@ -102,7 +102,14 @@ export function ExportDataButton({ userId }: { userId: string }) {
   }
 
   return (
-    <Button type="button" variant="outline" size="lg" onClick={download} disabled={busy}>
+    <Button
+      type="button"
+      variant="outline"
+      size="lg"
+      className="min-h-11"
+      onClick={download}
+      disabled={busy}
+    >
       <Download aria-hidden="true" />
       Download my data
     </Button>
@@ -143,7 +150,7 @@ export function DeleteAccountSection({ userId }: { userId: string }) {
         <div className="flex flex-col gap-2 sm:flex-row">
           <Input
             id="confirm-delete"
-            className="bg-background h-10"
+            className="bg-background h-11"
             autoComplete="off"
             value={typed}
             onChange={(e) => setTyped(e.target.value)}
@@ -152,6 +159,7 @@ export function DeleteAccountSection({ userId }: { userId: string }) {
             type="button"
             variant="destructive"
             size="lg"
+            className="min-h-11"
             disabled={busy || !confirmed}
             onClick={remove}
           >
