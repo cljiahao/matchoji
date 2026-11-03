@@ -16,6 +16,7 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 - `learn/`
 - `marketplace/`
 - `products/`
+- `share/`
 - `reviews/`
 - `shops/`
 - `social/`
@@ -33,6 +34,7 @@ and `auth`. `learn` depends on `products` (category styles, Explore links) and `
 `products` needs another feature's control on a card it takes a render slot instead.
 
 `discovery` depends on `products` and `taste`; the tea page, `/top`, home and the sitemap use it.
+`share` depends on `products` and `social`, and is used by the root metadata, manifest and icon routes.
 
 ## Parent
 

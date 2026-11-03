@@ -29,6 +29,7 @@ import {
   localToday,
   summarizeReviews,
 } from '@/features/reviews';
+import { teaMetadata } from '@/features/share';
 import { hasShopsForBrand, shopsHref } from '@/features/shops';
 import { ReviewReactions, loadReactions } from '@/features/social';
 import { StockPanel, getLatestStockReport } from '@/features/stock';
@@ -53,24 +54,7 @@ const loadProduct = cache(async (id: string) => getProduct(await createClient(),
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id } = await params;
   const product = isTeaId(id) ? await loadProduct(id) : null;
-  if (!product) return { title: 'Tea not found' };
-  const title = product.brand ? `${product.name} · ${product.brand}` : product.name;
-  const rating =
-    product.avgStars === null
-      ? 'Not yet rated'
-      : `${product.avgStars.toFixed(1)} out of 5 from ${product.reviewCount} ratings`;
-  const description = `${title}: ${product.category}. ${rating} on Matchoji.`;
-  return {
-    title,
-    description,
-    // Teas outside the catalogue are shareable by link but kept out of search engines.
-    robots: product.status === 'approved' ? undefined : { index: false },
-    openGraph: {
-      title,
-      description,
-      images: product.imageUrl ? [{ url: product.imageUrl }] : undefined,
-    },
-  };
+  return product ? teaMetadata(product) : { title: 'Tea not found' };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

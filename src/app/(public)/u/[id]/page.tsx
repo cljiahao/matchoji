@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
 
+import { profileMetadata } from '@/features/share';
 import { BlockButton, FollowButton, TastingFeed, getProfileView } from '@/features/social';
 import { YourTaste, buildTasteProfile } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
@@ -26,10 +27,7 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
   const { id } = await params;
   const view = isProfileId(id) ? await loadProfile(id) : null;
   if (!view) return { title: 'Taster not found' };
-  return {
-    title: view.profile.name,
-    robots: view.profile.isPublic ? undefined : { index: false },
-  };
+  return profileMetadata({ ...view.profile, teas: view.counts.teas });
 }
 
 const JOINED = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' });

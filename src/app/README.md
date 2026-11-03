@@ -9,6 +9,8 @@ theme tokens and the few global rules (focus outline, pill buttons, number and d
 catalogue teas (read per request) and `robots.ts` keeps admin, account, journal, sell and auth pages
 out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks (field edges 3:1, muted, brand and category text 4.5:1 in both themes); the dark block is opt-in through the footer's theme toggle, with Light the default and `enableSystem` on; `error.tsx` and `auth/error/` render a `main` landmark with one h1.
 
+Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the tea and profile pages have their own), `manifest.ts` makes the site installable as a standalone app (name, `/` start URL, brand-green theme, white background) and `icons/` serves its icons; `layout.tsx` adds the Apple web-app tags, icon links and a light/dark `themeColor`. There is no service worker, so nothing works offline.
+
 `sitemap.ts` also lists `/shops`.
 
 ## Contents
@@ -21,9 +23,13 @@ out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks
 - `global-error.test.tsx`
 - `global-error.tsx`
 - `globals.css`
+- `icons/`
 - `layout.tsx`
+- `manifest.test.ts`
+- `manifest.ts`
 - `not-found.test.tsx`
 - `not-found.tsx`
+- `opengraph-image.tsx`
 - `robots.ts`
 - `sitemap.ts`
 

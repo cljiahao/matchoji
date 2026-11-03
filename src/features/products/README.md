@@ -9,6 +9,7 @@ discover-feed UI (cards, category tabs, empty state). `types.ts`'s `Product` car
 A `Product` carries `imageCredit` (who the photo is from), read on the tea's own page and left null in lists.
 
 `lib/value-score.ts` scores value (see `lib/README.md`); `listCatalogue` in `api/` reads the whole catalogue as `CatalogueTea` (a `Product` plus `regionId`) for the features that compare a tea with the rest. `discovery` depends on this module for both.
+`components/`'s `tinDesign` is also used by `share` to draw the same tin in link-preview images.
 
 ## Contents
 
