@@ -6,7 +6,7 @@
 import { execFile } from 'node:child_process';
 import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
 import pg from 'pg';
 import ts from 'typescript';
@@ -85,14 +85,34 @@ function isNullable(type: ts.Type): boolean {
   return unionMembers(type).some((member) => member.flags & ts.TypeFlags.Null);
 }
 
+const COMPILER_OPTIONS: ts.CompilerOptions = {
+  strict: true,
+  noEmit: true,
+  skipLibCheck: true,
+  target: ts.ScriptTarget.ES2022,
+  types: [],
+};
+
+// Every program pulls in ~60 lib.*.d.ts files; parsing them dominates extractShape (hundreds of
+// ms warm, seconds on a loaded CI runner), so the parsed lib files are shared across programs.
+const libFiles = new Map<string, ts.SourceFile | undefined>();
+function createHost(): ts.CompilerHost {
+  const host = ts.createCompilerHost(COMPILER_OPTIONS);
+  const getSourceFile = host.getSourceFile.bind(host);
+  const libDir = dirname(ts.getDefaultLibFilePath(COMPILER_OPTIONS));
+  host.getSourceFile = (fileName, languageVersionOrOptions, ...rest) => {
+    if (!fileName.startsWith(libDir))
+      return getSourceFile(fileName, languageVersionOrOptions, ...rest);
+    if (!libFiles.has(fileName)) {
+      libFiles.set(fileName, getSourceFile(fileName, languageVersionOrOptions, ...rest));
+    }
+    return libFiles.get(fileName);
+  };
+  return host;
+}
+
 export function extractShape(filePath: string): SchemaShape {
-  const program = ts.createProgram([filePath], {
-    strict: true,
-    noEmit: true,
-    skipLibCheck: true,
-    target: ts.ScriptTarget.ES2022,
-    types: [],
-  });
+  const program = ts.createProgram([filePath], COMPILER_OPTIONS, createHost());
   const checker = program.getTypeChecker();
   const source = program.getSourceFile(filePath);
   const moduleSymbol = source && checker.getSymbolAtLocation(source);
