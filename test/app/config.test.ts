@@ -16,6 +16,13 @@ describe('proxy matcher', () => {
     expect(matches('/api/health')).toBe(false);
     expect(matches('/_next/static/chunk.js')).toBe(false);
   });
+
+  it('never gates or CSP-stamps the Sentry tunnel route', () => {
+    const [pattern] = proxyConfig.matcher;
+    const matches = (path: string) => new RegExp(`^${pattern}$`).test(path);
+    expect(matches('/monitoring')).toBe(false);
+    expect(matches('/monitoring/')).toBe(false);
+  });
 });
 
 describe('proxy CSP', () => {

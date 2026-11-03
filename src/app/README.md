@@ -15,6 +15,9 @@ out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks
 - `api/`
 - `auth/`
 - `error.tsx`
+- `error-pages.test.tsx`
+- `global-error.test.tsx`
+- `global-error.tsx`
 - `globals.css`
 - `layout.tsx`
 - `not-found.test.tsx`
@@ -29,6 +32,7 @@ out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks
 `globals.css` holds the design tokens (white ground, warm grey tiles, matcha-green brand,
 category colours), the pill-button rule (dark-mode values keep the green actions), and the authored motion (`.bar-grow`, `.marker-slide`), plus the global `:focus-visible` outline (kept outside
 any `@layer` so utilities can't hide it) and themed number/date inputs and summaries.
+`error.tsx` and `global-error.tsx` (which replaces the root layout when it fails) log the error and report it to Sentry when a DSN is set.
 `layout.tsx`, `globals.css`, and `error.tsx` form the shared root shell (fonts, theme,
 providers, global error boundary) every route renders inside.
 

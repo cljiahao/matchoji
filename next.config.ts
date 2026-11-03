@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs/config';
 import type { NextConfig } from 'next';
 
 import { imageSources } from './src/lib/security/csp';
@@ -37,4 +38,21 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Without a DSN the config is left unwrapped, so an unconfigured build is identical to one
+// without Sentry. The auth token only enables source-map upload; without it the upload is
+// skipped and a failed upload warns instead of failing the build.
+const sentryEnabled = Boolean(process.env.SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN);
+
+export default sentryEnabled
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      silent: true,
+      telemetry: false,
+      // Same-origin tunnel keeps connect-src free of a Sentry host and dodges ad blockers.
+      tunnelRoute: '/monitoring',
+      sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+      errorHandler: (error) => console.warn(`[sentry] build step skipped: ${error.message}`),
+    })
+  : nextConfig;

@@ -7,6 +7,7 @@ import AuthErrorPage from './auth/error/page';
 import GlobalError from './error';
 
 vi.mock('@/lib/errors/error-log-handler', () => ({ logError: vi.fn() }));
+vi.mock('@/lib/sentry/capture', () => ({ captureClientError: vi.fn() }));
 
 describe('standalone error pages', () => {
   it('give the global error boundary a main landmark and one h1', () => {

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { logError } from '@/lib/errors/error-log-handler';
+import { captureClientError } from '@/lib/sentry/capture';
 
 export default function GlobalError({
   error,
@@ -14,6 +15,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     logError('app.error-boundary', error);
+    captureClientError(error);
   }, [error]);
 
   return (
