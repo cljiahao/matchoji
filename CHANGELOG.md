@@ -5,15 +5,7 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
-### Performance
-
-- Pages without a map no longer load Leaflet's stylesheet (13.5 KB, render-blocking), and the Log a tasting form (React Hook Form, label scan, product search, rating form) is fetched the first time the dialog opens instead of with every page; first-load JavaScript is about 110 to 140 KB lighter (uncompressed) per page, and the dialog stops fetching regions on pages where nobody opens it. The navbar no longer jumps when the session resolves. Before and after scores are in `docs/superpowers/specs/2026-11-04-performance-pass.md`.
-
-### Fixed
-
-- Every page reported a `script-src blocked eval` content security policy violation in the browser console: Zod probed for `new Function` to speed up parsing. Zod's JIT is now off in the browser, so the policy stays strict with no violations.
-- Regions map: a scarce region's pin no longer reads "0 · Scarce" in a wide pill that overlapped its neighbours near Kyoto, Nara and Mie. Pins show only the tea count, scarce supply is a red dot, and the full supply text is in the tooltip and the pin's accessible name.
-- Cleared two moderate Dependabot alerts (`glob` AbortSignal bypass, `minimatch` globparts DoS) with `pnpm-workspace.yaml` overrides to `glob` 14.0.2 and `minimatch` 11.0.1.
+## [0.1.0] - 2026-11-03
 
 ### Added
 
@@ -25,7 +17,7 @@ All notable changes to this project are documented here. Format follows
 - Catalogue expansion: 31 more real teas (Ippodo, Marukyu Koyamaen, Horii Shichimeien, Kettl) and 4 more shops (Marukyu Koyamaen at Kyoto Takashimaya, Horii Shichimeien's Uji store, Kettl's Brooklyn and Los Feliz cafés). Every tea's name, grade, region, pack size and price come from the maker's own shop page, linked as its shop link; prices are converted to S$ at the ECB reference rate of 2026-11-02 and grade or region is left empty where the maker doesn't state it. Run `supabase/migrations/20261104000000_catalogue_expansion.sql` in the SQL editor (safe to rerun). No ratings or photos.
 - Price history. Every time an admin changes a tea's reference price or pack size, the old price is kept, and a tea's page shows a small sparkline of price per gram under its price with a line such as "Up 12% since Mar 2026" or "No change since Mar 2026" (it hides until a tea has two recorded prices). The admin Prices form lists the tea's last five prices. History is filled by a database trigger, so nothing in the app writes it, and teas already priced start their history on the day the migration runs. Run `supabase/migrations/20261104100000_tea_price_history.sql` in the SQL editor; until it runs, tea pages simply show no trend.
 - Shared links now carry a preview image. Tea pages show the tea's photo (or a drawn tin), name, maker, category and rating; taster profiles show the name and teas rated; every other page shows the Matchoji card. Private profiles share the plain Matchoji card, with no name or counts. Links also ask for large cards on Twitter/X. Images are drawn on our own server from a bundled font, with no outside service.
-- Matchoji can be installed on a phone's home screen from the browser menu ("Add to Home Screen" / "Install app"): it opens full-screen with its own icon and a green theme. Icons come in standard, maskable and Apple sizes, plus a favicon, and the browser bar follows light and dark. Offline, it shows only a "You're offline" page (see below).
+- Matchoji can be installed on a phone's home screen from the browser menu ("Add to Home Screen" / "Install app"): it opens full-screen with its own icon and a green theme. Icons come in standard, maskable and Apple sizes, plus a favicon, and the browser bar follows light and dark. Offline, it shows only a "You're offline" page (see the offline fallback entry).
 - Discovery from Matchoji's own data: a "Great value" badge on a tea rated well for its price per gram against its own category (rating percentile minus price percentile; needs 5 ratings and a price) and a "Best value" Explore sort; up to three computed highlights on a tea's page ("Top 10% of hojicha on Matchoji", "Highest rated from Uji", "Most rated ceremonial matcha"), shown only with enough ratings and a big enough comparison group; a "Similar teas" shelf of up to 8 teas by category, grade, region and taste; and `/top` lists (Top matcha, Top hojicha, Best value, Top from each region) ranked by a count-weighted average so one rating can't top a list. A list appears, and joins the sitemap, only once 5 teas have 3 ratings each. `/top` is linked from the footer and the home shelves' "See all". No migration.
 - Maps. `/regions` now has a map of the growing regions above its cards: each pin shows the region's tea count (and "Scarce" when its supply is), coloured by whether matcha or hojicha leads, and opens that region's teas. A new `/shops` page maps real shops (makers' own stores, stockists, cafés) with a list you can filter by maker, kind and country, each with the address, a Directions link and the source page the address came from. The tea page links to a maker's shops when there are any, and the footer links `/shops`. Admins manage shops in a new Shops tab. Maps use free OpenStreetMap tiles (no key or account) and no farm locations are shown. Run `supabase/migrations/20261103000000_shop_locations.sql` in the SQL editor; it seeds Ippodo's Kyoto and Shin-Marunouchi stores, and until it runs `/shops` shows no shops. The content security policy now allows `https://tile.openstreetmap.org` for images.
 - Scan a tea label to log a tasting: "Scan label" in the Log a tasting dialog opens the camera, reads the tin or packet (Japanese labels included), and either preselects the matching tea or pre-fills the add-a-tea form. You always confirm before anything is saved, and the photo is not stored. Up to 20 scans a day. It stays hidden until the server's `ANTHROPIC_API_KEY` is set.
@@ -44,90 +36,6 @@ All notable changes to this project are documented here. Format follows
 - A tea you have opened shows a freshness hint on its page: days since opening and, for makers
   whose own site states a figure (Ippodo, Aiya), their guidance with a source link; other makers
   get general advice and a link to "Keeping matcha fresh".
-
-### Changed
-
-- UI polish from an impeccable critique (`docs/superpowers/specs/2026-11-03-impeccable-critique.md`):
-  home shelves read "Matcha to try" / "Hojicha to try" while nothing is rated, Explore rows drop the
-  empty score dash on phones, the product page hero is shorter on phones, the second "Add your
-  rating" card shows only once a tea has reviews, the stock prompt says what it asks, region cards
-  stop repeating the prefecture and label supply, Journal and Account headings match the other
-  pages, Learn course cards use the neutral tile, and dark-mode tins are less blown out.
-
-### Fixed
-
-- The account page's "Make my profile private" / "Make my profile public" button and the blocked-list "Unblock" buttons now meet the 44px tap-target standard (they were 40px).
-- The navbar wordmark no longer overlaps "Explore" at tablet widths: it keeps its width, the nav
-  links, Log button and bottom tab bar switch at 768px, the header search pill waits for 1024px,
-  and gaps tighten below that.
-- Controls that were 36–40px tall now meet the 44px tap-target standard: the navbar and empty-state
-  "Log a tasting" buttons, the account name, delete-confirm, Save, download and delete controls, the
-  admin tabs, tea pickers, photo, credit, shop-link and price fields and buttons, and the "Remove
-  photo" row.
-- Accessibility pass from a token and source audit: form field edges are now 3:1 against the page
-  (they were 1.6:1), the dark theme's green is lifted so brand text and buttons clear 4.5:1 on
-  black, the course tick and the tab-bar badge follow the brand foreground token, loading
-  skeletons announce as a busy status, the "Done" tick has an image role, the standalone error
-  and sign-in-failed pages have a main landmark and one h1, and the listing form's tea picker
-  has a 44px tap target on mobile.
-- Real-browser audit fixes: the matcha green is a shade darker so its text clears 4.5:1 on grey tiles
-  (the supply page's tencha figures were 4.35:1); unknown URLs now keep the navbar and footer, get
-  a "Page not found" title and Explore and Home links; a "Skip to content" link is the first
-  focusable element of the site shell; and controls that measured under 44px on phones (sign in,
-  filters, search, sort, show more, want to try, stock buttons, lesson and recipe buttons, guide and
-  region pills, back links and several text links) now reach 44px there.
-
-### Security
-
-- Updated a transitive HTTP redirect library (`follow-redirects`) to 1.16.2, which fixes a
-  high-severity advisory.
-- The sign-in callback no longer trusts a forwarded host that is not the site's own when
-  building its redirects.
-- The content security policy now restricts scripts: only this site's own files and scripts carrying
-  a per-request nonce run, so an injected inline script is blocked. Every page is now rendered per
-  request to carry that nonce.
-- A private profile now keeps its tastings off the API: they still count towards every tea's
-  score and show on tea pages as "Private taster" (no name, link or photo), but nobody else can
-  list them, see them in a feed, or see who a private taster follows.
-- Daily limits can no longer be dodged by backdating, stock reports and feed entries can no
-  longer be dated into the future, and likes and follows have daily limits.
-- Review photos must be the author's own upload on Matchoji's storage, and pages load images
-  only from the site and its storage, so a review cannot carry a tracking image.
-- Who has blocked whom can no longer be looked up, and deleting an account also removes the
-  person's id from follows, blocks, reports and photos in the audit trail.
-- Suggested teas and shop applications cannot arrive with admin-only fields, sign-in redirects
-  are never cached, and malformed request ids are not logged.
-
-- Profiles can no longer be edited or deleted through the public profile view (closed by hand
-  on 2026-10-24 and now recorded in a migration); users can change only their display name,
-  and default names no longer use part of the email.
-- Ratings, want-to-try, stock reports and listings attach only to teas in the catalogue (a
-  taster may still rate the tea they added while it awaits review). Review photos must be the
-  author's own upload, at most 5 MB, and the photo bucket can no longer be listed.
-
-### Fixed
-
-- Touch targets on phones are now at least 44px: the navbar search and account buttons, the
-  notification bell, star-rating inputs, the Explore filter options and the footer links.
-  Navbar section links, the card bookmark button and the notification count badge were also
-  enlarged or made legible.
-- Tasting photos and tea images load lazily and decode off the main thread.
-- Signed-in users' Google profile pictures show again in the navbar.
-- A tea's score, rating spread, taste summary and flavour notes count each person's latest
-  tasting, so logging a tea repeatedly no longer moves them; the journal keeps every tasting.
-- The same tea cannot be added twice; "Log a tasting" says so and points to search.
-- A tea that is later rejected stays in the journal and want-to-try list of everyone who
-  tasted or saved it, labelled "Not in the catalogue"; teas awaiting review are labelled too.
-- Teas outside the catalogue no longer show "Where to buy" or stock reports, and only the
-  person who added a tea awaiting review can rate it.
-- A failed rating or reviewer-name lookup shows the error page instead of "Not yet rated" or
-  "Anonymous"; a malformed tea link shows "not found".
-- Tastings logged without a date use the taster's local day, not the server's; a photo whose
-  tasting failed to save is removed, and stored photo names no longer include the original
-  file name.
-
-### Added
-
 - Photo credits: a tea's photo can name who it is from, shown as "Photo: …" under it, and
   admins can now keep the current photo while editing a tea, or remove it. The footer says
   how to ask for a photo to be taken down.
@@ -147,31 +55,26 @@ All notable changes to this project are documented here. Format follows
   compares its harvests with a "Top rated harvest" badge, as Vivino compares vintages.
 - A stash on want-to-try: how many you have and when you opened it, shown as days since
   opening.
-
 - Like and comment on reviews, and report a review or comment to the admins; admins remove or
   keep it from `/admin`, and the reporter is told the outcome and why. A notification bell
   shows new followers, likes and comments, and the outcome of your tea suggestions, shop
   applications and reports.
-
 - Taster profiles (`/u/…`, linked from every review): name, teas rated, followers, their taste
   and recent tastings, with Follow and Block. Signed-in readers see "From people you follow" on
   the home page. Profiles are public by default; make yours private, and manage who you've
   blocked, from Your account.
-
 - Edit or delete your own tastings from the journal; a new photo replaces the old one.
 - Your account (`/account`, linked from the account menu with Sell on Matchoji): change the
   name on your reviews, download all your data as JSON, or delete your account. Your ratings
   stay on the teas, unnamed, as on Vivino; everything else goes, including your trace in the
   audit log.
 - Daily limits of 60 tastings and 20 suggested teas per person.
-
 - Match for you: signed-in tasters see how likely they are to love a tea ("86% match · Great
   match"), worked out from their own ratings of the most similar teas and naming them
   ("Because you rated Sayaka-no-mukashi 5★"). Explore rows show the match, and "Best match for
   you" sorts by it.
 - Your taste, in the journal: favourite notes, how you like your tea, teas per category, and
   the taste of teas you loved against those you didn't.
-
 - Explore pages its results 24 at a time ("Showing 1–24 of N", Previous/Next), with every
   filter and sort run by the database instead of loading the whole catalogue; the home shelves
   fetch only what they show. "Top rated" now weighs how many people rated a tea, so one 5★
@@ -181,12 +84,10 @@ All notable changes to this project are documented here. Format follows
   own title, tea pages get link previews, and there is a sitemap, robots rules and a "not
   found" page inside the site. Screen readers hear ratings as "4.2 out of 5" and the rating
   spread as "5 stars: 3 ratings".
-
 - Review queue (`/admin`, admins only): approve or reject teas tasters added and shop
   applications with a reason the submitter sees, merge a duplicate tea into the one it repeats
   (its tastings, saves, stock reports and listings move over and its page forwards), and set a
   catalogue tea's photo and shop link. A rejected shop now sees the reason and can apply again.
-
 - Teas added while logging a tasting now await review, like Vivino's "processing" label on
   an unmatched scan: the taster can rate it and see it in their journal at once, its page
   says "Awaiting review", and it joins Explore, the home shelves, search and the region
@@ -227,7 +128,6 @@ All notable changes to this project are documented here. Format follows
   community reviews beside the score, its spread and "Add your rating".
 - One-tap rating: tap a star on a product page and the tasting form opens with it set.
 - Drawn tea tins stand in for products without a photo.
-
 - Journal (`/journal`): your tastings by month with notes and prep, stats (count,
   average rating, matcha/hojicha split, most-used notes) and a "Want to try" list. A
   "Want to try" toggle on every product page; signed-out visitors sign in first.
@@ -257,6 +157,13 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- Pages without a map no longer load Leaflet's stylesheet (13.5 KB, render-blocking), and the Log a tasting form (React Hook Form, label scan, product search, rating form) is fetched the first time the dialog opens instead of with every page; first-load JavaScript is about 110 to 140 KB lighter (uncompressed) per page, and the dialog stops fetching regions on pages where nobody opens it. The navbar no longer jumps when the session resolves. Before and after scores are in `docs/superpowers/specs/2026-11-04-performance-pass.md`.
+- UI polish from an impeccable critique (`docs/superpowers/specs/2026-11-03-impeccable-critique.md`):
+  home shelves read "Matcha to try" / "Hojicha to try" while nothing is rated, Explore rows drop the
+  empty score dash on phones, the product page hero is shorter on phones, the second "Add your
+  rating" card shows only once a tea has reviews, the stock prompt says what it asks, region cards
+  stop repeating the prefecture and label supply, Journal and Account headings match the other
+  pages, Learn course cards use the neutral tile, and dark-mode tins are less blown out.
 - Forms and editing pages got a tidy-up. Account settings sit in sections with a one-line
   purpose; the admin page is tabs (Review queue, Reports, Tea photo, Tea price) with counts, and
   its tea pickers are selects. The photo form shows the tea's current photo and credit. Prices,
@@ -287,8 +194,57 @@ All notable changes to this project are documented here. Format follows
 - Dependencies updated within their semver ranges (Next.js 16.4, React 19.3,
   supabase-js 2.117, Radix 1.8, TanStack Query 5.104, Zod 4.6.7, and tooling).
 
+### Removed
+
+- The dev-only mock catalogue (now that the real one is seeded): every page reads Supabase,
+  and a missing URL or key fails with a clear "Supabase is not configured" error.
+- Unused template widgets (brand logo and text, card, dialog, floating shape, media card,
+  pill, theme toggle) and their leftover gradient and float CSS.
+- Scaffold `/dashboard` route and the scaffold footer's placeholder credit and link.
+
 ### Fixed
 
+- Every page reported a `script-src blocked eval` content security policy violation in the browser console: Zod probed for `new Function` to speed up parsing. Zod's JIT is now off in the browser, so the policy stays strict with no violations.
+- Regions map: a scarce region's pin no longer reads "0 · Scarce" in a wide pill that overlapped its neighbours near Kyoto, Nara and Mie. Pins show only the tea count, scarce supply is a red dot, and the full supply text is in the tooltip and the pin's accessible name.
+- Cleared two moderate Dependabot alerts (`glob` AbortSignal bypass, `minimatch` globparts DoS) with `pnpm-workspace.yaml` overrides to `glob` 14.0.2 and `minimatch` 11.0.1.
+- The account page's "Make my profile private" / "Make my profile public" button and the blocked-list "Unblock" buttons now meet the 44px tap-target standard (they were 40px).
+- The navbar wordmark no longer overlaps "Explore" at tablet widths: it keeps its width, the nav
+  links, Log button and bottom tab bar switch at 768px, the header search pill waits for 1024px,
+  and gaps tighten below that.
+- Controls that were 36–40px tall now meet the 44px tap-target standard: the navbar and empty-state
+  "Log a tasting" buttons, the account name, delete-confirm, Save, download and delete controls, the
+  admin tabs, tea pickers, photo, credit, shop-link and price fields and buttons, and the "Remove
+  photo" row.
+- Accessibility pass from a token and source audit: form field edges are now 3:1 against the page
+  (they were 1.6:1), the dark theme's green is lifted so brand text and buttons clear 4.5:1 on
+  black, the course tick and the tab-bar badge follow the brand foreground token, loading
+  skeletons announce as a busy status, the "Done" tick has an image role, the standalone error
+  and sign-in-failed pages have a main landmark and one h1, and the listing form's tea picker
+  has a 44px tap target on mobile.
+- Real-browser audit fixes: the matcha green is a shade darker so its text clears 4.5:1 on grey tiles
+  (the supply page's tencha figures were 4.35:1); unknown URLs now keep the navbar and footer, get
+  a "Page not found" title and Explore and Home links; a "Skip to content" link is the first
+  focusable element of the site shell; and controls that measured under 44px on phones (sign in,
+  filters, search, sort, show more, want to try, stock buttons, lesson and recipe buttons, guide and
+  region pills, back links and several text links) now reach 44px there.
+- Touch targets on phones are now at least 44px: the navbar search and account buttons, the
+  notification bell, star-rating inputs, the Explore filter options and the footer links.
+  Navbar section links, the card bookmark button and the notification count badge were also
+  enlarged or made legible.
+- Tasting photos and tea images load lazily and decode off the main thread.
+- Signed-in users' Google profile pictures show again in the navbar.
+- A tea's score, rating spread, taste summary and flavour notes count each person's latest
+  tasting, so logging a tea repeatedly no longer moves them; the journal keeps every tasting.
+- The same tea cannot be added twice; "Log a tasting" says so and points to search.
+- A tea that is later rejected stays in the journal and want-to-try list of everyone who
+  tasted or saved it, labelled "Not in the catalogue"; teas awaiting review are labelled too.
+- Teas outside the catalogue no longer show "Where to buy" or stock reports, and only the
+  person who added a tea awaiting review can rate it.
+- A failed rating or reviewer-name lookup shows the error page instead of "Not yet rated" or
+  "Anonymous"; a malformed tea link shows "not found".
+- Tastings logged without a date use the taster's local day, not the server's; a photo whose
+  tasting failed to save is removed, and stored photo names no longer include the original
+  file name.
 - Catalogue, journal and review lookups fetch ids in batches of 100, so pages keep loading
   once there are hundreds of teas or reviewers instead of failing on an over-long URL.
 - The journal's loading skeleton and the "How you made it" panel use the same corner radii
@@ -305,17 +261,33 @@ All notable changes to this project are documented here. Format follows
 
 ### Security
 
+- Updated a transitive HTTP redirect library (`follow-redirects`) to 1.16.2, which fixes a
+  high-severity advisory.
+- The sign-in callback no longer trusts a forwarded host that is not the site's own when
+  building its redirects.
+- The content security policy now restricts scripts: only this site's own files and scripts carrying
+  a per-request nonce run, so an injected inline script is blocked. Every page is now rendered per
+  request to carry that nonce.
+- A private profile now keeps its tastings off the API: they still count towards every tea's
+  score and show on tea pages as "Private taster" (no name, link or photo), but nobody else can
+  list them, see them in a feed, or see who a private taster follows.
+- Daily limits can no longer be dodged by backdating, stock reports and feed entries can no
+  longer be dated into the future, and likes and follows have daily limits.
+- Review photos must be the author's own upload on Matchoji's storage, and pages load images
+  only from the site and its storage, so a review cannot carry a tracking image.
+- Who has blocked whom can no longer be looked up, and deleting an account also removes the
+  person's id from follows, blocks, reports and photos in the audit trail.
+- Suggested teas and shop applications cannot arrive with admin-only fields, sign-in redirects
+  are never cached, and malformed request ids are not logged.
+- Profiles can no longer be edited or deleted through the public profile view (closed by hand
+  on 2026-10-24 and now recorded in a migration); users can change only their display name,
+  and default names no longer use part of the email.
+- Ratings, want-to-try, stock reports and listings attach only to teas in the catalogue (a
+  taster may still rate the tea they added while it awaits review). Review photos must be the
+  author's own upload, at most 5 MB, and the photo bucket can no longer be listed.
 - Every insert, update and delete on the app's tables writes an audit-log row (who, what,
   before and after) via database triggers. The log is closed to visitors and users, and
   leaves profile emails out.
 - The OAuth callback only redirects to same-origin paths (open-redirect fix).
 - Product search strips PostgREST filter syntax from user input.
 - Reviews show a display name, never the reviewer's email.
-
-### Removed
-
-- The dev-only mock catalogue (now that the real one is seeded): every page reads Supabase,
-  and a missing URL or key fails with a clear "Supabase is not configured" error.
-- Unused template widgets (brand logo and text, card, dialog, floating shape, media card,
-  pill, theme toggle) and their leftover gradient and float CSS.
-- Scaffold `/dashboard` route and the scaffold footer's placeholder credit and link.

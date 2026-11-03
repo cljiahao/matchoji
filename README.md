@@ -42,7 +42,7 @@ The 2026-11-03 impeccable critique (`docs/superpowers/specs/`) tuned empty-state
 - `.prettierignore`
 - `.prettierrc`
 - `AGENTS.md`
-- `CHANGELOG.md` (unreleased changes, newest first)
+- `CHANGELOG.md` (changes by release: a dated 0.1.0 section, with later work under Unreleased)
 - `CLAUDE.md`
 - `components.json`
 - `DESIGN.md`
