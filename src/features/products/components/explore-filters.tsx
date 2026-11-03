@@ -145,7 +145,7 @@ export function ExploreFilters({ filters, regions, grades }: ExploreFiltersProps
           </FilterGroup>
           <Link
             href={PAGE_ROUTES.REGIONS}
-            className="text-brand mt-2 inline-block text-sm font-semibold hover:underline"
+            className="text-brand mt-2 inline-flex min-h-11 items-center text-sm font-semibold hover:underline md:min-h-0"
           >
             Browse regions
           </Link>

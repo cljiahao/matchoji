@@ -35,7 +35,7 @@ export function SearchPill({ filters, size = 'md', className }: SearchPillProps)
           'border-border placeholder:text-muted-foreground bg-background w-full rounded-full border transition-colors hover:border-neutral-300 focus-visible:border-neutral-400',
           size === 'lg'
             ? 'h-14 pr-5 pl-13 text-base focus-visible:shadow-sm'
-            : 'h-10 pr-4 pl-10 text-sm'
+            : 'h-11 pr-4 pl-10 text-sm md:h-10'
         )}
       />
       {filters?.category && <input type="hidden" name="category" value={filters.category} />}

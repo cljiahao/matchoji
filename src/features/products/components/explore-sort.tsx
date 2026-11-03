@@ -29,7 +29,7 @@ export function ExploreSort({ filters }: { filters: DiscoverFilters }) {
       value={filters.sort}
       onValueChange={(v) => router.push(discoverHref(filters, { sort: v as DiscoverSort }))}
     >
-      <SelectTrigger aria-label="Sort" className="w-48 rounded-full">
+      <SelectTrigger aria-label="Sort" className="min-h-11 w-48 rounded-full md:min-h-0">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

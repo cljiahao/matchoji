@@ -20,6 +20,7 @@ export function LessonCompleteButton({
       variant={complete ? 'outline' : 'default'}
       aria-pressed={complete}
       onClick={() => toggle(lessonSlug)}
+      className="min-h-11 md:min-h-0"
     >
       {complete && <Check aria-hidden="true" />}
       {complete ? 'Lesson done' : 'Mark lesson as done'}

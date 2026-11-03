@@ -69,7 +69,10 @@ export function ProductFacts({ product }: ProductFactsProps) {
           </Fact>
         )}
         <Fact icon={Leaf} label="Tea">
-          <Link href={`/explore?category=${product.category}`} className="underline">
+          <Link
+            href={`/explore?category=${product.category}`}
+            className="inline-flex min-h-11 items-center underline md:min-h-0"
+          >
             {CATEGORY_STYLES[product.category].label}
           </Link>
         </Fact>

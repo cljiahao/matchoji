@@ -18,7 +18,7 @@ export function LogRecipeButton({ recipe }: { recipe: Recipe }) {
         waterTempC: recipe.waterTempC,
       }}
       trigger={
-        <Button>
+        <Button className="min-h-11 md:min-h-0">
           <Plus aria-hidden="true" />
           Log a tasting with this recipe
         </Button>

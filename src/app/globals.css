@@ -90,7 +90,7 @@
 
   /* Category identity (see DESIGN.md, Category Is Data) — fixed, not theme-adaptive.
      Both darkened from the initial logo hex until white text clears WCAG AA (4.5:1). */
-  --matcha: #5c7a4f;
+  --matcha: #577549;
   --matcha-foreground: #ffffff;
   --hojicha: #8f6224;
   --hojicha-foreground: #ffffff;

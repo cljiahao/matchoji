@@ -26,7 +26,7 @@ export function ProductShelf({ title, seeAllHref, products, renderAction }: Prod
         </h2>
         <Link
           href={seeAllHref}
-          className="text-brand flex shrink-0 items-center gap-0.5 text-sm font-semibold hover:underline"
+          className="text-brand flex min-h-11 shrink-0 items-center gap-0.5 text-sm font-semibold hover:underline md:min-h-0"
         >
           See all
           <ChevronRight aria-hidden="true" className="h-4 w-4" />

@@ -119,7 +119,12 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             {moreHref && (
               <div className="mt-6 flex justify-center">
                 {/* A plain link, so the list grows without client JS and the URL keeps the count. */}
-                <Button asChild variant="outline" size="lg" className="rounded-full">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="min-h-11 rounded-full md:min-h-0"
+                >
                   <Link href={moreHref} scroll={false}>
                     Show more
                   </Link>

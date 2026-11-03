@@ -34,7 +34,7 @@ export function Navbar() {
       <div className="max-w-site mx-auto flex h-16 items-center gap-6 px-6">
         <Link
           href={PAGE_ROUTES.HOME}
-          className="text-brand flex items-center gap-2 text-xl font-extrabold tracking-tight"
+          className="text-brand flex min-h-11 items-center gap-2 text-xl font-extrabold tracking-tight"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/image_assets/logo.svg" alt="" className="h-8 w-8" />
