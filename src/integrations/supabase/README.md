@@ -22,8 +22,9 @@ deleted accounts), `profiles.is_public`, `follows`, `blocks` and `following_feed
 `notifications` (`NotificationKind`), `content_reports` (`ReportTarget`) and `resolve_report`, review editions (`Flush`), the
 `edition_ratings` view and the want-to-try stash columns, `health`, `product_reviews` (with
 `author_private`) and `is_public_profile`, product prices (`price_sgd`, `pack_grams`, `PriceBand`),
-the `tea_prices` view and `set_tea_price`, `lesson_progress`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` is not modeled
-until checkout is built. `pnpm db:types` writes the CLI's generated types to
+the `tea_prices` view and `set_tea_price`, `lesson_progress`, the `catalogue_teas` and `tea_taste_profiles` views, and `vendors` (`VendorStatus`) and `listings`; `orders` (dormant until checkout) and `audit_log`
+(trigger-written) are typed too, so the schema check finds no table missing. `pnpm schema:check` compares
+this file's tables, columns, nullability and enums with the live database (see `docs/schema-checks.md`). `pnpm db:types` writes the CLI's generated types to
 `database.generated.ts` for comparing against these hand-written ones.
 
 `database.types.ts` also has `products.image_credit` and the four-argument `set_tea_links` (a null image keeps the photo).

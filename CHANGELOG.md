@@ -7,6 +7,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- `pnpm schema:check` compares the live database with the repo over a read-only, project-scoped connection string (`SUPABASE_DB_URL`, no Supabase access token): every migration file must be applied and every applied version must have a file, and `database.types.ts` must match `supabase gen types` on tables, columns, nullability and enums. It skips when the URL is unset. A new `schema-check.yml` workflow runs it on PRs touching `supabase/**` or the types, weekly, and on demand; `docs/schema-checks.md` has the role and secret setup. The types now include `orders` and `audit_log`.
 - A Light / Dark / System theme control in the footer. Light stays the default and the site only
   goes dark when a visitor picks it. Dark mode now holds up everywhere: the matcha and hojicha
   colours are lifted so text and badges clear 4.5:1 on black, field edges and the focus ring clear
