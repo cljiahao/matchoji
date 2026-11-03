@@ -24,6 +24,8 @@ Navbar, footer and tab-bar controls keep a 44px minimum touch target, including 
 
 The footer links `/shops` ("Where to buy in person") on every screen size; the navbar stays unchanged.
 
+`Providers` also turns Zod's JIT off (`z.config({ jitless: true })`): Zod's probe for `new Function` is reported as a CSP violation on every page under a policy with no `'unsafe-eval'`. `providers.test.tsx` holds that.
+
 ## Contents
 
 - `index.ts`
@@ -31,6 +33,7 @@ The footer links `/shops` ("Where to buy in person") on every screen size; the n
 - `mobile-tab-bar.tsx`
 - `navbar.test.tsx`
 - `navbar.tsx`
+- `providers.test.tsx`
 - `providers.tsx`
 - `site-footer.test.tsx`
 - `site-footer.tsx`

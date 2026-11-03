@@ -4,7 +4,11 @@ import { connection } from 'next/server';
 import { ShopsExplorer, listShops } from '@/features/shops';
 import { createClient } from '@/integrations/supabase/server';
 
-export const metadata: Metadata = { title: 'Where to buy in person' };
+export const metadata: Metadata = {
+  title: 'Where to buy in person',
+  description:
+    'Stores run by makers and shops that stock matcha and hojicha, on a map with addresses.',
+};
 
 interface ShopsPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

@@ -22,6 +22,10 @@ Browsers post events to the same-origin `/monitoring` tunnel, so the content sec
 
 `/regions` maps the growing regions and `/shops` maps real shop locations, with free OpenStreetMap tiles through Leaflet: no key, no account. Region pins use fixed town-centre coordinates (`src/features/products/lib/region-pins.ts`); there are no farm pins, since makers rarely publish their farms and a farm can be someone's home. Shops live in the `shop_locations` table (migration `20261103000000_shop_locations.sql`, applied by hand in the Supabase SQL editor; until it is, `/shops` shows no shops), managed in the admin Shops tab. Migration `20261104000000_catalogue_expansion.sql` (data only, also applied by hand) adds 31 more real teas from Ippodo, Marukyu Koyamaen, Horii Shichimeien and Kettl, each read on the maker's shop page with its price converted to S$ at the ECB rate of 2026-11-02, and 4 more shops. Every shop needs an address read from its own official site, kept as `source_url`; coordinates are approximate to the building. Tiles follow OSM's tile usage policy (default max zoom, attribution, no prefetching) and the CSP allows `https://tile.openstreetmap.org` for images.
 
+## Performance and end-to-end checks
+
+`docs/superpowers/specs/2026-11-04-performance-pass.md` records the Lighthouse scores before and after the performance and SEO pass, and what was left undone. `pnpm e2e` runs the read-only Playwright smoke tests in `e2e/` against production (override with `E2E_BASE_URL`; `E2E_CHANNEL=chrome` uses an installed Chrome instead of `pnpm exec playwright install chromium`). They sign in to nothing and write nothing, and each page also fails on a console error or CSP violation. `.github/workflows/e2e.yml` runs them daily and on demand, uploading the report on failure.
+
 ## Structure
 
 The 2026-11-03 impeccable critique (`docs/superpowers/specs/`) tuned empty-state copy and mobile spacing; `DESIGN.md` records the unrated-shelf rule.
@@ -45,11 +49,13 @@ The 2026-11-03 impeccable critique (`docs/superpowers/specs/`) tuned empty-state
 - `docker-entrypoint.sh`
 - `Dockerfile`
 - `docs/`
+- `e2e/`
 - `eslint.config.mjs`
 - `FUTURE.md`
 - `lefthook.yml`
 - `next.config.ts`
 - `package.json`
+- `playwright.config.ts`
 - `pnpm-lock.yaml`
 - `pnpm-workspace.yaml`
 - `postcss.config.mjs`

@@ -13,6 +13,8 @@ Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the te
 
 `sitemap.ts` also lists `/shops`.
 
+`layout.tsx` also sets `alternates.canonical` to `./`, which Next resolves against each page's own path, so filters and tracking parameters fold into the plain URL; `robots.ts` also keeps `/api/` out. A performance and SEO pass is recorded in `docs/superpowers/specs/2026-11-04-performance-pass.md`.
+
 ## Contents
 
 - `(public)/`

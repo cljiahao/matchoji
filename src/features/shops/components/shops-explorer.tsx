@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { TeaMap } from '@/components/widgets';
+import { TeaMap } from '@/components/widgets/tea-map';
 
 import { directionsUrl, distinct, filterShops, shopPins } from '../lib';
 import { SHOP_KINDS, SHOP_KIND_LABELS } from '../schemas';

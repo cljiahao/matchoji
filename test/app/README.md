@@ -27,6 +27,8 @@ The home page tests queue a fourth `catalogue_teas` read for the top-lists check
 
 The page, config and SEO tests cover the shop map's footprint: the footer's `/shops` link, the sitemap entry, the tile host in the CSP, and the tea page's in-person link, shown only when the maker has a listed shop.
 
+`seo.test.ts` also holds `robots.ts` (admin, account, journal, sell, auth and `/api/` kept out).
+
 ## Contents
 
 - `auth-callback.test.ts`

@@ -72,3 +72,7 @@ secrets/
 *.pfx
 supabase/.temp/
 supabase/.branches/
+
+# playwright
+/playwright-report
+/test-results

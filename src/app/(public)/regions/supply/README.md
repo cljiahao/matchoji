@@ -8,6 +8,8 @@ tencha and its share), a card per prefecture that has a Matchoji region or offic
 table, and the source credits the e-Stat and MAFF terms require. Rendered per request from
 `getSupplyOverview`; shows an empty state before the stats seed has been run. Its `loading.tsx` skeleton is announced as a busy `status`.
 
+The page has its own meta description.
+
 ## Contents
 
 - `loading.tsx`
