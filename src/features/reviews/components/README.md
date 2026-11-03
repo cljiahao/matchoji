@@ -37,6 +37,8 @@ Star inputs have 44px touch targets, and review photos load lazily. Empty stars,
 
 The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 
+`CommunityReviews` shows its "Add your rating" card only once a tea has reviews, since the product hero already carries "Rate it".
+
 ## Contents
 
 - `community-reviews.tsx`

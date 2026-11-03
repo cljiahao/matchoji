@@ -12,6 +12,8 @@ Titled "Tea regions". Its `loading.tsx` skeleton is announced as a busy `status`
 
 The sort pills keep a 44px minimum height on phones.
 
+A region card hides its prefecture line when the name already ends with it, and prefixes the supply line with "Supply:".
+
 ## Contents
 
 - `loading.tsx`

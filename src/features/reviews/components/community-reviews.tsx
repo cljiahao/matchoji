@@ -60,7 +60,8 @@ export function CommunityReviews({
             <RatingDistribution distribution={summary.distribution} category={product.category} />
           </div>
         )}
-        {canRate && (
+        {/* With no reviews the hero's Rate it is the only rating control; a second one would sit alone. */}
+        {canRate && count > 0 && (
           <div className="bg-muted rounded-2xl p-5">
             <h3 className="font-semibold">Add your rating</h3>
             <p className="text-muted-foreground mt-1 text-sm">

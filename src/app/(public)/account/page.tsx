@@ -42,7 +42,7 @@ export default async function AccountPage() {
 
   return (
     <div className="max-w-site mx-auto w-full space-y-8 px-6 py-10 sm:py-14">
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Your account</h1>
+      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Your account</h1>
       {user ? (
         <AccountSections
           userId={user.id}

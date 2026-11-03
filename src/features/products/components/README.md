@@ -21,6 +21,8 @@ Explore filter options are 44px tall on phones, and tea images load lazily. The 
 
 The filters button, search field, sort select, See all link and category link keep a 44px minimum height on phones; matcha text uses the AA-checked `--matcha` token.
 
+On phones `ProductRow` drops the empty score dash for an unrated tea and keeps "Not yet rated"; `PriceInline` keeps the band label on one line; `TeaTin` lifts less in dark (`brightness-125`, slightly desaturated).
+
 ## Contents
 
 - `category-badge.tsx`

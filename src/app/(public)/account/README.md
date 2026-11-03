@@ -6,6 +6,8 @@
 for a signed-in person; a sign-in prompt otherwise. Each section has a title and a one-line purpose, side by side from `md`. Rendered per request and kept out of search
 engines.
 
+The page heading uses the same `text-3xl sm:text-4xl` size as the other pages.
+
 ## Contents
 
 - `page.tsx`

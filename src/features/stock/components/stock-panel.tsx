@@ -70,7 +70,7 @@ export function StockPanel({
         )}
       </p>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-muted-foreground text-sm">Checked it lately?</span>
+        <span className="text-muted-foreground text-sm">Seen it in stock lately? Tell others:</span>
         {(Object.keys(STATUS) as StockStatus[]).map((value) => (
           <Button
             key={value}

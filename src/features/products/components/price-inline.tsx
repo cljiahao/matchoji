@@ -11,7 +11,9 @@ export function PriceInline({ price, className }: { price: TeaPrice | null; clas
       {price.band && (
         <>
           {' · '}
-          <span className="text-foreground font-semibold">{PRICE_BAND_LABELS[price.band]}</span>
+          <span className="text-foreground font-semibold whitespace-nowrap">
+            {PRICE_BAND_LABELS[price.band]}
+          </span>
         </>
       )}
     </p>

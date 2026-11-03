@@ -21,6 +21,8 @@ Under the photo, a muted "Photo: <credit>" caption shows when the tea has both a
 
 Tasting photos load lazily. Its `loading.tsx` skeleton is announced as a busy `status`.
 
+The hero is compact on phones (a 160px image well, tighter gaps) and the content sections stack closer together below `sm`.
+
 ## Contents
 
 - `loading.tsx`

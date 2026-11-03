@@ -37,7 +37,7 @@ function RegionCard({ region }: { region: RegionSummary }) {
       href={discoverHref({ sort: 'top' }, { regionId: region.id })}
       className="bg-muted hover:bg-muted/70 flex h-full flex-col rounded-2xl px-5 py-4 transition-colors"
     >
-      {region.prefecture && (
+      {region.prefecture && !region.name.endsWith(region.prefecture) && (
         <span className="text-muted-foreground text-sm">{region.prefecture}</span>
       )}
       <span className="text-lg font-bold tracking-tight">{region.name}</span>
@@ -53,7 +53,7 @@ function RegionCard({ region }: { region: RegionSummary }) {
           </span>
         ))}
       </span>
-      {supplied.length > 0 && <span className="mt-2 text-sm">{supplied.join(' · ')}</span>}
+      {supplied.length > 0 && <span className="mt-2 text-sm">Supply: {supplied.join(' · ')}</span>}
       {region.scarcityNote && (
         <span className="text-muted-foreground mt-2 text-sm">{region.scarcityNote}</span>
       )}

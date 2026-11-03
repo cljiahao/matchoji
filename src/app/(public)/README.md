@@ -14,6 +14,8 @@ can retry or go to Explore. Every page reads Supabase directly; there is no mock
 
 The layout renders its pages inside `SiteShell`, whose `main` is the skip link's target.
 
+Home titles a shelf "Matcha to try" / "Hojicha to try" while none of its teas is rated, rather than "Top-rated".
+
 ## Contents
 
 - `account/`

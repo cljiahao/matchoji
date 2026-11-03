@@ -12,6 +12,8 @@ when opened. Feed tastings carry the review's edition (harvest year and flush), 
 
 The privacy toggle (both states) and Unblock buttons keep a 44px minimum height. The notification bell has a 44px touch target and its count badge is 12px, the smallest type step.
 
+The notification bell's unread badge uses the 11px type step.
+
 ## Contents
 
 - `block-button.tsx`

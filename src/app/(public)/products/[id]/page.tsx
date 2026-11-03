@@ -126,7 +126,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <>
       <div className={cn(CATEGORY_STYLES[product.category].band)}>
-        <div className="max-w-site mx-auto grid w-full gap-8 px-6 py-10 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-12 sm:py-14 lg:grid-cols-[minmax(0,22rem)_1fr]">
+        <div className="max-w-site mx-auto grid w-full gap-5 px-6 py-6 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-12 sm:py-14 lg:grid-cols-[minmax(0,22rem)_1fr]">
           <div>
             <ProductImageWell
               imageUrl={product.imageUrl}
@@ -134,10 +134,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               name={product.name}
               seed={product.id}
               mark={product.brand ?? product.name}
-              className="bg-background/70 mx-auto aspect-square w-full max-w-60 sm:mx-0 sm:max-w-none"
+              className="bg-background/70 mx-auto aspect-square w-full max-w-40 sm:mx-0 sm:max-w-none"
             />
             {product.imageUrl && product.imageCredit && (
-              <p className="text-muted-foreground mx-auto mt-2 max-w-60 text-xs sm:mx-0 sm:max-w-none">
+              <p className="text-muted-foreground mx-auto mt-2 max-w-40 text-xs sm:mx-0 sm:max-w-none">
                 Photo: {product.imageCredit}
               </p>
             )}
@@ -231,7 +231,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      <div className="max-w-site mx-auto w-full space-y-16 px-6 py-12 sm:py-16">
+      <div className="max-w-site mx-auto w-full space-y-10 px-6 py-12 sm:space-y-16 sm:py-16">
         <ProductInsights summary={summary} category={product.category} productName={product.name} />
         {listed && <WhereToBuy offers={offers} />}
         <EditionList editions={editions} />

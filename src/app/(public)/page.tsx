@@ -15,19 +15,29 @@ import { createClient } from '@/integrations/supabase/server';
 
 const SHELF_SIZE = 12;
 
-const SHELVES: { title: string; filters: DiscoverFilters; href: string }[] = [
+const SHELVES: {
+  title: string;
+  // "Top-rated" over a shelf of teas nobody has rated would be a false claim.
+  unratedTitle?: string;
+  filters: DiscoverFilters;
+  href: string;
+}[] = [
   {
     title: 'Top-rated matcha',
+    unratedTitle: 'Matcha to try',
     filters: { category: 'matcha', sort: 'top' },
     href: '/explore?category=matcha',
   },
   {
     title: 'Top-rated hojicha',
+    unratedTitle: 'Hojicha to try',
     filters: { category: 'hojicha', sort: 'top' },
     href: '/explore?category=hojicha',
   },
   { title: 'Newly added', filters: { sort: 'newest' }, href: '/explore?sort=newest' },
 ];
+
+const unrated = (products: Product[]) => products.every((p) => p.avgStars === null);
 
 // Signed-in readers who follow people see their latest tastings first, as on Vivino.
 async function loadFollowingFeed(): Promise<Tasting[]> {
@@ -64,7 +74,7 @@ export default async function Home() {
 
   return (
     <>
-      <section className="max-w-site mx-auto w-full px-6 pt-12 pb-10 text-center sm:pt-20">
+      <section className="max-w-site mx-auto w-full px-6 pt-12 pb-4 text-center sm:pt-20 sm:pb-10">
         <h1 className="mx-auto max-w-2xl text-4xl font-bold tracking-tight text-balance sm:text-6xl">
           Find your next matcha or hojicha
         </h1>
@@ -72,7 +82,7 @@ export default async function Home() {
           Ratings, tasting notes and brewing tips from people who drink it.
         </p>
         <SearchPill size="lg" className="mx-auto mt-8 max-w-xl" />
-        <CategoryCircles className="mt-12" />
+        <CategoryCircles className="mt-8 sm:mt-12" />
       </section>
 
       <div className="max-w-site mx-auto w-full space-y-14 px-6 pt-6 pb-16 sm:pb-24">
@@ -96,7 +106,7 @@ export default async function Home() {
           SHELVES.map((shelf, i) => (
             <ProductShelf
               key={shelf.title}
-              title={shelf.title}
+              title={unrated(shelves[i]) ? (shelf.unratedTitle ?? shelf.title) : shelf.title}
               seeAllHref={shelf.href}
               products={shelves[i].slice(0, SHELF_SIZE)}
               renderAction={(product) => <WantToTryButton productId={product.id} compact />}

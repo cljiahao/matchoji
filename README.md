@@ -6,6 +6,8 @@ Theme colours are held to WCAG AA by `src/app/globals.test.ts`: field edges 3:1,
 
 ## Structure
 
+The 2026-11-03 impeccable critique (`docs/superpowers/specs/`) tuned empty-state copy and mobile spacing; `DESIGN.md` records the unrated-shelf rule.
+
 ### Contents
 
 - `.dockerignore`
