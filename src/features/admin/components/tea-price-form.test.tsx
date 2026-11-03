@@ -17,8 +17,13 @@ import { TeaPriceForm, teaPriceSchema } from './tea-price-form';
 
 const catalogue = [{ id: 't1', name: 'Sayaka', brand: 'Ippodo', category: 'matcha' as const }];
 
-function setup(error: unknown = null) {
-  const fake = createFakeBrowserClient({ results: { 'rpc:set_tea_price': { data: null, error } } });
+function setup(error: unknown = null, history: unknown[] = []) {
+  const fake = createFakeBrowserClient({
+    results: {
+      'rpc:set_tea_price': { data: null, error },
+      tea_price_history: { data: history, error: null },
+    },
+  });
   supabase.current = fake.client;
   renderWithQuery(<TeaPriceForm catalogue={catalogue} />);
   return fake;
@@ -109,6 +114,29 @@ describe('TeaPriceForm', () => {
     expect(screen.getByText('Pick a tea to set its price.')).toBeInTheDocument();
     expect(screen.getByText('S$')).toBeInTheDocument();
     expect(screen.getByText('g')).toBeInTheDocument();
+  });
+});
+
+describe('TeaPriceForm history', () => {
+  it('lists the last five recorded prices of the picked tea, newest first', async () => {
+    const history = [1, 2, 3, 4, 5, 6].map((m) => ({
+      recorded_at: `2026-0${m}-10T00:00:00Z`,
+      price: 30 + m,
+      pack_grams: '40.0',
+    }));
+    setup(null, history);
+    expect(screen.queryByText('Recent prices')).not.toBeInTheDocument();
+
+    await pickTea('Tea', 'Sayaka · Ippodo');
+
+    const items = await screen.findAllByRole('listitem');
+    expect(items.map((li) => li.textContent)).toEqual([
+      'Jun 2026: S$36.00 for 40 g · S$0.90/g',
+      'May 2026: S$35.00 for 40 g · S$0.88/g',
+      'Apr 2026: S$34.00 for 40 g · S$0.85/g',
+      'Mar 2026: S$33.00 for 40 g · S$0.82/g',
+      'Feb 2026: S$32.00 for 40 g · S$0.80/g',
+    ]);
   });
 });
 

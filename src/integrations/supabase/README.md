@@ -29,7 +29,7 @@ this file's tables, columns, nullability and enums with the live database (see `
 
 `database.types.ts` also has `label_scans` (id-only inserts) and `products.image_credit` and the four-argument `set_tea_links` (a null image keeps the photo).
 
-The types include `shop_locations` and the `ShopKind` union.
+The types include `shop_locations` and the `ShopKind` union, and `tea_price_history`.
 
 ## Contents
 

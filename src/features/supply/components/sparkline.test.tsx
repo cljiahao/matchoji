@@ -35,3 +35,28 @@ describe('Sparkline', () => {
     expect(container).toBeEmptyDOMElement();
   });
 });
+
+describe('Sparkline with its own labels', () => {
+  it('uses the summary, label and value format it is given', () => {
+    const { container } = render(
+      <Sparkline
+        label="Price per gram"
+        unit="S$/g"
+        summary="Price per gram: Up 10% since Jan 2026"
+        formatValue={(v) => `S$${v.toFixed(2)}/g`}
+        points={[
+          { year: 0, value: 0.8, label: 'Jan 2026' },
+          { year: 0, value: 0.88, label: 'Mar 2026' },
+        ]}
+      />
+    );
+
+    expect(
+      screen.getByRole('img', { name: 'Price per gram: Up 10% since Jan 2026' })
+    ).toBeInTheDocument();
+    expect([...container.querySelectorAll('title')].map((t) => t.textContent)).toEqual([
+      'Jan 2026: S$0.80/g',
+      'Mar 2026: S$0.88/g',
+    ]);
+  });
+});

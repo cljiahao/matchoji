@@ -12,6 +12,13 @@ export {
 } from './discover-params';
 export { gradeOptions } from './filter-products';
 export {
+  formatMonth,
+  formatPerGram,
+  toPricePoint,
+  trendSummary,
+  type PricePoint,
+} from './price-history';
+export {
   CUP_DOSES,
   PRICE_BAND_LABELS,
   formatGrams,

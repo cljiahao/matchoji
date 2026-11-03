@@ -25,9 +25,13 @@ fake Supabase client (`test/support/fake-supabase.ts`).
 
 `listCatalogue` reads every `catalogue_teas` row (up to PostgREST's 1000) as `CatalogueTea`s, for value scores, tea-page highlights, similar teas and top lists; its test covers the mapping and a failed read.
 
+`listPriceHistory` reads a tea's `tea_price_history` rows, oldest first; a missing table (`42P01`, `PGRST205`, the migration is applied by hand) gives no history.
+
 ## Contents
 
 - `index.ts`
+- `price-history-service.test.ts`
+- `price-history-service.ts`
 - `product-ratings.test.ts`
 - `product-ratings.ts`
 - `products-mutations.test.ts`

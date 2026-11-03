@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
@@ -8,11 +9,19 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { UnitInput } from '@/components/widgets';
-import type { ProductSummary } from '@/features/products';
+import {
+  formatMonth,
+  formatPerGram,
+  formatSgd,
+  listPriceHistory,
+  type ProductSummary,
+} from '@/features/products';
 import { createClient } from '@/integrations/supabase/client';
 
 import { setTeaPrice } from '../api/admin-service';
 import { TeaSelect } from './tea-select';
+
+const RECENT_PRICES = 5;
 
 // Both empty clears the price; otherwise both must be positive and within the columns' range.
 export const teaPriceSchema = z.union([
@@ -27,10 +36,18 @@ export const teaPriceSchema = z.union([
 // which its price per gram and band are worked out.
 export function TeaPriceForm({ catalogue }: { catalogue: ProductSummary[] }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [tea, setTea] = useState('');
   const [price, setPrice] = useState('');
   const [grams, setGrams] = useState('');
   const [busy, setBusy] = useState(false);
+  const history = useQuery({
+    queryKey: ['tea-price-history', tea],
+    queryFn: () => listPriceHistory(createClient(), tea),
+    enabled: Boolean(tea),
+  });
+  // Newest first, the few that matter when deciding whether a price is stale.
+  const recent = (history.data ?? []).slice(-RECENT_PRICES).reverse();
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -44,6 +61,7 @@ export function TeaPriceForm({ catalogue }: { catalogue: ProductSummary[] }) {
     try {
       await setTeaPrice(createClient(), tea, parsed.data);
       toast.success(parsed.data ? 'Price saved.' : 'Price cleared.');
+      void queryClient.invalidateQueries({ queryKey: ['tea-price-history', tea] });
       router.refresh();
     } catch {
       toast.error('Could not save the price. Try again.');
@@ -94,6 +112,21 @@ export function TeaPriceForm({ catalogue }: { catalogue: ProductSummary[] }) {
       <p id="price-help" className="text-muted-foreground -mt-2 text-sm">
         The maker&apos;s price for one pack, in Singapore dollars. Leave both empty to remove it.
       </p>
+      {recent.length > 0 && (
+        <section aria-labelledby="price-history-heading">
+          <h3 id="price-history-heading" className="text-sm font-semibold">
+            Recent prices
+          </h3>
+          <ul className="text-muted-foreground mt-1 text-sm tabular-nums">
+            {recent.map((p) => (
+              <li key={p.recordedAt}>
+                {formatMonth(p.recordedAt)}: {formatSgd(p.sgd)} for {p.packGrams} g ·{' '}
+                {formatPerGram(p.perGram)}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <div className="flex flex-wrap items-center gap-3">
         <Button type="submit" size="lg" className="min-h-11" disabled={busy || !tea}>
           {busy ? 'Saving…' : 'Save price'}

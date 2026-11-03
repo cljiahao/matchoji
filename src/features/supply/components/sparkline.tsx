@@ -3,10 +3,15 @@ import { cn } from '@/lib/utils';
 import type { YearValue } from '../types';
 
 interface SparklineProps {
-  points: YearValue[];
+  // `label` stands in for the year in tooltips when the x-axis is not years.
+  points: (YearValue & { label?: string })[];
   // Names the series for screen readers, e.g. "Tea fields in Kyoto, hectares".
   label: string;
   unit: string;
+  // Replaces the default "first value in year, last value in year" description.
+  summary?: string;
+  // Formats a value with its unit for descriptions and tooltips, in place of "1,510 ha".
+  formatValue?: (value: number) => string;
   className?: string;
 }
 
@@ -18,8 +23,17 @@ const format = (value: number) => value.toLocaleString('en-US');
 
 // One series, so no legend: the card heading names it. Each year has a hover target wider
 // than the line with a native tooltip, which works in a Server Component without script.
-export function Sparkline({ points, label, unit, className }: SparklineProps) {
+export function Sparkline({
+  points,
+  label,
+  unit,
+  summary,
+  formatValue,
+  className,
+}: SparklineProps) {
   if (points.length < 2) return null;
+
+  const show = (value: number) => (formatValue ? formatValue(value) : `${format(value)} ${unit}`);
 
   const values = points.map((p) => p.value);
   const min = Math.min(...values);
@@ -37,7 +51,10 @@ export function Sparkline({ points, label, unit, className }: SparklineProps) {
     <svg
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       role="img"
-      aria-label={`${label}: ${format(first.value)} ${unit} in ${first.year}, ${format(last.value)} ${unit} in ${last.year}`}
+      aria-label={
+        summary ??
+        `${label}: ${show(first.value)} in ${first.year}, ${show(last.value)} in ${last.year}`
+      }
       className={cn('h-9 w-30 overflow-visible', className)}
     >
       <polyline
@@ -56,9 +73,9 @@ export function Sparkline({ points, label, unit, className }: SparklineProps) {
         stroke="var(--background)"
         strokeWidth={2}
       />
-      {coords.map((c) => (
-        <circle key={c.year} cx={c.x} cy={c.y} r={step / 2} fill="transparent">
-          <title>{`${c.year}: ${format(c.value)} ${unit}`}</title>
+      {coords.map((c, i) => (
+        <circle key={i} cx={c.x} cy={c.y} r={step / 2} fill="transparent">
+          <title>{`${c.label ?? c.year}: ${show(c.value)}`}</title>
         </circle>
       ))}
     </svg>

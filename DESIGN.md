@@ -413,6 +413,10 @@ The `/offline` page is a bare centred `main` outside the site shell (its navbar 
 
 Stands in for any product photo on tiles, in category circles and in the journal. See Shapes for its anatomy and Colors for its tones.
 
+### Price Trend
+
+Under the Price row on a tea page, a 120×36 sparkline of price per gram (the existing `Sparkline`, `text-foreground/70`, end dot) sits beside one line of `text-muted-foreground` text: "Up 12% since Mar 2026", "Down 10% since Mar 2026" or "No change since Mar 2026". The text carries the claim, never the line's colour or slope, and the SVG's label repeats it for screen readers; each point has a native tooltip ("Mar 2026: S$0.80/g"). It appears only from two recorded prices and compares price per gram, so a new pack size at the same rate reads as no change. In the admin Prices form, "Recent prices" is a small muted list of the last five, newest first.
+
 ### Discovery Badges and Lists
 
 "Great value" is a brand-tint pill (`bg-brand/10`, `text-brand`, 12px semibold) beside the match badge on rows and under the rating on a tea page; the claim is in the text, never colour alone. Value score is plain and explainable: within a category (matcha and hojicha apart), among teas with at least 5 ratings and a price, rating percentile minus price-per-gram percentile. "Great value" needs a score of 0.25 or more and a rating in the category's top half, in a category with at least 5 such teas.
