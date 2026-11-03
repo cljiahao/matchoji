@@ -19,6 +19,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- The account page's "Make my profile private" / "Make my profile public" button and the blocked-list "Unblock" buttons now meet the 44px tap-target standard (they were 40px).
 - The navbar wordmark no longer overlaps "Explore" at tablet widths: it keeps its width, the nav
   links, Log button and bottom tab bar switch at 768px, the header search pill waits for 1024px,
   and gaps tighten below that.
