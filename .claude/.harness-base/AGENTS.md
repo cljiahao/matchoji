@@ -1,4 +1,4 @@
-<!-- templateCentral: nextjs@6.1.0 -->
+<!-- templateCentral: nextjs@6.0.0 -->
 
 # AGENTS.md — Matchoji
 
@@ -75,13 +75,13 @@ Add new project skills here whenever you repeat a workflow more than once.
 
 ## AI Harness
 
-PreToolUse (Edit/Write/NotebookEdit): blocks secrets only (exit 2): `.env*` (except `.env.example`), `secrets/`, cert files (`.pem`/`.key`/`.secret`), `credentials.json`/`.netrc`; asks for human approval before editing CI/CD definitions (`.github/workflows/`, `.github/actions/`, `.azuredevops/`, `azure-pipelines/`, `azure-pipelines*.y[a]ml`, `.gitlab-ci.yml`, `Jenkinsfile`) and governance files (AGENTS.md, CLAUDE.md, `.claude/settings.json`, `.claude/hooks/`); project-specific guards live in `.claude/hooks/local/`, which re-sync never overwrites; a second Bash guard blocks `--no-verify`, hook-layer bypasses (`LEFTHOOK=0`, `git -c core.hooksPath=…`, `git config core.hooksPath`), commits to protected branches, and force-pushes to them (incl. `--force-with-lease`, `HEAD:main`). Skills, specs, and all app code are unrestricted. SessionStart (startup/resume/clear/compact): re-injects AGENTS.md routing context + universal invariants so they survive compaction (PostCompact stdout is also injected as context and fires after compaction, but SessionStart additionally covers resume/startup, so it's the seeded mechanism here).
+PreToolUse (Edit/Write/NotebookEdit): blocks secrets only (exit 2): `.env*` (except `.env.example`), `secrets/`, cert files (`.pem`/`.key`/`.secret`), `credentials.json`/`.netrc`; asks for human approval before editing CI/CD definitions (`.github/workflows/`, `.github/actions/`, `.azuredevops/`, `azure-pipelines/`, `azure-pipelines*.y[a]ml`, `.gitlab-ci.yml`, `Jenkinsfile`) and governance files (AGENTS.md, CLAUDE.md, `.claude/settings.json`, `.claude/hooks/`); project-specific guards live in `.claude/hooks/local/`, which re-sync never overwrites; a second Bash guard blocks `--no-verify`, hook-layer bypasses (`LEFTHOOK=0`, `git -c core.hooksPath=…`, `git config core.hooksPath`), commits to protected branches, and force-pushes to them (incl. `--force-with-lease`, `HEAD:main`). Skills, specs, and all app code are unrestricted. SessionStart (startup/resume/clear/compact): re-injects the CONSTITUTION + universal invariants so they survive compaction (PostCompact stdout is also injected as context and fires after compaction, but SessionStart additionally covers resume/startup, so it's the seeded mechanism here).
 UserPromptSubmit: pattern-checks incoming prompts for injection phrases; exit 2 blocks the prompt.
 PostToolUse: incremental type-check (`pnpm exec tsc --noEmit --incremental`) and a comment-hygiene scan (change-narration comments, oversized comment blocks — patterns from `.claude/comment-hygiene-patterns.txt`) after every Edit/Write. Both feedback-only — findings reach Claude as `additionalContext`, never a block.
 Stop hook: runs the full test suite when there are uncommitted changes; exit 2 feeds failures to Claude via stderr; exit 0 on pass (Claude Code caps consecutive Stop continuations — 8 by default). SubagentStop: type-gates a subagent's uncommitted changes (read-only Explore/Plan agents skipped).
 Hook wiring: every `settings.json` hook is `"command": "<bin>", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/<script>"]` — an array-valued `command` is silently ignored by Claude Code.
 Git hooks (lefthook): pre-commit runs format/lint/typecheck + gitleaks secret-scan on staged files, plus a readme-coupling staleness warning and a comment-hygiene warning; commit-msg enforces Conventional Commits; pre-push runs the quality gate. Hard-local; coverage/changed-line/comment-hygiene gates run in CI.
-CI (GitHub Actions `.github/workflows/ci.yml`, or on Azure DevOps either the project's own pipelines — skipping the seed only when they already run gitleaks, the harness check and a dependency audit — or the `azure-pipelines/templatecentral-gates.yml` steps template included from the PR pipeline): the harness integrity check plus `.claude/ci-gates.sh` gates — a gitleaks secret scan (the PR's commits; full history off-PR) via the checksum-verified MIT CLI, a changelog-touched check, a readme-freshness check, and a comment-hygiene check on added lines (bypass labels `skip-changelog` / `skip-readme-check` / `skip-comment-check`; on Azure, queue with variable `LABELS`), and a dependency-audit gate (`deps`: fails on high/critical advisories, no label bypass; the only suppression is the expiring allowlist `.claude/dep-audit-allow.txt`). GitHub also gates changed-line coverage (`diff-cover` ≥80%) and lockfile-in-sync (`--frozen-lockfile`); on Azure the project pipeline owns those steps.
+CI (GitHub Actions `.github/workflows/ci.yml`, or on Azure DevOps either the project's own pipelines — skipping the seed only when they already run gitleaks, the harness check and a dependency audit — or the `azure-pipelines/templatecentral-gates.yml` steps template included from the PR pipeline, which a fresh scaffold seeds as `azure-pipelines.yml`): the harness integrity check plus `.claude/ci-gates.sh` gates — a gitleaks secret scan (the PR's commits; full history off-PR) via the checksum-verified MIT CLI, a changelog-touched check, a readme-freshness check, and a comment-hygiene check on added lines (bypass labels `skip-changelog` / `skip-readme-check` / `skip-comment-check`; on Azure, queue with variable `LABELS`), and a dependency-audit gate (`deps`: fails on high/critical advisories, no label bypass; the only suppression is the expiring allowlist `.claude/dep-audit-allow.txt`). GitHub also gates changed-line coverage (`diff-cover` ≥80%) and lockfile-in-sync (`--frozen-lockfile`); on Azure the pipeline that includes the template owns those steps (the seeded `azure-pipelines.yml` runs both).
 Project skills: `.claude/skills/` | Manifest: `.claude/harness.json`
 Context load order (context only — not enforcement, broad → specific): managed policy → `~/.claude/CLAUDE.md` → `CLAUDE.md` `@AGENTS.md` (optional, Claude Code) → this file → `.claude/rules/*.md` (lazy per-directory). Hard enforcement: PreToolUse hooks in `settings.json` only.
 
@@ -116,11 +116,27 @@ rationale): `docs/superpowers/specs/2026-09-14-matchoji-design.md`. Phase 1 only
 built now — do not build Phase 3/4 features (marketplace, vendor tools) without the user
 explicitly asking to move to that phase.
 
+Local patches to templateCentral-owned files (a harness re-sync overwrites them, so re-apply
+these afterwards and refresh their `origin_hash`):
+
+- `.github/workflows/ci.yml` — `pull_request` also runs on `labeled`/`unlabeled` (Dependabot
+  adds `skip-readme-check` after opening, and a re-run replays the label-less event); every
+  checkout sets `persist-credentials: false`; `diff-cover` is pinned (`pipx run diff-cover==10.6.0`).
+- `.gitleaks.toml` — no path allowlist for `.env.example` / `.env.default`, so a real key
+  pasted into the template is caught.
+
 ## Task Management
 
 For complex tasks (3+ files, architectural decisions): `/superpowers:brainstorm` → `/superpowers:write-plan` → `/superpowers:execute-plan`. Skip for single-file edits or quick fixes.
 
-<!-- [[post-harness]] — reserved for trace capture and meta-harness integration (v5.0+) -->
+The superpowers workflow skills come from the user-scoped `superpowers` plugin, not from this repo. Install once per machine:
+
+```bash
+claude plugin marketplace add obra/superpowers
+claude plugin install superpowers
+```
+
+<!-- [[post-harness]] — reserved for trace capture and meta-harness integration -->
 
 <!-- BEGIN:nextjs-agent-rules -->
 

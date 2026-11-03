@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-# SessionStart(startup|resume|clear|compact) — re-inject routing context + universal invariants.
+# SessionStart(startup|resume|clear|compact) — re-inject the constitution + universal invariants.
 # Plain stdout is added to Claude's context (per Claude Code hooks docs); this is what survives compaction.
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
-echo "=== templateCentral routing context ==="
-head -30 AGENTS.md 2>/dev/null
-
 # If a CONSTITUTION.md exists, re-inject it (project binding invariants survive compaction)
 if [ -f docs/CONSTITUTION.md ]; then
   echo ""
