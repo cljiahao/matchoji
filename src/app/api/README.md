@@ -7,10 +7,11 @@ App Router API route handlers. Every handler here is wrapped in `withLogging()` 
 ## Contents
 
 - `health/`
+- `label-scan/`
 
 ## Connectivity
 
-Each subfolder is one API route, matching Next.js's file-based routing; `health/` is the only route so far and is what the Dockerfile's `HEALTHCHECK` probes; it checks the database too.
+Each subfolder is one API route, matching Next.js's file-based routing; `health/` is what the Dockerfile's `HEALTHCHECK` probes; it checks the database too. `label-scan/` reads tea labels from photos and stays off (503) until `ANTHROPIC_API_KEY` is set.
 
 ## Parent
 

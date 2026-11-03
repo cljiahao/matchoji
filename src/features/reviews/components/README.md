@@ -35,6 +35,8 @@ ratings, "Popular".
 
 Star inputs have 44px touch targets, and review photos load lazily. Empty stars, hover borders and slider tracks use theme tokens, so they hold up in dark mode.
 
+`LogTastingDialog`'s search step shows `label-scan`'s "Scan label" button when the server has scanning on: a catalogue match goes straight to the rating step, anything else opens the add-a-tea step pre-filled, and nothing is submitted until the person confirms.
+
 The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 
 `CommunityReviews` shows its "Add your rating" card only once a tea has reviews, since the product hero already carries "Rate it".

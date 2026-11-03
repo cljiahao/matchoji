@@ -349,6 +349,7 @@ Pill-shaped and compact, like an app's.
 - **Primary:** deep matcha green, white 14px 500-weight text, 36px tall, 16px side padding (12px with an icon). Wherever a button is a standalone tap target (navbar "Log a tasting", account and admin forms, journal empty state) it keeps a 44px minimum height through `min-h-11`; the drawn height is only for buttons inside a denser control.
 - **Hover / Focus:** 90% green on hover; a 2px focus outline in the focus-ring grey, offset 2px.
 - **Outline:** white with a hairline border and hairline shadow; hover fills neutral-100. Used for "Want to try" (white on the hero band) and "Continue with Google" (48px, full width).
+- **Scan label:** an outline button, full width and 44px tall, with a camera icon, at the top of the Log a tasting dialog's search step. It reads "Reading label…" with a spinning loader while the photo is processed and is disabled then. Colours come from tokens only, so it holds in light and dark. It does not render at all until the server has label scanning switched on.
 - **Compact icon:** a 32px white circle in a card's top-right corner for save-to-try; the bookmark fills when saved.
 
 ### Chips

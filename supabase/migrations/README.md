@@ -76,6 +76,8 @@ the learner, audited, 200 a day at most, and gone with the account.
 
 `20261101000000_tea_image_credit.sql` adds `products.image_credit` (1–120 characters, admin-only: suggested teas cannot carry one) and replaces `set_tea_links` with a four-argument version where a null image keeps the photo and an empty one clears it and its credit.
 
+`20261102000000_label_scans.sql` adds `label_scans`, one row per label photo read, only to cap scans at 20 a day per person (the shared `limit_daily_inserts` trigger); people insert just the id, read their own rows, and writes are audited. The photo is never stored.
+
 ## Contents
 
 - `20260914071129_phase1_schema.sql`
