@@ -78,6 +78,8 @@ the learner, audited, 200 a day at most, and gone with the account.
 
 `20261102000000_label_scans.sql` adds `label_scans`, one row per label photo read, only to cap scans at 20 a day per person (the shared `limit_daily_inserts` trigger); people insert just the id, read their own rows, and writes are audited. The photo is never stored.
 
+`20261103000000_shop_locations.sql` adds `shop_locations` (maker store, stockist or café with address, coordinates and a required https `source_url`; public read, admin-only writes, audit trigger), seeded with Ippodo's Kyoto main store and Shin-Marunouchi store, each read from Ippodo's own store page. Coordinates are OpenStreetMap's for the same building, so approximate to it. Apply it by hand in the SQL editor; until then `/shops` shows no shops.
+
 ## Contents
 
 - `20260914071129_phase1_schema.sql`
@@ -105,6 +107,7 @@ the learner, audited, 200 a day at most, and gone with the account.
 - `20261030000000_tea_prices.sql`
 - `20261031000000_lesson_progress.sql`
 - `20261101000000_tea_image_credit.sql`
+- `20261103000000_shop_locations.sql`
 
 ## Parent
 

@@ -11,6 +11,7 @@ interface AdminTabsProps {
   reports: ReactNode;
   photo: ReactNode;
   price: ReactNode;
+  shops: ReactNode;
 }
 
 function Count({ n }: { n: number }) {
@@ -23,9 +24,9 @@ function Count({ n }: { n: number }) {
   );
 }
 
-// Four jobs on one page: two queues that empty out, two forms that edit a single tea. The
+// Five jobs on one page: two queues that empty out, forms that edit a single tea, and the shop map. The
 // counts sit on the queue tabs so a quiet day reads at a glance.
-const TABS = ['queue', 'reports', 'photo', 'price'] as const;
+const TABS = ['queue', 'reports', 'photo', 'price', 'shops'] as const;
 type Tab = (typeof TABS)[number];
 
 const fromHash = (hash: string): Tab => TABS.find((t) => `#${t}` === hash) ?? 'queue';
@@ -37,6 +38,7 @@ export function AdminTabs({
   reports,
   photo,
   price,
+  shops,
 }: AdminTabsProps) {
   const trigger = 'h-11 flex-none px-3';
   // The hash is read after mount so the server render and first client render agree.
@@ -73,6 +75,9 @@ export function AdminTabs({
         <TabsTrigger value="price" className={trigger}>
           Tea price
         </TabsTrigger>
+        <TabsTrigger value="shops" className={trigger}>
+          Shops
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="queue" forceMount className={panel}>
         {queue}
@@ -85,6 +90,9 @@ export function AdminTabs({
       </TabsContent>
       <TabsContent value="price" forceMount className={panel}>
         {price}
+      </TabsContent>
+      <TabsContent value="shops" forceMount className={panel}>
+        {shops}
       </TabsContent>
     </Tabs>
   );

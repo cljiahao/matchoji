@@ -45,6 +45,11 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
               </Link>
             </li>
             <li>
+              <Link href={PAGE_ROUTES.SHOPS} className={LINK_CLASS}>
+                Where to buy in person
+              </Link>
+            </li>
+            <li>
               <Link href={PAGE_ROUTES.SELL} className={LINK_CLASS}>
                 Sell on Matchoji
               </Link>

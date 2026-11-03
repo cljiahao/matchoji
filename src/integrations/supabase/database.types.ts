@@ -12,6 +12,7 @@ export type ProfileRole = 'consumer' | 'vendor';
 export type SupplyLevel = 'scarce' | 'tight' | 'plentiful';
 // Where a tea's price per gram sits among priced teas of its category.
 export type PriceBand = 'budget' | 'mid' | 'premium';
+export type ShopKind = 'maker_store' | 'stockist' | 'cafe';
 export type TeaMetric = 'cultivated_ha' | 'aracha_t' | 'tencha_t';
 export type TeaStatSource = 'maff' | 'zencharen';
 export type StockStatus = 'in_stock' | 'sold_out';
@@ -289,6 +290,54 @@ export interface Database {
           user_id?: string;
           status?: StockStatus;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      shop_locations: {
+        Row: {
+          id: string;
+          brand: string;
+          name: string;
+          kind: ShopKind;
+          address: string;
+          city: string;
+          country: string;
+          lat: number;
+          lng: number;
+          source_url: string;
+          checked_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          brand: string;
+          name: string;
+          kind: ShopKind;
+          address: string;
+          city: string;
+          country: string;
+          lat: number;
+          lng: number;
+          source_url: string;
+          checked_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          brand?: string;
+          name?: string;
+          kind?: ShopKind;
+          address?: string;
+          city?: string;
+          country?: string;
+          lat?: number;
+          lng?: number;
+          source_url?: string;
+          checked_at?: string;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

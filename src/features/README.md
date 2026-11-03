@@ -17,6 +17,7 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 - `marketplace/`
 - `products/`
 - `reviews/`
+- `shops/`
 - `social/`
 - `stock/`
 - `supply/`

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
@@ -28,6 +29,7 @@ import {
   localToday,
   summarizeReviews,
 } from '@/features/reviews';
+import { hasShopsForBrand, shopsHref } from '@/features/shops';
 import { ReviewReactions, loadReactions } from '@/features/social';
 import { StockPanel, getLatestStockReport } from '@/features/stock';
 import { MatchSummary, loadMatches } from '@/features/taste';
@@ -96,6 +98,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Buying and stock belong to catalogue teas. A tea awaiting review can be rated and saved
   // only by whoever added it (the database enforces the same rule); a rejected one by nobody.
   // Signed-in tasters see how well the tea suits them, unless they've rated it themselves.
+  const inPerson = product.brand ? await hasShopsForBrand(supabase, product.brand) : false;
   const taste = auth.user ? await loadMatches(supabase, auth.user.id, [product.id]) : null;
   const rated = taste?.ownStars.has(product.id) ?? false;
   const stash = auth.user ? await getStash(supabase, auth.user.id, product.id) : null;
@@ -251,6 +254,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <TeaHighlights lines={highlights} />
         <ProductInsights summary={summary} category={product.category} productName={product.name} />
         {listed && <WhereToBuy offers={offers} />}
+        {product.brand && inPerson && (
+          <p className="text-sm">
+            <Link
+              href={shopsHref(product.brand)}
+              className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2"
+            >
+              Where to buy in person
+            </Link>
+            <span className="text-muted-foreground"> · {product.brand} shops on the map</span>
+          </p>
+        )}
         <EditionList editions={editions} />
         <ProductFacts product={product} />
         {summary.photos.length > 0 && (

@@ -7,6 +7,7 @@ import {
   AdminTabs,
   ReportsQueue,
   ReviewQueueList,
+  ShopsForm,
   TeaLinksForm,
   TeaPriceForm,
   isAdmin,
@@ -14,6 +15,7 @@ import {
   listOpenReports,
   listReviewQueue,
 } from '@/features/admin';
+import { listShops } from '@/features/shops';
 import { createClient } from '@/integrations/supabase/server';
 
 // Only admins learn the page exists: everyone else gets "not found", title included.
@@ -38,10 +40,11 @@ export default async function AdminPage() {
   if (!(await canReview())) notFound();
   const supabase = await createClient();
 
-  const [queue, catalogue, reports] = await Promise.all([
+  const [queue, catalogue, reports, shops] = await Promise.all([
     listReviewQueue(supabase),
     listApprovedTeas(supabase),
     listOpenReports(supabase),
+    listShops(supabase),
   ]);
 
   return (
@@ -78,6 +81,18 @@ export default async function AdminPage() {
               The reference price behind each tea&apos;s price per gram and band.
             </p>
             <TeaPriceForm catalogue={catalogue} />
+          </section>
+        }
+        shops={
+          <section aria-labelledby="shop-locations" className="space-y-1">
+            <h2 id="shop-locations" className="text-2xl font-bold tracking-tight">
+              Shops
+            </h2>
+            <p className="text-muted-foreground mb-5 text-sm">
+              Real shop locations behind the Where to buy map. Add one only with an address from the
+              shop&apos;s own site.
+            </p>
+            <ShopsForm shops={shops} />
           </section>
         }
       />

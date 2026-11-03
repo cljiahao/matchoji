@@ -8,6 +8,8 @@ react-hook-form with one label style, `htmlFor`, and inline errors. `UnitInput` 
 footer's section links. `BackLink` is the one back link (chevron, "Back to <label>" for
 screen readers, 44px hit area, focus ring), named by where it goes.
 
+`tea-map/` is the Leaflet map (OpenStreetMap tiles, imported client-side inside an effect, so the server renders only its labelled `role="region"` container): pins carry names, region pins link on, shop pins open a popup with Directions; controls use tokens at 44px, and dark mode dims the tiles with a CSS filter.
+
 ## Contents
 
 - `back-link.test.tsx`
@@ -15,6 +17,7 @@ screen readers, 44px hit area, focus ring), named by where it goes.
 - `custom-form-field.tsx`
 - `index.ts`
 - `link-list.tsx`
+- `tea-map/`
 - `unit-input.test.tsx`
 - `unit-input.tsx`
 

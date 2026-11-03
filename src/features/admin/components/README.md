@@ -18,6 +18,8 @@ Every admin control (tabs, selects, inputs, buttons, and the whole "Remove photo
 
 `TeaLinksForm` also takes an optional photo credit (at most 120 characters, checked by `teaCreditSchema`) and a "Remove photo" checkbox; with no file and no removal the current photo stays. Picking a tea prefills the credit and shop link from its saved values, so editing one never wipes the other; the form clears after a save.
 
+`shops-form.tsx` is the Shops tab: add, edit and remove `shop_locations` rows, validated with the shops feature's `shopSchema` (latitude ±90, longitude ±180, https source). The table's admin-only RLS is the real gate.
+
 ## Contents
 
 - `admin-tabs.test.tsx`
@@ -27,6 +29,8 @@ Every admin control (tabs, selects, inputs, buttons, and the whole "Remove photo
 - `reports-queue.tsx`
 - `review-queue.test.tsx`
 - `review-queue.tsx`
+- `shops-form.test.tsx`
+- `shops-form.tsx`
 - `tea-links-form.tsx`
 - `tea-price-form.test.tsx`
 - `tea-price-form.tsx`

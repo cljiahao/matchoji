@@ -9,6 +9,8 @@ request.
 It is four tabs (review queue, reports, tea photo, tea price), kept in the URL hash. It lists teas and shops to review and open reports, and has forms for a tea's photo and shop
 link and its reference price.
 
+A Shops tab manages the `/shops` locations through `ShopsForm`.
+
 ## Contents
 
 - `page.tsx`

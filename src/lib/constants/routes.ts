@@ -4,6 +4,7 @@ export const PAGE_ROUTES = {
   TOP: '/top',
   REGIONS: '/regions',
   SUPPLY: '/regions/supply',
+  SHOPS: '/shops',
   JOURNAL: '/journal',
   LEARN: '/learn',
   SELL: '/sell',

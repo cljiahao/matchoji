@@ -50,6 +50,7 @@ describe('sitemap', () => {
       'http://localhost:3000/top',
       'http://localhost:3000/regions',
       'http://localhost:3000/regions/supply',
+      'http://localhost:3000/shops',
       'http://localhost:3000/learn',
       ...RECIPES.map((r) => `http://localhost:3000/learn/recipes/${r.slug}`),
       ...GUIDES.map((g) => `http://localhost:3000/learn/guides/${g.slug}`),

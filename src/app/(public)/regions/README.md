@@ -14,9 +14,12 @@ The sort pills keep a 44px minimum height on phones.
 
 A region card hides its prefecture line when the name already ends with it, and prefixes the supply line with "Supply:".
 
+A map of the regions (`TeaMap`, pins from `regionPins`) sits above the cards: each pin shows the region's tea count, coloured by the larger category, and links to Explore for it; the cards stay below as the keyboard and screen-reader equivalent. A legend line explains the colours. No map shows when no region has coordinates.
+
 ## Contents
 
 - `loading.tsx`
+- `page.test.tsx`
 - `page.tsx`
 - `supply/`
 
