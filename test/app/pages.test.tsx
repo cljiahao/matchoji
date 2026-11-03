@@ -1529,7 +1529,7 @@ describe('static routes', () => {
       'href',
       '/shops'
     );
-    expect(screen.getAllByRole('link')).toHaveLength(5);
+    expect(screen.getAllByRole('link')).toHaveLength(6);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
