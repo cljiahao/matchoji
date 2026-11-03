@@ -35,6 +35,11 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
               </Link>
             </li>
             <li>
+              <Link href={PAGE_ROUTES.TOP} className={LINK_CLASS}>
+                Top lists
+              </Link>
+            </li>
+            <li>
               <Link href={PAGE_ROUTES.SUPPLY} className={LINK_CLASS}>
                 Tea supply
               </Link>

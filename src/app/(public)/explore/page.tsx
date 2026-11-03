@@ -11,11 +11,14 @@ import {
   PAGE_SIZE,
   ProductRow,
   SearchPill,
+  ValueBadge,
   discoverProgress,
+  listCatalogue,
   listGradeOptions,
   listProducts,
   listRegions,
   parseDiscoverParams,
+  valueScoresFor,
   type DiscoverFilters,
 } from '@/features/products';
 import { LogTastingDialog } from '@/features/reviews';
@@ -50,16 +53,24 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   // "Best match" ranks by a score computed per taster, so it reads the matching teas (up to
   // MATCH_POOL, ample for this catalogue) and trims in memory; every other sort pages in SQL.
   const byMatch = filters.sort === 'match' && user !== null;
+  // "Best value" likewise ranks by a score relative to each tea's whole category, so it
+  // trims in memory too.
+  const byValue = filters.sort === 'bestvalue';
+  const pooled = byMatch || byValue;
   const shown = filters.shown ?? PAGE_SIZE;
 
   // Regions only feed the filter; losing them hides the rail section, not the results.
-  const [listing, grades, regions] = await Promise.all([
-    byMatch
+  // Value is judged against the whole catalogue, not the filtered list; losing it only hides
+  // the badges.
+  const [listing, grades, regions, catalogue] = await Promise.all([
+    pooled
       ? listProducts(supabase, { ...filters, sort: 'top' }, { limit: MATCH_POOL })
       : listProducts(supabase, filters),
     listGradeOptions(supabase, filters),
     listRegions(supabase).catch(() => []),
+    listCatalogue(supabase).catch(() => []),
   ]);
+  const values = valueScoresFor(catalogue);
   const taste = user
     ? await loadMatches(
         supabase,
@@ -68,10 +79,12 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       )
     : null;
   const scoreOf = (id: string) => taste?.matches.get(id)?.score ?? -1;
-  const products = byMatch
-    ? [...listing.products].sort((a, b) => scoreOf(b.id) - scoreOf(a.id)).slice(0, shown)
-    : listing.products;
-  const total = byMatch ? listing.products.length : listing.total;
+  const valueOf = (id: string) => values.get(id)?.score ?? -2;
+  let products = listing.products;
+  if (byMatch) products = [...products].sort((a, b) => scoreOf(b.id) - scoreOf(a.id));
+  else if (byValue) products = [...products].sort((a, b) => valueOf(b.id) - valueOf(a.id));
+  if (pooled) products = products.slice(0, shown);
+  const total = pooled ? listing.products.length : listing.total;
   const { countLabel, moreHref } = discoverProgress(filters, products.length, total);
 
   // Any narrowing that leaves nothing is "no match", not an empty catalogue.
@@ -109,7 +122,12 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                   <li key={product.id}>
                     <ProductRow
                       product={product}
-                      badge={<MatchBadge match={taste?.matches.get(product.id)} />}
+                      badge={
+                        <>
+                          <MatchBadge match={taste?.matches.get(product.id)} />
+                          <ValueBadge value={values.get(product.id)} />
+                        </>
+                      }
                       action={<WantToTryButton productId={product.id} compact />}
                     />
                   </li>

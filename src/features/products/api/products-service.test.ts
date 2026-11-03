@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
   getProduct,
+  listCatalogue,
   listGradeOptions,
   listProducts,
   listRegionSummaries,
@@ -306,5 +307,37 @@ describe('searchProducts', () => {
     const error = new Error('boom');
     const { client } = createFakeSupabase({ 'rpc:search_teas': { data: null, error } });
     await expect(searchProducts(client, 'uji')).rejects.toBe(error);
+  });
+});
+
+describe('listCatalogue', () => {
+  it('maps every approved tea with its region id and price', async () => {
+    const { client } = createFakeSupabase({
+      catalogue_teas: {
+        data: [
+          tea('a', {
+            region_id: 'uji',
+            review_count: 7,
+            avg_stars: '4.20',
+            price_sgd: '30.00',
+            pack_grams: '30.0',
+          }),
+          tea('b'),
+        ],
+        error: null,
+      },
+    });
+    const teas = await listCatalogue(client);
+    expect(teas.map((t) => t.id)).toEqual(['a', 'b']);
+    expect(teas[0]).toMatchObject({ regionId: 'uji', avgStars: 4.2, reviewCount: 7 });
+    expect(teas[0].price?.perGram).toBe(1);
+    expect(teas[1].price).toBeNull();
+  });
+
+  it('throws when the read fails', async () => {
+    const { client } = createFakeSupabase({
+      catalogue_teas: { data: null, error: new Error('down') },
+    });
+    await expect(listCatalogue(client)).rejects.toThrow('down');
   });
 });

@@ -1,10 +1,12 @@
 import { connection } from 'next/server';
 
+import { buildTopLists } from '@/features/discovery';
 import { WantToTryButton } from '@/features/journal';
 import {
   CategoryCircles,
   ProductShelf,
   SearchPill,
+  listCatalogue,
   listProducts,
   type DiscoverFilters,
   type Product,
@@ -21,18 +23,22 @@ const SHELVES: {
   unratedTitle?: string;
   filters: DiscoverFilters;
   href: string;
+  // The top list this shelf's "See all" prefers, once that list exists.
+  topSlug?: string;
 }[] = [
   {
     title: 'Top-rated matcha',
     unratedTitle: 'Matcha to try',
     filters: { category: 'matcha', sort: 'top' },
     href: '/explore?category=matcha',
+    topSlug: 'matcha',
   },
   {
     title: 'Top-rated hojicha',
     unratedTitle: 'Hojicha to try',
     filters: { category: 'hojicha', sort: 'top' },
     href: '/explore?category=hojicha',
+    topSlug: 'hojicha',
   },
   { title: 'Newly added', filters: { sort: 'newest' }, href: '/explore?sort=newest' },
 ];
@@ -46,6 +52,13 @@ async function loadFollowingFeed(): Promise<Tasting[]> {
     data: { user },
   } = await supabase.auth.getUser();
   return user ? loadFeed(supabase) : [];
+}
+
+// Top lists that exist yet; a read failure just leaves "See all" pointing at Explore.
+async function loadTopSlugs(): Promise<Set<string>> {
+  const supabase = await createClient();
+  const lists = await listCatalogue(supabase).then(buildTopLists, () => []);
+  return new Set(lists.map((l) => l.slug));
 }
 
 // Each shelf fetches only the teas it shows.
@@ -62,7 +75,11 @@ export default async function Home() {
   // prerender it at build time, and a build without Supabase env vars (CI, Vercel Preview)
   // fails in supabaseEnv().
   await connection();
-  const [shelves, feed] = await Promise.all([loadShelves(), loadFollowingFeed()]);
+  const [shelves, feed, topSlugs] = await Promise.all([
+    loadShelves(),
+    loadFollowingFeed(),
+    loadTopSlugs(),
+  ]);
   const empty = shelves.every((products) => products.length === 0);
   // On a small catalogue "Newly added" would only repeat the two shelves above; it earns its
   // place once it holds a tea they don't show.
@@ -107,7 +124,9 @@ export default async function Home() {
             <ProductShelf
               key={shelf.title}
               title={unrated(shelves[i]) ? (shelf.unratedTitle ?? shelf.title) : shelf.title}
-              seeAllHref={shelf.href}
+              seeAllHref={
+                shelf.topSlug && topSlugs.has(shelf.topSlug) ? `/top/${shelf.topSlug}` : shelf.href
+              }
               products={shelves[i].slice(0, SHELF_SIZE)}
               renderAction={(product) => <WantToTryButton productId={product.id} compact />}
             />

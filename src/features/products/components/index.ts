@@ -15,3 +15,4 @@ export { ScoreNumeral } from './score-numeral';
 export { SearchPill } from './search-pill';
 export { StarRatingDisplay, Stars } from './star-rating-display';
 export { TeaTin } from './tea-tin';
+export { ValueBadge } from './value-badge';

@@ -40,6 +40,11 @@ export interface Product {
   price: TeaPrice | null;
 }
 
+// A tea from the catalogue view, with the region id the lists group and compare by.
+export interface CatalogueTea extends Product {
+  regionId: string | null;
+}
+
 export interface ProductSummary {
   id: string;
   name: string;

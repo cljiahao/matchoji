@@ -12,6 +12,8 @@ the wordmark and tagline, the links the navbar lacks (Tea supply, Sell on Matcho
 on phones, where the tab bar has no Regions tab), and a fine-print row. `Providers` wraps the app in `SessionProvider`,
 so every component shares one sign-in session.
 
+The footer's link column adds "Top lists" (`/top`).
+
 The footer ends with `ThemeToggle`: Light, Dark and System radios over next-themes. Light is the default (`enableSystem` is on, `defaultTheme` stays `light`), so the site only goes dark when a visitor picks it; nothing is checked until after hydration so server and client markup match.
 
 `SiteShell` is the page frame the `(public)` layout and the root not-found page share: a "Skip to content" link (first focusable element, visible on focus), the navbar, `main#main-content`, the footer and the tab bar.

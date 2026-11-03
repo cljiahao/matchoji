@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
 
+import { SimilarTeas, TeaHighlights, buildHighlights, listSimilarTeas } from '@/features/discovery';
 import { FreshnessHint, WantToTryButton, getStash } from '@/features/journal';
 import { WhereToBuy, listProductOffers } from '@/features/marketplace';
 import {
@@ -12,7 +13,10 @@ import {
   ProductImageWell,
   ScoreNumeral,
   Stars,
+  ValueBadge,
   getProduct,
+  listCatalogue,
+  valueScoresFor,
 } from '@/features/products';
 import {
   CommunityReviews,
@@ -73,14 +77,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!isTeaId(id)) notFound();
 
   const supabase = await createClient();
-  const [product, reviews, stockReport, offers, { data: auth }, editions] = await Promise.all([
-    loadProduct(id),
-    listReviews(supabase, id),
-    getLatestStockReport(supabase, id),
-    listProductOffers(supabase, id),
-    supabase.auth.getUser(),
-    listEditions(supabase, id),
-  ]);
+  const [product, reviews, stockReport, offers, { data: auth }, editions, catalogue] =
+    await Promise.all([
+      loadProduct(id),
+      listReviews(supabase, id),
+      getLatestStockReport(supabase, id),
+      listProductOffers(supabase, id),
+      supabase.auth.getUser(),
+      listEditions(supabase, id),
+      // Comparisons with other teas are extras: if the read fails the page just omits them.
+      listCatalogue(supabase).catch(() => []),
+    ]);
 
   if (!product) notFound();
   // A merged duplicate forwards to the tea it repeated, so old links and shares still land.
@@ -114,6 +121,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />,
     ])
   );
+
+  // Only catalogue teas are compared; one awaiting review is not in the catalogue.
+  const catalogueTea = catalogue.find((t) => t.id === product.id);
+  const value = valueScoresFor(catalogue).get(product.id);
+  const highlights = catalogueTea ? buildHighlights(catalogueTea, catalogue) : [];
+  const similar = catalogueTea
+    ? await listSimilarTeas(supabase, catalogueTea, catalogue).catch(() => [])
+    : [];
 
   const summary = summarizeReviews(reviews);
   const productSummary = {
@@ -189,6 +204,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </p>
               </div>
             </div>
+            <ValueBadge value={value} className="mt-3" />
 
             {taste && !rated && (
               <MatchSummary
@@ -232,6 +248,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       <div className="max-w-site mx-auto w-full space-y-10 px-6 py-12 sm:space-y-16 sm:py-16">
+        <TeaHighlights lines={highlights} />
         <ProductInsights summary={summary} category={product.category} productName={product.name} />
         {listed && <WhereToBuy offers={offers} />}
         <EditionList editions={editions} />
@@ -266,6 +283,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           reviews={reviews}
           summary={summary}
         />
+        <SimilarTeas teas={similar} category={product.category} />
       </div>
     </>
   );

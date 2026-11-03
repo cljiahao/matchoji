@@ -395,6 +395,12 @@ Five 32px outline stars in the empty-star colour that fill in the category colou
 
 Stands in for any product photo on tiles, in category circles and in the journal. See Shapes for its anatomy and Colors for its tones.
 
+### Discovery Badges and Lists
+
+"Great value" is a brand-tint pill (`bg-brand/10`, `text-brand`, 12px semibold) beside the match badge on rows and under the rating on a tea page; the claim is in the text, never colour alone. Value score is plain and explainable: within a category (matcha and hojicha apart), among teas with at least 5 ratings and a price, rating percentile minus price-per-gram percentile. "Great value" needs a score of 0.25 or more and a rating in the category's top half, in a category with at least 5 such teas.
+
+Tea-page highlights are the same pill shape in a wrapping row (up to three): "Top 10% of hojicha on Matchoji", "Highest rated from Uji", "Most rated ceremonial matcha". Each is computed, needs the tea to have 5 ratings and its comparison group 5 teas with 3 ratings each, and is omitted otherwise. "Similar teas" reuses the shelf (up to 8 same-category teas by grade, region, then taste). Top lists number each `ProductRow`; ranking is a Bayesian average, `(v·R + 5·C) / (v + 5)`, so one rating cannot top a list. Every one of these hides itself rather than showing a thin claim.
+
 ## Do's and Don'ts
 
 ### Do:

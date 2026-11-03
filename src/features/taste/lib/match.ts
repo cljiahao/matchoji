@@ -41,6 +41,20 @@ export function teaSimilarity(a: TeaFeatures, b: TeaFeatures): number {
   return parts.reduce((s, [w, v]) => s + w * v, 0) / weight;
 }
 
+// How alike two teas taste (0-1), from the community's sliders and flavour notes alone; null
+// when neither tea has recorded taste to compare. "Similar teas" uses it to rank teas that
+// are otherwise level on category, grade and region.
+export function tasteCloseness(a: TeaFeatures, b: TeaFeatures): number | null {
+  const parts: [number, number][] = [];
+  const sliders = sliderSimilarity(a.sliders, b.sliders);
+  if (sliders !== null) parts.push([WEIGHTS.sliders, sliders]);
+  const notes = noteSimilarity(a.notes, b.notes);
+  if (notes !== null) parts.push([WEIGHTS.notes, notes]);
+  if (parts.length === 0) return null;
+  const weight = parts.reduce((s, [w]) => s + w, 0);
+  return parts.reduce((s, [w, v]) => s + w * v, 0) / weight;
+}
+
 // Vivino's bands: 70-100 a great match, 40-69 average, under 40 low.
 export function matchBand(score: number): MatchBand {
   if (score >= 70) return 'great';

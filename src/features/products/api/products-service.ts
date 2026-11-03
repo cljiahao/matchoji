@@ -7,7 +7,7 @@ import type {
 } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
-import type { Product, ProductSummary } from '../types';
+import type { CatalogueTea, Product, ProductSummary } from '../types';
 
 import { SHOW_MORE_STEP, type DiscoverFilters } from '../lib/discover-params';
 import { gradeOptions } from '../lib/filter-products';
@@ -87,7 +87,7 @@ async function hydrateProduct(supabase: Client, row: ProductRow): Promise<Produc
 }
 
 const CATALOGUE_COLUMNS =
-  'id, name, brand, category, grade, region_name, supply, image_url, shop_url, created_at, review_count, avg_stars, price_sgd, pack_grams, price_band';
+  'id, name, brand, category, grade, region_id, region_name, supply, image_url, shop_url, created_at, review_count, avg_stars, price_sgd, pack_grams, price_band';
 
 type CatalogueRow = Pick<
   Database['public']['Views']['catalogue_teas']['Row'],
@@ -96,6 +96,7 @@ type CatalogueRow = Pick<
   | 'brand'
   | 'category'
   | 'grade'
+  | 'region_id'
   | 'region_name'
   | 'supply'
   | 'image_url'
@@ -134,6 +135,21 @@ function fromCatalogue(row: CatalogueRow): Product {
   };
 }
 
+const DESC = { ascending: false, nullsFirst: false } as const;
+
+// The whole catalogue, for the features that compare a tea with the rest (value, highlights,
+// similar teas, top lists). Teas are in the tens to low hundreds, so one read per request
+// beats a view per comparison; PostgREST caps a response at 1000 rows anyway.
+export async function listCatalogue(supabase: Client): Promise<CatalogueTea[]> {
+  const { data, error } = await supabase
+    .from('catalogue_teas')
+    .select(CATALOGUE_COLUMNS)
+    .order('created_at', DESC)
+    .limit(1000);
+  if (error) throw error;
+  return data.map((row) => ({ ...fromCatalogue(row), regionId: row.region_id }));
+}
+
 export const PAGE_SIZE = SHOW_MORE_STEP;
 
 export interface ProductPage {
@@ -141,8 +157,6 @@ export interface ProductPage {
   // Every match, not just the ones returned: "Showing 12 of N".
   total: number;
 }
-
-const DESC = { ascending: false, nullsFirst: false } as const;
 
 export async function listProducts(
   supabase: Client,

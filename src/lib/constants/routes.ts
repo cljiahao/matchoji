@@ -1,6 +1,7 @@
 export const PAGE_ROUTES = {
   HOME: '/',
   EXPLORE: '/explore',
+  TOP: '/top',
   REGIONS: '/regions',
   SUPPLY: '/regions/supply',
   JOURNAL: '/journal',

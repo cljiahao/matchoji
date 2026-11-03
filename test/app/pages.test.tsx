@@ -140,6 +140,8 @@ describe('Home page', () => {
           ],
           error: null,
         },
+        // The top-lists check reads the whole catalogue; none is rated, so no list exists.
+        { data: [], error: null },
       ],
     });
 
@@ -180,9 +182,9 @@ describe('Home page', () => {
     ).toEqual(['Hoshino Fresh', 'Kyoto Bancha', 'Uji Gold']);
     expect(within(newest).getAllByRole('button', { name: 'Want to try' })).toHaveLength(3);
 
-    // Three queries, each fetching only its shelf.
+    // Three queries, each fetching only its shelf, and one for the top lists.
     expect(calls.filter((c) => c.table === 'catalogue_teas' && c.method === 'from')).toHaveLength(
-      3
+      4
     );
     expect(calls.filter((c) => c.method === 'range').map((c) => c.args)).toEqual([
       [0, 11],
@@ -193,6 +195,32 @@ describe('Home page', () => {
       ['category', 'matcha'],
       ['category', 'hojicha'],
     ]);
+  });
+
+  it('sends a shelf’s "See all" to its top list once that list exists', async () => {
+    const rated = Array.from({ length: 5 }, (_, i) =>
+      row(`m${i}`, `Matcha ${i}`, 'matcha', '2026-09-01T00:00:00Z', {
+        review_count: 4,
+        avg_stars: 4.5 - i * 0.1,
+      })
+    );
+    useServer({
+      catalogue_teas: [
+        { data: rated, error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+        { data: rated, error: null },
+      ],
+      tea_taste_profiles: { data: [], error: null },
+    });
+
+    renderWithQuery(await Home());
+
+    const matcha = screen.getByRole('region', { name: 'Top-rated matcha' });
+    expect(within(matcha).getByRole('link', { name: /See all/ })).toHaveAttribute(
+      'href',
+      '/top/matcha'
+    );
   });
 
   it('leads a signed-in reader with tastings from people they follow', async () => {
@@ -1457,7 +1485,8 @@ describe('static routes', () => {
       'href',
       '/regions/supply'
     );
-    expect(screen.getAllByRole('link')).toHaveLength(4);
+    expect(screen.getByRole('link', { name: 'Top lists' })).toHaveAttribute('href', '/top');
+    expect(screen.getAllByRole('link')).toHaveLength(5);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');

@@ -10,7 +10,10 @@ import type { MatchResult, RatedTea, TeaFeatures } from '../types';
 type Client = SupabaseClient<Database>;
 
 // Features for a set of teas: the catalogue entry plus the community's taste profile.
-async function loadFeatures(supabase: Client, ids: string[]): Promise<Map<string, TeaFeatures>> {
+export async function loadTeaFeatures(
+  supabase: Client,
+  ids: string[]
+): Promise<Map<string, TeaFeatures>> {
   const [teas, profiles] = await Promise.all([
     selectIn(ids, (batch) =>
       supabase.from('products').select('id, name, category, grade, region_id').in('id', batch)
@@ -71,7 +74,7 @@ export async function loadMatches(
   const ownStars = new Map(mine.map((r) => [r.product_id, r.stars]));
   if (mine.length === 0) return { hasRatings: false, matches: new Map(), ownStars };
 
-  const features = await loadFeatures(supabase, [
+  const features = await loadTeaFeatures(supabase, [
     ...new Set([...ownStars.keys(), ...candidateIds]),
   ]);
   const rated: RatedTea[] = mine.flatMap((r) => {
