@@ -36,12 +36,20 @@ interface TeaTinProps {
   className?: string;
 }
 
-export function TeaTin({ category, seed = '', mark, className }: TeaTinProps) {
+// The tone, label colour and height of a product's tin, shared with the share-image tin so a
+// shared link draws the same tin as the shelf.
+export function tinDesign(category: ProductCategory, seed = '') {
   const h = hash(seed);
-  const c = TONES[category][h % 3];
-  const label = LABELS[(h >>> 2) % 3];
-  // Short tins drop the body top by 14 units; the lid and label move with it.
-  const top = (h >>> 4) % 2 ? 14 : 0;
+  return {
+    c: TONES[category][h % 3],
+    label: LABELS[(h >>> 2) % 3],
+    // Short tins drop the body top by 14 units; the lid and label move with it.
+    top: (h >>> 4) % 2 ? 14 : 0,
+  };
+}
+
+export function TeaTin({ category, seed = '', mark, className }: TeaTinProps) {
+  const { c, label, top } = tinDesign(category, seed);
   const initial = mark?.trim().charAt(0).toUpperCase();
 
   let labelArt =

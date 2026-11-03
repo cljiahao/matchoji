@@ -395,6 +395,12 @@ Five 32px outline stars in the empty-star colour that fill in the category colou
 
 OpenStreetMap tiles through Leaflet on `/regions` and `/shops`, in a 16px-rounded, hairline-bordered container 320px tall on phones and 448px from `sm`. Pins are pills: matcha or hojicha fill for the larger category, brand green for an even split or a shop, white 2px edge, 32px tall inside a 44px hit area, label in white or black per the token's `-foreground`. A pin holds only its count so neighbouring pins never overlap; a 12px `--destructive` dot with a `--background` edge marks scarce supply, and the supply text lives in the tooltip and the accessible name. Zoom and popup-close controls are 44px on `--background`, popups use `--popover`, attribution sits on a translucent `--background`. In dark mode only the tile layer is dimmed (`brightness(0.72) contrast(1.05) saturate(0.85)`), never inverted. A list of the same items always follows the map as its accessible equivalent. Region pins carry no farm locations, by design.
 
+### Share Image & App Icon
+
+Share images are 1200×630 PNGs drawn with `next/og` from this file's tokens and Figtree 400/700/800 (committed as TTF under `src/features/share/fonts/`; no runtime font fetch). Three layouts: the **site card** is matcha-green with the logo tile, a 128px 800 "Matchoji" wordmark and the tagline in white; the **tea card** is white with a 480px shelf-tile panel on the left holding the photo or the drawn tin, and on the right a category chip (jade or amber, white text), the name (84/64/48px 800 by length), the maker in muted ink, the score numeral (88px 800), five stars in the category colour with the count, and the wordmark ("Not yet rated" replaces the score and stars when there are no ratings); the **profile card** is shelf-tile with "Taster on Matchoji", the name and teas rated. Private profiles never get a profile card: they share the site card.
+
+App icons are the logo (`public/image_assets/logo.svg`): 192 and 512 on the cream tile with its 16px-of-64 rounding, a 512 maskable with the cream ground full-bleed and the mark inside the centre 60%, a 180 Apple touch icon and a 32 favicon. The manifest uses page-white as background and matcha-green as theme colour; the browser bar follows the page (white, or `dark-page` in the dark theme).
+
 ### Drawn Tin
 
 Stands in for any product photo on tiles, in category circles and in the journal. See Shapes for its anatomy and Colors for its tones.

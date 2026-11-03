@@ -12,7 +12,7 @@ visible only to the taster who added it, says it was not added to the catalogue.
 or, for a tea awaiting review, to whoever added it; stock and "Where to buy" only on catalogue
 teas. A malformed id 404s before any query. A merged duplicate forwards permanently to the tea
 it repeated, and a rejected tea shows the admin's reason to whoever added it. `generateMetadata` titles
-the page "Name · Brand", describes its rating, uses its photo for link previews and keeps teas
+the page "Name · Brand", describes its rating, builds link-preview metadata through `share`'s `teaMetadata` (Open Graph and a large Twitter card; the image is the `opengraph-image` file beside the page: the tea's photo or a drawn tin, name, maker, category chip and rating) and keeps teas
 outside the catalogue out of search engines; the product read is shared with the page through
 React `cache`. Signed-in tasters who have not rated the tea see `MatchSummary`. A "Harvests" section compares editions. A signed-in taster who has opened this tea (stash `opened_on`) sees `FreshnessHint` under the hero buttons. Each review carries
 `ReviewReactions` (likes, comments, report), loaded with the page.
@@ -29,6 +29,7 @@ When the maker has any row in `shop_locations`, a small "Where to buy in person"
 ## Contents
 
 - `loading.tsx`
+- `opengraph-image.tsx`
 - `page.tsx`
 
 ## Parent
