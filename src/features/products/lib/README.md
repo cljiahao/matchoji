@@ -19,6 +19,8 @@ the band labels; `discover-params` includes the `value` sort (lowest price per g
 `value-score` is the value formula: within a category (matcha and hojicha apart), among teas with at least 5 ratings and a price, value score = rating percentile minus price-per-gram percentile (each 0 to 1, ties share a percentile), so it runs from -1 to +1. A tea is "great value" at a score of 0.25 or more with a rating in the category's top half. Categories with fewer than 5 such teas score nothing. `valueScoresFor` maps a list of teas to scores; the `bestvalue` Explore sort ranks by it.
 `region-pins.ts` holds `REGION_COORDINATES` (town or area centres, public geography, keyed by the seeded region name) and `regionPins`, which turns region summaries into map pins: the tea count (a warning dot when a supply level is scarce; the supply text lives in the tooltip and accessible name), coloured by the larger category, linking to Explore for the region. A region with no entry has no pin; its card still lists it.
 
+`region-pins` imports the `MapPin` type from `@/components/widgets/tea-map`, since the widgets barrel no longer exports the map.
+
 ## Contents
 
 - `category-styles.ts`

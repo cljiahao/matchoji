@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
+  // Names the service worker's cache (see src/features/offline), so each deploy replaces the last.
+  env: { NEXT_PUBLIC_BUILD_ID: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local' },
+
   // Uncomment and add domains when using next/image with external URLs:
   // images: {
   //   remotePatterns: [{ protocol: 'https', hostname: 'example.com' }],
@@ -32,6 +35,14 @@ const nextConfig: NextConfig = {
           { key: 'X-XSS-Protection', value: '0' },
           // HSTS — browsers ignore HSTS received over HTTP, so this is only effective over HTTPS.
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+        ],
+      },
+      {
+        // A browser must always re-check the worker script, or a deploy could not replace it.
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Service-Worker-Allowed', value: '/' },
         ],
       },
     ];

@@ -9,7 +9,8 @@ import { UserMenu } from './user-menu';
 export function AuthStatus() {
   const { session, isLoading } = useSession();
 
-  if (isLoading) return <Skeleton className="h-9 w-9 rounded-full" />;
+  // Sized like the Sign in button it usually becomes, so the navbar does not shift when the session resolves.
+  if (isLoading) return <Skeleton className="h-11 w-[4.75rem] rounded-md md:h-9" />;
   if (!session) return <SignInButton variant="outline" />;
   return <UserMenu />;
 }

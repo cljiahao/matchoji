@@ -6,6 +6,8 @@ How Matchoji looks when a link is shared. `lib/metadata.ts` builds the title, de
 
 `components/logo-mark.tsx` is also what draws the app icons under `/icons`.
 
+`teaJsonLd` and `serializeJsonLd` (`lib/json-ld.ts`) build the schema.org `Product` block a catalogue tea's page embeds.
+
 ## Contents
 
 - `components/`

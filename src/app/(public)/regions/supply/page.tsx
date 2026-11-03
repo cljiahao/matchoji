@@ -15,7 +15,10 @@ import {
 import { createClient } from '@/integrations/supabase/server';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
-export const metadata: Metadata = { title: 'Tea supply in numbers' };
+export const metadata: Metadata = {
+  title: 'Tea supply in numbers',
+  description: 'Harvest and price numbers behind the matcha shortage, by year.',
+};
 
 const number = (value: number) => value.toLocaleString('en-US');
 

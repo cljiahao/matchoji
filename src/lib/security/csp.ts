@@ -37,6 +37,9 @@ export function buildCsp({
     "base-uri 'self'",
     "object-src 'none'",
     "form-action 'self'",
+    // strict-dynamic makes script-src ignore 'self', and workers fall back to it, so the service
+    // worker needs its own same-origin allowance.
+    "worker-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
     imageSources(supabaseUrl),
   ].join('; ');

@@ -1,4 +1,4 @@
-import type { MapPin } from '@/components/widgets';
+import type { MapPin } from '@/components/widgets/tea-map';
 
 import { CATEGORY_STYLES } from './category-styles';
 import { discoverHref } from './discover-params';

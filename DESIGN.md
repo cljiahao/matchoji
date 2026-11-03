@@ -401,6 +401,14 @@ Share images are 1200×630 PNGs drawn with `next/og` from this file's tokens and
 
 App icons are the logo (`public/image_assets/logo.svg`): 192 and 512 on the cream tile with its 16px-of-64 rounding, a 512 maskable with the cream ground full-bleed and the mark inside the centre 60%, a 180 Apple touch icon and a 32 favicon. The manifest uses page-white as background and matcha-green as theme colour; the browser bar follows the page (white, or `dark-page` in the dark theme).
 
+### Goes Well With
+
+A tea page section: an h2 and up to four soft-grey (`bg-muted/40`) rounded cards, two columns from `sm`, each a semibold sweet, a muted one-line note and a 44px "Source: Ippodo, …" brand-colour link to the tea house's page. Hidden when no sourced rule fits.
+
+### Offline Screen
+
+The `/offline` page is a bare centred `main` outside the site shell (its navbar needs the network): an h1 "You're offline", a muted sentence and a pill "Try again" button, all token colours.
+
 ### Drawn Tin
 
 Stands in for any product photo on tiles, in category circles and in the journal. See Shapes for its anatomy and Colors for its tones.

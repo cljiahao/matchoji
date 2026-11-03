@@ -6,6 +6,8 @@
 
 Its `loading.tsx` skeleton is announced as a busy `status`.
 
+The page has its own meta description.
+
 ## Contents
 
 - `loading.tsx`

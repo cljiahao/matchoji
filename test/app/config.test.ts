@@ -17,6 +17,13 @@ describe('proxy matcher', () => {
     expect(matches('/_next/static/chunk.js')).toBe(false);
   });
 
+  it('lets /sw.js through unstamped but still stamps the /offline page', () => {
+    const [pattern] = proxyConfig.matcher;
+    const matches = (path: string) => new RegExp(`^${pattern}$`).test(path);
+    expect(matches('/sw.js')).toBe(false);
+    expect(matches('/offline')).toBe(true);
+  });
+
   it('never gates or CSP-stamps the Sentry tunnel route', () => {
     const [pattern] = proxyConfig.matcher;
     const matches = (path: string) => new RegExp(`^${pattern}$`).test(path);
@@ -35,6 +42,7 @@ describe('proxy CSP', () => {
     expect(csp).toContain(`script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`);
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("object-src 'none'");
+    expect(csp).toContain("worker-src 'self'");
     expect(request.headers.get('Content-Security-Policy')).toBe(csp);
 
     const second = new NextRequest('http://localhost/explore');
@@ -48,6 +56,16 @@ describe('security headers', () => {
     const [rule] = (await nextConfig.headers?.()) ?? [];
     expect(rule.headers.find((h) => h.key === 'Content-Security-Policy')).toBeUndefined();
     expect(rule.headers).toContainEqual({ key: 'X-Frame-Options', value: 'DENY' });
+  });
+
+  it('serve the service worker uncached and allowed to control the whole site', async () => {
+    const rules = (await nextConfig.headers?.()) ?? [];
+    const sw = rules.find((r) => r.source === '/sw.js');
+    expect(sw?.headers).toContainEqual({
+      key: 'Cache-Control',
+      value: 'no-cache, no-store, must-revalidate',
+    });
+    expect(sw?.headers).toContainEqual({ key: 'Service-Worker-Allowed', value: '/' });
   });
 
   it('fall back to any https image host without a usable Supabase URL', () => {

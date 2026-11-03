@@ -10,6 +10,8 @@ screen readers, 44px hit area, focus ring), named by where it goes.
 
 `tea-map/` is the Leaflet map (OpenStreetMap tiles, imported client-side inside an effect, so the server renders only its labelled `role="region"` container): pins carry names, region pins link on, shop pins open a popup with Directions; controls use tokens at 44px, and dark mode dims the tiles with a CSS filter.
 
+`TeaMap` is not re-exported from `index.ts`: its Leaflet stylesheet would then load on every page that uses `BackLink` or `UnitInput`. Import it from `@/components/widgets/tea-map`.
+
 ## Contents
 
 - `back-link.test.tsx`

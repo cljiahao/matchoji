@@ -20,6 +20,8 @@ On phones the filters button, search field, sort select and Show more link keep 
 
 The `bestvalue` sort reads the matching teas and ranks them in memory by value score, as `match` does; each row also carries a "Great value" badge when earned.
 
+Its description is its own, and the canonical URL (from the root layout) drops the filters.
+
 ## Contents
 
 - `loading.tsx`
