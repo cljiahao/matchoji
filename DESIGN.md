@@ -15,6 +15,11 @@ colors:
   field-edge: 'oklch(0.8 0 0)'
   focus-ring: 'oklch(0.35 0 0)'
   empty-star: '#d4d4d4'
+  dark-page: '#101010'
+  dark-matcha-green: '#86b48a'
+  dark-matcha-jade: '#9bc088'
+  dark-hojicha-amber: '#e0b070'
+  dark-field-edge: '#7a7a7a'
   destructive: 'oklch(0.577 0.245 27.325)'
   tin-matcha-body-1: '#5c7a4f'
   tin-matcha-shade-1: '#4d6942'
@@ -269,6 +274,19 @@ A white shop with one deep green for actions, two category colours treated as da
 
 **The Category Is Data Rule.** Every jade or amber use comes from one category style map, so a tea's chip, stars, slider marker, bars, tint and band always agree.
 
+### Dark theme
+
+Opt-in: Light is the default and the footer's Light / Dark / System control is the only way in, so nobody's site turns dark unasked. Dark uses the `.dark` token block in `globals.css`, and every colour in the UI comes from a token so nothing is hard-coded per theme.
+
+- **Surfaces:** page and cards are ink (`#101010`); tiles `#202020`, muted fills `#262626`; hairlines are white at 10%.
+- **Actions:** the deep green is too dark on black (2.15:1), so dark lifts it to `#86b48a` and flips the text on it to ink (8:1).
+- **Category colours:** jade `#9bc088` and amber `#e0b070` clear 4.5:1 as text on page, tile and muted fills, and carry ink text on badges. They stay the same hue families, so The Category Is Data Rule holds.
+- **Fields and focus:** field edge `#7a7a7a` and focus ring `#8c8c8c` clear 3:1 on page, tile and muted fills. Empty stars drop to `#525252`.
+- **Drawn tin:** lifted with a 150% brightness filter in dark so its mid-tone bodies stay readable on the dark tile.
+- **Native controls:** `color-scheme: dark` so date pickers and scrollbars follow.
+
+`globals.test.ts` measures these ratios, so a token change that breaks one fails the test.
+
 ## Typography
 
 **Display Font:** Figtree (with sans-serif)
@@ -349,7 +367,7 @@ Pill-shaped and compact, like an app's.
 
 ### Inputs / Fields
 
-- **Search pill:** white, hairline border, pill; 56px with 16px text and a 20px icon on home, 40px with 14px text in the header. Border darkens to neutral-300 on hover and neutral-400 on focus. It is a plain GET form.
+- **Search pill:** white, hairline border, pill; 56px with 16px text and a 20px icon on home, 40px with 14px text in the header. Border moves to the field-edge colour on hover and the focus-ring colour on focus. It is a plain GET form.
 - **Sort select:** a 160px pill trigger.
 - **Dialog fields:** primitive fields with the field-edge stroke and the global focus outline.
 
@@ -370,7 +388,7 @@ Five rows (5 to 1 stars) with an 8px track and a category-filled bar that grows 
 
 ### Rate It Row
 
-Five 32px outline stars in neutral-300 that fill in the category colour up to the hovered or focused star and scale 110% on hover. One tap opens the rating dialog (24px radius) with that star set; signed out, the tap opens the sign-in dialog instead.
+Five 32px outline stars in the empty-star colour that fill in the category colour up to the hovered or focused star and scale 110% on hover. One tap opens the rating dialog (24px radius) with that star set; signed out, the tap opens the sign-in dialog instead.
 
 ### Drawn Tin
 

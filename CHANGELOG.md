@@ -7,6 +7,11 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- A Light / Dark / System theme control in the footer. Light stays the default and the site only
+  goes dark when a visitor picks it. Dark mode now holds up everywhere: the matcha and hojicha
+  colours are lifted so text and badges clear 4.5:1 on black, field edges and the focus ring clear
+  3:1 on every dark surface, empty stars, hover borders and the like button follow tokens, the drawn
+  tins are brightened on dark tiles, and date fields render in the dark scheme.
 - Harvests with more than 30 ratings show a "Popular" badge beside "Top rated harvest".
 - A tea you have opened shows a freshness hint on its page: days since opening and, for makers
   whose own site states a figure (Ippodo, Aiya), their guidance with a source link; other makers

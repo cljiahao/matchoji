@@ -30,7 +30,7 @@ export function ProductRow({ product, action, badge }: ProductRowProps) {
   const countLabel = `${product.reviewCount} ${product.reviewCount === 1 ? 'rating' : 'ratings'}`;
 
   return (
-    <div className="border-border relative flex gap-3 rounded-2xl border p-3 transition-colors hover:border-neutral-300 sm:gap-6 sm:p-4">
+    <div className="border-border hover:border-input relative flex gap-3 rounded-2xl border p-3 transition-colors sm:gap-6 sm:p-4">
       <ProductImageWell
         imageUrl={product.imageUrl}
         category={product.category}

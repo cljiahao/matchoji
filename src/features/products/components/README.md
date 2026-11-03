@@ -3,7 +3,7 @@
 ## Purpose
 
 Product UI shared by home, Explore, product pages and the journal. `ProductImageWell` puts a
-tea on a warm grey tile: its photo, or a `TeaTin` drawn in the category's colours.
+tea on a warm grey tile: its photo, or a `TeaTin` drawn in the category's colours (brightened in dark so it stays readable on the dark tile). Empty stars use the `star-empty` token and hover borders the `input` token, so both follow the theme.
 `ProductCard` is the shelf card (brand, name, `RatingInline`) that `ProductShelf` lays out
 in a sideways-scrolling row; `ProductRow` is an Explore result with the big `ScoreNumeral` and an optional per-viewer
 `badge` (the match score).

@@ -33,7 +33,7 @@ page can supply another feature's client controls).
 `EditionList` badges a harvest "Top rated harvest" and, above `POPULAR_HARVEST_RATINGS` (30)
 ratings, "Popular".
 
-Star inputs have 44px touch targets, and review photos load lazily.
+Star inputs have 44px touch targets, and review photos load lazily. Empty stars, hover borders and slider tracks use theme tokens, so they hold up in dark mode.
 
 ## Contents
 

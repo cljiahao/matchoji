@@ -157,7 +157,7 @@ export function ReviewReactions({ reviewId, reviewAuthorId, initial }: ReviewRea
           aria-label={`Like (${likes})`}
           onClick={toggleLike}
         >
-          <Heart aria-hidden="true" className={cn(liked && 'fill-current text-red-600')} />
+          <Heart aria-hidden="true" className={cn(liked && 'text-destructive fill-current')} />
           <span className="tabular-nums">{likes}</span>
         </Button>
         <Button

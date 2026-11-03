@@ -43,7 +43,7 @@
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
 
-  /* Category identity — fixed brand colors, same in light and dark */
+  /* Category identity — lifted in dark so text and badges keep 4.5:1 */
   --color-matcha: var(--matcha);
   --color-matcha-foreground: var(--matcha-foreground);
   --color-hojicha: var(--hojicha);
@@ -53,6 +53,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-star-empty: var(--star-empty);
 }
 
 :root {
@@ -87,9 +88,11 @@
   /* Field edges and the focus ring must read against white and paper (≥3:1). */
   --input: #858585;
   --ring: oklch(0.35 0 0);
+  /* Unfilled stars: a soft outline, not a field edge. */
+  --star-empty: #d4d4d4;
 
-  /* Category identity (see DESIGN.md, Category Is Data) — fixed, not theme-adaptive.
-     Both darkened from the initial logo hex until white text clears WCAG AA (4.5:1). */
+  /* Category identity (see DESIGN.md, Category Is Data). Both darkened from the initial logo
+     hex until white text clears WCAG AA (4.5:1); the .dark block lifts them again. */
   --matcha: #577549;
   --matcha-foreground: #ffffff;
   --hojicha: #8f6224;
@@ -114,14 +117,26 @@
   --accent: var(--color-neutral-800);
   --accent-foreground: var(--color-neutral-100);
 
-  --muted: oklch(0.269 0 0);
-  --tile: oklch(0.24 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  /* Plain hex so globals.test.ts can measure contrast against them. */
+  --muted: #262626;
+  --tile: #202020;
+  --muted-foreground: #a1a1a1;
   --destructive: oklch(0.704 0.191 22.216);
 
   --border: oklch(1 0 0 / 10%);
-  --input: #707070;
-  --ring: oklch(0.556 0 0);
+  /* Field edges and the focus ring must read against black, tile and muted (≥3:1). */
+  --input: #7a7a7a;
+  --ring: #8c8c8c;
+  --star-empty: #525252;
+
+  /* The light-mode category colours are 3.6:1 on black, so dark lifts them and flips the
+     text on badges, as it does for the brand green. */
+  --matcha: #9bc088;
+  --matcha-foreground: #101010;
+  --hojicha: #e0b070;
+  --hojicha-foreground: #101010;
+
+  color-scheme: dark;
 }
 
 @layer base {
@@ -209,6 +224,9 @@ input[type='number']::-webkit-outer-spin-button {
 }
 input[type='date'] {
   color-scheme: light;
+}
+.dark input[type='date'] {
+  color-scheme: dark;
 }
 input[type='date']::-webkit-calendar-picker-indicator {
   cursor: pointer;

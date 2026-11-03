@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { LinkList, type LinkItem } from '@/components/widgets';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
+import { ThemeToggle } from './theme-toggle';
 
 // Photos are packshots shared with the makers' leave; a GitHub issue is the takedown route.
 const PHOTO_REMOVAL_URL =
@@ -53,6 +54,7 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
       </div>
 
       <div className="max-w-site mx-auto px-6">
+        <ThemeToggle className="pb-5" />
         <div className="border-border text-muted-foreground flex flex-col gap-1 border-t py-5 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Matchoji · A hobby project</p>
           <p>

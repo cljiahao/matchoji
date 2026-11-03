@@ -66,7 +66,7 @@ export function RateThisTea({ product, className }: RateThisTeaProps) {
                 aria-hidden="true"
                 className={cn(
                   'h-8 w-8 transition-colors',
-                  value <= hovered ? CATEGORY_STYLES[product.category].star : 'text-neutral-300'
+                  value <= hovered ? CATEGORY_STYLES[product.category].star : 'text-star-empty'
                 )}
               />
             </button>
