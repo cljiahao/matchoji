@@ -83,7 +83,7 @@ describe('robots', () => {
   it('keeps personal and admin pages out and points at the sitemap', () => {
     const rules = robots();
     expect(rules.rules).toMatchObject({
-      disallow: ['/admin', '/account', '/journal', '/sell', '/auth'],
+      disallow: ['/admin', '/account', '/journal', '/sell', '/auth', '/api/'],
     });
     expect(rules.sitemap).toBe('http://localhost:3000/sitemap.xml');
   });

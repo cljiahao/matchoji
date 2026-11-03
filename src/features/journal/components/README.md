@@ -2,10 +2,12 @@
 
 ## Purpose
 
-Journal UI: the stats strip, the month-grouped timeline (each tasting as a card with its
+Journal UI: the stats strip (teas rated, average, category split, top notes, and, once there are 3 tastings, top maker, top region, usual preparation and this month's tasting days with the longest run), the month-grouped timeline (each tasting as a card with its
 tea tile), the want-to-try list with remove, and the `WantToTryButton` used on product
 pages, shelves and Explore rows. Timeline cards and want-to-try rows show
 `CatalogueStatusNote` ("Awaiting review", "Not in the catalogue") next to such teas.
+
+`PublicStatsStrip` is the counts-only strip on `/u/[id]`. `YearLinks` links the years with 3 or more tastings, `YearInTeaView` is the owner's recap and `YearShareButton` shares the public recap link through the Web Share API, copying it where there is no share sheet.
 
 `StashEditor` opens a small panel (how many, opened on) with Save and Cancel; Cancel drops unsaved edits.
 
@@ -33,6 +35,7 @@ The compact want-to-try button extends its hit area to 44px without growing visu
 - `index.ts`
 - `journal-stats-strip.tsx`
 - `journal-timeline.tsx`
+- `public-stats-strip.tsx`
 - `stash-editor.test.tsx`
 - `stash-editor.tsx`
 - `tasting-actions.test.tsx`
@@ -41,6 +44,10 @@ The compact want-to-try button extends its hit area to 44px without growing visu
 - `want-to-try-button.tsx`
 - `wishlist-list.test.tsx`
 - `wishlist-list.tsx`
+- `year-in-tea-view.tsx`
+- `year-links.tsx`
+- `year-share-button.test.tsx`
+- `year-share-button.tsx`
 
 ## Parent
 

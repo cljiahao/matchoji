@@ -10,6 +10,8 @@ the Supabase project and Google profile photos (any https host when there is no 
 `generateNonce` makes the per-request nonce. `src/proxy.ts` calls both. `csp.test.ts` covers the
 production and dev variants and that no Sentry host is needed, since browsers report through the same-origin `/monitoring` tunnel.
 
+`worker-src 'self'` lets the offline service worker register: `strict-dynamic` makes `script-src` ignore `'self'`, and workers fall back to it.
+
 Image sources also allow `https://tile.openstreetmap.org`, the map tiles behind `/regions` and `/shops`; there is no `style-src`, so Leaflet's inline positioning needs nothing more, and the nonce + `strict-dynamic` script policy is unchanged.
 
 ## Contents

@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { SimilarTeas, TeaHighlights, buildHighlights, listSimilarTeas } from '@/features/discovery';
 import { FreshnessHint, WantToTryButton, getStash } from '@/features/journal';
 import { WhereToBuy, listProductOffers } from '@/features/marketplace';
+import { GoesWellWith } from '@/features/pairing';
 import {
   CATEGORY_STYLES,
   CategoryBadge,
@@ -30,7 +31,7 @@ import {
   localToday,
   summarizeReviews,
 } from '@/features/reviews';
-import { teaMetadata } from '@/features/share';
+import { serializeJsonLd, teaJsonLd, teaMetadata } from '@/features/share';
 import { hasShopsForBrand, shopsHref } from '@/features/shops';
 import { ReviewReactions, loadReactions } from '@/features/social';
 import { StockPanel, getLatestStockReport } from '@/features/stock';
@@ -130,6 +131,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <>
+      {listed && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(teaJsonLd(product)) }}
+        />
+      )}
       <div className={cn(CATEGORY_STYLES[product.category].band)}>
         <div className="max-w-site mx-auto grid w-full gap-5 px-6 py-6 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-12 sm:py-14 lg:grid-cols-[minmax(0,22rem)_1fr]">
           <div>
@@ -252,6 +259,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <span className="text-muted-foreground"> · {product.brand} shops on the map</span>
           </p>
         )}
+        <GoesWellWith category={product.category} grade={product.grade} />
         <EditionList editions={editions} />
         <ProductFacts product={product} priceHistory={priceHistory} />
         {summary.photos.length > 0 && (

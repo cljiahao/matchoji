@@ -41,6 +41,8 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 
 `CommunityReviews` shows its "Add your rating" card only once a tea has reviews, since the product hero already carries "Rate it".
 
+`LogTastingDialog` is the trigger, the open state and the sign-in gate; the form itself is `log-tasting-flow.tsx`, loaded with `next/dynamic` when the dialog first opens, so no page carries it (or its regions query) until someone logs a tasting. Its tests warm that chunk up front.
+
 ## Contents
 
 - `community-reviews.tsx`
@@ -52,6 +54,7 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 - `index.ts`
 - `log-tasting-dialog.test.tsx`
 - `log-tasting-dialog.tsx`
+- `log-tasting-flow.tsx`
 - `prep-fields.tsx`
 - `prep-summary.tsx`
 - `product-insights.test.tsx`

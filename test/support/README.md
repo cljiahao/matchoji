@@ -14,10 +14,13 @@ component tests;
 
 `makeProduct` includes `imageCredit`.
 
+`journal.ts` provides `makeEntry`, a journal entry (a `makeReview` with a tea and no region by default) whose tea fields can be overridden, for the stats, year-in-tea and year-page tests.
+
 ## Contents
 
 - `fake-browser-client.ts`
 - `fake-supabase.ts`
+- `journal.ts`
 - `render.tsx`
 - `supabase-db.ts`
 - `setup.ts`

@@ -19,4 +19,8 @@ describe('root layout', () => {
     expect(metadata.twitter).toMatchObject({ card: 'summary_large_image' });
     expect(JSON.stringify(metadata.icons)).toContain('/icons/apple-icon.png');
   });
+
+  it('canonicalises each page to its own path', () => {
+    expect(metadata.alternates).toEqual({ canonical: './' });
+  });
 });

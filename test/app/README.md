@@ -9,15 +9,15 @@ and empty states), the regions page (counts, supply levels, both sorts, links), 
 tiles, prefecture cards, sources, empty state), the sell page (signed out, applying,
 pending, rejected with its reason, approved with listings), the admin page (404 for
 non-admins, the tabs, queue and reports for admins), the account page (signed out and signed in, privacy and blocks), taster profiles (public,
-private, unknown), the product page (taste,
-facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row, the freshness hint for an opened tea), the journal's signed-out, empty and filled states (with Your taste),
+private, unknown, and their stats strip: shown to visitors of a public profile and to the owner, never read for a visitor of a private one), the product page (taste,
+facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row, the freshness hint for an opened tea), the journal's signed-out, empty and filled states (with the stats strip's tasting count and Your taste),
 loading routes, the public error boundary, and the OAuth callback's redirect handling.
 
 `seo.test.ts` covers the sitemap (browse, `/top`, Learn, course and tea pages, and a top list only once enough teas are rated) and robots rules. `learn.test.tsx`
 covers the Learn index (courses, recipes, guides), course and lesson pages (outline, practice,
 previous/next, the done button, 404s), recipe pages (brew numbers, steps, tips, the pre-filled log button's
 sign-in prompt, 404s) and guide pages. `config.test.ts` checks the proxy skips
-`/api/health` and the Sentry tunnel `/monitoring`, that it sets a fresh nonce-based content security policy on each request (scripts, framing and the other directives), and that `next.config.ts` leaves the CSP to it but keeps `X-Frame-Options`. `auth-callback.test.ts` also checks its redirects are never cached and ignore a spoofed forwarded host.
+`/api/health` and the Sentry tunnel `/monitoring`, that it sets a fresh nonce-based content security policy on each request (scripts, framing and the other directives), and that `next.config.ts` leaves the CSP to it but keeps `X-Frame-Options` and serves `/sw.js` uncached with `Service-Worker-Allowed`, that the CSP allows same-origin workers, and that the matcher lets `/sw.js` through but stamps `/offline`. `auth-callback.test.ts` also checks its redirects are never cached and ignore a spoofed forwarded host.
 
 Tea page tests get an empty `edition_ratings` result by default from `useServer`.
 
@@ -26,6 +26,8 @@ The tea page tests cover the photo credit caption; the footer's links and photo 
 The home page tests queue a fourth `catalogue_teas` read for the top-lists check, and cover "See all" moving to `/top/matcha` once that list exists. They expect the "to try" shelf titles while the fixtures are unrated, and the product page test expects no second "Add your rating" card on an unreviewed tea.
 
 The page, config and SEO tests cover the shop map's footprint: the footer's `/shops` link, the sitemap entry, the tile host in the CSP, and the tea page's in-person link, shown only when the maker has a listed shop.
+
+`seo.test.ts` also holds `robots.ts` (admin, account, journal, sell, auth and `/api/` kept out).
 
 ## Contents
 

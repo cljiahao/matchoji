@@ -1,7 +1,11 @@
 export { FreshnessHint } from './freshness-hint';
 export { JournalStatsStrip } from './journal-stats-strip';
 export { JournalTimeline } from './journal-timeline';
+export { PublicStatsStrip } from './public-stats-strip';
 export { StashEditor } from './stash-editor';
 export { TastingActions } from './tasting-actions';
 export { WantToTryButton } from './want-to-try-button';
 export { WishlistList } from './wishlist-list';
+export { YearInTeaView } from './year-in-tea-view';
+export { YearLinks } from './year-links';
+export { YearShareButton } from './year-share-button';

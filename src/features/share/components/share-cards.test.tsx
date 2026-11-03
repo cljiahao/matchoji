@@ -1,10 +1,11 @@
 import { ImageResponse } from 'next/og';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
 import { loadFonts } from '../lib/fonts';
 import { OG_SIZE } from '../lib/palette';
 import { LogoMark } from './logo-mark';
-import { ProfileCard, SiteCard, TeaCard, type TeaCardData } from './share-cards';
+import { ProfileCard, SiteCard, TeaCard, YearCard, type TeaCardData } from './share-cards';
 
 // 1×1 transparent PNG, standing in for a fetched tea photo.
 const PHOTO =
@@ -68,5 +69,31 @@ describe('share cards', () => {
         <LogoMark size={64} tile={false} />
       </div>
     );
+  });
+});
+
+describe('YearCard', () => {
+  const data = {
+    taster: 'Mei',
+    year: 2026,
+    tastings: 12,
+    teas: 9,
+    split: { matcha: 7, hojicha: 2 },
+    topRated: { tea: 'Samidori', stars: 5 },
+    busiestMonth: 'March',
+  };
+
+  it('draws a PNG', async () => {
+    await png(<YearCard data={data} />);
+  });
+
+  it('shows counts and a tea name and carries no note text', () => {
+    // Even if a caller smuggles an extra field in, the card reads only its own fields.
+    const smuggled = { ...data, notes: 'a private thought' } as typeof data;
+    const html = renderToStaticMarkup(<YearCard data={smuggled} />);
+    expect(html).toContain('Mei');
+    expect(html).toContain('Samidori');
+    expect(html).toContain('12 tastings');
+    expect(html).not.toContain('private thought');
   });
 });

@@ -15,6 +15,8 @@ The account menu trigger has a 44px touch target.
 
 `SignInButton` keeps a 44px minimum height on phones.
 
+`AuthStatus` shows a skeleton the size of the Sign in button while the session loads, so the navbar does not shift when it resolves.
+
 ## Contents
 
 - `auth-components.test.tsx`

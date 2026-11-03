@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Providers, ThemeProvider } from '@/components/layout';
+import { RegisterServiceWorker } from '@/features/offline';
 import { SITE_URL } from '@/lib/constants/env';
 import type { Metadata, Viewport } from 'next';
 import { Figtree } from 'next/font/google';
@@ -16,6 +17,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'Matchoji', template: '%s · Matchoji' },
   description: 'Rate and discover hojicha and matcha, one cup at a time.',
+  // './' resolves against each page's own path, so every page names itself the canonical URL and
+  // a filtered Explore or a tracking query string folds into the plain page.
+  alternates: { canonical: './' },
   openGraph: { siteName: 'Matchoji', type: 'website' },
   twitter: { card: 'summary_large_image' },
   icons: {
@@ -56,6 +60,7 @@ export default async function RootLayout({
           nonce={nonce}
         >
           <Providers>{children}</Providers>
+          <RegisterServiceWorker />
         </ThemeProvider>
       </body>
     </html>

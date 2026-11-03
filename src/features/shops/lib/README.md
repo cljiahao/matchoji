@@ -4,6 +4,8 @@
 
 `filterShops`, `distinct`, `directionsUrl` (OpenStreetMap search from name and address), `shopsHref` and `shopPins`.
 
+`shop-utils` imports the `MapPin` type from `@/components/widgets/tea-map`.
+
 ## Contents
 
 - `index.ts`

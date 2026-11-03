@@ -1,0 +1,40 @@
+name: E2E smoke
+# Read-only Playwright smoke tests against the live site: they sign in to nothing and write
+# nothing. Production is the target because Vercel previews are login-gated. It runs daily and on
+# demand rather than on every push, since a push to main races the deploy it would be testing; run
+# it by hand after a release, or point `base_url` at another open deployment.
+on:
+  schedule: [{ cron: "17 3 * * *" }]
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Site to test (defaults to production)
+        required: false
+        type: string
+permissions: { contents: read }
+concurrency:
+  group: e2e
+  cancel-in-progress: false
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      E2E_BASE_URL: ${{ inputs.base_url || 'https://matchoji.vercel.app' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0 — reads packageManager from package.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: "24.22.1", cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm e2e
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
