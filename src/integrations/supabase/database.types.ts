@@ -396,6 +396,19 @@ export interface Database {
         Update: Record<string, never>;
         Relationships: [];
       };
+      // One row per label photo read, only to cap scans per day; the photo is never stored.
+      label_scans: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       reviews: {
         Row: {
           id: string;

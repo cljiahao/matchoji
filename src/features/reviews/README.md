@@ -22,7 +22,7 @@ can link to profiles, and `edition` (harvest year and flush, tea's vintage).
 
 `schemas/` and `types.ts` define review data; `api/` reads/writes it (plus Storage for
 photos); `hooks/` wraps `api/` and `products`' API in TanStack Query; `components/`
-(`LogTastingDialog` above all) composes both into the end-to-end rating flow. `lib/` holds
+(`LogTastingDialog` above all, which also hosts `label-scan`'s "Scan label" button) composes both into the end-to-end rating flow. `lib/` holds
 the tasting vocabulary, review summaries, sign-in drafts and display helpers. `types.ts`'s
 `Review` carries flavour notes, a taste profile, preparation and the tasting date.
 

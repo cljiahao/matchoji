@@ -7,6 +7,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Scan a tea label to log a tasting: "Scan label" in the Log a tasting dialog opens the camera, reads the tin or packet (Japanese labels included), and either preselects the matching tea or pre-fills the add-a-tea form. You always confirm before anything is saved, and the photo is not stored. Up to 20 scans a day. It stays hidden until the server's `ANTHROPIC_API_KEY` is set.
 - `pnpm schema:check` compares the live database with the repo over a read-only, project-scoped connection string (`SUPABASE_DB_URL`, no Supabase access token): every migration file must be applied and every applied version must have a file, and `database.types.ts` must match `supabase gen types` on tables, columns, nullability and enums. It skips when the URL is unset. A new `schema-check.yml` workflow runs it on PRs touching `supabase/**` or the types, weekly, and on demand; `docs/schema-checks.md` has the role and secret setup. The types now include `orders` and `audit_log`.
 - Optional error tracking with Sentry. It does nothing until `SENTRY_DSN` and
   `NEXT_PUBLIC_SENTRY_DSN` are set in Vercel. Errors from route handlers and the error pages are

@@ -1,5 +1,11 @@
 export const API_BASE = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
 
+// Server-only (never NEXT_PUBLIC_): read at call time so a key added in Vercel's env takes
+// effect, and so tests can set it. Unset means label scanning is switched off.
+export function anthropicApiKey(): string | undefined {
+  return process.env.ANTHROPIC_API_KEY || undefined;
+}
+
 export const isDev = process.env.NODE_ENV === 'development';
 export const isProd = process.env.NODE_ENV === 'production';
 

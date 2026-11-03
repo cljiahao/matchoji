@@ -15,6 +15,9 @@ vi.mock('next/navigation', () => ({
 
 const toast = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn(), info: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
+vi.mock('@/features/label-scan/lib/downscale-image', () => ({
+  downscaleImage: async (file: File) => file,
+}));
 
 import { SignInPromptProvider } from '@/features/auth';
 
@@ -190,5 +193,59 @@ describe('LogTastingDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Back to search' }));
 
     expect(screen.getByRole('combobox', { name: 'Search products' })).toHaveValue('Kagoshima Gold');
+  });
+});
+
+describe('LogTastingDialog label scan', () => {
+  function stubScan(result: unknown) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: string, init?: RequestInit) =>
+        init?.method === 'POST' ? Response.json(result) : Response.json({ enabled: true })
+      )
+    );
+  }
+
+  async function scanPhoto() {
+    await userEvent.click(screen.getByRole('button', { name: 'Log a tasting' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Scan label' }));
+    await userEvent.upload(
+      screen.getByTestId('label-scan-input'),
+      new File(['x'], 'tin.jpg', { type: 'image/jpeg' })
+    );
+  }
+
+  const reading = {
+    maker: 'Ippodo',
+    name: 'Ummon',
+    category: 'matcha',
+    grade: 'Ceremonial',
+    origin: null,
+    harvest: null,
+    netWeightGrams: null,
+    confidence: 'high',
+  };
+
+  it('preselects a catalogue match and leaves the rating to the person', async () => {
+    stubScan({
+      reading,
+      match: { id: 'm1', name: 'Ummon', brand: 'Ippodo', category: 'matcha' },
+    });
+    setup({});
+    await scanPhoto();
+
+    expect(await screen.findByRole('heading', { name: 'Rate Ummon' })).toBeInTheDocument();
+    expect(screen.getByRole('radiogroup', { name: 'Rating out of 5 stars' })).toBeInTheDocument();
+  });
+
+  it('opens the add-a-tea form pre-filled when the tea is not in the catalogue', async () => {
+    stubScan({ reading, match: null });
+    setup({});
+    await scanPhoto();
+
+    expect(await screen.findByLabelText('Name')).toHaveValue('Ummon');
+    expect(screen.getByLabelText('Brand (optional)')).toHaveValue('Ippodo');
+    expect(screen.getByLabelText('Grade (optional)')).toHaveValue('Ceremonial');
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument();
   });
 });

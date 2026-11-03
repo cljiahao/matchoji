@@ -19,6 +19,7 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { CustomFormField } from '@/components/widgets';
 import { useSession, useSignInPrompt } from '@/features/auth';
+import { ScanLabelButton, type ScanResponse } from '@/features/label-scan';
 import {
   productSchema,
   type ProductInput,
@@ -92,6 +93,25 @@ export function LogTastingDialog({ trigger, prep }: LogTastingDialogProps) {
     }
   }
 
+  // The scan only fills things in: a catalogue match goes to the rating step and anything else
+  // opens the add-a-tea form pre-filled, and either way the person confirms.
+  function handleScanned({ reading, match }: ScanResponse) {
+    if (match) {
+      setProduct(match);
+      setStep('rate');
+      toast.info(`Found ${match.name}. Check it's the right tea before you rate.`);
+      return;
+    }
+    productForm.reset({
+      name: (reading.name ?? '').slice(0, 120),
+      brand: reading.maker?.slice(0, 120) || undefined,
+      category: reading.category ?? 'matcha',
+      grade: reading.grade?.slice(0, 60) || undefined,
+    });
+    setStep('add-product');
+    toast.info("That tea isn't on Matchoji yet. Check the details, then add it.");
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -109,6 +129,8 @@ export function LogTastingDialog({ trigger, prep }: LogTastingDialogProps) {
             {step === 'rate' && 'How was it?'}
           </DialogDescription>
         </DialogHeader>
+
+        {step === 'search' && <ScanLabelButton onScanned={handleScanned} />}
 
         {step === 'search' && (
           <ProductSearchCombobox
