@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createFakeBrowserClient, makeSession } from '../../../../test/support/fake-browser-client';
 import { renderWithQuery } from '../../../../test/support/render';
@@ -48,9 +48,14 @@ function setup(
 async function openAndSearch(text: string) {
   await userEvent.click(screen.getByRole('button', { name: 'Log a tasting' }));
   // One paste = one search request, so queued fake results line up with requests.
-  await userEvent.click(screen.getByRole('combobox', { name: 'Search products' }));
+  await userEvent.click(await screen.findByRole('combobox', { name: 'Search products' }));
   await userEvent.paste(text);
 }
+
+// The dialog loads its form on first open; compiling it up front keeps that out of the tests' waits.
+beforeAll(async () => {
+  await import('./log-tasting-flow');
+}, 60_000);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -149,7 +154,7 @@ describe('LogTastingDialog', () => {
     await userEvent.keyboard('{Escape}');
     await userEvent.click(screen.getByRole('button', { name: 'Log a tasting' }));
 
-    expect(screen.getByRole('combobox', { name: 'Search products' })).toHaveValue('');
+    expect(await screen.findByRole('combobox', { name: 'Search products' })).toHaveValue('');
   });
 
   // Logging needs an account (products and reviews are insert-only for signed-in users),
@@ -192,7 +197,9 @@ describe('LogTastingDialog', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Add as new product' }));
     await userEvent.click(screen.getByRole('button', { name: 'Back to search' }));
 
-    expect(screen.getByRole('combobox', { name: 'Search products' })).toHaveValue('Kagoshima Gold');
+    expect(await screen.findByRole('combobox', { name: 'Search products' })).toHaveValue(
+      'Kagoshima Gold'
+    );
   });
 });
 

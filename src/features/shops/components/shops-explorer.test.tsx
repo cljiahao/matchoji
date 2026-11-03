@@ -3,7 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/components/widgets', () => ({
+vi.mock('@/components/widgets/tea-map', () => ({
   TeaMap: ({ label, pins }: { label: string; pins: unknown[] }) => (
     <div role="region" aria-label={label} data-pins={pins.length} />
   ),

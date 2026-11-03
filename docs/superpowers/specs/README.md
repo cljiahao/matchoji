@@ -9,12 +9,16 @@ with Vivino, lists the audit's fixes, and orders the remaining work into milesto
 
 `2026-11-03-impeccable-critique.md` scores the main surfaces, ranks the UI/UX findings and lists what was left undone.
 
+`2026-11-04-performance-pass.md` records the Lighthouse scores before and after the performance and SEO pass, what changed and what was left.
+
 ## Contents
 
 - `2026-09-14-matchoji-design.md`
 - `2026-10-21-tasting-journal-redesign-design.md`
 - `2026-10-22-vivino-style-redesign-design.md`
 - `2026-10-24-vivino-parity-roadmap-design.md`
+- `2026-11-03-impeccable-critique.md`
+- `2026-11-04-performance-pass.md`
 
 ## Parent
 

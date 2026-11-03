@@ -27,7 +27,10 @@ import { createClient } from '@/integrations/supabase/server';
 
 const MATCH_POOL = 500;
 
-export const metadata: Metadata = { title: 'Explore teas' };
+export const metadata: Metadata = {
+  title: 'Explore teas',
+  description: 'Browse and filter matcha and hojicha by rating, region, grade and value.',
+};
 
 function activeFilterCount({ category, regionId, grade, minRating }: DiscoverFilters): number {
   return [category, regionId, grade, minRating].filter(Boolean).length;

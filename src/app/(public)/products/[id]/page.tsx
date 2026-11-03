@@ -29,7 +29,7 @@ import {
   localToday,
   summarizeReviews,
 } from '@/features/reviews';
-import { teaMetadata } from '@/features/share';
+import { serializeJsonLd, teaJsonLd, teaMetadata } from '@/features/share';
 import { hasShopsForBrand, shopsHref } from '@/features/shops';
 import { ReviewReactions, loadReactions } from '@/features/social';
 import { StockPanel, getLatestStockReport } from '@/features/stock';
@@ -127,6 +127,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <>
+      {listed && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(teaJsonLd(product)) }}
+        />
+      )}
       <div className={cn(CATEGORY_STYLES[product.category].band)}>
         <div className="max-w-site mx-auto grid w-full gap-5 px-6 py-6 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-12 sm:py-14 lg:grid-cols-[minmax(0,22rem)_1fr]">
           <div>

@@ -5,13 +5,20 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Performance
+
+- Pages without a map no longer load Leaflet's stylesheet (13.5 KB, render-blocking), and the Log a tasting form (React Hook Form, label scan, product search, rating form) is fetched the first time the dialog opens instead of with every page; first-load JavaScript is about 110 to 140 KB lighter (uncompressed) per page, and the dialog stops fetching regions on pages where nobody opens it. The navbar no longer jumps when the session resolves. Before and after scores are in `docs/superpowers/specs/2026-11-04-performance-pass.md`.
+
 ### Fixed
 
+- Every page reported a `script-src blocked eval` content security policy violation in the browser console: Zod probed for `new Function` to speed up parsing. Zod's JIT is now off in the browser, so the policy stays strict with no violations.
 - Regions map: a scarce region's pin no longer reads "0 · Scarce" in a wide pill that overlapped its neighbours near Kyoto, Nara and Mie. Pins show only the tea count, scarce supply is a red dot, and the full supply text is in the tooltip and the pin's accessible name.
 - Cleared two moderate Dependabot alerts (`glob` AbortSignal bypass, `minimatch` globparts DoS) with `pnpm-workspace.yaml` overrides to `glob` 14.0.2 and `minimatch` 11.0.1.
 
 ### Added
 
+- Tea pages carry `Product` structured data, with a star rating only once the tea has one; every page names its canonical URL; Explore, Regions, Shops and Supply have their own descriptions; `robots.txt` also skips `/api/`.
+- `pnpm e2e`: read-only Playwright smoke tests of the live site (home, search, a tea page, regions, shops, sign-in prompt, dark theme, no console or CSP errors), run daily and on demand by `.github/workflows/e2e.yml`.
 - Shared links now carry a preview image. Tea pages show the tea's photo (or a drawn tin), name, maker, category and rating; taster profiles show the name and teas rated; every other page shows the Matchoji card. Private profiles share the plain Matchoji card, with no name or counts. Links also ask for large cards on Twitter/X. Images are drawn on our own server from a bundled font, with no outside service.
 - Matchoji can be installed on a phone's home screen from the browser menu ("Add to Home Screen" / "Install app"): it opens full-screen with its own icon and a green theme. Icons come in standard, maskable and Apple sizes, plus a favicon, and the browser bar follows light and dark. There is no offline mode.
 - Discovery from Matchoji's own data: a "Great value" badge on a tea rated well for its price per gram against its own category (rating percentile minus price percentile; needs 5 ratings and a price) and a "Best value" Explore sort; up to three computed highlights on a tea's page ("Top 10% of hojicha on Matchoji", "Highest rated from Uji", "Most rated ceremonial matcha"), shown only with enough ratings and a big enough comparison group; a "Similar teas" shelf of up to 8 teas by category, grade, region and taste; and `/top` lists (Top matcha, Top hojicha, Best value, Top from each region) ranked by a count-weighted average so one rating can't top a list. A list appears, and joins the sitemap, only once 5 teas have 3 ratings each. `/top` is linked from the footer and the home shelves' "See all". No migration.

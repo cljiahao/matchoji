@@ -1,4 +1,4 @@
-import type { MapPin } from '@/components/widgets';
+import type { MapPin } from '@/components/widgets/tea-map';
 
 import { SHOP_KIND_LABELS } from '../schemas';
 import type { Shop, ShopKind } from '../types';

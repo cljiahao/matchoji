@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { connection } from 'next/server';
 
-import { TeaMap } from '@/components/widgets';
+import { TeaMap } from '@/components/widgets/tea-map';
 import {
   CATEGORY_STYLES,
   SUPPLY_LABELS,
@@ -17,7 +17,11 @@ import { createClient } from '@/integrations/supabase/server';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
-export const metadata: Metadata = { title: 'Tea regions' };
+export const metadata: Metadata = {
+  title: 'Tea regions',
+  description:
+    'Where matcha and hojicha are grown: tea regions across Japan, with how many teas each has and its supply.',
+};
 
 const CATEGORIES: ProductCategory[] = ['matcha', 'hojicha'];
 

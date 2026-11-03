@@ -26,6 +26,8 @@ The hero is compact on phones (a 160px image well, tighter gaps) and the content
 For catalogue teas the page adds a "Great value" badge under the rating, a row of data-backed highlights ("Highest rated from Uji") above the insights and a "Similar teas" shelf at the end; each is absent when the data is too thin.
 When the maker has any row in `shop_locations`, a small "Where to buy in person" link to `/shops?brand=<maker>` follows the online offers; without a shop it is absent.
 
+A catalogue tea also emits `Product` JSON-LD (`teaJsonLd`); `aggregateRating` appears only once the tea has a rating, and a tea awaiting review emits none.
+
 ## Contents
 
 - `loading.tsx`
