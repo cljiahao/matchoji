@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const getProduct = vi.fn();
 const getProfileView = vi.fn();
 const fetchPhoto = vi.fn();
+const getPublicYear = vi.fn();
 
 vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ({}) }));
 vi.mock('@/features/products', async (importOriginal) => ({
@@ -12,9 +13,13 @@ vi.mock('@/features/products', async (importOriginal) => ({
 vi.mock('@/features/social', () => ({
   getProfileView: (...args: unknown[]) => getProfileView(...args),
 }));
+vi.mock('@/features/journal', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/features/journal')>()),
+  getPublicYear: (...args: unknown[]) => getPublicYear(...args),
+}));
 vi.mock('./fetch-photo', () => ({ fetchPhoto: (...args: unknown[]) => fetchPhoto(...args) }));
 
-import { renderProfileImage, renderSiteImage, renderTeaImage } from './render';
+import { renderProfileImage, renderSiteImage, renderTeaImage, renderYearImage } from './render';
 
 const tea = {
   id: 'a',
@@ -80,5 +85,29 @@ describe('renderProfileImage', () => {
   it('shares the site card for an unknown profile', async () => {
     getProfileView.mockResolvedValue(null);
     await isPng(await renderProfileImage('missing'));
+  });
+});
+
+describe('renderYearImage', () => {
+  it('draws a public taster’s year', async () => {
+    getPublicYear.mockResolvedValue({
+      taster: 'Mei',
+      recap: {
+        year: 2026,
+        tastings: 3,
+        teas: 3,
+        split: { matcha: 3, hojicha: 0 },
+        topRated: { tea: 'Samidori', stars: 5 },
+        busiestMonth: { label: 'March', count: 2 },
+      },
+    });
+    expect(await isPng(await renderYearImage('u1', 2026))).toBeGreaterThan(1000);
+    expect(getPublicYear).toHaveBeenCalledWith(expect.anything(), 'u1', 2026);
+  });
+
+  it('falls back to the site image for a private taster or a thin year', async () => {
+    getPublicYear.mockResolvedValue(null);
+    const site = await isPng(await renderSiteImage());
+    expect(await isPng(await renderYearImage('u1', 2026))).toBe(site);
   });
 });

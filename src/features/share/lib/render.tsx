@@ -1,10 +1,11 @@
 import { ImageResponse } from 'next/og';
 
+import { getPublicYear, toYearCard } from '@/features/journal';
 import { getProduct } from '@/features/products';
 import { getProfileView } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
 
-import { ProfileCard, SiteCard, TeaCard } from '../components/share-cards';
+import { ProfileCard, SiteCard, TeaCard, YearCard } from '../components/share-cards';
 import { fetchPhoto } from './fetch-photo';
 import { loadFonts } from './fonts';
 import { OG_SIZE } from './palette';
@@ -30,4 +31,12 @@ export async function renderProfileImage(id: string) {
   const view = await getProfileView(await createClient(), id, null);
   if (!view?.profile.isPublic) return renderSiteImage();
   return respond(<ProfileCard name={view.profile.name} teas={view.counts.teas} />);
+}
+
+// Same rule as the profile card: read with no session, and anything that is not a public
+// taster's qualifying year falls back to the site image.
+export async function renderYearImage(id: string, year: number) {
+  const found = await getPublicYear(await createClient(), id, year);
+  if (!found) return renderSiteImage();
+  return respond(<YearCard data={toYearCard(found.recap, found.taster)} />);
 }

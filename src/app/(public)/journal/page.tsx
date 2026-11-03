@@ -6,9 +6,11 @@ import {
   JournalStatsStrip,
   JournalTimeline,
   WishlistList,
+  YearLinks,
   computeJournalStats,
   listMyReviews,
   listWishlist,
+  qualifyingYears,
 } from '@/features/journal';
 import { LogTastingDialog } from '@/features/reviews';
 import { YourTaste, buildTasteProfile } from '@/features/taste';
@@ -60,13 +62,17 @@ export default async function JournalPage() {
       {entries.length === 0 ? (
         <div className="bg-muted flex-center mt-8 flex-col gap-4 rounded-3xl px-6 py-10 text-center sm:py-16">
           <p className="text-muted-foreground max-w-sm">
-            No tastings yet. Log your first one and it will show up here.
+            No tastings yet. Log your first and this page grows into your stats, your taste profile
+            and, once a year has three tastings, a year in tea.
           </p>
           <LogTastingDialog />
         </div>
       ) : (
         <div className="mt-8">
           <JournalStatsStrip stats={computeJournalStats(entries)} />
+          <div className="mt-4">
+            <YearLinks years={qualifyingYears(entries)} />
+          </div>
           <div className="mt-10">
             <YourTaste profile={buildTasteProfile(entries)} />
           </div>

@@ -62,3 +62,17 @@ export function profileMetadata(profile: {
     robots: profile.isPublic ? undefined : { index: false },
   };
 }
+
+export function yearMetadata(year: {
+  id: string;
+  year: number;
+  taster: string;
+  tastings: number;
+}): Metadata {
+  const noun = year.tastings === 1 ? 'tasting' : 'tastings';
+  return card(
+    `${year.taster}'s ${year.year} in tea`,
+    `${year.taster} logged ${year.tastings} ${noun} in ${year.year} on Matchoji.`,
+    `/u/${year.id}/year/${year.year}`
+  );
+}

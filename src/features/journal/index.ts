@@ -2,4 +2,13 @@ export * from './api';
 export * from './components';
 export * from './hooks';
 export * from './lib';
-export type { JournalEntry, JournalStats } from './types';
+export type {
+  JournalEntry,
+  JournalStats,
+  PublicStats,
+  Ranked,
+  TasteShift,
+  YearCardData,
+  YearHighlight,
+  YearInTea,
+} from './types';

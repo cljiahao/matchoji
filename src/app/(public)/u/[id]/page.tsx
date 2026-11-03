@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
 
+import { PublicStatsStrip, computePublicStats, listUserTastings } from '@/features/journal';
 import { profileMetadata } from '@/features/share';
 import { BlockButton, FollowButton, TastingFeed, getProfileView } from '@/features/social';
 import { YourTaste, buildTasteProfile } from '@/features/taste';
@@ -39,6 +40,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   if (!view) notFound();
   const { profile, counts, viewer, recent } = view;
   const visible = profile.isPublic || viewer.isSelf;
+  // Read only when the viewer may see it; a private profile never reaches the query.
+  const stats = visible
+    ? computePublicStats(await listUserTastings(await createClient(), id))
+    : null;
 
   return (
     <div className="max-w-site mx-auto w-full space-y-10 px-6 py-10 sm:py-14">
@@ -68,6 +73,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       {visible ? (
         <>
+          {stats && <PublicStatsStrip stats={stats} />}
           {recent.length > 0 && (
             <YourTaste profile={buildTasteProfile(recent)} title={`${profile.name}'s taste`} />
           )}
