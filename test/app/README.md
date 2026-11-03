@@ -25,6 +25,8 @@ The tea page tests cover the photo credit caption; the footer's links and photo 
 
 The home page tests queue a fourth `catalogue_teas` read for the top-lists check, and cover "See all" moving to `/top/matcha` once that list exists. They expect the "to try" shelf titles while the fixtures are unrated, and the product page test expects no second "Add your rating" card on an unreviewed tea.
 
+The page, config and SEO tests cover the shop map's footprint: the footer's `/shops` link, the sitemap entry, the tile host in the CSP, and the tea page's in-person link, shown only when the maker has a listed shop.
+
 ## Contents
 
 - `auth-callback.test.ts`
