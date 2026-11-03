@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A taster's personal record: their own tastings over time and the teas they want to try next.
+A taster's personal record: their own tastings over time, the stats and yearly recap computed from them, and the teas they want to try next. Depends on `reviews`, `products` and `taste` through their `index.ts`.
 
 ## Contents
 
@@ -15,7 +15,7 @@ A taster's personal record: their own tastings over time and the teas they want 
 
 ## Connectivity
 
-`api/` reads the user's reviews (reusing the reviews feature's row mapping) and the `wishlist` table; `lib/` turns entries into stats and month groups; `components/` renders them for `/journal`, plus the want-to-try toggle that `products/[id]` mounts via `hooks/`.
+`api/` reads the user's reviews (reusing the reviews feature's row mapping) and the `wishlist` table; `lib/` turns entries into stats, month groups and the yearly recap; `components/` renders them for `/journal`, plus the want-to-try toggle that `products/[id]` mounts via `hooks/`.
 
 ## Parent
 

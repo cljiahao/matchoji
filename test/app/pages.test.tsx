@@ -853,6 +853,7 @@ describe('Profile page', () => {
           { data: null, count: 2, error: null },
         ],
         blocks: { data: null, error: null },
+        reviews: { data: [tasting], error: null },
         products: {
           data: [{ id: 'p1', name: 'Kyoto Bancha', brand: 'Ippodo', category: 'hojicha' }],
           error: null,
@@ -1472,7 +1473,7 @@ describe('Journal page', () => {
     );
     renderWithQuery(await JournalPage());
 
-    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('2 tastings')).toBeInTheDocument();
     expect(screen.getByText('4.0')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'October 2026' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'September 2026' })).toBeInTheDocument();

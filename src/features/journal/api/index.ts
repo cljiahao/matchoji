@@ -1,4 +1,4 @@
-export { listMyReviews } from './journal-service';
+export { getPublicYear, isProfilePublic, listMyReviews, listUserTastings } from './journal-service';
 export {
   addToWishlist,
   getStash,

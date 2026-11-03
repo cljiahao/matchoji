@@ -30,6 +30,7 @@ const entry = {
   tastedOn: '2026-10-01',
   edition: { harvestYear: null, flush: null },
   product: { id: 'p1', name: 'Kyoto Bancha', brand: null, category: 'hojicha' as const },
+  regionName: null,
 };
 
 beforeEach(() => {

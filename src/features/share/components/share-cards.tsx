@@ -1,3 +1,4 @@
+import type { YearCardData } from '@/features/journal';
 import type { ProductCategory } from '@/features/products';
 
 import { OG, OG_SIZE, SITE_TAGLINE } from '../lib/palette';
@@ -256,6 +257,61 @@ export function ProfileCard({ name, teas }: { name: string; teas: number }) {
         </div>
       </div>
       <Wordmark />
+    </div>
+  );
+}
+
+// Counts and tea names only: YearCardData has no field a private note could travel in.
+export function YearCard({ data }: { data: YearCardData }) {
+  const { tastings, teas, split } = data;
+  return (
+    <div
+      style={{
+        ...OG_SIZE,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '64px 96px',
+        background: OG.matchaGreen,
+        fontFamily: 'Figtree',
+        color: OG.onGreen,
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', fontSize: 36, fontWeight: 700 }}>
+          {data.taster}&apos;s year in tea
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            marginTop: 8,
+            fontSize: 148,
+            fontWeight: 800,
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+          }}
+        >
+          {data.year}
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', fontSize: 52, fontWeight: 800 }}>
+          {tastings} {tastings === 1 ? 'tasting' : 'tastings'} · {teas}{' '}
+          {teas === 1 ? 'tea' : 'teas'}
+        </div>
+        <div style={{ display: 'flex', marginTop: 12, fontSize: 36 }}>
+          Matcha {split.matcha} · Hojicha {split.hojicha} · Busiest in {data.busiestMonth}
+        </div>
+        <div style={{ display: 'flex', marginTop: 12, fontSize: 36 }}>
+          Top rated: {data.topRated.tea} ({data.topRated.stars}★)
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <LogoMark size={48} />
+        <div style={{ display: 'flex', marginLeft: 16, fontSize: 36, fontWeight: 800 }}>
+          Matchoji
+        </div>
+      </div>
     </div>
   );
 }
