@@ -22,3 +22,13 @@ export {
 } from './pricing';
 export { sortRegionsByScarcity, summarizeRegions, type RegionSummary } from './summarize-regions';
 export { SUPPLY_LABELS, SUPPLY_LEVELS, supplyRank, type SupplyLevel } from './supply';
+export {
+  GREAT_VALUE_SCORE,
+  MIN_VALUE_POOL,
+  MIN_VALUE_RATINGS,
+  computeValueScores,
+  percentile,
+  valueScoresFor,
+  type ValueInput,
+  type ValueScore,
+} from './value-score';

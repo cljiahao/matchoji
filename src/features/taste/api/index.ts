@@ -1,1 +1,1 @@
-export { loadMatches, type MatchContext } from './taste-service';
+export { loadMatches, loadTeaFeatures, type MatchContext } from './taste-service';

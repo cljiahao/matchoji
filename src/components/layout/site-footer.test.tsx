@@ -15,6 +15,7 @@ describe('SiteFooter', () => {
       'href',
       '/regions/supply'
     );
+    expect(within(nav).getByRole('link', { name: 'Top lists' })).toHaveAttribute('href', '/top');
     expect(within(nav).getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute(
       'href',
       '/sell'

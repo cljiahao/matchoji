@@ -16,6 +16,8 @@ tea's reference price (`toTeaPrice`: pack price in SGD, pack size, price per gra
 it, and holds `CUP_DOSES` (usucha 2 g, koicha 4 g, a hojicha cup 3 g, as in the Learn recipes) and
 the band labels; `discover-params` includes the `value` sort (lowest price per gram).
 
+`value-score` is the value formula: within a category (matcha and hojicha apart), among teas with at least 5 ratings and a price, value score = rating percentile minus price-per-gram percentile (each 0 to 1, ties share a percentile), so it runs from -1 to +1. A tea is "great value" at a score of 0.25 or more with a rating in the category's top half. Categories with fewer than 5 such teas score nothing. `valueScoresFor` maps a list of teas to scores; the `bestvalue` Explore sort ranks by it.
+
 ## Contents
 
 - `category-styles.ts`
@@ -30,6 +32,8 @@ the band labels; `discover-params` includes the `value` sort (lowest price per g
 - `summarize-regions.ts`
 - `supply.test.ts`
 - `supply.ts`
+- `value-score.test.ts`
+- `value-score.ts`
 
 ## Parent
 

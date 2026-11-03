@@ -23,6 +23,8 @@ The filters button, search field, sort select, See all link and category link ke
 
 On phones `ProductRow` drops the empty score dash for an unrated tea and keeps "Not yet rated"; `PriceInline` keeps the band label on one line; `TeaTin` lifts less in dark (`brightness-125`, slightly desaturated).
 
+`ValueBadge` shows "Great value" on Explore rows, top-list rows and the tea page's hero when a `ValueScore` qualifies, and renders nothing otherwise. `ExploreSort` adds "Best value".
+
 ## Contents
 
 - `category-badge.tsx`
@@ -45,6 +47,8 @@ On phones `ProductRow` drops the empty score dash for an unrated tea and keeps "
 - `search-pill.tsx`
 - `star-rating-display.tsx`
 - `tea-tin.tsx`
+- `value-badge.test.tsx`
+- `value-badge.tsx`
 
 ## Parent
 

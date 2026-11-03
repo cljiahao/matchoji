@@ -9,6 +9,8 @@ shrinks it toward their mean, and maps it to a 0–100 chance of 4★+ (`matchBa
 40–69 average, below 40 low, as Vivino bands it). `buildTasteProfile` reads each tea's latest
 tasting and flags fewer than 5 teas as an early read.
 
+`tasteCloseness` compares two teas on community sliders and notes alone (null if either has none); `discovery`'s similar teas uses it as a tie-break.
+
 ## Contents
 
 - `index.ts`

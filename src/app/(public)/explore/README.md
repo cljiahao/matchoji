@@ -18,6 +18,8 @@ ranks up to 500 matching teas by their score, trimming to the shown count in mem
 
 On phones the filters button, search field, sort select and Show more link keep a 44px minimum height.
 
+The `bestvalue` sort reads the matching teas and ranks them in memory by value score, as `match` does; each row also carries a "Great value" badge when earned.
+
 ## Contents
 
 - `loading.tsx`

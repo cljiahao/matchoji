@@ -13,7 +13,7 @@ private, unknown), the product page (taste,
 facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row, the freshness hint for an opened tea), the journal's signed-out, empty and filled states (with Your taste),
 loading routes, the public error boundary, and the OAuth callback's redirect handling.
 
-`seo.test.ts` covers the sitemap (browse, Learn, course and tea pages) and robots rules. `learn.test.tsx`
+`seo.test.ts` covers the sitemap (browse, `/top`, Learn, course and tea pages, and a top list only once enough teas are rated) and robots rules. `learn.test.tsx`
 covers the Learn index (courses, recipes, guides), course and lesson pages (outline, practice,
 previous/next, the done button, 404s), recipe pages (brew numbers, steps, tips, the pre-filled log button's
 sign-in prompt, 404s) and guide pages. `config.test.ts` checks the proxy skips
@@ -23,7 +23,7 @@ Tea page tests get an empty `edition_ratings` result by default from `useServer`
 
 The tea page tests cover the photo credit caption; the footer's links and photo takedown link are tested with the footer in `src/components/layout`.
 
-The home page tests expect the "to try" shelf titles while the fixtures are unrated, and the product page test expects no second "Add your rating" card on an unreviewed tea.
+The home page tests queue a fourth `catalogue_teas` read for the top-lists check, and cover "See all" moving to `/top/matcha` once that list exists. They expect the "to try" shelf titles while the fixtures are unrated, and the product page test expects no second "Add your rating" card on an unreviewed tea.
 
 ## Contents
 

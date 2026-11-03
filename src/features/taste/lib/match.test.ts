@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { RatedTea, TeaFeatures } from '../types';
-import { matchBand, predictMatch, teaSimilarity } from './match';
+import { matchBand, predictMatch, tasteCloseness, teaSimilarity } from './match';
 
 const tea = (id: string, overrides: Partial<TeaFeatures> = {}): TeaFeatures => ({
   id,
@@ -36,6 +36,21 @@ describe('teaSimilarity', () => {
   it('weighs only what both teas have', () => {
     expect(teaSimilarity(tea('a'), tea('b'))).toBe(1);
     expect(teaSimilarity(tea('a'), tea('b', { category: 'hojicha' }))).toBe(0);
+  });
+});
+
+describe('tasteCloseness', () => {
+  it('compares sliders and notes only, ignoring category, grade and region', () => {
+    const a = umamiMatcha('a');
+    expect(
+      tasteCloseness(a, { ...umamiMatcha('b'), category: 'hojicha', grade: null })
+    ).toBeCloseTo(1);
+    expect(tasteCloseness(a, roastyHojicha('c'))).toBeLessThan(0.7);
+  });
+
+  it('is null when either tea has no taste data', () => {
+    expect(tasteCloseness(umamiMatcha('a'), tea('bare'))).toBeNull();
+    expect(tasteCloseness(tea('x'), tea('y'))).toBeNull();
   });
 });
 

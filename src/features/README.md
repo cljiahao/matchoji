@@ -10,6 +10,7 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 - `account/`
 - `admin/`
 - `auth/`
+- `discovery/`
 - `journal/`
 - `label-scan/`
 - `learn/`
@@ -29,6 +30,8 @@ session). `stock` depends on `auth` only; `marketplace` and `admin` depend on `p
 `reviews`; `social` depends on `products`, `reviews` and `taste`. `label-scan` depends on `products` and `auth`; `reviews` depends on it for the scan button. `journal` depends on `reviews` (row mapping, vocabulary, prep display), `products`
 and `auth`. `learn` depends on `products` (category styles, Explore links) and `reviews` (prep methods and the tasting dialog). Imports always go through a feature's `index.ts` and only point that way; where
 `products` needs another feature's control on a card it takes a render slot instead.
+
+`discovery` depends on `products` and `taste`; the tea page, `/top`, home and the sitemap use it.
 
 ## Parent
 

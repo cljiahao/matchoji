@@ -23,6 +23,8 @@ fake Supabase client (`test/support/fake-supabase.ts`).
 
 `getProduct` reads `products.image_credit` into `imageCredit`; list rows leave it null.
 
+`listCatalogue` reads every `catalogue_teas` row (up to PostgREST's 1000) as `CatalogueTea`s, for value scores, tea-page highlights, similar teas and top lists; its test covers the mapping and a failed read.
+
 ## Contents
 
 - `index.ts`

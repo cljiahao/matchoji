@@ -21,15 +21,33 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+const catalogueRow = (id: string, extra: Record<string, unknown> = {}) => ({
+  id,
+  name: `Tea ${id}`,
+  brand: null,
+  category: 'matcha',
+  grade: null,
+  region_id: null,
+  region_name: null,
+  supply: null,
+  image_url: null,
+  shop_url: null,
+  created_at: '2026-10-01T00:00:00Z',
+  review_count: 0,
+  avg_stars: null,
+  ...extra,
+});
+
 describe('sitemap', () => {
   it('lists the browse and Learn pages and every catalogue tea', async () => {
     useServer({
-      catalogue_teas: { data: [{ id: 't1', created_at: '2026-10-01T00:00:00Z' }], error: null },
+      catalogue_teas: { data: [catalogueRow('t1')], error: null },
     });
     const urls = (await sitemap()).map((entry) => entry.url);
     expect(urls).toEqual([
       'http://localhost:3000/',
       'http://localhost:3000/explore',
+      'http://localhost:3000/top',
       'http://localhost:3000/regions',
       'http://localhost:3000/regions/supply',
       'http://localhost:3000/learn',
@@ -41,6 +59,16 @@ describe('sitemap', () => {
       ]),
       'http://localhost:3000/products/t1',
     ]);
+  });
+
+  it('adds a top list only once enough teas are rated', async () => {
+    const rated = Array.from({ length: 5 }, (_, i) =>
+      catalogueRow(`r${i}`, { review_count: 3, avg_stars: 4 })
+    );
+    useServer({ catalogue_teas: { data: rated, error: null } });
+    const urls = (await sitemap()).map((entry) => entry.url);
+    expect(urls).toContain('http://localhost:3000/top/matcha');
+    expect(urls).not.toContain('http://localhost:3000/top/hojicha');
   });
 
   it('throws the Supabase error', async () => {
