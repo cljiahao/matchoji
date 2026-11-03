@@ -9,11 +9,6 @@
       "Read(**/.env.production)",
       "Read(**/.env.staging)",
       "Read(**/.env.test)",
-      "Read(**/.env.*)",
-      "Bash(cat *.env*)",
-      "Bash(head *.env*)",
-      "Bash(tail *.env*)",
-      "Bash(less *.env*)",
       "Read(**/*.pem)",
       "Read(**/*.key)",
       "Read(./secrets/**)",
@@ -30,127 +25,46 @@
     "PreToolUse": [
       {
         "matcher": "Edit|Write|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/protect-files.sh"
-            ],
-            "timeout": 10
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/protect-files.sh"], "timeout": 10 }]
       },
       {
         "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-no-verify.sh"
-            ],
-            "timeout": 10
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/block-no-verify.sh"], "timeout": 10 }]
       }
     ],
     "UserPromptSubmit": [
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/user-prompt-guard.cjs"
-            ],
-            "timeout": 10
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "node", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/user-prompt-guard.cjs"], "timeout": 10 }]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/post-edit-typecheck.sh"
-            ],
-            "timeout": 60
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/post-edit-typecheck.sh"], "timeout": 60 }]
       },
       {
         "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/post-edit-comment-check.sh"
-            ],
-            "timeout": 30
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/post-edit-comment-check.sh"], "timeout": 30 }]
       },
       {
         "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/skill-usage-log.sh"
-            ],
-            "timeout": 10
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/skill-usage-log.sh"], "timeout": 10 }]
       }
     ],
     "Stop": [
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-checks.sh"
-            ],
-            "timeout": 300
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-checks.sh"], "timeout": 300 }]
       }
     ],
     "SubagentStop": [
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/subagent-stop.sh"
-            ],
-            "timeout": 120
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/subagent-stop.sh"], "timeout": 120 }]
       }
     ],
     "SessionStart": [
       {
         "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-context.sh"
-            ],
-            "timeout": 10
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "bash", "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/session-context.sh"], "timeout": 10 }]
       }
     ]
   },

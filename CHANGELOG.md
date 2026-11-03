@@ -5,6 +5,10 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Claude Code harness re-synced to templateCentral 7.2.2: the SessionStart hook re-injects the CONSTITUTION instead of the head of `AGENTS.md`, the dependency-audit gate parses `package.json` for advisory suppressions, `settings.json` drops the broad `.env.*` read denies, and `AGENTS.md` documents the user-scoped `superpowers` plugin install.
+
 ### Fixed
 
 - `test/scripts/schema-check.test.ts` no longer times out intermittently on CI runners. `extractShape` re-parsed about 60 TypeScript lib files for every program it built; those are now parsed once per process and shared, which also speeds up `pnpm schema:check`.
