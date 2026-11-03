@@ -5,6 +5,11 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Regions map: a scarce region's pin no longer reads "0 · Scarce" in a wide pill that overlapped its neighbours near Kyoto, Nara and Mie. Pins show only the tea count, scarce supply is a red dot, and the full supply text is in the tooltip and the pin's accessible name.
+- Cleared two moderate Dependabot alerts (`glob` AbortSignal bypass, `minimatch` globparts DoS) with `pnpm-workspace.yaml` overrides to `glob` 14.0.2 and `minimatch` 11.0.1.
+
 ### Added
 
 - Discovery from Matchoji's own data: a "Great value" badge on a tea rated well for its price per gram against its own category (rating percentile minus price percentile; needs 5 ratings and a price) and a "Best value" Explore sort; up to three computed highlights on a tea's page ("Top 10% of hojicha on Matchoji", "Highest rated from Uji", "Most rated ceremonial matcha"), shown only with enough ratings and a big enough comparison group; a "Similar teas" shelf of up to 8 teas by category, grade, region and taste; and `/top` lists (Top matcha, Top hojicha, Best value, Top from each region) ranked by a count-weighted average so one rating can't top a list. A list appears, and joins the sitemap, only once 5 teas have 3 ratings each. `/top` is linked from the footer and the home shelves' "See all". No migration.

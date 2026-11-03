@@ -17,6 +17,8 @@ export interface MapPin {
   // Short text drawn on the pin itself, such as a tea count.
   text?: string;
   tone?: 'matcha' | 'hojicha' | 'neutral';
+  // Draws a warning dot on the pin. Colour alone says nothing, so `description` must say why.
+  flagged?: boolean;
   // Extra lines for the tooltip and popup.
   description?: string;
   // Set: choosing the pin goes there. Unset: choosing it opens a popup.
@@ -85,8 +87,10 @@ export function TeaMap({ label, pins, className }: TeaMapProps) {
         el.className = 'tea-pin';
         el.dataset.tone = pin.tone ?? 'neutral';
         el.textContent = pin.text ?? '';
+        if (pin.flagged) el.dataset.flagged = 'true';
         const marker = L.marker([pin.lat, pin.lng], {
-          title: pin.name,
+          // The tooltip is the sighted route to the detail a compact pin leaves out.
+          title: pin.description ? `${pin.name}. ${pin.description}` : pin.name,
           keyboard: true,
           icon: L.divIcon({
             html: el,
