@@ -18,6 +18,8 @@ stub of Supabase's auth schema and roles, and checks the audit-log triggers and 
 `migrations/` holds the numbered SQL files, one per concern (Phase 1 tables, Phase 1 storage, public reviewer names + region seed, tasting journal, audit log), applied in filename order. `seed/` holds data scripts (real teas for the catalogue) run by
 hand after the migrations.
 
+`pnpm schema:check` compares the applied versions in `supabase_migrations.schema_migrations` with these files; after applying one by hand, record its version (see `docs/schema-checks.md`).
+
 ## Parent
 
 [matchoji](../README.md)
