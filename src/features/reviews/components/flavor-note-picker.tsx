@@ -38,7 +38,7 @@ export const FlavorNotePicker = forwardRef<HTMLDivElement, FlavorNotePickerProps
                   'rounded-full border px-3 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40',
                   pressed
                     ? cn(CATEGORY_STYLES[category].badge, 'border-transparent')
-                    : 'border-border hover:border-neutral-400'
+                    : 'border-border hover:border-input'
                 )}
               >
                 {noteLabel(note)}

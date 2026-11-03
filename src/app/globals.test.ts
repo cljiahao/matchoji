@@ -33,6 +33,31 @@ describe('theme tokens meet WCAG AA', () => {
     expect(ratio(token(dark, 'input'), token(light, 'black'))).toBeGreaterThanOrEqual(3);
   });
 
+  it('keeps dark field edges and the focus ring at 3:1 on the page, tile and muted fills', () => {
+    for (const surface of ['black', 'tile', 'muted']) {
+      const bg = surface === 'black' ? token(light, 'black') : token(dark, surface);
+      expect(ratio(token(dark, 'input'), bg)).toBeGreaterThanOrEqual(3);
+      expect(ratio(token(dark, 'ring'), bg)).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('keeps dark muted text at 4.5:1 on the page, tile and muted fills', () => {
+    expect(ratio(token(dark, 'muted-foreground'), token(light, 'black'))).toBeGreaterThanOrEqual(
+      4.5
+    );
+    for (const surface of ['tile', 'muted']) {
+      expect(ratio(token(dark, 'muted-foreground'), token(dark, surface))).toBeGreaterThanOrEqual(
+        4.5
+      );
+    }
+  });
+
+  it('keeps dark brand text at 4.5:1 on tile and muted fills', () => {
+    for (const surface of ['tile', 'muted']) {
+      expect(ratio(token(dark, 'brand'), token(dark, surface))).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it('keeps muted text at 4.5:1 on the page and the tile', () => {
     expect(
       ratio(token(light, 'muted-foreground'), token(light, 'background'))
@@ -64,6 +89,17 @@ describe('theme tokens meet WCAG AA', () => {
   it('keeps white text on the category badges at 4.5:1', () => {
     for (const name of ['matcha', 'hojicha']) {
       expect(ratio(token(light, `${name}-foreground`), token(light, name))).toBeGreaterThanOrEqual(
+        4.5
+      );
+    }
+  });
+
+  it('keeps the dark category colours at 4.5:1 as text and under badge text', () => {
+    for (const name of ['matcha', 'hojicha']) {
+      expect(ratio(token(dark, name), token(light, 'black'))).toBeGreaterThanOrEqual(4.5);
+      expect(ratio(token(dark, name), token(dark, 'muted'))).toBeGreaterThanOrEqual(4.5);
+      expect(ratio(token(dark, name), token(dark, 'tile'))).toBeGreaterThanOrEqual(4.5);
+      expect(ratio(token(dark, `${name}-foreground`), token(dark, name))).toBeGreaterThanOrEqual(
         4.5
       );
     }

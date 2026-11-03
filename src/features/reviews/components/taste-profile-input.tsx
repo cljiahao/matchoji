@@ -49,7 +49,7 @@ export function TasteProfileInput({
             <span
               className={cn(
                 'h-2 w-full rounded-full transition-colors',
-                value !== undefined && step <= value ? fill : 'bg-muted group-hover:bg-neutral-300'
+                value !== undefined && step <= value ? fill : 'bg-muted group-hover:bg-input'
               )}
             />
           </button>

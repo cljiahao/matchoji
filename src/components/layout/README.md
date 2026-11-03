@@ -12,6 +12,8 @@ the wordmark and tagline, the links the navbar lacks (Tea supply, Sell on Matcho
 on phones, where the tab bar has no Regions tab), and a fine-print row. `Providers` wraps the app in `SessionProvider`,
 so every component shares one sign-in session.
 
+The footer ends with `ThemeToggle`: Light, Dark and System radios over next-themes. Light is the default (`enableSystem` is on, `defaultTheme` stays `light`), so the site only goes dark when a visitor picks it; nothing is checked until after hydration so server and client markup match.
+
 `SiteShell` is the page frame the `(public)` layout and the root not-found page share: a "Skip to content" link (first focusable element, visible on focus), the navbar, `main#main-content`, the footer and the tab bar.
 
 The fine print also has "Is one of these photos yours? Ask us to take it down.", a link (new tab) to a prefilled GitHub issue for photo removal requests.
@@ -31,6 +33,8 @@ Navbar, footer and tab-bar controls keep a 44px minimum touch target. The tab ba
 - `site-shell.test.tsx`
 - `site-shell.tsx`
 - `theme-provider.tsx`
+- `theme-toggle.test.tsx`
+- `theme-toggle.tsx`
 
 ## Parent
 

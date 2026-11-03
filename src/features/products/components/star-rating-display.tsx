@@ -21,7 +21,7 @@ export function Stars({ value, category, size = 'md' }: StarsProps) {
         const fill = Math.min(1, Math.max(0, value - i));
         return (
           <span key={i} className={cn('relative', box)} data-fill={fill}>
-            <Star className={cn('absolute inset-0 text-neutral-300', box)} />
+            <Star className={cn('text-star-empty absolute inset-0', box)} />
             {fill > 0 && (
               <span
                 className="absolute inset-0 overflow-hidden"

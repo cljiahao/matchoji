@@ -65,7 +65,7 @@ export function PrepFields({ category }: PrepFieldsProps) {
                         'min-h-10 rounded-full border px-4 py-1 text-sm transition-colors',
                         checked
                           ? 'bg-primary text-primary-foreground border-transparent'
-                          : 'border-border hover:border-neutral-400'
+                          : 'border-border hover:border-input'
                       )}
                     >
                       {PREP_METHOD_LABELS[method]}
