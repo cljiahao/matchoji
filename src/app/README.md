@@ -16,6 +16,7 @@ out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks
 - `auth/`
 - `error.tsx`
 - `error-pages.test.tsx`
+- `global-error.test.tsx`
 - `global-error.tsx`
 - `globals.css`
 - `layout.tsx`

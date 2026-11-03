@@ -12,6 +12,7 @@ All application code: routes, UI, feature modules, and shared utilities.
 - `hooks/`
 - `integrations/`
 - `instrumentation-client.ts`
+- `instrumentation.test.ts`
 - `instrumentation.ts`
 - `lib/`
 - `proxy.ts`
