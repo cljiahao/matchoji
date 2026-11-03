@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { SimilarTeas, TeaHighlights, buildHighlights, listSimilarTeas } from '@/features/discovery';
 import { FreshnessHint, WantToTryButton, getStash } from '@/features/journal';
 import { WhereToBuy, listProductOffers } from '@/features/marketplace';
+import { GoesWellWith } from '@/features/pairing';
 import {
   CATEGORY_STYLES,
   CategoryBadge,
@@ -249,6 +250,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <span className="text-muted-foreground"> · {product.brand} shops on the map</span>
           </p>
         )}
+        <GoesWellWith category={product.category} grade={product.grade} />
         <EditionList editions={editions} />
         <ProductFacts product={product} />
         {summary.photos.length > 0 && (

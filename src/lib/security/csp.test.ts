@@ -28,6 +28,14 @@ describe('buildCsp', () => {
   });
 });
 
+describe('buildCsp with the service worker', () => {
+  it('allows same-origin workers, since strict-dynamic makes script-src ignore self', () => {
+    for (const isDev of [false, true]) {
+      expect(buildCsp({ nonce: 'abc123', isDev, supabaseUrl })).toContain("worker-src 'self'");
+    }
+  });
+});
+
 describe('buildCsp with Sentry', () => {
   it('needs no Sentry host: events go through the same-origin tunnel', () => {
     const csp = buildCsp({ nonce: 'abc123', isDev: false, supabaseUrl });
