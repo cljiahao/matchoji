@@ -33,6 +33,7 @@ Every admin control (tabs, selects, inputs, buttons, and the whole "Remove photo
 - `drink-queue.test.tsx`
 - `drink-queue.tsx`
 - `edit-forms.test.tsx`
+- `moderation-controls.test.tsx`
 - `moderation-controls.tsx`
 - `tasters-form.test.tsx`
 - `tasters-form.tsx`
@@ -46,6 +47,7 @@ Every admin control (tabs, selects, inputs, buttons, and the whole "Remove photo
 - `tea-links-form.tsx`
 - `tea-price-form.test.tsx`
 - `tea-price-form.tsx`
+- `tea-select.test.tsx`
 - `tea-select.tsx`
 
 ## Parent

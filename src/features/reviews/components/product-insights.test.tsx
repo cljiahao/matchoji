@@ -8,22 +8,7 @@ import { FlavorFamilies } from './flavor-families';
 import { PrepSummary } from './prep-summary';
 import { ProductInsights } from './product-insights';
 import { RatingDistribution } from './rating-distribution';
-import { TasteProfileBars } from './taste-profile-bars';
 import { TasteStructure } from './taste-structure';
-
-describe('TasteProfileBars', () => {
-  it('exposes values as meters and skips unset attributes', () => {
-    render(<TasteProfileBars values={{ umami: 4.5, body: 2 }} category="matcha" />);
-
-    const umami = screen.getByRole('meter', { name: 'Umami' });
-    expect(umami).toHaveAttribute('aria-valuenow', '4.5');
-    expect(umami).toHaveAttribute('aria-valuemin', '1');
-    expect(umami).toHaveAttribute('aria-valuemax', '5');
-    expect(screen.getByRole('meter', { name: 'Body' })).toBeInTheDocument();
-    expect(umami).toHaveAttribute('aria-valuetext', '4.5 of 5');
-    expect(screen.queryByRole('meter', { name: 'Sweetness' })).not.toBeInTheDocument();
-  });
-});
 
 describe('RatingDistribution', () => {
   it('lists every star level with its count, five first', () => {

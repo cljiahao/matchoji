@@ -9,7 +9,7 @@ theme tokens and the few global rules (focus outline, pill buttons, number and d
 catalogue teas (read per request) and `robots.ts` keeps admin, account, journal, sell and auth pages
 out of search engines. Theme tokens meet WCAG AA, which `globals.test.ts` checks (field edges 3:1, muted, brand and category text 4.5:1 in both themes); the dark block is opt-in through the footer's theme toggle, with Light the default and `enableSystem` on; `error.tsx` and `auth/error/` render a `main` landmark with one h1.
 
-Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the tea and profile pages have their own), `manifest.ts` makes the site installable as a standalone app (name, `/` start URL, brand-green theme, white background) and `icons/` serves its icons; `layout.tsx` adds the Apple web-app tags, icon links and a light/dark `themeColor`. `offline/` is the page the service worker (`public/sw.js`, see `features/offline`) precaches and shows when a page can't be loaded; `layout.tsx` registers the worker in production.
+Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the tea, profile, café and drink pages have their own; `cafe-opengraph-image.test.tsx` checks the café and drink routes pass their params through), `manifest.ts` makes the site installable as a standalone app (name, `/` start URL, brand-green theme, white background) and `icons/` serves its icons; `layout.tsx` adds the Apple web-app tags, icon links and a light/dark `themeColor`. `offline/` is the page the service worker (`public/sw.js`, see `features/offline`) precaches and shows when a page can't be loaded; `layout.tsx` registers the worker in production.
 
 `sitemap.ts` also lists `/shops`, `/cafes` and every approved café and drink page (read per request), and lists `/sell` only while `MARKETPLACE_ENABLED` is on.
 
@@ -37,6 +37,7 @@ The root layout, web manifest and share image take their description and alt tex
 - `offline/`
 - `not-found.test.tsx`
 - `not-found.tsx`
+- `cafe-opengraph-image.test.tsx`
 - `opengraph-image.tsx`
 - `robots.ts`
 - `sitemap.test.ts`

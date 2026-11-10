@@ -13,7 +13,9 @@ The logging UI. `DrinkLogFlow` (default export, loaded through `LazyDrinkLogFlow
 - `add-cafe-form.tsx`
 - `add-drink-form.tsx`
 - `cafe-card.tsx`
+- `cafe-filters.test.tsx`
 - `cafe-filters.tsx`
+- `city-switch.test.tsx`
 - `city-switch.tsx`
 - `disclosure-radios.tsx`
 - `drink-log-flow.test.tsx`

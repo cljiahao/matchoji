@@ -81,7 +81,6 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 - `review-list.tsx`
 - `star-rating-input.test.tsx`
 - `star-rating-input.tsx`
-- `taste-profile-bars.tsx`
 - `taste-profile-input.tsx`
 - `taste-structure.tsx`
 - `tasting-inputs.test.tsx`

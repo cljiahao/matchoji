@@ -26,7 +26,7 @@ Browsers post events to the same-origin `/monitoring` tunnel, so the content sec
 
 ## Performance and end-to-end checks
 
-`docs/superpowers/specs/2026-11-04-performance-pass.md` records the Lighthouse scores before and after the performance and SEO pass, and what was left undone. `pnpm e2e` runs the read-only Playwright smoke tests in `e2e/` against production (override with `E2E_BASE_URL`; `E2E_CHANNEL=chrome` uses an installed Chrome instead of `pnpm exec playwright install chromium`). They sign in to nothing and write nothing, and each page also fails on a console error or CSP violation. `.github/workflows/e2e.yml` runs them daily and on demand, uploading the report on failure.
+`docs/superpowers/specs/2026-11-04-performance-pass.md` records the Lighthouse scores before and after the performance and SEO pass, and what was left undone. `pnpm e2e` runs the read-only Playwright smoke tests in `e2e/` against production (override with `E2E_BASE_URL`; `E2E_CHANNEL=chrome` uses an installed Chrome instead of `pnpm exec playwright install chromium`). They sign in to nothing and write nothing, and each page also fails on a console error or CSP violation. The steps pass on an empty database too, since each accepts the page's empty-state message. `.github/workflows/e2e.yml` runs them daily and on demand, uploading the report on failure.
 
 ## Structure
 

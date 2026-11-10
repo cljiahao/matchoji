@@ -15,7 +15,6 @@ export {
   latestTasterReviews,
   listCafeSitemapEntries,
   listCafes,
-  listCities,
   listLatestTasterDrinkReviews,
   listSimilarDrinks,
   listTopDrinkLists,

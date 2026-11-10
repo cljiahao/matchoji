@@ -31,8 +31,7 @@ its public `index.ts`) for search and product creation — this module never dep
 its category is in its region) `shopUrl` (its page on the maker's shop) and `status` (`pending` until an admin approves
 a taster-added tea, with `addedBy` naming who suggested it, `reviewNote` the admin's reason and `mergedInto` the tea a
 merged duplicate forwards to); `ProductSummary` can carry
-`status` where a list may include teas outside the catalogue; `ProductGrid` takes a
-`renderAction` slot for per-card controls owned by other features.
+`status` where a list may include teas outside the catalogue.
 
 ## Parent
 

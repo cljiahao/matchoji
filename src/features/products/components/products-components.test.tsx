@@ -9,20 +9,17 @@ import { CategoryBadge } from './category-badge';
 const router = vi.hoisted(() => ({ push: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => router }));
 
-import { CategoryCircles } from './category-circles';
 import { ExploreFilters } from './explore-filters';
 import { ExploreSort } from './explore-sort';
 import { FilterDisclosure } from './filter-disclosure';
 import { PriceInline } from './price-inline';
 import { ProductFacts } from './product-facts';
-import { ProductGrid } from './product-grid';
 import { ProductImageWell } from './product-image-well';
 import { ProductRow } from './product-row';
 import { ProductShelf } from './product-shelf';
 import { RatingInline } from './rating-inline';
 import { ScoreNumeral } from './score-numeral';
 import { SearchPill } from './search-pill';
-import { StarRatingDisplay } from './star-rating-display';
 import { TeaTin } from './tea-tin';
 
 const REGION = '7b0c1c2e-3f4a-4b5c-8d9e-0f1a2b3c4d5e';
@@ -41,21 +38,6 @@ describe('CategoryBadge', () => {
     );
     expect(screen.getByText('Matcha')).toHaveClass('bg-matcha');
     expect(screen.getByText('Hojicha')).toHaveClass('bg-hojicha');
-  });
-});
-
-describe('StarRatingDisplay', () => {
-  it('shows the average, count, and category-coloured filled stars', () => {
-    const { container } = render(
-      <StarRatingDisplay avgStars={3.6} reviewCount={1} category="hojicha" />
-    );
-    expect(screen.getByText('3.6 (1 review)')).toBeInTheDocument();
-    expect(container.querySelectorAll('svg.fill-hojicha')).toHaveLength(4);
-  });
-
-  it('says when a product is not yet rated', () => {
-    render(<StarRatingDisplay avgStars={null} reviewCount={0} category="matcha" />);
-    expect(screen.getByText('Not yet rated')).toBeInTheDocument();
   });
 });
 
@@ -102,55 +84,6 @@ describe('ProductImageWell', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
     expect(container.firstChild).toHaveClass('bg-tile');
     expect(container.querySelector('svg[data-tin="hojicha"]')).not.toBeNull();
-  });
-});
-
-describe('ProductGrid', () => {
-  it('renders a shelf card per product linking to its detail page', () => {
-    render(
-      <ProductGrid
-        products={[
-          makeProduct(),
-          makeProduct({ id: 'p2', name: 'Kyoto Bancha', category: 'hojicha', brand: null }),
-        ]}
-      />
-    );
-
-    const card = screen.getByRole('link', { name: /Uji Ceremonial/ });
-    expect(card).toHaveAttribute('href', '/products/p1');
-    expect(card).toHaveTextContent('Marukyu Koyamaen');
-    expect(within(card).getByRole('heading', { level: 3 })).toHaveTextContent('Uji Ceremonial');
-    expect(card).toHaveTextContent('(12 ratings)');
-    expect(card).toHaveAccessibleName(/4\.5 out of 5, 12 ratings/);
-    expect(screen.getByRole('link', { name: /Kyoto Bancha/ })).not.toHaveTextContent(
-      'Marukyu Koyamaen'
-    );
-  });
-
-  // A drawn tin already shows the tea by colour; only a photo needs the label.
-  it('labels the category only on a photographed card', () => {
-    render(
-      <ProductGrid
-        products={[
-          makeProduct(),
-          makeProduct({ id: 'p2', name: 'Kyoto Bancha', imageUrl: 'https://cdn.test/b.jpg' }),
-        ]}
-      />
-    );
-    expect(screen.getByRole('link', { name: /Uji Ceremonial/ })).not.toHaveTextContent('Matcha');
-    expect(screen.getByRole('link', { name: /Kyoto Bancha/ })).toHaveTextContent('Matcha');
-  });
-
-  // Interactive controls can't nest inside the card link.
-  it('renders a per-card action outside the card link', () => {
-    render(
-      <ProductGrid
-        products={[makeProduct()]}
-        renderAction={(p) => <button type="button">Save {p.name}</button>}
-      />
-    );
-    const action = screen.getByRole('button', { name: 'Save Uji Ceremonial' });
-    expect(action.closest('a')).toBeNull();
   });
 });
 
@@ -267,20 +200,6 @@ describe('ProductRow', () => {
     );
     expect(screen.getByText('1 rating')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' }).closest('a')).toBeNull();
-  });
-});
-
-describe('CategoryCircles', () => {
-  it('links each tea to Explore filtered to it', () => {
-    render(<CategoryCircles />);
-    expect(screen.getByRole('link', { name: /Matcha/ })).toHaveAttribute(
-      'href',
-      '/explore?category=matcha'
-    );
-    expect(screen.getByRole('link', { name: /Hojicha.*Roasted green tea/ })).toHaveAttribute(
-      'href',
-      '/explore?category=hojicha'
-    );
   });
 });
 

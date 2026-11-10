@@ -16,5 +16,4 @@ export { RatingDistribution } from './rating-distribution';
 export { ReviewItem } from './review-item';
 export { ReviewList } from './review-list';
 export { StarRatingInput } from './star-rating-input';
-export { TasteProfileBars } from './taste-profile-bars';
 export { TasteStructure } from './taste-structure';
