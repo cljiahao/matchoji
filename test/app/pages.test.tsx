@@ -19,6 +19,15 @@ vi.mock('next/server', async (importOriginal) => ({
   connection: nextServer.connection,
 }));
 
+// The marketplace is parked (off); the suites that cover it switch it on.
+const marketplace = vi.hoisted(() => ({ enabled: false }));
+vi.mock('@/lib/constants/env', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/constants/env')>()),
+  get MARKETPLACE_ENABLED() {
+    return marketplace.enabled;
+  },
+}));
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }),
   usePathname: () => '/',
@@ -444,7 +453,13 @@ describe('Explore page', () => {
           count: 1,
           error: null,
         },
-        { data: [{ grade: 'Bancha' }, { grade: 'Premium' }], error: null },
+        {
+          data: [
+            { grade: 'Bancha', category: 'hojicha' },
+            { grade: 'Premium', category: 'hojicha' },
+          ],
+          error: null,
+        },
       ],
       tea_taste_profiles: { data: [], error: null },
       regions: { data: [], error: null },
@@ -699,6 +714,13 @@ describe('Supply page', () => {
 });
 
 describe('Sell page', () => {
+  beforeEach(() => {
+    marketplace.enabled = true;
+  });
+  afterEach(() => {
+    marketplace.enabled = false;
+  });
+
   const vendor = (status: string) => ({
     id: 'v1',
     name: 'Kyoto Leaf',
@@ -989,7 +1011,12 @@ describe('Public error boundary', () => {
 });
 
 describe('Product page', () => {
+  afterEach(() => {
+    marketplace.enabled = false;
+  });
+
   it('shows the product, its taste, facts, photos and community reviews', async () => {
+    marketplace.enabled = true;
     const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
     useServer({
       products: {
@@ -1247,7 +1274,7 @@ describe('Product page', () => {
     expect(screen.queryByText(/^Photo:/)).not.toBeInTheDocument();
   });
 
-  it('invites sellers and stock reports on an approved tea nobody sells yet', async () => {
+  it('shows no seller or stock prompts to a visitor on an approved tea nobody sells yet', async () => {
     useServer({
       products: { data: productRow, error: null },
       product_ratings: { data: null, error: null },
@@ -1259,11 +1286,9 @@ describe('Product page', () => {
 
     renderWithQuery(await ProductPage({ params: Promise.resolve({ id: PRODUCT_ID }) }));
 
-    expect(screen.getByText('No recent reports')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Sell it on Matchoji' })).toHaveAttribute(
-      'href',
-      '/sell'
-    );
+    expect(screen.queryByText('No recent reports')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Where to buy' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Sell it on Matchoji' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /shop/ })).not.toBeInTheDocument();
   });
 

@@ -7,7 +7,7 @@ creating a product. `listProducts` reads the first `shown` (12 by default) of `c
 weighted score and scarcity rank), applying search, tea, region, grade and minimum rating as
 SQL filters and each sort as an ORDER BY ("Top rated" by weighted score with a 3-rating
 floor); it returns those teas and the total, plus each rated tea's two most-noticed notes.
-`listGradeOptions` lists the grades among the other matches. `searchProducts` calls the
+`listGradeOptions` lists the grades among the other matches, grouped by category (matcha first). `searchProducts` calls the
 `search_teas` database function, which ranks typo-tolerant matches. `listRegionSummaries` returns every region with its tea counts and supply levels; each
 product carries `supply`, its category's level in its region, and `shopUrl`. Explore, the shelves and the region counts read approved teas only;
 `searchProducts` (the "Log a tasting" picker) returns approved teas plus the searcher's own

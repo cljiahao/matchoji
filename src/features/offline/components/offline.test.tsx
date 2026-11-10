@@ -18,6 +18,7 @@ describe('OfflineScreen', () => {
     vi.stubGlobal('location', { ...window.location, reload });
     render(<OfflineScreen />);
     expect(screen.getByRole('heading', { name: 'You’re offline' })).toBeInTheDocument();
+    expect(screen.getByText(/cafés, teas and tastings/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(reload).toHaveBeenCalled();
   });
