@@ -6,6 +6,8 @@
 
 `cafe-share.test.ts` tests the café and drink metadata and JSON-LD. `json-ld.ts` also builds `cafeJsonLd` (`CafeOrCoffeeShop`, with `aggregateRating` only from taster reviews) and `drinkJsonLd` (`MenuItem`, no rating); `metadata.ts` adds `cafeMetadata` and `drinkMetadata`; `render.tsx` adds `renderCafeImage` and `renderDrinkImage`. `json-ld.ts` builds the `Product` structured data for a tea (`aggregateRating` only when rated) and serialises it safely for a `<script>` element.
 
+`renderProfileImage` passes the bio and handle to the card only for a public trusted taster, and only a handle that passes the handle pattern.
+
 ## Contents
 
 - `cafe-share.test.ts`

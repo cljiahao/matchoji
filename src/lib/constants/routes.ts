@@ -6,6 +6,8 @@ export const PAGE_ROUTES = {
   SUPPLY: '/regions/supply',
   SHOPS: '/shops',
   CAFES: '/cafes',
+  TASTERS: '/tasters',
+  HOW_WE_RATE: '/about/how-we-rate',
   JOURNAL: '/journal',
   LEARN: '/learn',
   SELL: '/sell',

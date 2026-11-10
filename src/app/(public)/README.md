@@ -20,9 +20,12 @@ Home titles a shelf "Matcha to try" / "Hojicha to try" while none of its teas is
 
 `top/` holds the top-lists index and `top/[slug]/` one list ("Top matcha", "Best value hojicha", "Top from Uji"); a list below its threshold (5 teas with 3 ratings each) is absent from the index and the sitemap and its page is `notFound()`. Home's matcha and hojicha shelves send "See all" to their top list once it exists.
 
+`tasters/` lists the trusted tasters (one quiet line when there are none) and `about/how-we-rate/` explains the taster and community scores and the disclosure labels in plain words.
+
 ## Contents
 
 - `account/`
+- `about/`
 - `admin/`
 - `cafes/`
 - `error.tsx`
@@ -36,6 +39,7 @@ Home titles a shelf "Matcha to try" / "Hojicha to try" while none of its teas is
 - `products/`
 - `regions/`
 - `sell/`
+- `tasters/`
 - `top/`
 - `u/`
 

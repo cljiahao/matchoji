@@ -3,23 +3,33 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/database.types';
 import { isMissingTable } from '@/integrations/supabase/missing-table';
 
+import { profileDetailsSchema, type ProfileDetailsInput } from '../schemas';
+
 type Client = SupabaseClient<Database>;
 
 export interface MyProfile {
   email: string;
   displayName: string;
   isPublic: boolean;
+  instagramHandle: string | null;
+  bio: string | null;
 }
 
 export async function getMyProfile(supabase: Client, userId: string): Promise<MyProfile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('email, display_name, is_public')
+    .select('email, display_name, is_public, instagram_handle, bio')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw error;
   return data
-    ? { email: data.email, displayName: data.display_name, isPublic: data.is_public }
+    ? {
+        email: data.email,
+        displayName: data.display_name,
+        isPublic: data.is_public,
+        instagramHandle: data.instagram_handle,
+        bio: data.bio,
+      }
     : null;
 }
 
@@ -32,6 +42,21 @@ export async function updateDisplayName(
   const { error } = await supabase
     .from('profiles')
     .update({ display_name: displayName.trim() })
+    .eq('id', userId);
+  if (error) throw error;
+}
+
+// Handle and bio are the other two columns a user may write (column grants). The schema is the
+// boundary: the database re-checks both, but a bad value should fail before the round trip.
+export async function updateProfileDetails(
+  supabase: Client,
+  userId: string,
+  input: ProfileDetailsInput
+): Promise<void> {
+  const { instagramHandle, bio } = profileDetailsSchema.parse(input);
+  const { error } = await supabase
+    .from('profiles')
+    .update({ instagram_handle: instagramHandle, bio })
     .eq('id', userId);
   if (error) throw error;
 }

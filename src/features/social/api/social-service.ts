@@ -4,7 +4,7 @@ import { REVIEW_COLUMNS, loadDrinkSummaries, mapReviewRow } from '@/features/rev
 import type { Database } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
-import type { ProfileView, PublicProfile, Tasting } from '../types';
+import type { DrinkTasting, ProfileView, PublicProfile, TasterCard, Tasting } from '../types';
 
 type Client = SupabaseClient<Database>;
 type ReviewRow = Database['public']['Tables']['reviews']['Row'];
@@ -45,7 +45,7 @@ export async function getProfileView(
 ): Promise<ProfileView | null> {
   const { data: row, error } = await supabase
     .from('public_profiles')
-    .select('id, display_name, is_public, created_at')
+    .select('id, display_name, is_public, created_at, is_trusted_taster, instagram_handle, bio')
     .eq('id', profileId)
     .maybeSingle();
   if (error) throw error;
@@ -56,6 +56,9 @@ export async function getProfileView(
     name: row.display_name,
     isPublic: row.is_public,
     joinedAt: row.created_at,
+    isTrustedTaster: row.is_trusted_taster,
+    instagramHandle: row.instagram_handle,
+    bio: row.bio,
   };
   const isSelf = viewerId === profileId;
   const visible = profile.isPublic || isSelf;
@@ -98,6 +101,7 @@ export async function getProfileView(
   for (const result of [teas, followers, following, follows, blocked, recent])
     if (result.error) throw result.error;
 
+  const tastings = await withSubjects(supabase, recent.data ?? [], () => profile.name);
   return {
     profile,
     counts: {
@@ -106,8 +110,57 @@ export async function getProfileView(
       following: following.count ?? 0,
     },
     viewer: { isSelf, follows: follows.data !== null, blocked: blocked.data !== null },
-    recent: await withSubjects(supabase, recent.data ?? [], () => profile.name),
+    recent: tastings,
+    drinkReviews: tastings.filter((t): t is DrinkTasting => 'drink' in t),
   };
+}
+
+// Trusted tasters are always public (a database trigger keeps them so), so the view's handle and
+// bio are populated. Counts and the latest review read only drink reviews whose drink the reader
+// can still see.
+export async function listTasters(supabase: Client): Promise<TasterCard[]> {
+  const { data: people, error } = await supabase
+    .from('public_profiles')
+    .select('id, display_name, instagram_handle, bio')
+    .eq('is_trusted_taster', true)
+    .eq('is_public', true)
+    .order('display_name');
+  if (error) throw error;
+  if (people.length === 0) return [];
+
+  const { data: rows, error: reviewsError } = await selectIn(
+    people.map((p) => p.id),
+    (ids) =>
+      supabase
+        .from('latest_reviews')
+        .select(REVIEW_COLUMNS)
+        .in('user_id', ids)
+        .not('drink_id', 'is', null)
+        .order('created_at', { ascending: false })
+  );
+  if (reviewsError) throw reviewsError;
+  rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const drinks = await loadDrinkSummaries(
+    supabase,
+    rows.flatMap((r) => (r.drink_id ? [r.drink_id] : []))
+  );
+
+  return people.map((person): TasterCard => {
+    const mine = rows.flatMap((r) => {
+      const drink = r.drink_id ? drinks.get(r.drink_id) : undefined;
+      return r.user_id === person.id && drink
+        ? [{ ...mapReviewRow(r, person.display_name), drink }]
+        : [];
+    });
+    return {
+      id: person.id,
+      name: person.display_name,
+      bio: person.bio,
+      instagramHandle: person.instagram_handle,
+      drinkReviewCount: mine.length,
+      latest: mine[0] ?? null,
+    };
+  });
 }
 
 // The latest tastings of the people the reader follows, from the following_feed function.
