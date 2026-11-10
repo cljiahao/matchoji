@@ -46,8 +46,8 @@ import AdminPage, { generateMetadata as adminMetadata } from '@/app/(public)/adm
 import PublicError from '@/app/(public)/error';
 import ExploreLoading from '@/app/(public)/explore/loading';
 import ExplorePage from '@/app/(public)/explore/page';
-import JournalLoading from '@/app/(public)/journal/loading';
-import JournalPage from '@/app/(public)/journal/page';
+import JournalLoading from '@/app/(public)/journal/(list)/loading';
+import JournalPage from '@/app/(public)/journal/(list)/page';
 import ProductPage, { generateMetadata } from '@/app/(public)/products/[id]/page';
 import RegionsLoading from '@/app/(public)/regions/loading';
 import RegionsPage from '@/app/(public)/regions/page';

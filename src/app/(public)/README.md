@@ -31,10 +31,9 @@ The "Log a tasting" buttons on the home page, Explore and the journal open `LogD
 - `admin/`
 - `cafes/`
 - `error.tsx`
-- `layout.tsx`
 - `(home)/`
+- `layout.tsx`
 - `not-found.tsx`
-- `page.tsx`
 - `explore/`
 - `journal/`
 - `learn/`
