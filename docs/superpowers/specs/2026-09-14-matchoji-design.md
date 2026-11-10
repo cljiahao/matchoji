@@ -76,6 +76,8 @@ so it falls out of the Phase 1 schema almost for free.
 
 ## 5. Phase Breakdown
 
+> Update 2026-11-10: the product is repositioned around café drinks in Singapore and Johor Bahru; see `2026-11-10-cafe-drinks-repositioning-design.md` and its plan in `../plans/2026-11-10-cafe-drinks-repositioning.md`.
+
 ### Phase 1 — Rating & Discovery (build now)
 
 Consumer-facing MVP. Features:

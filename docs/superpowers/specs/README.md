@@ -9,6 +9,8 @@ with Vivino, lists the audit's fixes, and orders the remaining work into milesto
 
 `2026-11-03-impeccable-critique.md` scores the main surfaces, ranks the UI/UX findings and lists what was left undone.
 
+`2026-11-10-cafe-drinks-repositioning-design.md` repositions the product around café drinks in Singapore and Johor Bahru: cafés and drinks as the rated unit, trusted tasters with Instagram-linked reviews, and a taster score kept apart from the community score.
+
 `2026-11-04-performance-pass.md` records the Lighthouse scores before and after the performance and SEO pass, what changed and what was left.
 
 ## Contents
@@ -19,6 +21,7 @@ with Vivino, lists the audit's fixes, and orders the remaining work into milesto
 - `2026-10-24-vivino-parity-roadmap-design.md`
 - `2026-11-03-impeccable-critique.md`
 - `2026-11-04-performance-pass.md`
+- `2026-11-10-cafe-drinks-repositioning-design.md`
 
 ## Parent
 
