@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import HomeLoading from './(public)/loading';
+import HomeLoading from './(public)/(home)/loading';
 import AuthErrorPage from './auth/error/page';
 import GlobalError from './error';
 

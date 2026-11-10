@@ -6,7 +6,6 @@ One drink: café link, base, style, serving and price, then the taster score and
 
 ## Contents
 
-- `loading.tsx`
 - `opengraph-image.tsx`
 - `page.test.tsx`
 - `page.tsx`

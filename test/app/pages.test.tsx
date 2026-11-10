@@ -39,16 +39,15 @@ vi.mock('next/navigation', () => ({
   },
 }));
 
+import HomeLoading from '@/app/(public)/(home)/loading';
+import Home from '@/app/(public)/(home)/page';
 import AccountPage from '@/app/(public)/account/page';
 import AdminPage, { generateMetadata as adminMetadata } from '@/app/(public)/admin/page';
 import PublicError from '@/app/(public)/error';
 import ExploreLoading from '@/app/(public)/explore/loading';
 import ExplorePage from '@/app/(public)/explore/page';
-import JournalLoading from '@/app/(public)/journal/loading';
-import JournalPage from '@/app/(public)/journal/page';
-import HomeLoading from '@/app/(public)/loading';
-import Home from '@/app/(public)/page';
-import ProductLoading from '@/app/(public)/products/[id]/loading';
+import JournalLoading from '@/app/(public)/journal/(list)/loading';
+import JournalPage from '@/app/(public)/journal/(list)/page';
 import ProductPage, { generateMetadata } from '@/app/(public)/products/[id]/page';
 import RegionsLoading from '@/app/(public)/regions/loading';
 import RegionsPage from '@/app/(public)/regions/page';
@@ -1380,12 +1379,11 @@ describe('static routes', () => {
       <>
         <HomeLoading />
         <ExploreLoading />
-        <ProductLoading />
         <JournalLoading />
         <RegionsLoading />
       </>
     );
-    expect(screen.getAllByLabelText('Loading')).toHaveLength(5);
+    expect(screen.getAllByLabelText('Loading')).toHaveLength(4);
   });
 
   it('auth error page links back home', () => {
