@@ -27,7 +27,7 @@ The product page test expects no second "Add your rating" card on an unreviewed 
 
 The page, config and SEO tests cover the shop map's footprint: the footer's `/shops` link, the sitemap entry, the tile host in the CSP, and the tea page's in-person link, shown only when the maker has a listed shop.
 
-`loading-boundaries.test.ts` fails when a `loading.tsx` sits above a page or layout that calls `notFound()`, `redirect()` or `permanentRedirect()`, because the skeleton would stream the response as a 200. A layout is only covered by a `loading.tsx` in a parent folder. Comments are ignored.
+`loading-boundaries.test.ts` fails when a `loading.tsx` sits above a page or layout that calls `notFound()`, `redirect()` or `permanentRedirect()`, because the skeleton would stream the response as a 200. A layout is only covered by a `loading.tsx` in a parent folder. The check walks the TypeScript syntax tree, so comments and strings that mention those calls never count.
 
 `pages.test.tsx` mocks `MARKETPLACE_ENABLED` (off by default, as shipped): the sell page suite and the tea page's "Where to buy" test switch it on, and a tea nobody sells shows no seller or stock prompts to a visitor. Explore's grade test feeds grades with their category. The footer test expects no Sell link at all.
 
