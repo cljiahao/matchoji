@@ -31,6 +31,8 @@ this file's tables, columns, nullability and enums with the live database (see `
 
 The types include `shop_locations` and the `ShopKind` union, and `tea_price_history`.
 
+The types also cover the café-drinks schema: `cities`, `cafes` and `drinks` (suggestion-only inserts), the `drink_ratings` and `cafe_ratings` views, `drink_reviews`, `review_cafe`, `review_drink`, `merge_cafe`, `merge_drink` and `set_trusted_taster`, the new `profiles` columns (`is_trusted_taster`, `instagram_handle`, `bio`, also on `public_profiles`), `notifications.drink_id` and `cafe_id` with the two new kinds, and the new `reviews` insert and update columns (`drink_id`, `instagram_url`, `disclosure`, `tea_strength`, `roast`). The `reviews` and `latest_reviews` `Row` types stay tea-only until the review consumers are made drink-safe.
+
 ## Contents
 
 - `client.ts`
