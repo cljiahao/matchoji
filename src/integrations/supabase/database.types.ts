@@ -876,6 +876,11 @@ export interface Database {
       };
       merge_cafe: { Args: { duplicate: string; keep: string }; Returns: undefined };
       merge_drink: { Args: { duplicate: string; keep: string }; Returns: undefined };
+      update_cafe: { Args: { cafe: string; fields: Record<string, unknown> }; Returns: undefined };
+      update_drink: {
+        Args: { drink: string; fields: Record<string, unknown> };
+        Returns: undefined;
+      };
       drink_reviews: {
         Args: { drink: string };
         Returns: (Omit<Database['public']['Tables']['reviews']['Row'], 'product_id'> & {

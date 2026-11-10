@@ -565,7 +565,7 @@ describe('drink_ratings', () => {
     ).toEqual([{ drink_count: 1, community_count: 1 }]);
   });
 
-  it('rolls a café up over its drinks, taster and community apart', async () => {
+  it('rolls a café up over its drinks, counting people once, taster and community apart', async () => {
     const c = await cafe();
     const a = await drink(c);
     const b = await drink(c);
@@ -583,7 +583,7 @@ describe('drink_ratings', () => {
         drink_count: 2,
         taster_count: 1,
         taster_avg: '5.00',
-        community_count: 2,
+        community_count: 1,
         community_avg: '3.00',
       },
     ]);
@@ -869,5 +869,251 @@ describe('audit', () => {
       await rows(`select 1 from public.audit_log where table_name = 'cities' and action = 'UPDATE'`)
     ).toHaveLength(1);
     expect(d).toBeTruthy();
+  });
+});
+
+describe('security review fixes', () => {
+  type Shown = { id: string };
+  const visibleDrinks = (who: string | null, cafeId: string) =>
+    asRows<Shown>(who, 'select id from public.drinks where cafe_id = $1', [cafeId]);
+
+  it('delete_my_account leaves a taster review unlinkable to the person', async () => {
+    const taster = '99999999-9999-4999-8999-999999999999';
+    await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, '{}')`, [
+      taster,
+      'gone@example.com',
+    ]);
+    await call(ADMIN, 'select public.set_trusted_taster ($1, true)', [taster]);
+    await call(
+      taster,
+      `update public.profiles set instagram_handle = 'gone_tea', bio = 'hi' where id = $1`,
+      [taster]
+    );
+    const d = await drink(await cafe());
+    const review = await tasterReview(taster, d, 5, 'gifted');
+
+    await call(taster, 'select public.delete_my_account ()');
+
+    expect(
+      await rows(
+        'select user_id, by_trusted_taster, instagram_url, disclosure from public.reviews where id = $1',
+        [review]
+      )
+    ).toEqual([
+      { user_id: null, by_trusted_taster: false, instagram_url: null, disclosure: 'none' },
+    ]);
+    const logged = await rows<{ blob: string }>(
+      `select (coalesce(old_row::text, '') || coalesce(new_row::text, '')) as blob
+       from public.audit_log
+       where (table_name = 'reviews' and (old_row ->> 'id' = $1 or new_row ->> 'id' = $1))
+          or table_name = 'profiles'`,
+      [review]
+    );
+    for (const { blob } of logged) {
+      expect(blob).not.toContain(taster);
+      expect(blob).not.toContain('gone_tea');
+      expect(blob).not.toContain(POST);
+      expect(blob).not.toContain('gone@example.com');
+    }
+    expect(await ratings(d)).toMatchObject({ taster_count: 0, community_count: 1 });
+  });
+
+  it('a rejected café hides its drinks and their reviews from visitors', async () => {
+    const c = await cafe();
+    const d = await drink(c);
+    await drinkReview(BOB, d, 4);
+    expect(await visibleDrinks(null, c)).toHaveLength(1);
+
+    await call(ADMIN, `select public.review_cafe ($1, 'rejected', 'closed')`, [c]);
+
+    expect(await visibleDrinks(null, c)).toEqual([]);
+    expect(await visibleDrinks(DAVE, c)).toEqual([]);
+    expect(await asRows(null, 'select id from public.drink_reviews ($1)', [d])).toEqual([]);
+    expect(await asRows(null, 'select id from public.reviews where drink_id = $1', [d])).toEqual(
+      []
+    );
+    expect(await visibleDrinks(ADMIN, c)).toHaveLength(1);
+  });
+
+  it('review_drink refuses to approve a drink at a café that is not approved', async () => {
+    const c = await cafe({ status: 'pending' });
+    const d = await drink(c, { status: 'pending' });
+    await expect(call(ADMIN, `select public.review_drink ($1, 'approved')`, [d])).rejects.toThrow(
+      /Approve the café first/
+    );
+    await call(ADMIN, `select public.review_cafe ($1, 'approved')`, [c]);
+    await call(ADMIN, `select public.review_drink ($1, 'approved')`, [d]);
+  });
+
+  it('merge_cafe refuses cafés in different cities', async () => {
+    const sg = await cafe();
+    const jb = await cafe({ city: 'johor-bahru' });
+    await expect(call(ADMIN, 'select public.merge_cafe ($1, $2)', [jb, sg])).rejects.toThrow(
+      /different cities/
+    );
+  });
+
+  it('merge_cafe merges a clashing drink only into an approved keeper drink', async () => {
+    const keep = await cafe();
+    const dup = await cafe();
+    await drink(keep, { name: 'Hojicha Latte', status: 'pending' });
+    await drink(dup, { name: 'Hojicha Latte' });
+    await expect(call(ADMIN, 'select public.merge_cafe ($1, $2)', [dup, keep])).rejects.toThrow(
+      /matching drink/
+    );
+    expect(await rows('select status from public.cafes where id = $1', [dup])).toEqual([
+      { status: 'approved' },
+    ]);
+  });
+
+  it('hides added_by and the reviewer note from visitors but not from the adder', async () => {
+    const c = await cafe();
+    await expect(
+      asRows(null, 'select added_by from public.cafes where id = $1', [c])
+    ).rejects.toThrow(/permission denied/);
+    await expect(asRows(null, 'select review_note from public.drinks')).rejects.toThrow(
+      /permission denied/
+    );
+    await expect(asRows(null, 'select * from public.cafes')).rejects.toThrow(/permission denied/);
+    expect(
+      await asRows(null, 'select name, status from public.cafes where id = $1', [c])
+    ).toHaveLength(1);
+
+    const mine = (
+      await call(
+        ALICE,
+        `insert into public.cafes (name, city_slug) values ($1, 'singapore') returning id`,
+        [unique('Mine')]
+      )
+    ).rows[0] as { id: string };
+    expect(
+      await asRows(ALICE, 'select added_by, review_note from public.cafes where id = $1', [mine.id])
+    ).toEqual([{ added_by: ALICE, review_note: null }]);
+  });
+
+  it('keeps the internal merge and the admin RPCs out of reach', async () => {
+    const c = await cafe();
+    const a = await drink(c);
+    const b = await drink(c);
+    for (const who of [null, ALICE])
+      await expect(call(who, 'select internal.merge_drink_into ($1, $2)', [a, b])).rejects.toThrow(
+        /permission denied/
+      );
+    for (const sql of [
+      'select public.update_cafe ($1, \'{"name":"X"}\')',
+      'select public.update_drink ($1, \'{"name":"X"}\')',
+      'select public.merge_cafe ($1, $1)',
+      "select public.review_cafe ($1, 'approved')",
+    ])
+      await expect(call(null, sql, [c])).rejects.toThrow(/permission denied/);
+    await expect(
+      call(ALICE, 'select public.update_cafe ($1, \'{"name":"X"}\')', [c])
+    ).rejects.toThrow(/Only admins/);
+  });
+
+  it('an adder cannot change status on their own café or drink', async () => {
+    const mine = (
+      await call(
+        ALICE,
+        `insert into public.cafes (name, city_slug) values ($1, 'singapore') returning id`,
+        [unique('Self-approve')]
+      )
+    ).rows[0] as { id: string };
+    await expect(
+      call(ALICE, `update public.cafes set status = 'approved' where id = $1`, [mine.id])
+    ).rejects.toThrow(/permission denied/);
+    const d = (
+      await call(
+        ALICE,
+        `insert into public.drinks (cafe_id, name, base, style, serving) values ($1, 'Mine', 'matcha', 'latte', 'hot') returning id`,
+        [mine.id]
+      )
+    ).rows[0] as { id: string };
+    await expect(
+      call(ALICE, `update public.drinks set status = 'approved' where id = $1`, [d.id])
+    ).rejects.toThrow(/permission denied/);
+  });
+
+  it("shows no other person's pending drink or its reviews", async () => {
+    const c = await cafe();
+    const pending = (
+      await call(
+        ALICE,
+        `insert into public.drinks (cafe_id, name, base, style, serving) values ($1, $2, 'matcha', 'latte', 'hot') returning id`,
+        [c, unique('Pending')]
+      )
+    ).rows[0] as { id: string };
+    await call(ALICE, 'insert into public.reviews (user_id, drink_id, stars) values ($1, $2, 4)', [
+      ALICE,
+      pending.id,
+    ]);
+    const q = 'select id from public.drink_reviews ($1)';
+    expect(await asRows(BOB, q, [pending.id])).toEqual([]);
+    expect(await asRows(null, q, [pending.id])).toEqual([]);
+    expect(await asRows(ALICE, q, [pending.id])).toHaveLength(1);
+    expect(
+      await asRows(BOB, 'select id from public.reviews where drink_id = $1', [pending.id])
+    ).toEqual([]);
+  });
+
+  it('only lets a suggestion name an approved tea', async () => {
+    const c = await cafe();
+    const pendingTea = (
+      await rows<{ id: string }>(
+        `insert into public.products (name, brand, category, status)
+         values ($1, 'Farm', 'hojicha', 'pending') returning id`,
+        [unique('Pending tea')]
+      )
+    )[0].id;
+    const add = (teaId: string) =>
+      call(
+        ALICE,
+        `insert into public.drinks (cafe_id, name, base, style, serving, tea_product_id)
+         values ($1, $2, 'hojicha', 'latte', 'hot', $3)`,
+        [c, unique('Tea Latte'), teaId]
+      );
+    await expect(add(pendingTea)).rejects.toThrow(/row-level security/);
+    await add(await tea(unique('Approved tea')));
+  });
+
+  it('update_cafe and update_drink edit allowed fields, refuse the rest, and are audited', async () => {
+    const c = await cafe({ name: 'Old Name' });
+    const d = await drink(c, { name: 'Old Drink' });
+
+    await call(ADMIN, `select public.update_cafe ($1, $2::jsonb)`, [
+      c,
+      JSON.stringify({ name: 'New Name', area: 'Tiong Bahru', lat: 1.28, instagram_handle: '' }),
+    ]);
+    expect(
+      await rows('select name, area, lat, slug from public.cafes where id = $1', [c])
+    ).toMatchObject([{ name: 'New Name', area: 'Tiong Bahru', lat: 1.28 }]);
+    await expect(
+      call(ADMIN, `select public.update_cafe ($1, '{"status":"approved"}')`, [c])
+    ).rejects.toThrow(/Cannot edit status/);
+    await expect(
+      call(ADMIN, `select public.update_cafe ($1, '{"name":"x"}')`, [crypto.randomUUID()])
+    ).rejects.toThrow(/No such café/);
+
+    const teaId = await tea(unique('Linked tea'));
+    await call(ADMIN, `select public.update_drink ($1, $2::jsonb)`, [
+      d,
+      JSON.stringify({ name: 'New Drink', price: 7.5, tea_product_id: teaId }),
+    ]);
+    expect(
+      await rows(
+        'select name, price::float as price, tea_product_id from public.drinks where id = $1',
+        [d]
+      )
+    ).toEqual([{ name: 'New Drink', price: 7.5, tea_product_id: teaId }]);
+    await expect(
+      call(ADMIN, `select public.update_drink ($1, '{"cafe_id":"${c}"}')`, [d])
+    ).rejects.toThrow(/Cannot edit cafe_id/);
+
+    const logged = await rows<{ actor_id: string }>(
+      `select actor_id from public.audit_log
+       where table_name = 'drinks' and action = 'UPDATE' and new_row ->> 'id' = $1`,
+      [d]
+    );
+    expect(logged.at(-1)?.actor_id).toBe(ADMIN);
   });
 });

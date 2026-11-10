@@ -132,6 +132,8 @@ declare
   candidate text := base;
   n integer := 1;
 begin
+  -- Two simultaneous inserts of one name would otherwise both pick the same free slug.
+  perform pg_advisory_xact_lock (hashtext ('cafe-slug:' || base));
   while exists (select 1 from public.cafes where slug = candidate) loop
     n := n + 1;
     candidate := base || '-' || n;
@@ -151,6 +153,7 @@ declare
   candidate text := base;
   n integer := 1;
 begin
+  perform pg_advisory_xact_lock (hashtext ('drink-slug:' || new.cafe_id::text || ':' || base));
   while exists (
     select 1 from public.drinks where cafe_id = new.cafe_id and slug = candidate
   ) loop
@@ -203,6 +206,8 @@ begin
   if new.added_by is null or new.status <> 'pending' then
     return new;
   end if;
+  -- Serialise one person's inserts so parallel requests cannot all pass the count.
+  perform pg_advisory_xact_lock (hashtext (tg_table_name || ':' || new.added_by::text));
   execute format(
     'select count(*) from public.%I where added_by = $1 and status = ''pending''',
     tg_table_name
@@ -249,6 +254,27 @@ security definer set search_path = '' as $$
   )
 $$;
 
+-- Who may see a drink and its reviews: everyone for an approved drink at an approved café,
+-- the adder for their own pending one, admins for all. A rejected café hides its drinks.
+create function public.can_view_drink (drink uuid) returns boolean language sql stable
+security definer set search_path = '' as $$
+  select public.is_admin ()
+    or public.can_engage_drink (drink)
+      and exists (
+        select 1 from public.drinks d
+        join public.cafes c on c.id = d.cafe_id
+        where d.id = drink and (d.status = 'pending' or c.status = 'approved')
+      )
+    or exists (
+      select 1 from public.drinks d
+      join public.cafes c on c.id = d.cafe_id
+      where d.id = drink and d.status = 'approved' and c.status = 'approved'
+    )
+$$;
+
+revoke execute on function public.can_view_drink (uuid) from public;
+grant execute on function public.can_view_drink (uuid) to anon, authenticated;
+
 revoke execute on function public.can_engage_cafe (uuid) from public, anon;
 revoke execute on function public.can_engage_drink (uuid) from public, anon;
 grant execute on function public.can_engage_cafe (uuid) to authenticated;
@@ -262,7 +288,18 @@ alter table public.drinks enable row level security;
 
 revoke all on public.cafes from anon, authenticated;
 revoke all on public.drinks from anon, authenticated;
-grant select on public.cafes, public.drinks to anon, authenticated;
+-- Visitors do not get who added a row, the reviewer's note or when it was reviewed; signed-in
+-- users do (their own rows and the admin queue need them), so a visitor's query must name its
+-- columns rather than select *.
+grant select (
+  id, slug, name, city_slug, area, address, lat, lng, instagram_handle, website_url, status,
+  merged_into, created_at, updated_at
+) on public.cafes to anon;
+grant select (
+  id, cafe_id, slug, name, base, style, serving, price, currency, photo_url, photo_credit,
+  tea_product_id, status, merged_into, created_at, updated_at
+) on public.drinks to anon;
+grant select on public.cafes, public.drinks to authenticated;
 grant insert on public.cafes, public.drinks to authenticated;
 
 create policy "approved cafés are viewable by everyone"
@@ -295,9 +332,12 @@ create policy "signed-in users can suggest cafés for review"
     and review_note is null
   );
 
-create policy "approved drinks are viewable by everyone"
+create policy "approved drinks at approved cafés are viewable by everyone"
   on public.drinks for select
-  using (status = 'approved');
+  using (
+    status = 'approved'
+    and exists (select 1 from public.cafes c where c.id = cafe_id and c.status = 'approved')
+  );
 
 create policy "merged drinks are viewable so their links can forward"
   on public.drinks for select
@@ -326,6 +366,7 @@ create policy "signed-in users can suggest drinks for review"
     and review_note is null
     and photo_url is null
     and photo_credit is null
+    and (tea_product_id is null or public.is_approved_product (tea_product_id))
     and public.can_engage_cafe (cafe_id)
   );
 
@@ -337,6 +378,12 @@ add column bio text check (char_length(bio) <= 280);
 
 -- is_trusted_taster is deliberately outside every grant: only set_trusted_taster writes it.
 grant update (instagram_handle, bio) on public.profiles to authenticated;
+
+-- The handle and bio are personal data; the log does not copy them.
+drop trigger audit_profiles on public.profiles;
+create trigger audit_profiles
+after insert or update or delete on public.profiles
+for each row execute function public.audit_row_change ('email', 'instagram_handle', 'bio');
 
 -- A taster score must always have visible reviews behind it (§7.5.2).
 create function public.keep_taster_public () returns trigger language plpgsql
@@ -408,6 +455,31 @@ create policy "reviews are insertable by their owner"
     and (
       (product_id is not null and public.can_engage_product (product_id))
       or (drink_id is not null and public.can_engage_drink (drink_id))
+    )
+  );
+
+-- A review of a drink is readable only where the drink is: a pending or rejected drink, or one
+-- at a rejected café, keeps its reviews to the adder and admins. Authors always read their own.
+drop policy "reviews by public tasters are viewable by everyone" on public.reviews;
+drop policy "reviews are viewable unless the author is private" on public.reviews;
+
+create policy "reviews by public tasters are viewable by everyone"
+  on public.reviews for select
+  to anon
+  using (
+    (user_id is null or public.is_public_profile (user_id))
+    and (drink_id is null or public.can_view_drink (drink_id))
+  );
+
+create policy "reviews are viewable unless the author is private"
+  on public.reviews for select
+  to authenticated
+  using (
+    user_id = auth.uid ()
+    or public.is_admin ()
+    or (
+      (user_id is null or public.is_public_profile (user_id))
+      and (drink_id is null or public.can_view_drink (drink_id))
     )
   );
 
@@ -649,9 +721,12 @@ with (security_invoker = false) as
 select
   c.id as cafe_id,
   count(distinct d.id)::integer as drink_count,
-  count(r.id) filter (where r.by_trusted_taster)::integer as taster_count,
+  -- People, not reviews: someone who rated three drinks counts once.
+  count(distinct coalesce(r.user_id, r.id)) filter (where r.by_trusted_taster)::integer
+    as taster_count,
   (avg(r.stars) filter (where r.by_trusted_taster))::numeric(3, 2) as taster_avg,
-  count(r.id) filter (where not r.by_trusted_taster)::integer as community_count,
+  count(distinct coalesce(r.user_id, r.id)) filter (where not r.by_trusted_taster)::integer
+    as community_count,
   (avg(r.stars) filter (where not r.by_trusted_taster))::numeric(3, 2) as community_avg
 from public.cafes c
 left join public.drinks d on d.cafe_id = c.id and d.status = 'approved'
@@ -708,11 +783,7 @@ language sql stable security definer set search_path = '' as $$
       ) as shown
     from internal.latest_reviews r
     where r.drink_id = drink
-      and (
-        exists (select 1 from public.drinks d where d.id = drink and d.status = 'approved')
-        or public.can_engage_drink (drink)
-        or public.is_admin ()
-      )
+      and public.can_view_drink (drink)
   )
   select
     v.id,
@@ -771,6 +842,13 @@ begin
   perform public.require_admin ();
   if decision not in ('approved', 'rejected') then
     raise exception 'Decision must be approved or rejected.' using errcode = '22023';
+  end if;
+  if decision = 'approved' and not exists (
+    select 1 from public.drinks d
+    join public.cafes c on c.id = d.cafe_id
+    where d.id = drink and c.status = 'approved'
+  ) then
+    raise exception 'Approve the café first.' using errcode = '22023';
   end if;
   update public.drinks
   set status = decision, reviewed_at = now(), review_note = nullif(btrim(note), '')
@@ -853,6 +931,11 @@ begin
   if kept_name is null then
     raise exception 'Merge into an approved café.' using errcode = '22023';
   end if;
+  -- Drinks are priced in their city's currency, so a merge across cities would mislabel them.
+  if (select city_slug from public.cafes where id = duplicate)
+    is distinct from (select city_slug from public.cafes where id = keep) then
+    raise exception 'Cafés in different cities cannot be merged.' using errcode = '22023';
+  end if;
 
   for d in select id, slug, name from public.drinks where cafe_id = duplicate loop
     select k.id into clash
@@ -861,6 +944,10 @@ begin
       and (k.slug = d.slug or lower(btrim(k.name)) = lower(btrim(d.name)))
     limit 1;
     if clash is not null then
+      if (select status from public.drinks where id = clash) <> 'approved' then
+        raise exception 'Approve or reject the café''s matching drink "%" first.', d.name
+          using errcode = '22023';
+      end if;
       -- It stays under the duplicate, rejected and forwarding: moving it would repeat the slug.
       perform internal.merge_drink_into (d.id, clash);
     else
@@ -891,3 +978,147 @@ grant execute on function public.review_drink (uuid, text, text) to authenticate
 grant execute on function public.merge_cafe (uuid, uuid) to authenticated;
 grant execute on function public.merge_drink (uuid, uuid) to authenticated;
 grant execute on function public.set_trusted_taster (uuid, boolean) to authenticated;
+
+-- The internal merge has no admin check of its own: only the definer functions above call it.
+revoke execute on function internal.merge_drink_into (uuid, uuid) from public, anon, authenticated;
+
+-- === admin: edit details ===
+-- Slug, status, credit and review fields are not editable here. fields holds only the keys to
+-- change; an empty string clears an optional text field.
+create function public.update_cafe (cafe uuid, fields jsonb)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  allowed text[] := array[
+    'name', 'area', 'address', 'lat', 'lng', 'instagram_handle', 'website_url'
+  ];
+  unknown text;
+begin
+  perform public.require_admin ();
+  select k into unknown from jsonb_object_keys (fields) k where k <> all (allowed) limit 1;
+  if unknown is not null then
+    raise exception 'Cannot edit %.', unknown using errcode = '22023';
+  end if;
+  update public.cafes
+  set
+    name = case when fields ? 'name' then fields ->> 'name' else name end,
+    area = case when fields ? 'area' then nullif(btrim(fields ->> 'area'), '') else area end,
+    address = case when fields ? 'address' then nullif(btrim(fields ->> 'address'), '') else address end,
+    lat = case when fields ? 'lat' then (fields ->> 'lat')::double precision else lat end,
+    lng = case when fields ? 'lng' then (fields ->> 'lng')::double precision else lng end,
+    instagram_handle = case
+      when fields ? 'instagram_handle' then nullif(btrim(fields ->> 'instagram_handle'), '')
+      else instagram_handle
+    end,
+    website_url = case
+      when fields ? 'website_url' then nullif(btrim(fields ->> 'website_url'), '')
+      else website_url
+    end
+  where id = cafe;
+  if not found then
+    raise exception 'No such café.' using errcode = 'P0002';
+  end if;
+end;
+$$;
+
+create function public.update_drink (drink uuid, fields jsonb)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  allowed text[] := array[
+    'name', 'base', 'style', 'serving', 'price', 'photo_url', 'photo_credit', 'tea_product_id'
+  ];
+  unknown text;
+begin
+  perform public.require_admin ();
+  select k into unknown from jsonb_object_keys (fields) k where k <> all (allowed) limit 1;
+  if unknown is not null then
+    raise exception 'Cannot edit %.', unknown using errcode = '22023';
+  end if;
+  update public.drinks
+  set
+    name = case when fields ? 'name' then fields ->> 'name' else name end,
+    base = case when fields ? 'base' then fields ->> 'base' else base end,
+    style = case when fields ? 'style' then fields ->> 'style' else style end,
+    serving = case when fields ? 'serving' then fields ->> 'serving' else serving end,
+    price = case when fields ? 'price' then (fields ->> 'price')::numeric else price end,
+    photo_url = case
+      when fields ? 'photo_url' then nullif(btrim(fields ->> 'photo_url'), '')
+      else photo_url
+    end,
+    photo_credit = case
+      when fields ? 'photo_credit' then nullif(btrim(fields ->> 'photo_credit'), '')
+      else photo_credit
+    end,
+    tea_product_id = case
+      when fields ? 'tea_product_id' then nullif(fields ->> 'tea_product_id', '')::uuid
+      else tea_product_id
+    end
+  where id = drink;
+  if not found then
+    raise exception 'No such drink.' using errcode = 'P0002';
+  end if;
+end;
+$$;
+
+revoke execute on function public.update_cafe (uuid, jsonb) from public, anon;
+revoke execute on function public.update_drink (uuid, jsonb) from public, anon;
+grant execute on function public.update_cafe (uuid, jsonb) to authenticated;
+grant execute on function public.update_drink (uuid, jsonb) to authenticated;
+
+-- === delete_my_account: a deleted taster stays unidentifiable ===
+-- Their reviews stay as anonymous ratings, but lose the Instagram post link (which names them)
+-- and the taster stamp, so the badge and link cannot point back. One statement, so the
+-- taster-rules trigger never sees a taster review without its link.
+create or replace function public.delete_my_account () returns void language plpgsql
+security definer set search_path = '' as $$
+declare
+  me uuid := auth.uid ();
+  me_text text := me::text;
+  person_keys text[] := array[
+    'user_id', 'added_by', 'follower_id', 'followee_id', 'blocker_id', 'blocked_id',
+    'reporter_id', 'actor_id'
+  ];
+  my_reviews text[];
+begin
+  if me is null then
+    raise exception 'Sign in to delete your account.' using errcode = '42501';
+  end if;
+
+  select coalesce(array_agg(id::text), '{}') into my_reviews
+  from public.reviews where user_id = me;
+
+  update public.reviews set photo_url = null where user_id = me and photo_url is not null;
+  update public.reviews
+  set by_trusted_taster = false, instagram_url = null, disclosure = 'none'
+  where user_id = me and (by_trusted_taster or instagram_url is not null or disclosure <> 'none');
+  delete from auth.users where id = me;
+
+  update public.audit_log set actor_id = null where actor_id = me;
+  -- A review photo's path holds the person's id.
+  update public.audit_log set old_row = old_row - 'photo_url'
+  where old_row ->> 'photo_url' like '%/' || me_text || '/%';
+  update public.audit_log set new_row = new_row - 'photo_url'
+  where new_row ->> 'photo_url' like '%/' || me_text || '/%';
+  -- The post link, disclosure and taster stamp of their reviews, in every logged version.
+  update public.audit_log
+  set
+    old_row = old_row - 'instagram_url' - 'disclosure' - 'by_trusted_taster',
+    new_row = new_row - 'instagram_url' - 'disclosure' - 'by_trusted_taster'
+  where table_name = 'reviews'
+    and (old_row ->> 'id' = any (my_reviews) or new_row ->> 'id' = any (my_reviews));
+  -- A profile row's own id is the person, so it goes too, with their name, handle and bio.
+  update public.audit_log
+  set old_row = old_row - person_keys - 'display_name' - 'instagram_handle' - 'bio'
+    - case when table_name = 'profiles' then 'id' else '' end
+  where exists (
+      select 1 from jsonb_each_text(old_row) e where e.key = any (person_keys) and e.value = me_text
+    )
+    or (table_name = 'profiles' and old_row ->> 'id' = me_text);
+  update public.audit_log
+  set new_row = new_row - person_keys - 'display_name' - 'instagram_handle' - 'bio'
+    - case when table_name = 'profiles' then 'id' else '' end
+  where exists (
+      select 1 from jsonb_each_text(new_row) e where e.key = any (person_keys) and e.value = me_text
+    )
+    or (table_name = 'profiles' and new_row ->> 'id' = me_text);
+end;
+$$;
