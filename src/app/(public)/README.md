@@ -17,7 +17,7 @@ The "Log a drink" buttons on the home page, Explore and the journal open `LogDia
 
 `cafes/` holds the café list, café pages and drink pages (see its README).
 
-`top/` holds the drink top-lists index (per city, base and style) and `top/[slug]/` one drink list (`singapore-hojicha-latte`); tea lists live under `top/teas/`, and an old `/top/<tea-slug>` is a 308 to `/top/teas/<slug>`. Home reads `?city=` through `resolveCity`, else the city cookie, else Singapore.
+`top/` holds the drink top-lists index (per city, base and style) and `top/[slug]/` one drink list (`singapore-hojicha-latte`); tea lists live under `top/teas/`, and an old `/top/<tea-slug>` is a 308 to `/top/teas/<slug>`. The "No drinks rated yet" panel shows whenever no café rail (taster reviews, top lattes, areas, feed) renders. Home reads `?city=` through `resolveCity`, else the city cookie, else Singapore.
 
 `tasters/` lists the trusted tasters (one quiet line when there are none) and `about/how-we-rate/` explains the taster and community scores and the disclosure labels in plain words.
 
