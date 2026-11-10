@@ -7,7 +7,7 @@ origin for absolute URLs (the base URL, else Vercel's production domain, else lo
 routes (`/`, `/explore`, `/regions`, `/regions/supply`, `/journal`, `/learn`, `/sell`, `/account`); dynamic product pages are built inline as `/products/<id>`, and Learn's recipe and guide paths by `features/learn`'s `recipeHref` / `guideHref`.
 
 `PAGE_ROUTES.TOP` is the top-lists index.
-`PAGE_ROUTES.SHOPS` is `/shops`, the in-person shop map.
+`PAGE_ROUTES.SHOPS` is `/shops`, the in-person shop map; `PAGE_ROUTES.CAFES` is `/cafes`, the café list.
 
 ## Contents
 

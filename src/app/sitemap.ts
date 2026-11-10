@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { connection } from 'next/server';
 
+import { listCafeSitemapEntries } from '@/features/cafes';
 import { buildTopLists } from '@/features/discovery';
 import {
   COURSES,
@@ -20,7 +21,10 @@ import { PAGE_ROUTES } from '@/lib/constants/routes';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
   const supabase = await createClient();
-  const catalogue = await listCatalogue(supabase);
+  const [catalogue, cafeEntries] = await Promise.all([
+    listCatalogue(supabase),
+    listCafeSitemapEntries(supabase),
+  ]);
 
   const pages = [
     PAGE_ROUTES.HOME,
@@ -29,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.REGIONS,
     PAGE_ROUTES.SUPPLY,
     PAGE_ROUTES.SHOPS,
+    PAGE_ROUTES.CAFES,
     PAGE_ROUTES.LEARN,
     ...(MARKETPLACE_ENABLED ? [PAGE_ROUTES.SELL] : []),
     // Only lists with enough rated teas exist; the rest return not-found and stay out.
@@ -44,5 +49,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${SITE_URL}/products/${tea.id}`,
     lastModified: tea.createdAt,
   }));
-  return [...pages, ...teas];
+  const cafes = cafeEntries.map((entry) => ({
+    url: `${SITE_URL}${entry.path}`,
+    lastModified: entry.lastModified,
+  }));
+  return [...pages, ...teas, ...cafes];
 }

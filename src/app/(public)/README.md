@@ -16,12 +16,15 @@ The layout renders its pages inside `SiteShell`, whose `main` is the skip link's
 
 Home titles a shelf "Matcha to try" / "Hojicha to try" while none of its teas is rated, rather than "Top-rated".
 
+`cafes/` holds the café list, café pages and drink pages (see its README).
+
 `top/` holds the top-lists index and `top/[slug]/` one list ("Top matcha", "Best value hojicha", "Top from Uji"); a list below its threshold (5 teas with 3 ratings each) is absent from the index and the sitemap and its page is `notFound()`. Home's matcha and hojicha shelves send "See all" to their top list once it exists.
 
 ## Contents
 
 - `account/`
 - `admin/`
+- `cafes/`
 - `error.tsx`
 - `layout.tsx`
 - `loading.tsx`

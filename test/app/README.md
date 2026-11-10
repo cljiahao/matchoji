@@ -13,7 +13,7 @@ private, unknown, and their stats strip: shown to visitors of a public profile a
 facts, photos, community reviews, stock report and shop link, where to buy, awaiting-review and rejected notes, who may rate a pending tea, malformed ids, merged duplicates forwarding, the match summary, review reactions, a priced tea's price row, the freshness hint for an opened tea), the journal's signed-out, empty and filled states (with the stats strip's tasting count and Your taste),
 loading routes, the public error boundary, and the OAuth callback's redirect handling.
 
-`seo.test.ts` covers the sitemap (browse, `/top`, Learn, course and tea pages, and a top list only once enough teas are rated) and robots rules. `learn.test.tsx`
+`seo.test.ts` covers the sitemap (browse, `/top`, `/cafes`, approved café and drink pages, Learn, course and tea pages, and a top list only once enough teas are rated) and robots rules. `learn.test.tsx`
 covers the Learn index (courses, recipes, guides), course and lesson pages (outline, practice,
 previous/next, the done button, 404s), recipe pages (brew numbers, steps, tips, the pre-filled log button's
 sign-in prompt, 404s) and guide pages. `config.test.ts` checks the proxy skips

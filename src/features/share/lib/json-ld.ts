@@ -40,3 +40,60 @@ export function teaJsonLd(tea: LdTea): Record<string, unknown> {
 export function serializeJsonLd(data: Record<string, unknown>): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
+
+interface LdCafe {
+  name: string;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+  instagramHandle: string | null;
+  websiteUrl: string | null;
+  // Only the taster score is claimed: it is the one with a named, disclosed source.
+  tasterAvg: number | null;
+  tasterCount: number;
+}
+
+// schema.org CafeOrCoffeeShop. aggregateRating needs at least one taster review behind it, for
+// the same reason teaJsonLd leaves it out of an unrated tea.
+export function cafeJsonLd(cafe: LdCafe): Record<string, unknown> {
+  const rated = cafe.tasterAvg !== null && cafe.tasterCount > 0;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CafeOrCoffeeShop',
+    name: cafe.name,
+    ...(cafe.address && { address: cafe.address }),
+    ...(cafe.lat !== null &&
+      cafe.lng !== null && {
+        geo: { '@type': 'GeoCoordinates', latitude: cafe.lat, longitude: cafe.lng },
+      }),
+    ...(cafe.websiteUrl && { url: cafe.websiteUrl }),
+    ...(cafe.instagramHandle && {
+      sameAs: [`https://www.instagram.com/${cafe.instagramHandle}/`],
+    }),
+    ...(rated && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: Number(cafe.tasterAvg?.toFixed(1)),
+        reviewCount: cafe.tasterCount,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }),
+  };
+}
+
+// A menu item has no rating of its own in schema.org, so none is claimed.
+export function drinkJsonLd(drink: {
+  name: string;
+  slug: string;
+  cafeName: string;
+  cafeSlug: string;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MenuItem',
+    name: drink.name,
+    description: `${drink.name} at ${drink.cafeName}`,
+    url: `${SITE_URL}/cafes/${drink.cafeSlug}/${drink.slug}`,
+  };
+}
