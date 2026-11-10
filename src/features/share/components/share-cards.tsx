@@ -226,6 +226,7 @@ export function TeaCard({ tea }: { tea: TeaCardData }) {
 interface ProfileCardProps {
   name: string;
   teas: number;
+  drinks?: number;
   // Only a trusted taster's card carries the badge, bio and handle; the caller passes the handle
   // only after it passes the handle pattern.
   taster?: { bio: string | null; handle: string | null };
@@ -235,7 +236,7 @@ const BIO_LIMIT = 140;
 const clip = (text: string) =>
   text.length > BIO_LIMIT ? `${text.slice(0, BIO_LIMIT - 1).trimEnd()}…` : text;
 
-export function ProfileCard({ name, teas, taster }: ProfileCardProps) {
+export function ProfileCard({ name, teas, drinks = 0, taster }: ProfileCardProps) {
   return (
     <div
       style={{
@@ -265,7 +266,9 @@ export function ProfileCard({ name, teas, taster }: ProfileCardProps) {
           {name}
         </div>
         <div style={{ display: 'flex', marginTop: 24, fontSize: 52, color: OG.mutedInk }}>
-          {teas} {teas === 1 ? 'tea' : 'teas'} rated
+          {drinks > 0 && `${drinks} ${drinks === 1 ? 'drink' : 'drinks'} rated`}
+          {drinks > 0 && teas > 0 && ' · '}
+          {(teas > 0 || drinks === 0) && `${teas} ${teas === 1 ? 'tea' : 'teas'} rated`}
         </div>
         {taster?.bio && (
           <div style={{ display: 'flex', marginTop: 20, fontSize: 32, color: OG.mutedInk }}>

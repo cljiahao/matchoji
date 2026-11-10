@@ -35,7 +35,7 @@ vi.mock('@/features/cafes', async (importOriginal) => ({
   listCafes: (...args: unknown[]) => state.cafes(...args),
 }));
 
-import Home from './page';
+import Home, { generateMetadata } from './page';
 
 const scores = {
   tasterAvg: 4.5,
@@ -225,5 +225,31 @@ describe('Home', () => {
     state.user = { id: 'u1' };
     render(await Home(search()));
     expect(screen.getByRole('region', { name: 'From people you follow' })).toBeInTheDocument();
+  });
+});
+
+describe('Home metadata', () => {
+  it('has its own title and description rather than the layout default', async () => {
+    const meta = await generateMetadata(search());
+    expect(meta.title).toEqual({
+      absolute: 'Matchoji · The trusted guide to hojicha and matcha drinks in Singapore and JB',
+    });
+    expect(meta.description).toContain('rated drink by drink');
+  });
+
+  it('names a self-referencing canonical per city', async () => {
+    expect((await generateMetadata(search({ city: 'johor-bahru' }))).alternates?.canonical).toBe(
+      '/?city=johor-bahru'
+    );
+    expect((await generateMetadata(search({ city: 'singapore' }))).alternates?.canonical).toBe(
+      '/?city=singapore'
+    );
+  });
+
+  it('falls back to the cookie city, then Singapore', async () => {
+    state.cookie = 'johor-bahru';
+    expect((await generateMetadata(search())).alternates?.canonical).toBe('/?city=johor-bahru');
+    state.cookie = undefined;
+    expect((await generateMetadata(search())).alternates?.canonical).toBe('/?city=singapore');
   });
 });

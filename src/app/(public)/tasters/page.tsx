@@ -1,21 +1,32 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { connection } from 'next/server';
+import { cache } from 'react';
 
+import { AddCafeCta } from '@/components/widgets/log-dialog';
 import { drinkHref } from '@/features/reviews';
 import { InstagramHandleLink, TrustedTasterBadge, listTasters } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
-export const metadata: Metadata = {
-  title: 'Trusted tasters',
-  description: 'The people whose hojicha and matcha drink reviews lead Matchoji’s drink pages.',
-};
+// One read per request, shared by the page and its metadata.
+const loadTasters = cache(async () => listTasters(await createClient()));
+
+export async function generateMetadata(): Promise<Metadata> {
+  await connection();
+  const tasters = await loadTasters();
+  return {
+    title: 'Trusted tasters',
+    description: 'The people whose hojicha and matcha drink reviews lead Matchoji’s drink pages.',
+    // An index with no tasters is a thin page; keep it out of search until there is someone to list.
+    ...(tasters.length === 0 && { robots: { index: false } }),
+  };
+}
 
 export default async function TastersPage() {
   // Tasters are granted by an admin at any time, so this opts out of prerendering.
   await connection();
-  const tasters = await listTasters(await createClient());
+  const tasters = await loadTasters();
 
   return (
     <div className="max-w-site mx-auto w-full px-6 py-10 sm:py-14">
@@ -59,9 +70,12 @@ export default async function TastersPage() {
           ))}
         </ul>
       ) : (
-        <p className="bg-muted text-muted-foreground mt-8 rounded-3xl px-6 py-10 text-center">
-          No trusted tasters yet.
-        </p>
+        <div className="bg-muted mt-8 flex flex-col items-center gap-4 rounded-3xl px-6 py-10 text-center">
+          <p className="text-muted-foreground max-w-md">
+            No trusted tasters yet. In the meantime, add the cafés you know and rate their drinks.
+          </p>
+          <AddCafeCta />
+        </div>
       )}
     </div>
   );

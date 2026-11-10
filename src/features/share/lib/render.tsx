@@ -49,7 +49,14 @@ export async function renderProfileImage(id: string) {
             : null,
       }
     : undefined;
-  return respond(<ProfileCard name={profile.name} teas={view.counts.teas} taster={taster} />);
+  return respond(
+    <ProfileCard
+      name={profile.name}
+      teas={view.counts.teas}
+      drinks={view.counts.drinks}
+      taster={taster}
+    />
+  );
 }
 
 // Same rule as the profile card: read with no session, and anything that is not a public

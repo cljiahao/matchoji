@@ -21,6 +21,8 @@ The "Log a drink" buttons on the home page, Explore and the journal open `LogDia
 
 `tasters/` lists the trusted tasters (one quiet line when there are none) and `about/how-we-rate/` explains the taster and community scores and the disclosure labels in plain words.
 
+`error.tsx` takes `reset` (the prop Next passes to an error boundary) and, with `not-found.tsx`, points to cafés, top drinks and Explore before teas.
+
 ## Contents
 
 - `account/`

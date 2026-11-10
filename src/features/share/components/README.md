@@ -8,6 +8,8 @@ The share-image layouts, drawn with inline styles and SVG because `next/og` rend
 
 `DrinkCard` words the partnership line as "n of m taster reviews were invited, gifted or paid".
 
+`ProfileCard` takes an optional `drinks` count and shows it before the tea count.
+
 ## Contents
 
 - `logo-mark.tsx`

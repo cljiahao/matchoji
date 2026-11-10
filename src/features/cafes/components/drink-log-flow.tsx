@@ -22,6 +22,8 @@ type Step = 'cafe' | 'add-cafe' | 'drink' | 'add-drink' | 'rate';
 interface DrinkLogFlowProps {
   // Set when logging from a drink's own page: skips straight to rating it.
   initialDrink?: Pick<DrinkListing, 'id' | 'name' | 'base'>;
+  // Set from an empty café list: opens on the add-café form, since there is nothing to pick.
+  startAtAddCafe?: boolean;
   onDone: () => void;
 }
 
@@ -42,11 +44,23 @@ function drinkDetail(drink: Drink): string {
   return parts.join(' · ');
 }
 
+function openingStep(
+  initialDrink: DrinkLogFlowProps['initialDrink'],
+  startAtAddCafe: boolean
+): Step {
+  if (initialDrink) return 'rate';
+  return startAtAddCafe ? 'add-cafe' : 'cafe';
+}
+
 // The café-drink path of the log dialog: pick or add a café, pick or add a drink, then rate it.
 // Closing unmounts it, so each opening starts fresh. Items the person adds wait for review but
 // are theirs to rate straight away.
-export default function DrinkLogFlow({ initialDrink, onDone }: DrinkLogFlowProps) {
-  const [step, setStep] = useState<Step>(initialDrink ? 'rate' : 'cafe');
+export default function DrinkLogFlow({
+  initialDrink,
+  startAtAddCafe = false,
+  onDone,
+}: DrinkLogFlowProps) {
+  const [step, setStep] = useState<Step>(() => openingStep(initialDrink, startAtAddCafe));
   const [cafe, setCafe] = useState<Cafe | undefined>();
   const [target, setTarget] = useState<RateTarget | undefined>(initialDrink);
   const [cafeQuery, setCafeQuery] = useState('');

@@ -17,6 +17,8 @@ Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the te
 
 `sitemap.ts` also lists `/tasters` and `/about/how-we-rate`.
 
+The root layout, web manifest and share image take their description and alt text from `SITE_DESCRIPTION` / `SITE_TAGLINE` (`lib/constants/site.ts`), so they state the café-drink positioning. `sitemap.ts` lists each city's home (`/?city=`) and, only when the city has a café, its list (`/cafes?city=`), and leaves out `/top` and `/tasters` while they are empty, matching their `noindex`. The root not-found page links to cafés first.
+
 ## Contents
 
 - `(public)/`

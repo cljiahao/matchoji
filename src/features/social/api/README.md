@@ -15,6 +15,8 @@ recording fake client.
 
 `getProfileView` also returns `isTrustedTaster`, `instagramHandle`, `bio` (blank unless the profile is public: the `public_profiles` view does that) and `drinkReviews`. `listTasters` lists trusted, public tasters with their bio, handle, drink review count and latest drink review; it counts only drinks the reader can see and is empty when there are none.
 
+`getProfileView` also counts the profile's drink reviews.
+
 ## Contents
 
 - `index.ts`

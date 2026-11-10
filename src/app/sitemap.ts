@@ -1,7 +1,14 @@
 import type { MetadataRoute } from 'next';
 import { connection } from 'next/server';
 
-import { listCafeSitemapEntries, listTopDrinkLists, topTeasHref } from '@/features/cafes';
+import {
+  CITIES,
+  cityHref,
+  listCafeSitemapEntries,
+  listCafes,
+  listTopDrinkLists,
+  topTeasHref,
+} from '@/features/cafes';
 import { buildTopLists } from '@/features/discovery';
 import {
   COURSES,
@@ -13,6 +20,7 @@ import {
   recipeHref,
 } from '@/features/learn';
 import { listCatalogue } from '@/features/products';
+import { listTasters } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
 import { MARKETPLACE_ENABLED, SITE_URL } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
@@ -21,22 +29,29 @@ import { PAGE_ROUTES } from '@/lib/constants/routes';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
   const supabase = await createClient();
-  const [catalogue, cafeEntries, drinkLists] = await Promise.all([
+  const [catalogue, cafeEntries, drinkLists, cityCafes, tasters] = await Promise.all([
     listCatalogue(supabase),
     listCafeSitemapEntries(supabase),
     listTopDrinkLists(supabase),
+    Promise.all(CITIES.map((city) => listCafes(supabase, { city: city.slug }))),
+    listTasters(supabase),
+  ]);
+  // Each city's home and café list is its own canonical URL (see the pages' generateMetadata).
+  // A list with nothing on it is noindex, so it stays out of here too.
+  const cityPages = CITIES.flatMap((city, i) => [
+    cityHref(PAGE_ROUTES.HOME, city.slug),
+    ...(cityCafes[i].length > 0 ? [cityHref(PAGE_ROUTES.CAFES, city.slug)] : []),
   ]);
 
   const pages = [
-    PAGE_ROUTES.HOME,
+    ...cityPages,
     PAGE_ROUTES.EXPLORE,
-    PAGE_ROUTES.TOP,
+    ...(drinkLists.length > 0 ? [PAGE_ROUTES.TOP] : []),
     topTeasHref(),
     PAGE_ROUTES.REGIONS,
     PAGE_ROUTES.SUPPLY,
     PAGE_ROUTES.SHOPS,
-    PAGE_ROUTES.CAFES,
-    PAGE_ROUTES.TASTERS,
+    ...(tasters.length > 0 ? [PAGE_ROUTES.TASTERS] : []),
     PAGE_ROUTES.HOW_WE_RATE,
     PAGE_ROUTES.LEARN,
     ...(MARKETPLACE_ENABLED ? [PAGE_ROUTES.SELL] : []),

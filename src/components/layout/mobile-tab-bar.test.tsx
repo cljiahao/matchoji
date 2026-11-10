@@ -23,18 +23,19 @@ beforeEach(() => {
 });
 
 describe('MobileTabBar', () => {
-  it('has five tabs in order: Home, Cafés, Log, Top, Journal', () => {
+  it('has five café-first tabs in order: Home, Cafés, Log, Top, Tasters', () => {
     renderWithQuery(<MobileTabBar />);
     const nav = screen.getByRole('navigation', { name: 'Sections' });
     expect(nav).toHaveClass('md:hidden');
     const labels = within(nav)
       .getAllByRole('listitem')
       .map((item) => item.textContent);
-    expect(labels).toEqual(['Home', 'Cafés', 'Log', 'Top', 'Journal']);
+    expect(labels).toEqual(['Home', 'Cafés', 'Log', 'Top', 'Tasters']);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Cafés' })).toHaveAttribute('href', '/cafes');
     expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute('href', '/top');
-    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
+    expect(screen.getByRole('link', { name: 'Tasters' })).toHaveAttribute('href', '/tasters');
+    expect(screen.queryByRole('link', { name: 'Journal' })).not.toBeInTheDocument();
   });
 
   it('marks the tab for the current section', () => {
@@ -48,9 +49,9 @@ describe('MobileTabBar', () => {
     expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute('aria-current', 'page');
     top.unmount();
 
-    pathname.current = '/journal';
+    pathname.current = '/tasters';
     renderWithQuery(<MobileTabBar />);
-    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Tasters' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('logs a drink from the middle tab, asking a signed-out visitor to sign in', async () => {

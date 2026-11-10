@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Providers, ThemeProvider } from '@/components/layout';
 import { RegisterServiceWorker } from '@/features/offline';
 import { SITE_URL } from '@/lib/constants/env';
+import { SITE_DESCRIPTION } from '@/lib/constants/site';
 import type { Metadata, Viewport } from 'next';
 import { Figtree } from 'next/font/google';
 import { headers } from 'next/headers';
@@ -16,7 +17,7 @@ const figtree = Figtree({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'Matchoji', template: '%s · Matchoji' },
-  description: 'Rate and discover hojicha and matcha, one cup at a time.',
+  description: SITE_DESCRIPTION,
   // './' resolves against each page's own path, so every page names itself the canonical URL and
   // a filtered Explore or a tracking query string folds into the plain page.
   alternates: { canonical: './' },

@@ -15,6 +15,8 @@ Trusted tasters (granted by an admin, see `admin`) get a "Trusted taster" badge,
 
 Also depends on `account` for the handle check.
 
+The profile view's `counts` include `drinks` (drink reviews), beside `teas`.
+
 ## Contents
 
 - `api/`

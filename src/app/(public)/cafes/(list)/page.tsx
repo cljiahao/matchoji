@@ -1,24 +1,23 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { cache } from 'react';
 
+import { AddCafeCta } from '@/components/widgets/log-dialog';
 import { TeaMap } from '@/components/widgets/tea-map';
 import {
   CITY_COOKIE,
   CafeCard,
   CafeFilters,
+  type CitySlug,
   CitySwitch,
   cafePins,
   cityBySlug,
+  cityHref,
   listCafes,
   resolveCity,
 } from '@/features/cafes';
 import { createClient } from '@/integrations/supabase/server';
-
-export const metadata: Metadata = {
-  title: 'Cafés for hojicha and matcha drinks',
-  description:
-    'Where to drink hojicha and matcha in Singapore and Johor Bahru, rated drink by drink by trusted tasters.',
-};
+import { PAGE_ROUTES } from '@/lib/constants/routes';
 
 interface CafesPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -26,6 +25,25 @@ interface CafesPageProps {
 
 const first = (value: string | string[] | undefined) =>
   typeof value === 'string' ? value : undefined;
+
+const loadCityCafes = cache(async (city: CitySlug) => listCafes(await createClient(), { city }));
+
+// The city reaches the page as a cookie as well as a query, so one URL serves both cities; the
+// canonical names the query form, which makes each city's list its own indexable page. Filtered
+// views fold into it. A city with no café is a thin page, so it stays out of search until it has one.
+export async function generateMetadata({ searchParams }: CafesPageProps): Promise<Metadata> {
+  const query = await searchParams;
+  const jar = await cookies();
+  const city = resolveCity(first(query.city), jar.get(CITY_COOKIE)?.value);
+  const cafes = await loadCityCafes(city);
+  return {
+    title: 'Cafés for hojicha and matcha drinks',
+    description:
+      'Where to drink hojicha and matcha in Singapore and Johor Bahru, rated drink by drink by trusted tasters.',
+    alternates: { canonical: cityHref(PAGE_ROUTES.CAFES, city) },
+    ...(cafes.length === 0 && { robots: { index: false } }),
+  };
+}
 
 export default async function CafesPage({ searchParams }: CafesPageProps) {
   const query = await searchParams;
@@ -68,11 +86,21 @@ export default async function CafesPage({ searchParams }: CafesPageProps) {
           </ul>
         </div>
       ) : (
-        <p className="bg-muted text-muted-foreground mt-8 rounded-3xl px-6 py-16 text-center">
-          {area || tasterOnly
-            ? `No cafés match those filters in ${cityName}.`
-            : `No cafés listed in ${cityName} yet.`}
-        </p>
+        <div className="bg-muted mt-8 flex flex-col items-center gap-4 rounded-3xl px-6 py-16 text-center">
+          <p className="text-muted-foreground">
+            {area || tasterOnly
+              ? `No cafés match those filters in ${cityName}.`
+              : `No cafés listed in ${cityName} yet.`}
+          </p>
+          {!area && !tasterOnly && (
+            <>
+              <p className="max-w-sm text-sm">
+                Know a café serving hojicha or matcha? Add it and rate its drinks to start the list.
+              </p>
+              <AddCafeCta />
+            </>
+          )}
+        </div>
       )}
     </div>
   );

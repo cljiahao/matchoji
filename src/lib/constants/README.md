@@ -11,11 +11,14 @@ routes (`/`, `/explore`, `/regions`, `/regions/supply`, `/journal`, `/learn`, `/
 
 `PAGE_ROUTES.TASTERS` is `/tasters` and `PAGE_ROUTES.HOW_WE_RATE` is `/about/how-we-rate`.
 
+`site.ts` holds `SITE_TAGLINE` and `SITE_DESCRIPTION`, the one statement of the positioning that the layout, manifest and share image reuse.
+
 ## Contents
 
 - `env.ts`
 - `index.ts`
 - `routes.ts`
+- `site.ts`
 
 ## Parent
 

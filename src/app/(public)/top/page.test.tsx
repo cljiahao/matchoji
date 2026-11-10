@@ -17,6 +17,9 @@ vi.mock('next/navigation', () => ({
     throw new Error(`NEXT_REDIRECT ${url}`);
   },
 }));
+vi.mock('@/components/widgets/log-dialog', () => ({
+  AddCafeCta: () => <button>Add a café</button>,
+}));
 vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ({}) }));
 vi.mock('@/features/products', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/features/products')>()),
@@ -99,6 +102,7 @@ describe('/top index', () => {
   it('says so with no lists yet, and still offers tea lists under At home', async () => {
     render(await TopIndexPage());
     expect(screen.getByText(/No top drinks yet/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add a café' })).toBeInTheDocument();
     const home = screen.getByRole('region', { name: 'At home' });
     expect(within(home).getByRole('link')).toHaveAttribute('href', '/top/teas');
   });

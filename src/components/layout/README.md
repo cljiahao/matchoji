@@ -22,6 +22,8 @@ Navbar, footer and tab-bar controls keep a 44px minimum touch target, including 
 
 `Providers` also turns Zod's JIT off (`z.config({ jitless: true })`): Zod's probe for `new Function` is reported as a CSP violation on every page under a policy with no `'unsafe-eval'`. `providers.test.tsx` holds that.
 
+The phone tab bar is Home, Cafés, Log, Top, Tasters: Journal lives in the account menu (`UserMenu`) and tea search behind the header's search icon, labelled "Search teas".
+
 ## Contents
 
 - `index.ts`
