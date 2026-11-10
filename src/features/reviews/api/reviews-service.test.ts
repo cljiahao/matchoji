@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
-import { listEditions, listReviews, mapReviewRow } from './reviews-service';
+import { listEditions, listReviews, mapReviewRow, type ReviewRow } from './reviews-service';
 
 const review = (id: string, userId: string) => ({
   id,
@@ -139,18 +139,40 @@ describe('listEditions', () => {
 });
 
 describe('mapReviewRow', () => {
+  const teaRow: ReviewRow = {
+    id: 'r1',
+    product_id: 'p1',
+    user_id: 'u1',
+    stars: 4,
+    notes: 'nutty',
+    photo_url: null,
+    created_at: '2026-09-01T00:00:00Z',
+    flavor_notes: ['nutty'],
+    sweetness: null,
+    umami: 4,
+    bitterness: null,
+    body: 3,
+    prep_method: 'latte',
+    dose_g: 2.5,
+    water_ml: null,
+    water_temp_c: 75,
+    tasted_on: '2026-09-01',
+    harvest_year: null,
+    flush: null,
+  };
+
   it('maps drink review fields', () => {
     const mapped = mapReviewRow(
       {
-        ...review('r1', 'u1'),
+        ...teaRow,
         product_id: null,
         drink_id: 'd1',
         instagram_url: 'https://www.instagram.com/p/Cabc123/',
         disclosure: 'gifted',
-        tea_strength: '4',
+        tea_strength: 4,
         roast: 3,
         by_trusted_taster: true,
-      } as unknown as Parameters<typeof mapReviewRow>[0],
+      },
       'Clarence'
     );
     expect(mapped).toMatchObject({
@@ -165,9 +187,7 @@ describe('mapReviewRow', () => {
   });
 
   it('reads a tea review from product_reviews, which omits the drink columns, as a plain one', () => {
-    expect(
-      mapReviewRow(review('r1', 'u1') as unknown as Parameters<typeof mapReviewRow>[0], 'A')
-    ).toMatchObject({
+    expect(mapReviewRow(teaRow, 'A')).toMatchObject({
       drinkId: null,
       instagramUrl: null,
       disclosure: 'none',

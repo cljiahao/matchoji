@@ -43,7 +43,7 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 
 `LogTastingDialog` is the trigger, the open state and the sign-in gate; the form itself is `log-tasting-flow.tsx`, loaded with `next/dynamic` when the dialog first opens, so no page carries it (or its regions query) until someone logs a tasting. Its tests warm that chunk up front.
 
-`DisclosureBadge` labels an invited, gifted or paid review ("Invited", "Gifted", "Paid partnership") and renders nothing for none; `InstagramPostLink` links out to a taster's post (new tab, `noopener noreferrer`). `ReviewItem` shows a "Trusted taster" chip, the badge and the link for drink reviews, and every other surface that lists a drink review reuses the first two.
+`DisclosureBadge` labels an invited, gifted or paid review ("Invited", "Gifted", "Paid partnership") and renders nothing for none; `InstagramPostLink` links out to a taster's post (new tab, `noopener noreferrer`) and renders nothing unless the URL is `https://www.instagram.com/...`. `ReviewItem` shows a "Trusted taster" chip, the badge and the link for drink reviews, and every other surface that lists a drink review reuses the first two.
 
 ## Contents
 
@@ -56,6 +56,7 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 - `flavor-note-picker.tsx`
 - `form-selects.tsx`
 - `index.ts`
+- `instagram-post-link.test.tsx`
 - `instagram-post-link.tsx`
 - `log-tasting-dialog.test.tsx`
 - `log-tasting-dialog.tsx`

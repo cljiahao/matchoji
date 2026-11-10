@@ -9,7 +9,7 @@ import type { Review } from '../types';
 type Client = SupabaseClient<Database>;
 type FullReviewRow = Database['public']['Tables']['reviews']['Row'];
 // product_reviews() predates drink reviews and omits their columns, which then read as a tea's defaults.
-type ReviewRow = Omit<FullReviewRow, DrinkReviewColumn> &
+export type ReviewRow = Omit<FullReviewRow, DrinkReviewColumn> &
   Partial<Pick<FullReviewRow, DrinkReviewColumn>>;
 
 export const REVIEW_COLUMNS =

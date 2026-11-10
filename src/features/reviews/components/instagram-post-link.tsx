@@ -1,7 +1,18 @@
 import { ExternalLink } from 'lucide-react';
 
+// The link is stored data, so only a real Instagram post URL is rendered as one.
+function isInstagramUrl(url: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(url);
+    return protocol === 'https:' && hostname === 'www.instagram.com';
+  } catch {
+    return false;
+  }
+}
+
 // Links out rather than embedding: Instagram's embed script would need CSP changes.
 export function InstagramPostLink({ url }: { url: string }) {
+  if (!isInstagramUrl(url)) return null;
   return (
     <a
       href={url}
