@@ -102,6 +102,15 @@ const reviewRow = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
+const drinkNode = (id: string, over: Record<string, unknown> = {}) => ({
+  id,
+  slug: `drink-${id}`,
+  cafe_id: 'c1',
+  status: 'approved',
+  merged_into: null,
+  ...over,
+});
+
 const missing = { data: null, error: { code: '42P01', message: 'no table' } };
 
 const eqCalls = (calls: { table: string; method: string; args: unknown[] }[], table: string) =>
@@ -161,7 +170,7 @@ describe('listCafes', () => {
 describe('getCafePage', () => {
   it('redirects merged café', async () => {
     const { client } = createFakeSupabase({
-      cafes: [ok(cafeRow({ merged_into: 'c9' })), ok({ slug: 'kurasu-new' })],
+      cafes: [ok(cafeRow({ merged_into: 'c9' })), ok(cafeRow({ id: 'c9', slug: 'kurasu-new' }))],
     });
     expect(await getCafePage(client, 'kurasu-bugis')).toEqual({
       kind: 'redirect',
@@ -179,6 +188,46 @@ describe('getCafePage', () => {
   it('is missing when the survivor of a merge cannot be read', async () => {
     const { client } = createFakeSupabase({
       cafes: [ok(cafeRow({ merged_into: 'c9' })), ok(null)],
+    });
+    expect(await getCafePage(client, 'kurasu-bugis')).toEqual({ kind: 'missing' });
+  });
+
+  it('follows a chain of merges to the final café in one redirect', async () => {
+    const { client } = createFakeSupabase({
+      cafes: [
+        ok(cafeRow({ id: 'a', slug: 'cafe-a', merged_into: 'b' })),
+        ok(cafeRow({ id: 'b', slug: 'cafe-b', merged_into: 'c' })),
+        ok(cafeRow({ id: 'c', slug: 'cafe-c' })),
+      ],
+    });
+    expect(await getCafePage(client, 'cafe-a')).toEqual({ kind: 'redirect', to: '/cafes/cafe-c' });
+  });
+
+  it('is missing when merges loop back on themselves', async () => {
+    const { client } = createFakeSupabase({
+      cafes: [
+        ok(cafeRow({ id: 'a', slug: 'cafe-a', merged_into: 'b' })),
+        ok(cafeRow({ id: 'b', slug: 'cafe-b', merged_into: 'a' })),
+      ],
+    });
+    expect(await getCafePage(client, 'cafe-a')).toEqual({ kind: 'missing' });
+  });
+
+  it('is missing when a merge chain is longer than the hop cap', async () => {
+    const link = (n: number) =>
+      ok(cafeRow({ id: `n${n}`, slug: `cafe-${n}`, merged_into: `n${n + 1}` }));
+    const { client } = createFakeSupabase({
+      cafes: [0, 1, 2, 3, 4, 5, 6].map(link),
+    });
+    expect(await getCafePage(client, 'cafe-0')).toEqual({ kind: 'missing' });
+  });
+
+  it('is missing when the final survivor of a merge was rejected', async () => {
+    const { client } = createFakeSupabase({
+      cafes: [
+        ok(cafeRow({ id: 'a', merged_into: 'b' })),
+        ok(cafeRow({ id: 'b', status: 'rejected' })),
+      ],
     });
     expect(await getCafePage(client, 'kurasu-bugis')).toEqual({ kind: 'missing' });
   });
@@ -225,7 +274,10 @@ describe('getDrinkPage', () => {
   it('redirects a merged drink to the survivor page', async () => {
     const { client } = createFakeSupabase({
       cafes: [ok(cafeRow()), ok({ slug: 'other-cafe' })],
-      drinks: [ok(drinkRow({ merged_into: 'd9' })), ok({ slug: 'hojicha-latte-2', cafe_id: 'c2' })],
+      drinks: [
+        ok(drinkRow({ merged_into: 'd9' })),
+        ok(drinkNode('d9', { cafe_id: 'c2', slug: 'hojicha-latte-2' })),
+      ],
     });
     expect(await getDrinkPage(client, 'kurasu-bugis', 'hojicha-latte')).toEqual({
       kind: 'redirect',
@@ -235,13 +287,103 @@ describe('getDrinkPage', () => {
 
   it('redirects to the surviving café when a merge moved the drink', async () => {
     const { client } = createFakeSupabase({
-      cafes: [ok(cafeRow({ merged_into: 'c9' })), ok({ slug: 'kurasu-new' })],
+      cafes: [ok(cafeRow({ merged_into: 'c9' })), ok(cafeRow({ id: 'c9', slug: 'kurasu-new' }))],
       drinks: ok(null),
     });
     expect(await getDrinkPage(client, 'kurasu-bugis', 'hojicha-latte')).toEqual({
       kind: 'redirect',
       to: '/cafes/kurasu-new/hojicha-latte',
     });
+  });
+
+  it('follows a merged café chain reached through a drink slug', async () => {
+    const { client } = createFakeSupabase({
+      cafes: [
+        ok(cafeRow({ id: 'a', slug: 'cafe-a', merged_into: 'b' })),
+        ok(cafeRow({ id: 'b', slug: 'cafe-b', merged_into: 'c' })),
+        ok(cafeRow({ id: 'c', slug: 'cafe-c' })),
+      ],
+      drinks: ok(null),
+    });
+    expect(await getDrinkPage(client, 'cafe-a', 'hojicha-latte')).toEqual({
+      kind: 'redirect',
+      to: '/cafes/cafe-c/hojicha-latte',
+    });
+  });
+
+  it('is missing when a merged café chain loops', async () => {
+    const { client } = createFakeSupabase({
+      cafes: [
+        ok(cafeRow({ id: 'a', merged_into: 'b' })),
+        ok(cafeRow({ id: 'b', merged_into: 'a' })),
+      ],
+      drinks: ok(null),
+    });
+    expect(await getDrinkPage(client, 'kurasu-bugis', 'hojicha-latte')).toEqual({
+      kind: 'missing',
+    });
+  });
+
+  it('follows a chain of drink merges to the final drink in one redirect', async () => {
+    const { client } = createFakeSupabase({
+      cafes: ok(cafeRow()),
+      drinks: [
+        ok(drinkRow({ id: 'd1', merged_into: 'd2' })),
+        ok(drinkNode('d2', { slug: 'drink-2', merged_into: 'd3' })),
+        ok(drinkNode('d3', { slug: 'drink-3' })),
+      ],
+    });
+    expect(await getDrinkPage(client, 'kurasu-bugis', 'hojicha-latte')).toEqual({
+      kind: 'redirect',
+      to: '/cafes/kurasu-bugis/drink-3',
+    });
+  });
+
+  it('is missing when drink merges loop, and falls back to the café when the survivor is gone or rejected', async () => {
+    const looping = createFakeSupabase({
+      cafes: ok(cafeRow()),
+      drinks: [
+        ok(drinkRow({ id: 'd1', merged_into: 'd2' })),
+        ok(drinkNode('d2', { merged_into: 'd1' })),
+      ],
+    });
+    expect(await getDrinkPage(looping.client, 'kurasu-bugis', 'hojicha-latte')).toEqual({
+      kind: 'missing',
+    });
+
+    for (const survivor of [ok(null), ok(drinkNode('d2', { status: 'rejected' }))]) {
+      const { client } = createFakeSupabase({
+        cafes: ok(cafeRow()),
+        drinks: [ok(drinkRow({ merged_into: 'd2' })), survivor],
+      });
+      expect(await getDrinkPage(client, 'kurasu-bugis', 'hojicha-latte')).toEqual({
+        kind: 'redirect',
+        to: '/cafes/kurasu-bugis',
+      });
+    }
+  });
+
+  it('shows the drink without reviews or names when their database objects are missing', async () => {
+    const noFunction = { data: null, error: { code: 'PGRST202', message: 'no function' } };
+    const { client } = createFakeSupabase({
+      cafes: ok(cafeRow()),
+      drinks: ok(drinkRow()),
+      drink_ratings: missing,
+      'rpc:drink_reviews': noFunction,
+    });
+    const page = await getDrinkPage(client, 'kurasu-bugis', 'hojicha-latte');
+    expect(page).toMatchObject({ kind: 'found', tasterReviews: [], communityReviews: [] });
+
+    const names = createFakeSupabase({
+      cafes: ok(cafeRow()),
+      drinks: ok(drinkRow()),
+      drink_ratings: ok(null),
+      'rpc:drink_reviews': ok([reviewRow({ user_id: 'u1' })]),
+      public_profiles: missing,
+    });
+    const named = await getDrinkPage(names.client, 'kurasu-bugis', 'hojicha-latte');
+    if (named.kind !== 'found') throw new Error('expected found');
+    expect(named.communityReviews[0].reviewerName).toBe('Former taster');
   });
 
   it('is missing for an unknown café, drink or rejected café', async () => {
@@ -442,5 +584,23 @@ describe('listCafeSitemapEntries', () => {
   it('returns [] before the migration is applied', async () => {
     const { client } = createFakeSupabase({ cafes: missing, drinks: missing });
     expect(await listCafeSitemapEntries(client)).toEqual([]);
+  });
+
+  it('reads every page past the 1000-row PostgREST cap and keeps each drink under its café', async () => {
+    const full = Array.from({ length: 1000 }, (_, i) =>
+      cafeRow({ id: `c${i}`, slug: `cafe-${i}` })
+    );
+    const { client, calls } = createFakeSupabase({
+      cafes: [ok(full), ok([cafeRow({ id: 'last', slug: 'cafe-last' })])],
+      drinks: [ok([drinkRow({ cafe_id: 'last', slug: 'late-drink' })])],
+    });
+    const entries = await listCafeSitemapEntries(client);
+    expect(entries).toHaveLength(1002);
+    expect(entries.at(-1)?.path).toBe('/cafes/cafe-last/late-drink');
+    const ranges = calls.filter((c) => c.table === 'cafes' && c.method === 'range');
+    expect(ranges.map((c) => c.args)).toEqual([
+      [0, 999],
+      [1000, 1999],
+    ]);
   });
 });

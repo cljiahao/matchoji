@@ -69,6 +69,11 @@ describe('cafés page', () => {
     expect(state.listCafes.mock.calls[0][1]).toMatchObject({ city: 'johor-bahru' });
   });
 
+  it('falls back to the default city for an unknown ?city=', async () => {
+    render(await CafesPage(search({ city: 'bogus' })));
+    expect(state.listCafes.mock.calls[0][1]).toMatchObject({ city: 'singapore' });
+  });
+
   it('uses the cookie without a query, and passes area and taster filters', async () => {
     state.cookie = 'johor-bahru';
     render(await CafesPage(search({ area: 'Bugis', taster: '1' })));

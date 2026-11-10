@@ -83,11 +83,40 @@ const NO_SCORES: ScorePair = {
   communityCount: 0,
 };
 
-// Migrations are applied by hand, so a reader of a newer table returns nothing until it exists;
-// every other error is real.
+// PostgREST's and Postgres's "no such function" codes, for the drink_reviews rpc.
+const MISSING_FUNCTION = new Set(['PGRST202', '42883']);
+
+// Migrations are applied by hand, so a reader of a newer table or function returns nothing until
+// it exists; every other error is real.
 function emptyOrThrow<T>(error: { code?: string }, empty: T): T {
-  if (isMissingTable(error)) return empty;
+  if (isMissingTable(error) || (error.code !== undefined && MISSING_FUNCTION.has(error.code))) {
+    return empty;
+  }
   throw error;
+}
+
+// merged_into has no cycle guard in the schema, and a chain wastes a 308 per hop, so a merge is
+// followed to its final survivor, giving up on a loop or a chain longer than this.
+const MAX_MERGE_HOPS = 5;
+
+type MergeChain<T> = { status: 'ok'; row: T } | { status: 'loop' } | { status: 'gone' };
+
+async function followMerges<T extends { id: string; merged_into: string | null }>(
+  start: T,
+  fetchById: (id: string) => Promise<T | null>
+): Promise<MergeChain<T>> {
+  const seen = new Set([start.id]);
+  let row = start;
+  for (let hops = 0; hops <= MAX_MERGE_HOPS; hops++) {
+    const target = row.merged_into;
+    if (!target) return { status: 'ok', row };
+    if (seen.has(target)) return { status: 'loop' };
+    seen.add(target);
+    const next = await fetchById(target);
+    if (!next) return { status: 'gone' };
+    row = next;
+  }
+  return { status: 'loop' };
 }
 
 // numeric columns can arrive as strings depending on PostgREST settings.
@@ -166,6 +195,23 @@ async function findCafe(supabase: Client, slug: string): Promise<CafeRow | null>
   return data;
 }
 
+async function cafeById(supabase: Client, id: string): Promise<CafeRow | null> {
+  const { data, error } = await supabase
+    .from('cafes')
+    .select(CAFE_COLUMNS)
+    .eq('id', id)
+    .maybeSingle();
+  if (error) return emptyOrThrow(error, null);
+  return data;
+}
+
+// The café a merged one finally resolves to, or null when there is none to show: a loop, a
+// survivor that cannot be read, or one that was rejected.
+async function survivingCafe(supabase: Client, merged: CafeRow): Promise<CafeRow | null> {
+  const chain = await followMerges(merged, (id) => cafeById(supabase, id));
+  return chain.status === 'ok' && chain.row.status !== 'rejected' ? chain.row : null;
+}
+
 async function cafeSlugById(supabase: Client, id: string): Promise<string | null> {
   const { data, error } = await supabase.from('cafes').select('slug').eq('id', id).maybeSingle();
   if (error) return emptyOrThrow(error, null);
@@ -231,8 +277,9 @@ export async function listCafes(
         .select('cafe_id, drink_count, taster_count, taster_avg, community_count, community_avg')
         .in('cafe_id', batch)
   );
-  if (ratingsError) return emptyOrThrow(ratingsError, []);
-  const ratingByCafe = new Map(ratings.map((r) => [r.cafe_id, r]));
+  // Without the cafe_ratings view the cafés still list, just unscored.
+  const ratingRows = ratingsError ? emptyOrThrow(ratingsError, []) : ratings;
+  const ratingByCafe = new Map(ratingRows.map((r) => [r.cafe_id, r]));
 
   const cafes = data.map((row) => {
     const rating = ratingByCafe.get(row.id);
@@ -257,8 +304,8 @@ export async function getCafePage(supabase: Client, slug: string): Promise<CafeP
   const row = await findCafe(supabase, slug);
   if (!row) return MISSING;
   if (row.merged_into) {
-    const survivor = await cafeSlugById(supabase, row.merged_into);
-    return survivor ? redirect(cafeHref(survivor)) : MISSING;
+    const survivor = await survivingCafe(supabase, row);
+    return survivor ? redirect(cafeHref(survivor.slug)) : MISSING;
   }
   if (row.status === 'rejected') return MISSING;
 
@@ -279,13 +326,13 @@ async function reviewerNames(
     userIds.flatMap((id) => (id ? [id] : [])),
     (batch) => supabase.from('public_profiles').select('id, display_name').in('id', batch)
   );
-  if (error) throw error;
+  if (error) return emptyOrThrow(error, new Map<string, string>());
   return new Map(data.map((p) => [p.id, p.display_name]));
 }
 
 async function loadDrinkReviews(supabase: Client, drinkId: string): Promise<Review[]> {
   const { data, error } = await supabase.rpc('drink_reviews', { drink: drinkId });
-  if (error) throw error;
+  if (error) return emptyOrThrow(error, []);
   const names = await reviewerNames(
     supabase,
     data.map((r) => r.user_id)
@@ -313,23 +360,34 @@ async function loadTeaProduct(
   return data;
 }
 
-// A merged drink forwards to the drink that absorbed it; if that one cannot be read, the café
-// page is the nearest page that still exists.
+type DrinkNode = Pick<DrinkRow, 'id' | 'slug' | 'cafe_id' | 'status' | 'merged_into'>;
+
+async function drinkNodeById(supabase: Client, id: string): Promise<DrinkNode | null> {
+  const { data, error } = await supabase
+    .from('drinks')
+    .select('id, slug, cafe_id, status, merged_into')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) return emptyOrThrow(error, null);
+  return data;
+}
+
+// A merged drink forwards to the drink that finally absorbed it. A loop is missing; if the
+// survivor is gone, rejected or in a café that cannot be read, the café page is the nearest page
+// that still exists.
 async function mergedDrinkRedirect(
   supabase: Client,
-  survivorId: string,
+  merged: DrinkRow,
   cafeRow: { id: string; slug: string }
-): Promise<PageRedirect> {
-  const { data: survivor, error } = await supabase
-    .from('drinks')
-    .select('slug, cafe_id')
-    .eq('id', survivorId)
-    .maybeSingle();
-  if (error) throw error;
-  if (!survivor) return redirect(cafeHref(cafeRow.slug));
+): Promise<PageRedirect | PageMissing> {
+  const chain = await followMerges<DrinkNode>(merged, (id) => drinkNodeById(supabase, id));
+  if (chain.status === 'loop') return MISSING;
+  const toCafe = redirect(cafeHref(cafeRow.slug));
+  if (chain.status === 'gone' || chain.row.status === 'rejected') return toCafe;
+  const { slug, cafe_id } = chain.row;
   const survivorCafe =
-    survivor.cafe_id === cafeRow.id ? cafeRow.slug : await cafeSlugById(supabase, survivor.cafe_id);
-  return redirect(survivorCafe ? drinkHref(survivorCafe, survivor.slug) : cafeHref(cafeRow.slug));
+    cafe_id === cafeRow.id ? cafeRow.slug : await cafeSlugById(supabase, cafe_id);
+  return survivorCafe ? redirect(drinkHref(survivorCafe, slug)) : toCafe;
 }
 
 // Every outcome other than "found" is a stable answer for an Instagram link: a merged café or
@@ -343,8 +401,8 @@ export async function getDrinkPage(
   const cafeRow = await findCafe(supabase, cafeSlug);
   if (!cafeRow) return MISSING;
   if (cafeRow.merged_into) {
-    const survivor = await cafeSlugById(supabase, cafeRow.merged_into);
-    return survivor ? redirect(drinkHref(survivor, drinkSlug)) : MISSING;
+    const survivor = await survivingCafe(supabase, cafeRow);
+    return survivor ? redirect(drinkHref(survivor.slug, drinkSlug)) : MISSING;
   }
   if (cafeRow.status === 'rejected') return MISSING;
 
@@ -357,7 +415,7 @@ export async function getDrinkPage(
   if (error) return emptyOrThrow(error, MISSING);
   if (!row) return MISSING;
 
-  if (row.merged_into) return mergedDrinkRedirect(supabase, row.merged_into, cafeRow);
+  if (row.merged_into) return mergedDrinkRedirect(supabase, row, cafeRow);
   if (row.status === 'rejected') return redirect(cafeHref(cafeRow.slug));
 
   const [{ data: rating, error: ratingError }, reviews, teaProduct] = await Promise.all([
@@ -365,11 +423,11 @@ export async function getDrinkPage(
     loadDrinkReviews(supabase, row.id),
     loadTeaProduct(supabase, row.tea_product_id),
   ]);
-  if (ratingError) throw ratingError;
+  const drinkRating = ratingError ? emptyOrThrow(ratingError, null) : rating;
 
   return {
     kind: 'found',
-    drink: { ...toDrink(row), scores: toScores(rating), cafe: cafeSummary(toCafe(cafeRow)) },
+    drink: { ...toDrink(row), scores: toScores(drinkRating), cafe: cafeSummary(toCafe(cafeRow)) },
     tasterReviews: reviews.filter((r) => r.byTrustedTaster),
     communityReviews: reviews.filter((r) => !r.byTrustedTaster),
     teaProduct,
@@ -509,32 +567,60 @@ export async function listLatestTasterDrinkReviews(
   return latestTasterReviews(supabase, await cityDrinks(supabase, { city }), limit);
 }
 
+// PostgREST caps a response at 1000 rows by default, so a larger table is read page by page.
+const SITEMAP_PAGE_SIZE = 1000;
+
+async function readAllPages<T>(
+  fetchPage: (
+    from: number,
+    to: number
+  ) => PromiseLike<{ data: T[] | null; error: { code?: string } | null }>
+): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += SITEMAP_PAGE_SIZE) {
+    const { data, error } = await fetchPage(from, from + SITEMAP_PAGE_SIZE - 1);
+    if (error) return emptyOrThrow(error, []);
+    const page = data ?? [];
+    rows.push(...page);
+    if (page.length < SITEMAP_PAGE_SIZE) return rows;
+  }
+}
+
 // Approved cafés and drinks for the sitemap. Merged ones are left out: they redirect.
 export async function listCafeSitemapEntries(supabase: Client): Promise<CafeSitemapEntry[]> {
-  const { data: cafes, error } = await supabase
-    .from('cafes')
-    .select('id, slug, updated_at')
-    .eq('status', 'approved')
-    .is('merged_into', null)
-    .order('slug');
-  if (error) return emptyOrThrow(error, []);
+  const cafes = await readAllPages((from, to) =>
+    supabase
+      .from('cafes')
+      .select('id, slug, updated_at')
+      .eq('status', 'approved')
+      .is('merged_into', null)
+      .order('slug')
+      .range(from, to)
+  );
+  // Ordered by café then slug: drink slugs are only unique within a café, so slug alone would
+  // let rows swap pages between reads.
+  const drinks = await readAllPages((from, to) =>
+    supabase
+      .from('drinks')
+      .select('cafe_id, slug, updated_at')
+      .eq('status', 'approved')
+      .is('merged_into', null)
+      .order('cafe_id')
+      .order('slug')
+      .range(from, to)
+  );
 
-  const { data: drinks, error: drinksError } = await supabase
-    .from('drinks')
-    .select('cafe_id, slug, updated_at')
-    .eq('status', 'approved')
-    .is('merged_into', null)
-    .order('slug');
-  if (drinksError) return emptyOrThrow(drinksError, []);
-
-  const slugByCafe = new Map(cafes.map((c) => [c.id, c.slug]));
+  const drinksByCafe = new Map<string, typeof drinks>();
+  for (const drink of drinks) {
+    const list = drinksByCafe.get(drink.cafe_id);
+    if (list) list.push(drink);
+    else drinksByCafe.set(drink.cafe_id, [drink]);
+  }
   return cafes.flatMap((cafe) => [
     { path: cafeHref(cafe.slug), lastModified: cafe.updated_at },
-    ...drinks
-      .filter((d) => d.cafe_id === cafe.id)
-      .map((d) => ({
-        path: drinkHref(slugByCafe.get(cafe.id) ?? cafe.slug, d.slug),
-        lastModified: d.updated_at,
-      })),
+    ...(drinksByCafe.get(cafe.id) ?? []).map((d) => ({
+      path: drinkHref(cafe.slug, d.slug),
+      lastModified: d.updated_at,
+    })),
   ]);
 }

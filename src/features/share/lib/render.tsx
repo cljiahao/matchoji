@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-import { cityBySlug, getCafePage, getDrinkPage } from '@/features/cafes';
+import { SlugSchema, cityBySlug, getCafePage, getDrinkPage } from '@/features/cafes';
 import { getPublicYear, toYearCard } from '@/features/journal';
 import { getProduct } from '@/features/products';
 import { getProfileView } from '@/features/social';
@@ -52,6 +52,7 @@ export async function renderYearImage(id: string, year: number) {
 // Like the other cards, only a page that is publicly listed gets its own image; a merged,
 // rejected, pending or unknown café shares the site card.
 export async function renderCafeImage(slug: string) {
+  if (!SlugSchema.safeParse(slug).success) return renderSiteImage();
   const page = await getCafePage(await createClient(), slug);
   if (page.kind !== 'found' || page.cafe.status !== 'approved') return renderSiteImage();
   const { cafe, scores, drinks } = page;
@@ -70,6 +71,9 @@ export async function renderCafeImage(slug: string) {
 }
 
 export async function renderDrinkImage(cafeSlug: string, drinkSlug: string) {
+  if (!SlugSchema.safeParse(cafeSlug).success || !SlugSchema.safeParse(drinkSlug).success) {
+    return renderSiteImage();
+  }
   const page = await getDrinkPage(await createClient(), cafeSlug, drinkSlug);
   if (page.kind !== 'found' || page.drink.status !== 'approved') return renderSiteImage();
   const { drink } = page;

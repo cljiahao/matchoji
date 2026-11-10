@@ -113,6 +113,21 @@ describe('drink page', () => {
     expect(screen.getByRole('link', { name: 'See the post on Instagram' })).toBeTruthy();
   });
 
+  it('shows the drink photo with alt text and its credit', async () => {
+    state.page = {
+      kind: 'found',
+      drink: { ...drink, photoUrl: 'https://x.test/d.jpg', photoCredit: '@mei' },
+      tasterReviews: [],
+      communityReviews: [],
+      teaProduct: null,
+    };
+    render(await DrinkPage(params('kurasu-bugis', 'hojicha-latte')));
+    expect(screen.getByRole('img', { name: 'Hojicha Latte at Kurasu' }).getAttribute('src')).toBe(
+      'https://x.test/d.jpg'
+    );
+    expect(screen.getByText('Photo: @mei')).toBeTruthy();
+  });
+
   it('says so when there are no reviews yet', async () => {
     state.page = {
       kind: 'found',

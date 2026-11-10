@@ -185,6 +185,12 @@ describe('renderCafeImage', () => {
     });
     expect(await isPng(await renderCafeImage('x'))).toBe(site);
   });
+
+  it('shares the site card for a malformed slug without reading the café', async () => {
+    const site = await isPng(await renderSiteImage());
+    expect(await isPng(await renderCafeImage('Not A Slug'))).toBe(site);
+    expect(getCafePage).not.toHaveBeenCalled();
+  });
 });
 
 describe('renderDrinkImage', () => {
@@ -214,5 +220,12 @@ describe('renderDrinkImage', () => {
       teaProduct: null,
     });
     expect(await isPng(await renderDrinkImage('a', 'b'))).toBe(site);
+  });
+
+  it('shares the site card for a malformed slug without reading the drink', async () => {
+    const site = await isPng(await renderSiteImage());
+    expect(await isPng(await renderDrinkImage('Bad Slug', 'hojicha-latte'))).toBe(site);
+    expect(await isPng(await renderDrinkImage('kurasu-bugis', '../x'))).toBe(site);
+    expect(getDrinkPage).not.toHaveBeenCalled();
   });
 });

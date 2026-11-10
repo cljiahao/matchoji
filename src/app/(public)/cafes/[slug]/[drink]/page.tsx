@@ -107,8 +107,23 @@ export default async function DrinkPage({ params }: DrinkPageProps) {
               </span>
             ))}
           </p>
-          {drink.photoUrl && drink.photoCredit && (
-            <p className="text-muted-foreground mt-3 text-xs">Photo: {drink.photoCredit}</p>
+          {drink.photoUrl && (
+            <figure className="mt-5">
+              {/* Remote hosts are not configured for next/image, so this stays a plain img. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={drink.photoUrl}
+                alt={`${drink.name} at ${drink.cafe.name}`}
+                width={640}
+                height={480}
+                className="h-auto max-h-80 w-full max-w-xl rounded-3xl object-cover"
+              />
+              {drink.photoCredit && (
+                <figcaption className="text-muted-foreground mt-2 text-xs">
+                  Photo: {drink.photoCredit}
+                </figcaption>
+              )}
+            </figure>
           )}
         </div>
       </div>
@@ -124,8 +139,6 @@ export default async function DrinkPage({ params }: DrinkPageProps) {
             </Link>
           </p>
         )}
-
-        {/* The slot where rating this drink will go; empty until the log flow ships. */}
 
         {tasterReviews.length > 0 && (
           <section aria-labelledby="drink-tasters" className="mt-10">
