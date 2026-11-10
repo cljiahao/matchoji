@@ -22,7 +22,7 @@ vi.mock('@/features/journal', async (importOriginal) => ({
   isProfilePublic: async () => state.isPublic,
 }));
 
-import YearPage from './page';
+import YearPage, { generateMetadata } from './page';
 
 const params = (year: string) => ({ params: Promise.resolve({ year }) });
 const entries = (n: number, year = 2026) =>
@@ -80,5 +80,29 @@ describe('journal year page', () => {
     render(await YearPage(params('2026')));
     expect(screen.queryByRole('button', { name: 'Share your year' })).not.toBeInTheDocument();
     expect(screen.getByText(/profile is private/)).toBeInTheDocument();
+  });
+
+  describe('tab title', () => {
+    it('is the year title for a year with a recap', async () => {
+      expect(await generateMetadata(params('2026'))).toMatchObject({
+        title: 'Your year in tea',
+        robots: { index: false },
+      });
+    });
+
+    it('is the not-found title for a malformed year, without reading tastings', async () => {
+      expect(await generateMetadata(params('twenty'))).toEqual({ title: 'Page not found' });
+      expect(state.listMyReviews).not.toHaveBeenCalled();
+    });
+
+    it('is the not-found title for a year with no recap', async () => {
+      state.listMyReviews.mockResolvedValue(entries(2));
+      expect(await generateMetadata(params('2026'))).toEqual({ title: 'Page not found' });
+    });
+
+    it('keeps the year title for a signed-out visitor', async () => {
+      state.user = null;
+      expect(await generateMetadata(params('2026'))).toMatchObject({ title: 'Your year in tea' });
+    });
   });
 });
