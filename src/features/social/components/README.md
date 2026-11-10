@@ -14,6 +14,8 @@ The privacy toggle (both states) and Unblock buttons keep a 44px minimum height.
 
 The notification bell's unread badge uses the 11px type step.
 
+`TastingFeed` renders a drink tasting with its café, disclosure badge and Instagram link.
+
 ## Contents
 
 - `block-button.tsx`

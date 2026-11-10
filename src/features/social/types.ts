@@ -1,5 +1,5 @@
 import type { ProductSummary } from '@/features/products';
-import type { Review } from '@/features/reviews';
+import type { DrinkSummary, Review } from '@/features/reviews';
 
 export interface PublicProfile {
   id: string;
@@ -8,9 +8,16 @@ export interface PublicProfile {
   joinedAt: string;
 }
 
-export interface Tasting extends Review {
+export interface TeaTasting extends Review {
   product: ProductSummary;
 }
+
+export interface DrinkTasting extends Review {
+  drink: DrinkSummary;
+}
+
+// The feed and profiles show both kinds; taste and counts read the tea ones only.
+export type Tasting = TeaTasting | DrinkTasting;
 
 export interface ProfileView {
   profile: PublicProfile;

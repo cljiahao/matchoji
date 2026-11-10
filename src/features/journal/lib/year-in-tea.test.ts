@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import { makeEntry } from '../../../../test/support/journal';
+import { makeReview } from '../../../../test/support/render';
+import type { DrinkJournalEntry } from '../types';
+import { computeJournalStats, computePublicStats } from './journal-stats';
 import { buildYearInTea, qualifyingYears, toYearCard } from './year-in-tea';
 
 type Over = Parameters<typeof makeEntry>[0];
@@ -174,5 +177,40 @@ describe('toYearCard', () => {
       busiestMonth: expect.any(String),
     });
     expect(JSON.stringify(recap)).not.toContain('secret');
+  });
+});
+
+describe('with drink reviews in the journal', () => {
+  const drinkEntry = (tastedOn: string): DrinkJournalEntry => ({
+    ...makeReview({ tastedOn, productId: null, drinkId: 'd1', stars: 5 }),
+    drink: {
+      id: 'd1',
+      slug: 'hojicha-latte',
+      name: 'Hojicha Latte',
+      base: 'hojicha',
+      cafe: { id: 'c1', slug: 'kurasu', name: 'Kurasu' },
+    },
+  });
+
+  it('year-in-tea ignores drink reviews', () => {
+    const items = [
+      at('2026-01-01'),
+      at('2026-02-01'),
+      drinkEntry('2026-03-01'),
+      drinkEntry('2026-04-01'),
+    ];
+    // Two teas plus two drinks is still below the three-tasting bar.
+    expect(buildYearInTea(items, 2026)).toBeNull();
+    expect(qualifyingYears(items)).toEqual([]);
+
+    const recap = buildYearInTea([...items, at('2026-05-01')], 2026);
+    expect(recap?.tastings).toBe(3);
+    expect(recap?.topRated.stars).toBe(4);
+  });
+
+  it('journal stats count teas only', () => {
+    const stats = computeJournalStats([at('2026-01-01'), drinkEntry('2026-03-01')], '2026-03-02');
+    expect(stats).toMatchObject({ count: 1, teas: 1, avgStars: 4 });
+    expect(computePublicStats([drinkEntry('2026-03-01')])).toMatchObject({ teas: 0 });
   });
 });

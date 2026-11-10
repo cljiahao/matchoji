@@ -38,10 +38,10 @@ export type DrinkStyle = 'latte' | 'straight' | 'iced_latte' | 'float' | 'other'
 export type DrinkServing = 'hot' | 'iced' | 'both';
 export type Disclosure = 'none' | 'invited' | 'gifted' | 'paid';
 
-// The migration 20261110000000_cafes_and_drinks.sql makes reviews.product_id nullable and adds
-// drink_id, instagram_url, disclosure, tea_strength, roast and by_trusted_taster to reviews and
-// latest_reviews. Their Row types below still show the tea-only shape until the review
-// consumers are made drink-safe (slice S2), which changes Row and REVIEW_COLUMNS together.
+// Columns added to reviews for drink reviews; tea-only functions don't return them.
+export type DrinkReviewColumn =
+  'drink_id' | 'instagram_url' | 'disclosure' | 'tea_strength' | 'roast' | 'by_trusted_taster';
+
 export interface Database {
   public: {
     Tables: {
@@ -601,7 +601,9 @@ export interface Database {
           id: string;
           // Null once the author deleted their account; the rating stays, anonymised.
           user_id: string | null;
-          product_id: string;
+          // Exactly one of product_id and drink_id is set.
+          product_id: string | null;
+          drink_id: string | null;
           stars: number;
           notes: string | null;
           photo_url: string | null;
@@ -618,6 +620,12 @@ export interface Database {
           tasted_on: string;
           harvest_year: number | null;
           flush: Flush | null;
+          instagram_url: string | null;
+          disclosure: Disclosure;
+          tea_strength: number | null;
+          roast: number | null;
+          // Set by the database from the author's badge when the review is written.
+          by_trusted_taster: boolean;
         };
         Insert: {
           id?: string;
@@ -703,7 +711,9 @@ export interface Database {
           id: string;
           // Null once the author deleted their account; the rating stays, anonymised.
           user_id: string | null;
-          product_id: string;
+          // Exactly one of product_id and drink_id is set.
+          product_id: string | null;
+          drink_id: string | null;
           stars: number;
           notes: string | null;
           photo_url: string | null;
@@ -720,6 +730,12 @@ export interface Database {
           tasted_on: string;
           harvest_year: number | null;
           flush: Flush | null;
+          instagram_url: string | null;
+          disclosure: Disclosure;
+          tea_strength: number | null;
+          roast: number | null;
+          // Set by the database from the author's badge when the review is written.
+          by_trusted_taster: boolean;
         };
         Relationships: [];
       };
@@ -874,7 +890,10 @@ export interface Database {
       delete_my_account: { Args: Record<string, never>; Returns: undefined };
       product_reviews: {
         Args: { product: string };
-        Returns: (Database['public']['Tables']['reviews']['Row'] & { author_private: boolean })[];
+        // The tea function predates drink reviews, so it returns the original columns only.
+        Returns: (Omit<Database['public']['Tables']['reviews']['Row'], DrinkReviewColumn> & {
+          author_private: boolean;
+        })[];
       };
       slugify: { Args: { txt: string }; Returns: string };
       set_trusted_taster: { Args: { person: string; value: boolean }; Returns: undefined };
@@ -895,16 +914,7 @@ export interface Database {
       };
       drink_reviews: {
         Args: { drink: string };
-        Returns: (Omit<Database['public']['Tables']['reviews']['Row'], 'product_id'> & {
-          product_id: string | null;
-          drink_id: string | null;
-          author_private: boolean;
-          instagram_url: string | null;
-          disclosure: Disclosure;
-          tea_strength: number | null;
-          roast: number | null;
-          by_trusted_taster: boolean;
-        })[];
+        Returns: (Database['public']['Tables']['reviews']['Row'] & { author_private: boolean })[];
       };
       is_public_profile: { Args: { person: string }; Returns: boolean };
       search_teas: {

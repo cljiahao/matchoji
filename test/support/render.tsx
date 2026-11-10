@@ -54,6 +54,7 @@ export function makeReview(overrides: Partial<Review> = {}): Review {
   return {
     id: 'r1',
     productId: 'p1',
+    drinkId: null,
     reviewerName: 'taster',
     authorId: 'u-taster',
     stars: 4,
@@ -65,6 +66,11 @@ export function makeReview(overrides: Partial<Review> = {}): Review {
     prep: { method: null, doseG: null, waterMl: null, waterTempC: null },
     tastedOn: '2026-09-01',
     edition: { harvestYear: null, flush: null },
+    byTrustedTaster: false,
+    instagramUrl: null,
+    disclosure: 'none',
+    teaStrength: null,
+    roast: null,
     ...overrides,
   };
 }

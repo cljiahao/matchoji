@@ -138,6 +138,12 @@ describe('TastingFeed', () => {
       tastedOn: '2026-10-05',
       edition: { harvestYear: null, flush: null },
       product: { id: 'p1', name: 'Sayaka', brand: null, category: 'matcha' as const },
+      drinkId: null,
+      byTrustedTaster: false,
+      instagramUrl: null,
+      disclosure: 'none' as const,
+      teaStrength: null,
+      roast: null,
     };
     const { rerender } = render(<TastingFeed tastings={[tasting]} />);
     expect(screen.getByRole('link', { name: 'Ben' })).toHaveAttribute('href', '/u/u2');
@@ -145,5 +151,52 @@ describe('TastingFeed', () => {
     rerender(<TastingFeed tastings={[tasting]} showAuthor={false} />);
     expect(screen.queryByRole('link', { name: 'Ben' })).not.toBeInTheDocument();
     expect(screen.getByText('Rated')).toBeInTheDocument();
+  });
+
+  it('feed renders a drink review with café name, disclosure and post link', () => {
+    const base = {
+      id: 'r1',
+      productId: null,
+      reviewerName: 'Ben',
+      authorId: 'u2',
+      stars: 5,
+      notes: null,
+      photoUrl: null,
+      createdAt: '2026-10-05T00:00:00Z',
+      flavorNotes: [],
+      profile: {},
+      prep: { method: null, doseG: null, waterMl: null, waterTempC: null },
+      tastedOn: '2026-10-05',
+      edition: { harvestYear: null, flush: null },
+      drinkId: 'd1',
+      byTrustedTaster: false,
+      instagramUrl: 'https://www.instagram.com/p/Cabc123/',
+      disclosure: 'gifted' as const,
+      teaStrength: null,
+      roast: null,
+    };
+    render(
+      <TastingFeed
+        tastings={[
+          {
+            ...base,
+            drink: {
+              id: 'd1',
+              slug: 'matcha-latte',
+              name: 'Matcha Latte',
+              base: 'matcha' as const,
+              cafe: { id: 'c1', slug: 'cafe-x', name: 'Café X' },
+            },
+          },
+        ]}
+      />
+    );
+    expect(screen.getByRole('link', { name: 'Matcha Latte' })).toHaveAttribute(
+      'href',
+      '/cafes/cafe-x/matcha-latte'
+    );
+    expect(screen.getByText(/Café X/)).toBeInTheDocument();
+    expect(screen.getByText('Gifted')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /See the post on Instagram/ })).toBeInTheDocument();
   });
 });

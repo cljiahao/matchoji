@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { applyRating } from './product-ratings';
+import { applyRating, topNotesByProduct } from './product-ratings';
 
 const base = {
   id: 'p1',
@@ -42,5 +42,15 @@ describe('applyRating', () => {
       review_count: number;
     };
     expect(applyRating(base, rating)).toMatchObject({ avgStars: 3.5, reviewCount: 2 });
+  });
+});
+
+describe('topNotesByProduct with drink reviews', () => {
+  it('ignores rows with no product', () => {
+    const notes = topNotesByProduct([
+      { product_id: null, flavor_notes: ['nutty'] },
+      { product_id: 'p1', flavor_notes: ['sweet'] },
+    ]);
+    expect([...notes.keys()]).toEqual(['p1']);
   });
 });

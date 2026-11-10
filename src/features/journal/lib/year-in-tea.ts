@@ -1,7 +1,15 @@
 import { TASTE_ATTRIBUTES, TASTE_POLES } from '@/features/reviews';
 import { buildTasteProfile } from '@/features/taste';
 
-import type { JournalEntry, TasteShift, YearCardData, YearHighlight, YearInTea } from '../types';
+import type {
+  JournalEntry,
+  JournalItem,
+  TasteShift,
+  YearCardData,
+  YearHighlight,
+  YearInTea,
+} from '../types';
+import { teaEntries } from './journal-stats';
 
 // Below this a "year in tea" is just the journal again.
 export const YEAR_MIN_TASTINGS = 3;
@@ -12,9 +20,9 @@ const MAX_SHIFTS = 2;
 const inYear = (e: JournalEntry, year: number) => e.tastedOn.startsWith(`${year}-`);
 
 // Years with enough tastings to recap, newest first.
-export function qualifyingYears(entries: JournalEntry[]): number[] {
+export function qualifyingYears(items: JournalItem[]): number[] {
   const counts = new Map<number, number>();
-  for (const e of entries) {
+  for (const e of teaEntries(items)) {
     const year = Number(e.tastedOn.slice(0, 4));
     counts.set(year, (counts.get(year) ?? 0) + 1);
   }
@@ -66,7 +74,8 @@ function tasteMovement(entries: JournalEntry[], year: number): YearInTea['taste'
 
 // The recap for one calendar year, or null when the year has too few tastings. `entries` is the
 // whole journal, newest first: earlier years are the baseline for what is new.
-export function buildYearInTea(entries: JournalEntry[], year: number): YearInTea | null {
+export function buildYearInTea(items: JournalItem[], year: number): YearInTea | null {
+  const entries = teaEntries(items);
   const mine = entries.filter((e) => inYear(e, year));
   if (mine.length < YEAR_MIN_TASTINGS) return null;
 

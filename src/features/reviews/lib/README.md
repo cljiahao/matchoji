@@ -12,8 +12,12 @@ selection; `local-date` and `truncate-notes` format input and display.
 `tasting-vocab` also holds the flushes (`FLUSHES`, `FLUSH_LABELS`) and `editionLabel`
 ("2025 first flush").
 
+`drinkHref(cafeSlug, drinkSlug)` builds a drink page path (`/cafes/<café>/<drink>`), shared by the journal, feed and notifications.
+
 ## Contents
 
+- `drink-href.test.ts`
+- `drink-href.ts`
 - `index.ts`
 - `local-date.ts`
 - `roving-radio.ts`

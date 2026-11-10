@@ -7,6 +7,8 @@
 (photos first, then the database function, then sign-out; it stops before deleting anything if
 the photos cannot be listed).
 
+`exportMyData` also returns `cafesAdded` and `drinksAdded`, read from the `my_cafes` and `my_drinks` views (the only way to read `added_by` and `review_note`); a missing view gives an empty list.
+
 ## Contents
 
 - `account-service.test.ts`

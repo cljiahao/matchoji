@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
-import { listEditions, listReviews } from './reviews-service';
+import { listEditions, listReviews, mapReviewRow } from './reviews-service';
 
 const review = (id: string, userId: string) => ({
   id,
@@ -135,5 +135,45 @@ describe('listEditions', () => {
     const error = new Error('down');
     const { client } = createFakeSupabase({ edition_ratings: { data: null, error } });
     await expect(listEditions(client, 'p1')).rejects.toBe(error);
+  });
+});
+
+describe('mapReviewRow', () => {
+  it('maps drink review fields', () => {
+    const mapped = mapReviewRow(
+      {
+        ...review('r1', 'u1'),
+        product_id: null,
+        drink_id: 'd1',
+        instagram_url: 'https://www.instagram.com/p/Cabc123/',
+        disclosure: 'gifted',
+        tea_strength: '4',
+        roast: 3,
+        by_trusted_taster: true,
+      } as unknown as Parameters<typeof mapReviewRow>[0],
+      'Clarence'
+    );
+    expect(mapped).toMatchObject({
+      productId: null,
+      drinkId: 'd1',
+      instagramUrl: 'https://www.instagram.com/p/Cabc123/',
+      disclosure: 'gifted',
+      teaStrength: 4,
+      roast: 3,
+      byTrustedTaster: true,
+    });
+  });
+
+  it('reads a tea review from product_reviews, which omits the drink columns, as a plain one', () => {
+    expect(
+      mapReviewRow(review('r1', 'u1') as unknown as Parameters<typeof mapReviewRow>[0], 'A')
+    ).toMatchObject({
+      drinkId: null,
+      instagramUrl: null,
+      disclosure: 'none',
+      teaStrength: null,
+      roast: null,
+      byTrustedTaster: false,
+    });
   });
 });

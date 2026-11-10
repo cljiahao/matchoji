@@ -1,11 +1,18 @@
 import Link from 'next/link';
 
 import { CatalogueStatusNote, CATEGORY_STYLES, Stars, TeaTin } from '@/features/products';
-import { FLAVOR_NOTES, noteLabel, PrepSummary } from '@/features/reviews';
+import {
+  DisclosureBadge,
+  drinkHref,
+  FLAVOR_NOTES,
+  InstagramPostLink,
+  noteLabel,
+  PrepSummary,
+} from '@/features/reviews';
 import { cn } from '@/lib/utils';
 
 import { groupByMonth } from '../lib/journal-stats';
-import type { JournalEntry } from '../types';
+import type { DrinkJournalEntry, JournalItem } from '../types';
 import { TastingActions } from './tasting-actions';
 
 // ids can't hold spaces ("October 2026"), so headings are keyed by the ISO month.
@@ -21,7 +28,46 @@ function dayLabel(isoDate: string): string {
   });
 }
 
-export function JournalTimeline({ entries }: { entries: JournalEntry[] }) {
+function DrinkRow({ entry }: { entry: DrinkJournalEntry }) {
+  const { drink } = entry;
+  const notes = entry.flavorNotes.filter((n) => FLAVOR_NOTES[drink.base].includes(n));
+  return (
+    <li className="border-border space-y-2 rounded-2xl border p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+        <span className="flex flex-wrap items-baseline gap-x-2">
+          <Link href={drinkHref(drink.cafe.slug, drink.slug)} className="font-bold hover:underline">
+            {drink.name}
+          </Link>
+          <span className="text-muted-foreground text-sm">at {drink.cafe.name}</span>
+        </span>
+        <time dateTime={entry.tastedOn} className="text-muted-foreground text-sm tabular-nums">
+          {dayLabel(entry.tastedOn)}
+        </time>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Stars value={entry.stars} category={drink.base} size="sm" />
+        <span className="sr-only">You rated it {entry.stars} out of 5</span>
+        <DisclosureBadge disclosure={entry.disclosure} />
+      </div>
+      {entry.notes && <p className="max-w-prose text-sm">{entry.notes}</p>}
+      {notes.length > 0 && (
+        <ul className="flex flex-wrap gap-1.5">
+          {notes.map((note) => (
+            <li
+              key={note}
+              className={cn('rounded-full px-2.5 py-0.5 text-xs', CATEGORY_STYLES[drink.base].tint)}
+            >
+              {noteLabel(note)}
+            </li>
+          ))}
+        </ul>
+      )}
+      {entry.instagramUrl && <InstagramPostLink url={entry.instagramUrl} />}
+    </li>
+  );
+}
+
+export function JournalTimeline({ entries }: { entries: JournalItem[] }) {
   return (
     <div className="space-y-10">
       {groupByMonth(entries).map(({ month, entries: monthEntries }) => (
@@ -31,6 +77,7 @@ export function JournalTimeline({ entries }: { entries: JournalEntry[] }) {
           </h2>
           <ul className="mt-4 space-y-3">
             {monthEntries.map((entry) => {
+              if ('drink' in entry) return <DrinkRow key={entry.id} entry={entry} />;
               const notes = entry.flavorNotes.filter((n) =>
                 FLAVOR_NOTES[entry.product.category].includes(n)
               );

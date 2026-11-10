@@ -68,16 +68,21 @@ export async function loadMatches(
   const { data: mine, error } = await supabase
     .from('latest_reviews')
     .select('product_id, stars')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    // Taste match is tea-only; a café-drink rating says nothing about a packaged tea.
+    .not('product_id', 'is', null);
   if (error) throw error;
 
-  const ownStars = new Map(mine.map((r) => [r.product_id, r.stars]));
-  if (mine.length === 0) return { hasRatings: false, matches: new Map(), ownStars };
+  const rows = mine.flatMap((r) =>
+    r.product_id ? [{ product_id: r.product_id, stars: r.stars }] : []
+  );
+  const ownStars = new Map(rows.map((r) => [r.product_id, r.stars]));
+  if (rows.length === 0) return { hasRatings: false, matches: new Map(), ownStars };
 
   const features = await loadTeaFeatures(supabase, [
     ...new Set([...ownStars.keys(), ...candidateIds]),
   ]);
-  const rated: RatedTea[] = mine.flatMap((r) => {
+  const rated: RatedTea[] = rows.flatMap((r) => {
     const tea = features.get(r.product_id);
     return tea ? [{ tea, stars: r.stars }] : [];
   });

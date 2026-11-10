@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
+import { teaEntries } from '../lib/journal-stats';
 import { getPublicYear, listMyReviews, listUserTastings } from './journal-service';
 
 const row = (id: string, productId: string) => ({
@@ -44,7 +45,7 @@ describe('listMyReviews', () => {
       method: 'order',
       args: ['tasted_on', { ascending: false }],
     });
-    expect(entries.map((e) => [e.id, e.product.name])).toEqual([
+    expect(teaEntries(entries).map((e) => [e.id, e.product.name])).toEqual([
       ['r1', 'Uji'],
       ['r2', 'Bancha'],
     ]);
@@ -91,8 +92,8 @@ describe('listUserTastings', () => {
       regions: { data: [{ id: 'g1', name: 'Uji, Kyoto' }], error: null },
     });
     const entries = await listUserTastings(client, 'u1');
-    expect(entries.map((e) => e.regionName)).toEqual(['Uji, Kyoto', null]);
-    expect(entries[0].product).not.toHaveProperty('region_id');
+    expect(teaEntries(entries).map((e) => e.regionName)).toEqual(['Uji, Kyoto', null]);
+    expect(teaEntries(entries)[0].product).not.toHaveProperty('region_id');
   });
 
   it('throws a regions error', async () => {
@@ -154,5 +155,81 @@ describe('getPublicYear', () => {
       ...tastings,
     });
     expect(await getPublicYear(thin.client, 'u1', 2020)).toBeNull();
+  });
+});
+
+const drinkRow = (id: string, drinkId = 'd1') => ({
+  ...row(id, 'unused'),
+  product_id: null,
+  drink_id: drinkId,
+  instagram_url: 'https://www.instagram.com/p/Cabc123/',
+  disclosure: 'gifted',
+  tea_strength: 4,
+  roast: 3,
+  by_trusted_taster: true,
+});
+
+describe('listUserTastings with drink reviews', () => {
+  it('lists drink and tea tastings together, naming the café', async () => {
+    const { client, calls } = createFakeSupabase({
+      reviews: { data: [drinkRow('r1'), row('r2', 'p1')], error: null },
+      products: { data: [{ id: 'p1', name: 'Uji', brand: null, category: 'matcha' }], error: null },
+      drinks: {
+        data: [
+          {
+            id: 'd1',
+            cafe_id: 'c1',
+            slug: 'hojicha-latte',
+            name: 'Hojicha Latte',
+            base: 'hojicha',
+          },
+        ],
+        error: null,
+      },
+      cafes: { data: [{ id: 'c1', slug: 'kurasu', name: 'Kurasu' }], error: null },
+    });
+
+    const entries = await listUserTastings(client, 'u1');
+
+    expect(entries.map((e) => e.id)).toEqual(['r1', 'r2']);
+    expect(entries[0]).toMatchObject({
+      drinkId: 'd1',
+      disclosure: 'gifted',
+      drink: { name: 'Hojicha Latte', cafe: { name: 'Kurasu', slug: 'kurasu' } },
+    });
+    expect(entries[0]).not.toHaveProperty('product');
+    // added_by and the review fields are not selectable, so only named columns are read.
+    expect(
+      calls.filter((c) => c.table === 'drinks' && c.method === 'select')[0].args[0]
+    ).not.toContain('*');
+    expect(calls).toContainEqual({ table: 'products', method: 'in', args: ['id', ['p1']] });
+  });
+
+  it('drops a drink review whose drink is no longer visible', async () => {
+    const { client } = createFakeSupabase({
+      reviews: { data: [drinkRow('r1')], error: null },
+      products: { data: [], error: null },
+      drinks: { data: [], error: null },
+    });
+    expect(await listUserTastings(client, 'u1')).toEqual([]);
+  });
+
+  it('shows no drink tastings, and does not throw, before the café migration is applied', async () => {
+    const { client } = createFakeSupabase({
+      reviews: { data: [drinkRow('r1'), row('r2', 'p1')], error: null },
+      products: { data: [{ id: 'p1', name: 'Uji', brand: null, category: 'matcha' }], error: null },
+      drinks: { data: null, error: { code: '42P01', message: 'missing' } },
+    });
+    expect((await listUserTastings(client, 'u1')).map((e) => e.id)).toEqual(['r2']);
+  });
+
+  it('throws other drink errors', async () => {
+    const error = new Error('down');
+    const { client } = createFakeSupabase({
+      reviews: { data: [drinkRow('r1')], error: null },
+      products: { data: [], error: null },
+      drinks: { data: null, error },
+    });
+    await expect(listUserTastings(client, 'u1')).rejects.toBe(error);
   });
 });

@@ -35,6 +35,8 @@ describe('exportMyData', () => {
       wishlist: { data: [], error: null },
       stock_reports: { data: [], error: null },
       vendors: { data: null, error: null },
+      my_cafes: { data: [], error: null },
+      my_drinks: { data: [], error: null },
     });
     expect(await exportMyData(client, 'u1')).toMatchObject({
       profile: { email: 'a@example.com' },
@@ -42,6 +44,51 @@ describe('exportMyData', () => {
       wantToTry: [],
       shop: null,
     });
+  });
+
+  it('export includes cafés and drinks added by me, read from the my_* views', async () => {
+    const { client, calls } = createFakeSupabase({
+      profiles: { data: null, error: null },
+      reviews: { data: [], error: null },
+      wishlist: { data: [], error: null },
+      stock_reports: { data: [], error: null },
+      vendors: { data: null, error: null },
+      my_cafes: { data: [{ id: 'c1', name: 'Kurasu' }], error: null },
+      my_drinks: { data: [{ id: 'd1', name: 'Hojicha Latte' }], error: null },
+    });
+    expect(await exportMyData(client, 'u1')).toMatchObject({
+      cafesAdded: [{ id: 'c1' }],
+      drinksAdded: [{ id: 'd1' }],
+    });
+    expect(calls.some((c) => c.table === 'cafes' || c.table === 'drinks')).toBe(false);
+  });
+
+  it('exports empty café lists before the café migration is applied', async () => {
+    const missing = { data: null, error: { code: 'PGRST205', message: 'missing' } };
+    const { client } = createFakeSupabase({
+      profiles: { data: null, error: null },
+      reviews: { data: [], error: null },
+      wishlist: { data: [], error: null },
+      stock_reports: { data: [], error: null },
+      vendors: { data: null, error: null },
+      my_cafes: missing,
+      my_drinks: missing,
+    });
+    expect(await exportMyData(client, 'u1')).toMatchObject({ cafesAdded: [], drinksAdded: [] });
+  });
+
+  it('throws other café read errors', async () => {
+    const error = new Error('down');
+    const { client } = createFakeSupabase({
+      profiles: { data: null, error: null },
+      reviews: { data: [], error: null },
+      wishlist: { data: [], error: null },
+      stock_reports: { data: [], error: null },
+      vendors: { data: null, error: null },
+      my_cafes: { data: null, error },
+      my_drinks: { data: [], error: null },
+    });
+    await expect(exportMyData(client, 'u1')).rejects.toBe(error);
   });
 });
 

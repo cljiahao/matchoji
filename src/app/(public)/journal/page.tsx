@@ -11,6 +11,7 @@ import {
   listMyReviews,
   listWishlist,
   qualifyingYears,
+  teaEntries,
 } from '@/features/journal';
 import { LogTastingDialog } from '@/features/reviews';
 import { YourTaste, buildTasteProfile } from '@/features/taste';
@@ -74,7 +75,7 @@ export default async function JournalPage() {
             <YearLinks years={qualifyingYears(entries)} />
           </div>
           <div className="mt-10">
-            <YourTaste profile={buildTasteProfile(entries)} />
+            <YourTaste profile={buildTasteProfile(teaEntries(entries))} />
           </div>
         </div>
       )}
