@@ -42,6 +42,9 @@ function ReportItem({ report }: { report: OpenReport }) {
       {report.content ? (
         <blockquote className="bg-muted rounded-xl px-3 py-2 break-words">
           <span className="font-semibold">{report.content.authorName}:</span> {report.content.text}
+          {report.content.drinkLabel && (
+            <span className="text-muted-foreground"> on {report.content.drinkLabel}</span>
+          )}
           {report.content.productId && (
             <>
               {' '}

@@ -1,17 +1,29 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
+import { cafeFieldsSchema } from '../schemas';
 import {
   isAdmin,
   listApprovedTeas,
+  listCafeQueue,
+  listDrinkQueue,
   listOpenReports,
   listReviewQueue,
+  listTrustedTasters,
+  mergeCafe,
+  mergeDrink,
   mergeTea,
   resolveReport,
+  reviewCafe,
+  reviewDrink,
   reviewShop,
   reviewTea,
+  searchProfiles,
   setTeaLinks,
   setTeaPrice,
+  setTrustedTaster,
+  updateCafe,
+  updateDrink,
 } from './admin-service';
 
 describe('isAdmin', () => {
@@ -207,6 +219,41 @@ describe('listOpenReports and resolveReport', () => {
     expect(reports[1].content).toBeNull();
   });
 
+  it('reports queue shows drink review target', async () => {
+    const { client } = createFakeSupabase({
+      content_reports: {
+        data: [
+          {
+            id: 'rep1',
+            reporter_id: 'u1',
+            target_type: 'review',
+            target_id: 'r1',
+            reason: 'Rude',
+            created_at: 'x',
+          },
+        ],
+        error: null,
+      },
+      reviews: {
+        data: [
+          { id: 'r1', user_id: 'u2', product_id: null, drink_id: 'd1', notes: 'Meh', stars: 2 },
+        ],
+        error: null,
+      },
+      review_comments: { data: [], error: null },
+      admin_drinks: { data: [{ id: 'd1', name: 'Hojicha latte', cafe_id: 'c1' }], error: null },
+      admin_cafes: { data: [{ id: 'c1', name: 'Kopi Hou' }], error: null },
+      public_profiles: { data: [{ id: 'u1', display_name: 'Aiko' }], error: null },
+    });
+    const [report] = await listOpenReports(client);
+    expect(report.content).toEqual({
+      text: '2★ Meh',
+      authorName: 'Former taster',
+      productId: null,
+      drinkLabel: 'Kopi Hou · Hojicha latte',
+    });
+  });
+
   it('is empty without further reads when nothing is reported', async () => {
     const { client, calls } = createFakeSupabase({ content_reports: { data: [], error: null } });
     expect(await listOpenReports(client)).toEqual([]);
@@ -238,5 +285,240 @@ describe('setTeaPrice', () => {
       { tea: 't1', price: null, grams: null },
     ]);
     await expect(setTeaPrice(client, 't1', null)).rejects.toThrow('denied');
+  });
+});
+
+const ID = '11111111-1111-4111-8111-111111111111';
+const KEEP = '22222222-2222-4222-8222-222222222222';
+
+describe('café and drink moderation', () => {
+  it('reviewCafe calls review_cafe rpc', async () => {
+    const { client, calls } = createFakeSupabase({
+      'rpc:review_cafe': { data: null, error: null },
+    });
+    await reviewCafe(client, ID, 'rejected', 'Duplicate');
+    expect(calls[0]).toMatchObject({
+      table: 'rpc:review_cafe',
+      args: [{ cafe: ID, decision: 'rejected', note: 'Duplicate' }],
+    });
+  });
+
+  it('reviewCafe surfaces 42501', async () => {
+    const error = { code: '42501', message: 'Admins only.' };
+    const { client } = createFakeSupabase({ 'rpc:review_cafe': { data: null, error } });
+    await expect(reviewCafe(client, ID, 'approved')).rejects.toBe(error);
+  });
+
+  it('reviewDrink passes the database refusal for a drink at an unapproved café', async () => {
+    const error = { code: 'P0001', message: 'Approve the café first.' };
+    const { client } = createFakeSupabase({ 'rpc:review_drink': { data: null, error } });
+    await expect(reviewDrink(client, ID, 'approved')).rejects.toBe(error);
+  });
+
+  it('rejects a decision that is not approved or rejected, without calling the database', async () => {
+    const { client, calls } = createFakeSupabase({});
+    const bad = JSON.parse('"maybe"') as 'approved';
+    await expect(reviewCafe(client, ID, bad)).rejects.toThrow();
+    await expect(reviewDrink(client, ID, bad)).rejects.toThrow();
+    expect(calls).toHaveLength(0);
+  });
+
+  it('rejects an id that is not a uuid before calling the database', async () => {
+    const { client, calls } = createFakeSupabase({});
+    await expect(reviewCafe(client, 'nope', 'approved')).rejects.toThrow();
+    expect(calls).toHaveLength(0);
+  });
+
+  it('merges through the checked functions and surfaces a refusal', async () => {
+    const error = { message: 'Cannot merge across cities.' };
+    const { client, calls } = createFakeSupabase({
+      'rpc:merge_cafe': { data: null, error },
+      'rpc:merge_drink': { data: null, error: null },
+    });
+    await expect(mergeCafe(client, ID, KEEP)).rejects.toBe(error);
+    await mergeDrink(client, ID, KEEP);
+    expect(calls.at(-1)?.args).toEqual([{ duplicate: ID, keep: KEEP }]);
+  });
+
+  it('setTrustedTaster calls rpc', async () => {
+    const { client, calls } = createFakeSupabase({
+      'rpc:set_trusted_taster': { data: null, error: null },
+    });
+    await setTrustedTaster(client, ID, true);
+    expect(calls[0].args).toEqual([{ person: ID, value: true }]);
+  });
+});
+
+describe('listCafeQueue and listDrinkQueue', () => {
+  it('maps pending cafés with the adder from admin_cafes', async () => {
+    const { client, calls } = createFakeSupabase({
+      admin_cafes: {
+        data: [
+          {
+            id: 'c1',
+            name: 'Kopi Hou',
+            city_slug: 'singapore',
+            area: 'Tiong Bahru',
+            address: null,
+            lat: null,
+            lng: null,
+            instagram_handle: 'kopihou',
+            website_url: null,
+            status: 'pending',
+            created_at: '2026-11-10T00:00:00Z',
+            adder_name: 'Aiko',
+          },
+        ],
+        error: null,
+      },
+    });
+    const [cafe] = await listCafeQueue(client);
+    expect(cafe).toMatchObject({ name: 'Kopi Hou', citySlug: 'singapore', addedByName: 'Aiko' });
+    expect(calls.some((c) => c.table === 'cafes')).toBe(false);
+    expect(calls).toContainEqual(
+      expect.objectContaining({ method: 'eq', args: ['status', 'pending'] })
+    );
+  });
+
+  it('listCafeQueue returns [] on missing table', async () => {
+    const { client } = createFakeSupabase({
+      admin_cafes: { data: null, error: { code: 'PGRST205', message: 'no table' } },
+    });
+    expect(await listCafeQueue(client)).toEqual([]);
+  });
+
+  it('throws any other error', async () => {
+    const error = { code: '500', message: 'down' };
+    const { client } = createFakeSupabase({ admin_cafes: { data: null, error } });
+    await expect(listCafeQueue(client)).rejects.toBe(error);
+  });
+
+  it('names each pending drink’s café', async () => {
+    const { client } = createFakeSupabase({
+      admin_drinks: {
+        data: [
+          {
+            id: 'd1',
+            cafe_id: 'c1',
+            name: 'Hojicha latte',
+            base: 'hojicha',
+            style: 'latte',
+            serving: 'hot',
+            price: 7.5,
+            photo_url: null,
+            photo_credit: null,
+            tea_product_id: null,
+            status: 'pending',
+            created_at: 'x',
+            adder_name: null,
+          },
+        ],
+        error: null,
+      },
+      admin_cafes: { data: [{ id: 'c1', name: 'Kopi Hou' }], error: null },
+    });
+    expect(await listDrinkQueue(client)).toMatchObject([
+      { name: 'Hojicha latte', cafeName: 'Kopi Hou', price: 7.5, addedByName: null },
+    ]);
+  });
+
+  it('listDrinkQueue returns [] on missing table', async () => {
+    const { client } = createFakeSupabase({
+      admin_drinks: { data: null, error: { code: '42P01', message: 'x' } },
+    });
+    expect(await listDrinkQueue(client)).toEqual([]);
+  });
+});
+
+describe('updateCafe and updateDrink', () => {
+  it('updateCafe sends only the changed fields to update_cafe', async () => {
+    const { client, calls } = createFakeSupabase({
+      'rpc:update_cafe': { data: null, error: null },
+    });
+    await updateCafe(client, ID, { name: 'Kopi Hou', instagram_handle: '' });
+    expect(calls[0]).toMatchObject({
+      table: 'rpc:update_cafe',
+      args: [{ cafe: ID, fields: { name: 'Kopi Hou', instagram_handle: '' } }],
+    });
+  });
+
+  it('updateCafe surfaces the database error', async () => {
+    const error = { code: 'P0002', message: 'No such café.' };
+    const { client } = createFakeSupabase({ 'rpc:update_cafe': { data: null, error } });
+    await expect(updateCafe(client, ID, { name: 'x' })).rejects.toBe(error);
+  });
+
+  it('updateCafe refuses an invalid field, without calling the database', async () => {
+    const { client, calls } = createFakeSupabase({});
+    await expect(updateCafe(client, ID, { website_url: 'http://x.test' })).rejects.toThrow();
+    expect(calls).toHaveLength(0);
+  });
+
+  it('the café field schema refuses keys the database does not allow', () => {
+    const unknownKey: Record<string, unknown> = { slug: 'hack' };
+    expect(cafeFieldsSchema.safeParse(unknownKey).success).toBe(false);
+  });
+
+  it('updateDrink sends photo, credit and tea link', async () => {
+    const { client, calls } = createFakeSupabase({
+      'rpc:update_drink': { data: null, error: null },
+    });
+    const fields = {
+      photo_url: 'https://cdn.test/p.webp',
+      photo_credit: 'Kopi Hou',
+      tea_product_id: KEEP,
+      price: 8,
+    };
+    await updateDrink(client, ID, fields);
+    expect(calls[0].args).toEqual([{ drink: ID, fields }]);
+  });
+
+  it('updateDrink refuses a negative price', async () => {
+    const { client, calls } = createFakeSupabase({});
+    await expect(updateDrink(client, ID, { price: -1 })).rejects.toThrow();
+    expect(calls).toHaveLength(0);
+  });
+});
+
+describe('searchProfiles and listTrustedTasters', () => {
+  it('finds private profiles through public_profiles and escapes wildcards', async () => {
+    const { client, calls } = createFakeSupabase({
+      public_profiles: {
+        data: [{ id: 'u1', display_name: 'Aiko', is_public: false, is_trusted_taster: false }],
+        error: null,
+      },
+    });
+    expect(await searchProfiles(client, ' 50%_ ')).toEqual([
+      { id: 'u1', displayName: 'Aiko', isPublic: false, isTrustedTaster: false },
+    ]);
+    expect(calls).toContainEqual(
+      expect.objectContaining({ method: 'ilike', args: ['display_name', '%50\\%\\_%'] })
+    );
+  });
+
+  it('refuses an over-long search term without querying', async () => {
+    const { client, calls } = createFakeSupabase({});
+    await expect(searchProfiles(client, 'a'.repeat(81))).rejects.toThrow();
+    expect(calls).toHaveLength(0);
+  });
+
+  it('does not query for a blank search', async () => {
+    const { client, calls } = createFakeSupabase({});
+    expect(await searchProfiles(client, '  ')).toEqual([]);
+    expect(calls).toHaveLength(0);
+  });
+
+  it('lists current tasters, and is empty on a missing table', async () => {
+    const { client } = createFakeSupabase({
+      public_profiles: {
+        data: [{ id: 'u1', display_name: 'Aiko', is_public: true, is_trusted_taster: true }],
+        error: null,
+      },
+    });
+    expect(await listTrustedTasters(client)).toHaveLength(1);
+    const missing = createFakeSupabase({
+      public_profiles: { data: null, error: { code: '42P01', message: 'x' } },
+    });
+    expect(await listTrustedTasters(missing.client)).toEqual([]);
   });
 });
