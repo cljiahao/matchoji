@@ -30,6 +30,7 @@ All notable changes to this project are documented here. Format follows
 
 - Claude Code harness re-synced to templateCentral 7.2.2: the SessionStart hook re-injects the CONSTITUTION instead of the head of `AGENTS.md`, the dependency-audit gate parses `package.json` for advisory suppressions, `settings.json` drops the broad `.env.*` read denies, and `AGENTS.md` documents the user-scoped `superpowers` plugin install.
 - `AGENTS.md` and `docs/CONSTITUTION.md` no longer say "Phase 1 only". They now state the café-drinks positioning, that the marketplace and farm/vendor tools stay parked (`MARKETPLACE_ENABLED` stays `false`) and that label scanning and Sentry stay off until the owner asks, and the product-never-references-a-café rule is added (slice S9; owner-approved wording). Docs only, no migration.
+- The Playwright smoke spec no longer needs data in production: Explore, a tea page, regions, shops and the sitemap accept the empty state. New steps cover `/cafes`, an unknown `/c/<slug>` ending in a real 404, `/tasters` and `/about/how-we-rate`.
 
 ### Fixed
 
@@ -38,10 +39,6 @@ All notable changes to this project are documented here. Format follows
 - `test/scripts/schema-check.test.ts` no longer times out intermittently on CI runners. `extractShape` re-parsed about 60 TypeScript lib files for every program it built; those are now parsed once per process and shared, which also speeds up `pnpm schema:check`.
 - A `.pnpm-store/` cache inside a worktree no longer fails `pnpm check` (Prettier and ESLint now skip it; it is also git-ignored).
 - The loading-boundary test now ignores status calls that only appear in comments, also scans `layout.tsx` (only a `loading.tsx` in a parent folder counts) and has unit cases; the `(public)` README contents list is back in alphabetical order. No app change.
-
-### Changed
-
-- The Playwright smoke spec no longer needs data in production: Explore, a tea page, regions, shops and the sitemap accept the empty state. New steps cover `/cafes`, an unknown `/c/<slug>` ending in a real 404, `/tasters` and `/about/how-we-rate`.
 
 ### Removed
 
