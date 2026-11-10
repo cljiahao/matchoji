@@ -11,6 +11,10 @@ likes, comments, and the outcome of their tea suggestions, shop applications and
 
 `Tasting` is a tea tasting or a drink tasting (`TeaTasting` | `DrinkTasting`), so the feed and a profile's recent tastings can show café drink reviews; a profile's tea count counts teas only.
 
+Trusted tasters (granted by an admin, see `admin`) get a "Trusted taster" badge, their bio and Instagram link, and a place on `/tasters` (`listTasters`). `getProfileView` returns the badge, handle, bio and the drink tastings (`drinkReviews`) alongside `recent`. A handle becomes a link only if it passes the handle pattern.
+
+Also depends on `account` for the handle check.
+
 ## Contents
 
 - `api/`

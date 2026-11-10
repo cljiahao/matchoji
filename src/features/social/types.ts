@@ -6,6 +6,10 @@ export interface PublicProfile {
   name: string;
   isPublic: boolean;
   joinedAt: string;
+  isTrustedTaster: boolean;
+  // Null unless the profile is public (the view blanks them) and the person filled them in.
+  instagramHandle: string | null;
+  bio: string | null;
 }
 
 export interface TeaTasting extends Review {
@@ -25,4 +29,15 @@ export interface ProfileView {
   viewer: { isSelf: boolean; follows: boolean; blocked: boolean };
   // Newest first; empty for a private profile seen by someone else.
   recent: Tasting[];
+  // The drink tastings among `recent`, kept apart so the page can lead with them.
+  drinkReviews: DrinkTasting[];
+}
+
+export interface TasterCard {
+  id: string;
+  name: string;
+  bio: string | null;
+  instagramHandle: string | null;
+  drinkReviewCount: number;
+  latest: DrinkTasting | null;
 }

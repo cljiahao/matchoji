@@ -8,6 +8,8 @@ engines.
 
 The page heading uses the same `text-3xl sm:text-4xl` size as the other pages.
 
+An "Instagram and bio" section edits the handle and bio shown on the public profile.
+
 ## Contents
 
 - `page.tsx`

@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 
+import { isInstagramHandle } from '@/features/account';
 import { SlugSchema, cityBySlug, getCafePage, getDrinkPage } from '@/features/cafes';
 import { getPublicYear, toYearCard } from '@/features/journal';
 import { getProduct } from '@/features/products';
@@ -38,7 +39,17 @@ export async function renderTeaImage(id: string) {
 export async function renderProfileImage(id: string) {
   const view = await getProfileView(await createClient(), id, null);
   if (!view?.profile.isPublic) return renderSiteImage();
-  return respond(<ProfileCard name={view.profile.name} teas={view.counts.teas} />);
+  const { profile } = view;
+  const taster = profile.isTrustedTaster
+    ? {
+        bio: profile.bio,
+        handle:
+          profile.instagramHandle && isInstagramHandle(profile.instagramHandle)
+            ? profile.instagramHandle
+            : null,
+      }
+    : undefined;
+  return respond(<ProfileCard name={profile.name} teas={view.counts.teas} taster={taster} />);
 }
 
 // Same rule as the profile card: read with no session, and anything that is not a public

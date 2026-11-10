@@ -25,6 +25,12 @@ describe('sitemap', () => {
     );
   });
 
+  it('lists the tasters index and how we rate', async () => {
+    const urls = (await sitemap()).map((entry) => new URL(entry.url).pathname);
+    expect(urls).toContain('/tasters');
+    expect(urls).toContain('/about/how-we-rate');
+  });
+
   it('omits /sell', async () => {
     const urls = (await sitemap()).map((entry) => new URL(entry.url).pathname);
     expect(urls).toContain('/explore');

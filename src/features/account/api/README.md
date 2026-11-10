@@ -9,6 +9,8 @@ the photos cannot be listed).
 
 `exportMyData` also returns `cafesAdded` and `drinksAdded`, read from the `my_cafes` and `my_drinks` views (the only way to read `added_by` and `review_note`); a missing view gives an empty list.
 
+`updateProfileDetails` writes the Instagram handle and bio after `profileDetailsSchema` has checked them (a blank value is stored as null); `getMyProfile` also returns both.
+
 ## Contents
 
 - `account-service.test.ts`

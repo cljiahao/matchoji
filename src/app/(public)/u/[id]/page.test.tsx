@@ -11,7 +11,11 @@ vi.mock('@/integrations/supabase/server', () => ({
 vi.mock('@/features/social', () => ({
   BlockButton: () => null,
   FollowButton: () => null,
-  TastingFeed: () => null,
+  InstagramHandleLink: ({ handle }: { handle: string }) => (
+    <a href={`https://www.instagram.com/${handle}/`}>@{handle}</a>
+  ),
+  TrustedTasterBadge: () => <span>Trusted taster</span>,
+  TastingFeed: ({ tastings }: { tastings: unknown[] }) => <p>feed of {tastings.length}</p>,
   getProfileView: (...a: unknown[]) => getProfileView(...a),
 }));
 vi.mock('@/features/journal', () => ({
@@ -24,6 +28,15 @@ vi.mock('@/features/taste', () => ({ YourTaste: () => null, buildTasteProfile: (
 import ProfilePage, { generateMetadata } from './page';
 
 const ID = '22222222-2222-4222-8222-222222222222';
+const PROFILE = {
+  id: ID,
+  name: 'Mei',
+  isPublic: true,
+  joinedAt: '2026-01-01',
+  isTrustedTaster: false,
+  instagramHandle: null as string | null,
+  bio: null as string | null,
+};
 const params = (id: string) => Promise.resolve({ id });
 
 beforeEach(() => vi.clearAllMocks());
@@ -57,10 +70,11 @@ describe('profile generateMetadata', () => {
 
 describe('profile stats strip', () => {
   const view = (isPublic: boolean, isSelf: boolean) => ({
-    profile: { id: ID, name: 'Mei', isPublic, joinedAt: '2026-01-01' },
+    profile: { ...PROFILE, isPublic },
     counts: { teas: 2, followers: 0, following: 0 },
     viewer: { isSelf, follows: false, blocked: false },
     recent: [],
+    drinkReviews: [],
   });
 
   it('shows a public profile’s stats to a visitor', async () => {
@@ -82,5 +96,41 @@ describe('profile stats strip', () => {
     listUserTastings.mockResolvedValue([{}]);
     render(await ProfilePage({ params: params(ID) }));
     expect(screen.getByText('stats strip 1')).toBeInTheDocument();
+  });
+});
+
+describe('taster profile', () => {
+  const taster = (overrides: Partial<typeof PROFILE>) => ({
+    profile: { ...PROFILE, ...overrides },
+    counts: { teas: 0, followers: 0, following: 0 },
+    viewer: { isSelf: false, follows: false, blocked: false },
+    recent: [{ id: 'r1', drink: {} }],
+    drinkReviews: [{ id: 'r1', drink: {} }],
+  });
+
+  it('shows the badge, bio, IG link and drink reviews for a taster', async () => {
+    getProfileView.mockResolvedValue(
+      taster({ isTrustedTaster: true, instagramHandle: 'foodcnl', bio: 'Hojicha first.' })
+    );
+    listUserTastings.mockResolvedValue([]);
+    render(await ProfilePage({ params: params(ID) }));
+    expect(screen.getByText('Trusted taster')).toBeInTheDocument();
+    expect(screen.getByText('Hojicha first.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '@foodcnl' })).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/foodcnl/'
+    );
+    expect(screen.getByRole('heading', { name: 'Drink reviews' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'How we rate' })).toHaveAttribute(
+      'href',
+      '/about/how-we-rate'
+    );
+  });
+
+  it('shows no badge for a community member, and no bio for a private profile', async () => {
+    getProfileView.mockResolvedValue(taster({ isPublic: false, bio: 'Secret' }));
+    render(await ProfilePage({ params: params(ID) }));
+    expect(screen.queryByText('Trusted taster')).not.toBeInTheDocument();
+    expect(screen.queryByText('Secret')).not.toBeInTheDocument();
   });
 });

@@ -4,6 +4,7 @@ import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
   getProfileView,
   listBlocked,
+  listTasters,
   loadFeed,
   setBlocked,
   setFollowing,
@@ -44,6 +45,9 @@ describe('getProfileView', () => {
           display_name: 'Ben',
           is_public: false,
           created_at: '2026-09-01T00:00:00Z',
+          is_trusted_taster: false,
+          instagram_handle: null,
+          bio: null,
         },
         error: null,
       },
@@ -67,6 +71,9 @@ describe('getProfileView', () => {
           display_name: 'Ben',
           is_public: true,
           created_at: '2026-09-01T00:00:00Z',
+          is_trusted_taster: false,
+          instagram_handle: null,
+          bio: null,
         },
         error: null,
       },
@@ -184,6 +191,9 @@ describe('feed with drink reviews', () => {
           display_name: 'Ben',
           is_public: false,
           created_at: '2026-09-01T00:00:00Z',
+          is_trusted_taster: false,
+          instagram_handle: null,
+          bio: null,
         },
         error: null,
       },
@@ -196,5 +206,114 @@ describe('feed with drink reviews', () => {
       method: 'not',
       args: ['product_id', 'is', null],
     });
+  });
+});
+
+describe('getProfileView taster fields', () => {
+  const person = {
+    id: 'u1',
+    display_name: 'Foodcnl',
+    is_public: true,
+    created_at: '2026-09-01T00:00:00Z',
+    is_trusted_taster: true,
+    instagram_handle: 'foodcnl',
+    bio: 'Hojicha first.',
+  };
+  const drinkReview = { ...review('r1', 'u1'), product_id: null, drink_id: 'd1' };
+
+  it('returns the badge, handle, bio and the drink reviews apart from tea tastings', async () => {
+    const { client } = createFakeSupabase({
+      public_profiles: { data: person, error: null },
+      latest_reviews: [
+        { data: null, count: 1, error: null },
+        { data: [drinkReview, review('r2', 'u1')], error: null },
+      ],
+      follows: { data: null, count: 0, error: null },
+      products: {
+        data: [{ id: 'p1', name: 'Sayaka', brand: null, category: 'matcha' }],
+        error: null,
+      },
+      drinks: {
+        data: [
+          {
+            id: 'd1',
+            cafe_id: 'c1',
+            slug: 'hojicha-latte',
+            name: 'Hojicha latte',
+            base: 'hojicha',
+          },
+        ],
+        error: null,
+      },
+      cafes: { data: [{ id: 'c1', slug: 'kurasu', name: 'Kurasu' }], error: null },
+    });
+    const view = await getProfileView(client, 'u1', null);
+    expect(view?.profile).toMatchObject({
+      isTrustedTaster: true,
+      instagramHandle: 'foodcnl',
+      bio: 'Hojicha first.',
+    });
+    expect(view?.drinkReviews.map((t) => t.drink.name)).toEqual(['Hojicha latte']);
+    expect(view?.recent).toHaveLength(2);
+  });
+});
+
+describe('listTasters', () => {
+  const people = [
+    { id: 'u1', display_name: 'Foodcnl', instagram_handle: 'foodcnl', bio: 'Hojicha first.' },
+    { id: 'u2', display_name: 'Newbie', instagram_handle: null, bio: null },
+  ];
+  const drinkReview = (id: string, userId: string, drinkId: string, createdAt: string) => ({
+    ...review(id, userId),
+    product_id: null,
+    drink_id: drinkId,
+    created_at: createdAt,
+  });
+
+  it('reads trusted, public profiles only and returns each with a count and latest drink', async () => {
+    const { client, calls } = createFakeSupabase({
+      public_profiles: { data: people, error: null },
+      latest_reviews: {
+        data: [
+          drinkReview('r1', 'u1', 'd1', '2026-11-01T00:00:00Z'),
+          drinkReview('r2', 'u1', 'd2', '2026-11-05T00:00:00Z'),
+          // d3 is not visible to the reader, so it is neither counted nor shown.
+          drinkReview('r3', 'u1', 'd3', '2026-11-09T00:00:00Z'),
+        ],
+        error: null,
+      },
+      drinks: {
+        data: [
+          { id: 'd1', cafe_id: 'c1', slug: 'a', name: 'Matcha latte', base: 'matcha' },
+          { id: 'd2', cafe_id: 'c1', slug: 'b', name: 'Hojicha float', base: 'hojicha' },
+        ],
+        error: null,
+      },
+      cafes: { data: [{ id: 'c1', slug: 'kurasu', name: 'Kurasu' }], error: null },
+    });
+    const tasters = await listTasters(client);
+
+    const eqs = calls.filter((c) => c.table === 'public_profiles' && c.method === 'eq');
+    expect(eqs.map((c) => c.args)).toEqual([
+      ['is_trusted_taster', true],
+      ['is_public', true],
+    ]);
+    expect(tasters.map((t) => [t.name, t.drinkReviewCount, t.latest?.drink.name ?? null])).toEqual([
+      ['Foodcnl', 2, 'Hojicha float'],
+      ['Newbie', 0, null],
+    ]);
+    expect(tasters[0]).toMatchObject({ bio: 'Hojicha first.', instagramHandle: 'foodcnl' });
+  });
+
+  it('is empty, without reading reviews, when nobody is a trusted taster', async () => {
+    const { client, calls } = createFakeSupabase({ public_profiles: { data: [], error: null } });
+    expect(await listTasters(client)).toEqual([]);
+    expect(calls.some((c) => c.table === 'latest_reviews')).toBe(false);
+  });
+
+  it('throws when a read fails', async () => {
+    const error = new Error('down');
+    const { client } = createFakeSupabase({ public_profiles: { data: null, error } });
+    await expect(listTasters(client)).rejects.toBe(error);
   });
 });

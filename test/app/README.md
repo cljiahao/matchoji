@@ -31,6 +31,8 @@ The page, config and SEO tests cover the shop map's footprint: the footer's `/sh
 
 `seo.test.ts` also holds `robots.ts` (admin, account, journal, sell, auth and `/api/` kept out).
 
+`seo.test.ts` also expects `/tasters` and `/about/how-we-rate` in the sitemap.
+
 ## Contents
 
 - `auth-callback.test.ts`

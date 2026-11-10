@@ -5,6 +5,7 @@ import {
   DeleteAccountSection,
   DisplayNameForm,
   ExportDataButton,
+  ProfileDetailsForm,
   getMyProfile,
 } from '@/features/account';
 import { SignInButton } from '@/features/auth';
@@ -73,6 +74,16 @@ function AccountSections({
       {profile && <p className="text-muted-foreground break-all">Signed in as {profile.email}</p>}
       <Section title="Your name" purpose="How other tasters see you.">
         <DisplayNameForm userId={userId} current={profile?.displayName ?? ''} />
+      </Section>
+      <Section
+        title="Instagram and bio"
+        purpose="Shown on your public profile, and on the tasters page if you are a trusted taster."
+      >
+        <ProfileDetailsForm
+          userId={userId}
+          instagramHandle={profile?.instagramHandle ?? null}
+          bio={profile?.bio ?? null}
+        />
       </Section>
       <Section title="Privacy" purpose="Who can see your profile.">
         <PrivacyToggle userId={userId} isPublic={profile?.isPublic ?? true} />

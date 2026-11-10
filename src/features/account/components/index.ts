@@ -1,1 +1,6 @@
-export { DeleteAccountSection, DisplayNameForm, ExportDataButton } from './account-sections';
+export {
+  DeleteAccountSection,
+  DisplayNameForm,
+  ExportDataButton,
+  ProfileDetailsForm,
+} from './account-sections';
