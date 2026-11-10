@@ -47,9 +47,9 @@ export default function HowWeRatePage() {
           Invited, gifted and paid reviews
         </h2>
         <p>
-          Disclosed reviews count, and they are labelled. If a taster was invited, gifted or paid,
-          the review says so. A drink with such reviews also shows how many of its taster reviews
-          were gifted or paid, like “1 of 3 taster reviews were gifted/paid”.
+          Invited, gifted and paid reviews all count toward the taster score, and every one is
+          labelled. If a taster was invited, gifted or paid, the review says so. A drink with such
+          reviews also says how many of its taster reviews carry one of these labels.
         </p>
         <ul className="space-y-2">
           {DISCLOSURES.map(({ value, meaning }) => (

@@ -132,7 +132,9 @@ export function ProfileDetailsForm({ userId, instagramHandle, bio }: ProfileDeta
           autoCapitalize="none"
           maxLength={31}
           aria-invalid={error !== null}
-          aria-describedby="instagram-handle-help"
+          aria-describedby={
+            error ? 'instagram-handle-help profile-details-error' : 'instagram-handle-help'
+          }
           onChange={(e) => setHandle(e.target.value)}
         />
         <p id="instagram-handle-help" className="text-muted-foreground text-sm">
@@ -153,7 +155,7 @@ export function ProfileDetailsForm({ userId, instagramHandle, bio }: ProfileDeta
           {text.length}/{MAX_BIO}
         </p>
       </div>
-      <p role="alert" className="text-destructive text-sm">
+      <p id="profile-details-error" role="alert" className="text-destructive text-sm">
         {error}
       </p>
       <Button type="submit" size="lg" disabled={saving} className="min-h-11">

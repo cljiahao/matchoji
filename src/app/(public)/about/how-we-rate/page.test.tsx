@@ -10,7 +10,9 @@ describe('how-we-rate page', () => {
     expect(screen.getByText('Invited')).toBeInTheDocument();
     expect(screen.getByText('Gifted')).toBeInTheDocument();
     expect(screen.getByText('Paid partnership')).toBeInTheDocument();
-    expect(screen.getByText(/Disclosed reviews count, and they are labelled/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/all count toward the taster score, and every one is labelled/)
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'One rating per person' })).toBeInTheDocument();
     expect(screen.getByText(/never mix them/)).toBeInTheDocument();
   });

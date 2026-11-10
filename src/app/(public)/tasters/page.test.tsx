@@ -56,4 +56,10 @@ describe('tasters page', () => {
     );
     expect(screen.getByText(/0 drinks rated/)).toBeInTheDocument();
   });
+
+  // A failed read must reach (public)/error.tsx, which keeps the navbar and offers a retry.
+  it('lets a failed read propagate to the route error boundary', async () => {
+    listTasters.mockRejectedValue(new Error('down'));
+    await expect(TastersPage()).rejects.toThrow('down');
+  });
 });
