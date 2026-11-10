@@ -9,6 +9,8 @@ routes (`/`, `/explore`, `/regions`, `/regions/supply`, `/journal`, `/learn`, `/
 `PAGE_ROUTES.TOP` is the top-lists index.
 `PAGE_ROUTES.SHOPS` is `/shops`, the in-person shop map; `PAGE_ROUTES.CAFES` is `/cafes`, the café list.
 
+`PAGE_ROUTES.TASTERS` is `/tasters` and `PAGE_ROUTES.HOW_WE_RATE` is `/about/how-we-rate`.
+
 ## Contents
 
 - `env.ts`

@@ -63,6 +63,13 @@ describe('share cards', () => {
     await png(<ProfileCard name="A taster with a rather long display name" teas={30} />);
   });
 
+  it('draws a trusted taster with a long bio and a handle', async () => {
+    await png(
+      <ProfileCard name="Foodcnl" teas={0} taster={{ bio: 'x'.repeat(300), handle: 'foodcnl' }} />
+    );
+    await png(<ProfileCard name="Foodcnl" teas={0} taster={{ bio: null, handle: null }} />);
+  });
+
   it('draws the logo mark without its tile', async () => {
     await png(
       <div style={{ display: 'flex', width: 1200, height: 630 }}>

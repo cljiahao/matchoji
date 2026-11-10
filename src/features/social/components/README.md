@@ -16,6 +16,8 @@ The notification bell's unread badge uses the 11px type step.
 
 `TastingFeed` renders a drink tasting with its café, disclosure badge and Instagram link.
 
+`TrustedTasterBadge` is the text "Trusted taster" with a decorative icon; `InstagramHandleLink` links `@handle` to the Instagram profile only when the handle passes the handle pattern, else renders nothing.
+
 ## Contents
 
 - `block-button.tsx`
@@ -27,6 +29,8 @@ The notification bell's unread badge uses the 11px type step.
 - `review-reactions.tsx`
 - `social-components.test.tsx`
 - `tasting-feed.tsx`
+- `trusted-taster-badge.test.tsx`
+- `trusted-taster-badge.tsx
 
 ## Parent
 

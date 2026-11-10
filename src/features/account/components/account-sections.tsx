@@ -10,7 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createClient } from '@/integrations/supabase/client';
 
-import { deleteMyAccount, exportMyData, updateDisplayName } from '../api/account-service';
+import {
+  deleteMyAccount,
+  exportMyData,
+  updateDisplayName,
+  updateProfileDetails,
+} from '../api/account-service';
+import { MAX_BIO, profileDetailsSchema } from '../schemas';
 
 const MAX_NAME = 40;
 
@@ -75,6 +81,84 @@ export function DisplayNameForm({ userId, current }: { userId: string; current: 
           {name.length}/{MAX_NAME}
         </span>
       </p>
+    </form>
+  );
+}
+
+interface ProfileDetailsFormProps {
+  userId: string;
+  instagramHandle: string | null;
+  bio: string | null;
+}
+
+// Both fields are optional; they show on the public profile only while the profile is public.
+export function ProfileDetailsForm({ userId, instagramHandle, bio }: ProfileDetailsFormProps) {
+  const router = useRouter();
+  const [handle, setHandle] = useState(instagramHandle ?? '');
+  const [text, setText] = useState(bio ?? '');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    const parsed = profileDetailsSchema.safeParse({ instagramHandle: handle, bio: text });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? 'Check the details and try again.');
+      return;
+    }
+    setError(null);
+    setSaving(true);
+    try {
+      await updateProfileDetails(createClient(), userId, { instagramHandle: handle, bio: text });
+      toast.success('Details saved.');
+      router.refresh();
+    } catch {
+      toast.error('Could not save your details. Try again.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={save} className="max-w-md space-y-4" aria-label="Profile details">
+      <div className="space-y-2">
+        <Label htmlFor="instagram-handle">Instagram handle</Label>
+        <Input
+          id="instagram-handle"
+          className="h-11"
+          value={handle}
+          placeholder="foodcnl"
+          autoComplete="off"
+          autoCapitalize="none"
+          maxLength={31}
+          aria-invalid={error !== null}
+          aria-describedby="instagram-handle-help"
+          onChange={(e) => setHandle(e.target.value)}
+        />
+        <p id="instagram-handle-help" className="text-muted-foreground text-sm">
+          Without the @. Linked from your profile.
+        </p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="profile-bio">Bio</Label>
+        <textarea
+          id="profile-bio"
+          rows={3}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          aria-describedby="profile-bio-count"
+          className="border-input bg-background w-full rounded-md border px-3 py-2 text-sm"
+        />
+        <p id="profile-bio-count" className="text-muted-foreground text-right text-sm tabular-nums">
+          {text.length}/{MAX_BIO}
+        </p>
+      </div>
+      <p role="alert" className="text-destructive text-sm">
+        {error}
+      </p>
+      <Button type="submit" size="lg" disabled={saving} className="min-h-11">
+        {saving ? 'Saving…' : 'Save details'}
+      </Button>
     </form>
   );
 }

@@ -13,7 +13,12 @@ vi.mock('next/navigation', () => ({ useRouter: () => router }));
 const toast = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
-import { DeleteAccountSection, DisplayNameForm, ExportDataButton } from './account-sections';
+import {
+  DeleteAccountSection,
+  DisplayNameForm,
+  ExportDataButton,
+  ProfileDetailsForm,
+} from './account-sections';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -107,5 +112,41 @@ describe('account tap targets', () => {
     ]) {
       expect(control.className).toMatch(/(^|\s)(min-)?h-11(\s|$)/);
     }
+  });
+});
+
+describe('ProfileDetailsForm', () => {
+  it('saves the handle and bio, and refuses a handle with an @ before any request', async () => {
+    const fake = createFakeBrowserClient({ results: { profiles: { data: null, error: null } } });
+    supabase.current = fake.client;
+    renderWithQuery(<ProfileDetailsForm userId="u1" instagramHandle={null} bio={null} />);
+
+    const handle = screen.getByLabelText('Instagram handle');
+    await userEvent.type(handle, '@foodcnl');
+    await userEvent.click(screen.getByRole('button', { name: 'Save details' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('without the @');
+    expect(fake.calls.find((c) => c.method === 'update')).toBeUndefined();
+
+    await userEvent.clear(handle);
+    await userEvent.type(handle, 'foodcnl');
+    await userEvent.type(screen.getByLabelText('Bio'), 'Hojicha first');
+    expect(screen.getByText('13/280')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Save details' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Details saved.'));
+    expect(fake.calls.find((c) => c.method === 'update')?.args[0]).toEqual({
+      instagram_handle: 'foodcnl',
+      bio: 'Hojicha first',
+    });
+  });
+
+  it('says so when the save fails', async () => {
+    const fake = createFakeBrowserClient({
+      results: { profiles: { data: null, error: new Error('down') } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<ProfileDetailsForm userId="u1" instagramHandle="foodcnl" bio="Hi" />);
+    await userEvent.click(screen.getByRole('button', { name: 'Save details' }));
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
   });
 });

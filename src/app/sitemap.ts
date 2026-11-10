@@ -34,6 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.SUPPLY,
     PAGE_ROUTES.SHOPS,
     PAGE_ROUTES.CAFES,
+    PAGE_ROUTES.TASTERS,
+    PAGE_ROUTES.HOW_WE_RATE,
     PAGE_ROUTES.LEARN,
     ...(MARKETPLACE_ENABLED ? [PAGE_ROUTES.SELL] : []),
     // Only lists with enough rated teas exist; the rest return not-found and stay out.

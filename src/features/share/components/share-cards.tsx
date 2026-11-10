@@ -223,7 +223,19 @@ export function TeaCard({ tea }: { tea: TeaCardData }) {
   );
 }
 
-export function ProfileCard({ name, teas }: { name: string; teas: number }) {
+interface ProfileCardProps {
+  name: string;
+  teas: number;
+  // Only a trusted taster's card carries the badge, bio and handle; the caller passes the handle
+  // only after it passes the handle pattern.
+  taster?: { bio: string | null; handle: string | null };
+}
+
+const BIO_LIMIT = 140;
+const clip = (text: string) =>
+  text.length > BIO_LIMIT ? `${text.slice(0, BIO_LIMIT - 1).trimEnd()}…` : text;
+
+export function ProfileCard({ name, teas, taster }: ProfileCardProps) {
   return (
     <div
       style={{
@@ -238,7 +250,7 @@ export function ProfileCard({ name, teas }: { name: string; teas: number }) {
       }}
     >
       <div style={{ display: 'flex', fontSize: 36, fontWeight: 700, color: OG.matchaGreen }}>
-        Taster on Matchoji
+        {taster ? 'Trusted taster on Matchoji' : 'Taster on Matchoji'}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
@@ -255,6 +267,24 @@ export function ProfileCard({ name, teas }: { name: string; teas: number }) {
         <div style={{ display: 'flex', marginTop: 24, fontSize: 52, color: OG.mutedInk }}>
           {teas} {teas === 1 ? 'tea' : 'teas'} rated
         </div>
+        {taster?.bio && (
+          <div style={{ display: 'flex', marginTop: 20, fontSize: 32, color: OG.mutedInk }}>
+            {clip(taster.bio)}
+          </div>
+        )}
+        {taster?.handle && (
+          <div
+            style={{
+              display: 'flex',
+              marginTop: 16,
+              fontSize: 32,
+              fontWeight: 700,
+              color: OG.matchaGreen,
+            }}
+          >
+            @{taster.handle}
+          </div>
+        )}
       </div>
       <Wordmark />
     </div>

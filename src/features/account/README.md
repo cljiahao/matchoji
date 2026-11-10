@@ -8,10 +8,13 @@ Deletion removes their photos through the Storage API, then calls `delete_my_acc
 which keeps their ratings anonymised (as Vivino does), removes the rest and scrubs them from
 the audit trail, then signs them out.
 
+The account page also edits an optional Instagram handle (stored without `@`, letters, digits, `.` and `_`, up to 30) and a bio (up to 280 characters), through `updateProfileDetails` and `profileDetailsSchema`. Both show on the public profile of a public account and are what a trusted taster's profile and the tasters page display.
+
 ## Contents
 
 - `api/`
-- `components/`
+- `components/
+- `schemas/`
 - `index.ts`
 
 ## Connectivity

@@ -13,6 +13,8 @@ All notable changes to this project are documented here. Format follows
 
 - Admin moderation for cafés, drinks and trusted tasters on `/admin`: Cafés and Drinks tabs list suggestions waiting for review with who added them, and an admin can approve, reject with a note the submitter sees, or merge one into an approved duplicate, and edit an approved café's or drink's details (a drink's photo, photo credit and linked tea too). A Tasters tab searches people by display name (private profiles included) and grants or revokes the trusted-taster badge. The database's own refusals, such as approving a drink at a café that is not approved, are shown as they are. No migration.
 
+- Trusted taster profiles (slice S6; needs the S1 schema applied). `/account` has an "Instagram and bio" section (handle without the @, up to 30 letters, numbers, dots and underscores; bio up to 280 characters; a blank value removes it). A trusted taster's profile shows a "Trusted taster" badge, their bio, an Instagram link and a "Drink reviews" section; their link-preview image carries the same. `/tasters` lists the trusted tasters with their latest drink review, or one line when there are none. `/about/how-we-rate` explains the taster and community scores, the Invited, Gifted and Paid partnership labels and one rating per person in plain words. Both pages are in the sitemap. No migration.
+
 ### Changed
 
 - The admin reports queue handles a reported drink review: it names the café and drink instead of a tea, and no longer breaks on a review with no tea.

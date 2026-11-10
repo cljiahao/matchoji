@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { createFakeBrowserClient } from '../../../../test/support/fake-browser-client';
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
-import { deleteMyAccount, exportMyData, getMyProfile, updateDisplayName } from './account-service';
+import {
+  deleteMyAccount,
+  exportMyData,
+  getMyProfile,
+  updateDisplayName,
+  updateProfileDetails,
+} from './account-service';
 
 describe('getMyProfile and updateDisplayName', () => {
   it('reads the profile and saves a trimmed name', async () => {
@@ -118,5 +124,53 @@ describe('deleteMyAccount', () => {
     await expect(deleteMyAccount(asClient(fake.client), 'u1')).rejects.toBe(error);
     expect(fake.calls.some((c) => c.method === 'rpc')).toBe(false);
     expect(fake.auth.signOut).not.toHaveBeenCalled();
+  });
+});
+
+describe('updateProfileDetails', () => {
+  const save = (input: { instagramHandle: string | null; bio: string | null }) => {
+    const fake = createFakeSupabase({ profiles: { data: null, error: null } });
+    return { ...fake, done: updateProfileDetails(fake.client, 'u1', input) };
+  };
+
+  it('rejects a handle with an @ or spaces, and writes nothing', async () => {
+    for (const handle of ['@foodcnl', 'food cnl', 'a'.repeat(31)]) {
+      const { calls, done } = save({ instagramHandle: handle, bio: null });
+      await expect(done).rejects.toThrow();
+      expect(calls).toEqual([]);
+    }
+  });
+
+  it('rejects a bio over 280 characters and accepts exactly 280', async () => {
+    const tooLong = save({ instagramHandle: null, bio: 'x'.repeat(281) });
+    await expect(tooLong.done).rejects.toThrow();
+    expect(tooLong.calls).toEqual([]);
+
+    const exact = save({ instagramHandle: null, bio: 'x'.repeat(280) });
+    await expect(exact.done).resolves.toBeUndefined();
+  });
+
+  it('stores a trimmed handle and turns blanks into null', async () => {
+    const filled = save({ instagramHandle: ' foodcnl ', bio: ' Hojicha first. ' });
+    await filled.done;
+    expect(filled.calls.find((c) => c.method === 'update')?.args[0]).toEqual({
+      instagram_handle: 'foodcnl',
+      bio: 'Hojicha first.',
+    });
+
+    const blank = save({ instagramHandle: '  ', bio: '' });
+    await blank.done;
+    expect(blank.calls.find((c) => c.method === 'update')?.args[0]).toEqual({
+      instagram_handle: null,
+      bio: null,
+    });
+  });
+
+  it('throws when the save is refused', async () => {
+    const error = new Error('denied');
+    const { client } = createFakeSupabase({ profiles: { data: null, error } });
+    await expect(
+      updateProfileDetails(client, 'u1', { instagramHandle: 'ok', bio: null })
+    ).rejects.toBe(error);
   });
 });

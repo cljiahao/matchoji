@@ -13,6 +13,8 @@ recording fake client.
 
 `loadFeed` and the profile's recent tastings pair each review with its tea or its drink and café. `listNotifications` also selects `drink_id` and `cafe_id` and resolves them to `drinkPath` and `cafePath`; `notificationHref` links a drink like or comment to the drink, and `cafe_reviewed` / `drink_reviewed` notifications to the café or drink, using the notification's own sentence.
 
+`getProfileView` also returns `isTrustedTaster`, `instagramHandle`, `bio` (blank unless the profile is public: the `public_profiles` view does that) and `drinkReviews`. `listTasters` lists trusted, public tasters with their bio, handle, drink review count and latest drink review; it counts only drinks the reader can see and is empty when there are none.
+
 ## Contents
 
 - `index.ts`

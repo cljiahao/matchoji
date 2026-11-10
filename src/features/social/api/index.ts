@@ -17,6 +17,7 @@ export {
 export {
   getProfileView,
   listBlocked,
+  listTasters,
   loadFeed,
   setBlocked,
   setFollowing,
