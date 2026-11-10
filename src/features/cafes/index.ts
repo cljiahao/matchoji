@@ -13,4 +13,5 @@ export type {
   DrinkPageResult,
   ScorePair as ScorePairData,
   TasterDrinkReview,
+  TopDrinkList,
 } from './types';

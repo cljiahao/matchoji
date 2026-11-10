@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
 import { LinkList, type LinkItem } from '@/components/widgets';
-import { MARKETPLACE_ENABLED } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { ThemeToggle } from './theme-toggle';
 
@@ -22,12 +21,13 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
         <div className="max-w-xs">
           <p className="text-brand text-lg font-extrabold tracking-tight">Matchoji</p>
           <p className="text-muted-foreground mt-1 text-sm">
-            Rate and discover matcha and hojicha, one cup at a time.
+            The trusted guide to hojicha and matcha drinks in Singapore and JB, rated drink by
+            drink.
           </p>
         </div>
 
-        {/* The navbar (md and up) already has Explore, Regions, Learn and Journal, and the
-            phone tab bar has all but Regions, so only that one repeats, where the tab bar shows. */}
+        {/* The desktop navbar's At home menu already has Regions and Learn, so those two show
+            only where the phone tab bar lacks them. */}
         <nav aria-label="More from Matchoji" className="text-sm">
           <ul className="flex flex-col sm:items-end">
             <li className="md:hidden">
@@ -36,27 +36,25 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
               </Link>
             </li>
             <li>
-              <Link href={PAGE_ROUTES.TOP} className={LINK_CLASS}>
-                Top lists
-              </Link>
-            </li>
-            <li>
               <Link href={PAGE_ROUTES.SUPPLY} className={LINK_CLASS}>
                 Tea supply
               </Link>
             </li>
-            <li>
-              <Link href={PAGE_ROUTES.SHOPS} className={LINK_CLASS}>
-                Where to buy in person
+            <li className="md:hidden">
+              <Link href={PAGE_ROUTES.LEARN} className={LINK_CLASS}>
+                Learn
               </Link>
             </li>
-            {MARKETPLACE_ENABLED && (
-              <li>
-                <Link href={PAGE_ROUTES.SELL} className={LINK_CLASS}>
-                  Sell on Matchoji
-                </Link>
-              </li>
-            )}
+            <li>
+              <Link href={PAGE_ROUTES.SHOPS} className={LINK_CLASS}>
+                Tea shops
+              </Link>
+            </li>
+            <li>
+              <Link href={PAGE_ROUTES.HOW_WE_RATE} className={LINK_CLASS}>
+                How we rate
+              </Link>
+            </li>
             {links.length > 0 && (
               <li className="py-1.5">
                 <LinkList links={links} className="text-muted-foreground" />
@@ -69,7 +67,7 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
       <div className="max-w-site mx-auto px-6">
         <ThemeToggle className="pb-5" />
         <div className="border-border text-muted-foreground flex flex-col gap-1 border-t py-5 text-xs sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Matchoji · A hobby project</p>
+          <p>© {new Date().getFullYear()} Matchoji</p>
           <p>
             Is one of these photos yours?{' '}
             <a

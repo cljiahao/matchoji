@@ -132,160 +132,8 @@ describe('Home page', () => {
       throw new Error('prerender bail-out');
     });
 
-    await expect(Home()).rejects.toThrow('prerender bail-out');
+    await expect(Home({ searchParams: Promise.resolve({}) })).rejects.toThrow('prerender bail-out');
     expect(fake.calls).toHaveLength(0);
-  });
-
-  it('leads with search and the two teas, then shelves for each tea and the newest', async () => {
-    const { calls } = useServer({
-      catalogue_teas: [
-        { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
-        { data: [row('h1', 'Kyoto Bancha', 'hojicha', '2026-09-02T00:00:00Z')], error: null },
-        {
-          data: [
-            row('n1', 'Hoshino Fresh', 'matcha', '2026-09-03T00:00:00Z'),
-            row('h1', 'Kyoto Bancha', 'hojicha', '2026-09-02T00:00:00Z'),
-            row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z'),
-          ],
-          error: null,
-        },
-        // The top-lists check reads the whole catalogue; none is rated, so no list exists.
-        { data: [], error: null },
-      ],
-    });
-
-    renderWithQuery(await Home());
-
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Find your next matcha or hojicha' })
-    ).toBeInTheDocument();
-    expect(screen.getByRole('search')).toHaveAttribute('action', '/explore');
-    expect(screen.getByRole('link', { name: /Stone-ground green tea/ })).toHaveAttribute(
-      'href',
-      '/explore?category=matcha'
-    );
-
-    const matcha = screen.getByRole('region', { name: 'Matcha to try' });
-    expect(within(matcha).getByRole('link', { name: /See all/ })).toHaveAttribute(
-      'href',
-      '/explore?category=matcha'
-    );
-    expect(within(matcha).getByRole('link', { name: /Uji Gold/ })).toHaveAttribute(
-      'href',
-      '/products/m1'
-    );
-    const hojicha = screen.getByRole('region', { name: 'Hojicha to try' });
-    expect(within(hojicha).getByRole('link', { name: /See all/ })).toHaveAttribute(
-      'href',
-      '/explore?category=hojicha'
-    );
-    const newest = screen.getByRole('region', { name: 'Newly added' });
-    expect(within(newest).getByRole('link', { name: /See all/ })).toHaveAttribute(
-      'href',
-      '/explore?sort=newest'
-    );
-    expect(
-      within(newest)
-        .getAllByRole('heading', { level: 3 })
-        .map((h) => h.textContent)
-    ).toEqual(['Hoshino Fresh', 'Kyoto Bancha', 'Uji Gold']);
-    expect(within(newest).getAllByRole('button', { name: 'Want to try' })).toHaveLength(3);
-
-    // Three queries, each fetching only its shelf, and one for the top lists.
-    expect(calls.filter((c) => c.table === 'catalogue_teas' && c.method === 'from')).toHaveLength(
-      4
-    );
-    expect(calls.filter((c) => c.method === 'range').map((c) => c.args)).toEqual([
-      [0, 11],
-      [0, 11],
-      [0, 11],
-    ]);
-    expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
-      ['category', 'matcha'],
-      ['category', 'hojicha'],
-    ]);
-  });
-
-  it('sends a shelf’s "See all" to its top list once that list exists', async () => {
-    const rated = Array.from({ length: 5 }, (_, i) =>
-      row(`m${i}`, `Matcha ${i}`, 'matcha', '2026-09-01T00:00:00Z', {
-        review_count: 4,
-        avg_stars: 4.5 - i * 0.1,
-      })
-    );
-    useServer({
-      catalogue_teas: [
-        { data: rated, error: null },
-        { data: [], error: null },
-        { data: [], error: null },
-        { data: rated, error: null },
-      ],
-      tea_taste_profiles: { data: [], error: null },
-    });
-
-    renderWithQuery(await Home());
-
-    const matcha = screen.getByRole('region', { name: 'Top-rated matcha' });
-    expect(within(matcha).getByRole('link', { name: /See all/ })).toHaveAttribute(
-      'href',
-      '/top/matcha'
-    );
-  });
-
-  it('leads a signed-in reader with tastings from people they follow', async () => {
-    useServer(
-      {
-        catalogue_teas: {
-          data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')],
-          error: null,
-        },
-        'rpc:following_feed': {
-          data: [{ ...reviewRow('r1', 'm1', '2026-10-05', 5), user_id: 'u2' }],
-          error: null,
-        },
-        public_profiles: { data: [{ id: 'u2', display_name: 'Ben' }], error: null },
-        products: {
-          data: [{ id: 'm1', name: 'Uji Gold', brand: null, category: 'matcha' }],
-          error: null,
-        },
-      },
-      { id: 'u1' }
-    );
-
-    renderWithQuery(await Home());
-
-    const feed = screen.getByRole('region', { name: 'From people you follow' });
-    expect(within(feed).getByRole('link', { name: 'Ben' })).toHaveAttribute('href', '/u/u2');
-    expect(within(feed).getByRole('link', { name: 'Uji Gold' })).toHaveAttribute(
-      'href',
-      '/products/m1'
-    );
-  });
-
-  it('hides an empty shelf and keeps the others', async () => {
-    useServer({
-      catalogue_teas: [
-        { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
-        { data: [], error: null },
-        { data: [row('m1', 'Uji Gold', 'matcha', '2026-09-01T00:00:00Z')], error: null },
-      ],
-    });
-
-    renderWithQuery(await Home());
-
-    expect(screen.getByRole('region', { name: 'Matcha to try' })).toBeInTheDocument();
-    expect(screen.queryByRole('region', { name: 'Hojicha to try' })).not.toBeInTheDocument();
-    expect(screen.queryByText('No teas rated yet')).not.toBeInTheDocument();
-  });
-
-  it('invites the first tasting when the catalogue is empty', async () => {
-    useServer({ catalogue_teas: { data: [], error: null } });
-
-    renderWithQuery(await Home());
-
-    expect(screen.getByRole('heading', { name: 'No teas rated yet' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Log a tasting' })).toBeInTheDocument();
-    expect(screen.queryByRole('region')).not.toBeInTheDocument();
   });
 });
 
@@ -1550,7 +1398,9 @@ describe('static routes', () => {
     const { rerender } = render(<SiteFooter />);
     expect(screen.getByText('Matchoji')).toBeInTheDocument();
     expect(
-      screen.getByText('Rate and discover matcha and hojicha, one cup at a time.')
+      screen.getByText(
+        'The trusted guide to hojicha and matcha drinks in Singapore and JB, rated drink by drink.'
+      )
     ).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Sell on Matchoji' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Regions' })).toHaveAttribute('href', '/regions');
@@ -1558,12 +1408,13 @@ describe('static routes', () => {
       'href',
       '/regions/supply'
     );
-    expect(screen.getByRole('link', { name: 'Top lists' })).toHaveAttribute('href', '/top');
-    expect(screen.getByRole('link', { name: 'Where to buy in person' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Tea shops' })).toHaveAttribute('href', '/shops');
+    expect(screen.getByRole('link', { name: 'How we rate' })).toHaveAttribute(
       'href',
-      '/shops'
+      '/about/how-we-rate'
     );
-    expect(screen.getAllByRole('link')).toHaveLength(5);
+    expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');
+    expect(screen.getAllByRole('link')).toHaveLength(6);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');

@@ -5,7 +5,17 @@ import type { Database, DrinkBase, DrinkStyle } from '@/integrations/supabase/da
 import { isMissingTable } from '@/integrations/supabase/missing-table';
 import { selectIn } from '@/integrations/supabase/select-in';
 
-import { CITIES, cafeHref, compareDrinks, drinkHref, qualifiesForTop } from '../lib';
+import {
+  ALL_DRINK_LISTS,
+  CITIES,
+  cafeHref,
+  compareDrinks,
+  drinkHref,
+  drinkListSlug,
+  drinkListTitle,
+  qualifiesForTop,
+  type DrinkListKey,
+} from '../lib';
 import type {
   Cafe,
   CafeListing,
@@ -19,6 +29,7 @@ import type {
   PageRedirect,
   ScorePair,
   TasterDrinkReview,
+  TopDrinkList,
 } from '../types';
 
 type Client = SupabaseClient<Database>;
@@ -499,6 +510,34 @@ export async function listTopDrinks(
   const drinks = await cityDrinks(supabase, query);
   return drinks.filter(qualifiesForTop).sort(compareDrinks).slice(0, limit);
 }
+
+// Every drink list that has at least one qualifying drink, for the /top index and the sitemap. One
+// read per city, split by base and style here, so an empty list costs nothing and is left out.
+export async function listTopDrinkLists(supabase: Client): Promise<TopDrinkList[]> {
+  const perCity = await Promise.all(
+    CITIES.map((city) => listTopDrinks(supabase, { city: city.slug, limit: TOP_LIST_READ_LIMIT }))
+  );
+  const drinks = perCity.flat();
+  const lists: TopDrinkList[] = [];
+  for (const key of ALL_DRINK_LISTS) {
+    const matching = drinks.filter((d) => sameList(d, key));
+    if (matching.length === 0) continue;
+    lists.push({
+      ...key,
+      slug: drinkListSlug(key),
+      title: drinkListTitle(key),
+      count: matching.length,
+      drinks: matching.slice(0, TOP_LIST_PREVIEW),
+    });
+  }
+  return lists;
+}
+
+const TOP_LIST_READ_LIMIT = 500;
+const TOP_LIST_PREVIEW = 3;
+
+const sameList = (d: DrinkListing, key: DrinkListKey) =>
+  d.cafe.citySlug === key.city && d.base === key.base && d.style === key.style;
 
 // Same base and style in the same city; prices are never compared across cities.
 export async function listSimilarDrinks(

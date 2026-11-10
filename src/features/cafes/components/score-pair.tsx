@@ -35,7 +35,7 @@ function Block({
 }
 
 // Taster and community scores sit side by side and are never averaged together: a visitor can
-// tell whose opinion each number is. A disclosed (gifted or paid) taster review still counts,
+// tell whose opinion each number is. A disclosed (invited, gifted or paid) taster review still counts,
 // and the line under the score says how many were.
 export function ScorePair({ scores, compact = false, className }: ScorePairProps) {
   const hasTaster = scores.tasterAvg !== null && scores.tasterCount > 0;
@@ -68,7 +68,7 @@ export function ScorePair({ scores, compact = false, className }: ScorePairProps
       {hasTaster && scores.tasterDisclosedCount > 0 && (
         <p className="text-muted-foreground text-xs">
           {scores.tasterDisclosedCount} of {scores.tasterCount} taster{' '}
-          {scores.tasterCount === 1 ? 'review was' : 'reviews were'} gifted/paid
+          {scores.tasterCount === 1 ? 'review was' : 'reviews were'} invited, gifted or paid
         </p>
       )}
     </div>

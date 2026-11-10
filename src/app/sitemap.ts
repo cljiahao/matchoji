@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { connection } from 'next/server';
 
-import { listCafeSitemapEntries } from '@/features/cafes';
+import { listCafeSitemapEntries, listTopDrinkLists, topTeasHref } from '@/features/cafes';
 import { buildTopLists } from '@/features/discovery';
 import {
   COURSES,
@@ -21,15 +21,17 @@ import { PAGE_ROUTES } from '@/lib/constants/routes';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
   const supabase = await createClient();
-  const [catalogue, cafeEntries] = await Promise.all([
+  const [catalogue, cafeEntries, drinkLists] = await Promise.all([
     listCatalogue(supabase),
     listCafeSitemapEntries(supabase),
+    listTopDrinkLists(supabase),
   ]);
 
   const pages = [
     PAGE_ROUTES.HOME,
     PAGE_ROUTES.EXPLORE,
     PAGE_ROUTES.TOP,
+    topTeasHref(),
     PAGE_ROUTES.REGIONS,
     PAGE_ROUTES.SUPPLY,
     PAGE_ROUTES.SHOPS,
@@ -38,8 +40,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.HOW_WE_RATE,
     PAGE_ROUTES.LEARN,
     ...(MARKETPLACE_ENABLED ? [PAGE_ROUTES.SELL] : []),
-    // Only lists with enough rated teas exist; the rest return not-found and stay out.
-    ...buildTopLists(catalogue).map((list) => `${PAGE_ROUTES.TOP}/${list.slug}`),
+    // Only drink lists with a qualifying drink exist; the rest return not-found and stay out.
+    ...drinkLists.map((list) => `${PAGE_ROUTES.TOP}/${list.slug}`),
+    // Likewise only tea lists with enough rated teas.
+    ...buildTopLists(catalogue).map((list) => topTeasHref(list.slug)),
     ...RECIPES.map((recipe) => recipeHref(recipe.slug)),
     ...GUIDES.map((guide) => guideHref(guide.slug)),
     ...COURSES.flatMap((course) => [
