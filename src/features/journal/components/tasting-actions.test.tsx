@@ -39,6 +39,30 @@ const entry = {
   roast: null,
 };
 
+const drinkEntry = {
+  ...entry,
+  id: 'r2',
+  productId: null,
+  drinkId: 'd1',
+  product: undefined,
+  regionName: undefined,
+  stars: 5,
+  notes: 'Roasty',
+  flavorNotes: [],
+  profile: { sweetness: 2 },
+  teaStrength: 4,
+  roast: 3,
+  drink: {
+    id: 'd1',
+    slug: 'hojicha-latte',
+    name: 'Hojicha Latte',
+    base: 'hojicha' as const,
+    cafe: { id: 'c1', slug: 'kissa', name: 'Kissa' },
+  },
+};
+// The tea fields do not exist on a drink entry; spreading `entry` left placeholders to drop.
+const { product: _product, regionName: _regionName, ...drinkOnly } = drinkEntry;
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -81,5 +105,46 @@ describe('TastingActions', () => {
 
     await waitFor(() => expect(router.refresh).toHaveBeenCalled());
     expect(fake.calls).toContainEqual({ table: 'reviews', method: 'eq', args: ['id', 'r1'] });
+  });
+
+  it('edits a café drink rating in the drink form, prefilled', async () => {
+    const fake = createFakeBrowserClient({
+      session: makeSession(),
+      results: { reviews: { data: null, error: null } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<TastingActions entry={drinkOnly} />);
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Edit your tasting of Hojicha Latte' })
+    );
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByLabelText('Tasting notes (optional)')).toHaveValue('Roasty');
+    expect(within(dialog).getByRole('radio', { name: 'Tea strength 4 of 5' })).toBeChecked();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Save changes' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Rating updated.'));
+    expect(fake.calls.find((c) => c.method === 'update')?.args[0]).toMatchObject({
+      stars: 5,
+      notes: 'Roasty',
+      sweetness: 2,
+      tea_strength: 4,
+      roast: 3,
+    });
+  });
+
+  it('deletes a café drink rating only after confirming', async () => {
+    const fake = createFakeBrowserClient({ results: { reviews: { data: null, error: null } } });
+    supabase.current = fake.client;
+    renderWithQuery(<TastingActions entry={drinkOnly} />);
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete your tasting of Hojicha Latte' })
+    );
+    expect(fake.calls.some((c) => c.method === 'delete')).toBe(false);
+    await userEvent.click(await screen.findByRole('button', { name: 'Delete tasting' }));
+
+    await waitFor(() => expect(router.refresh).toHaveBeenCalled());
+    expect(fake.calls).toContainEqual({ table: 'reviews', method: 'eq', args: ['id', 'r2'] });
   });
 });

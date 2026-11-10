@@ -4,7 +4,7 @@ import { BookOpen, Compass, GraduationCap, Home, Plus, type LucideIcon } from 'l
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { LogTastingDialog } from '@/features/reviews';
+import { LogDialog } from '@/components/widgets/log-dialog';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
@@ -55,7 +55,7 @@ export function MobileTabBar() {
         <Tab href={PAGE_ROUTES.HOME} label="Home" icon={Home} active={pathname === '/'} />
         <Tab href={PAGE_ROUTES.EXPLORE} label="Explore" icon={Compass} active={exploring} />
         <li className="flex-1">
-          <LogTastingDialog
+          <LogDialog
             trigger={
               <button
                 type="button"

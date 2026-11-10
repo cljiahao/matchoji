@@ -25,14 +25,14 @@ type Client = SupabaseClient<Database>;
 type Tables = Database['public']['Tables'];
 
 // Columns are named, never '*': added_by, review_note and reviewed_at are not granted to readers.
-const CAFE_COLUMNS =
+export const CAFE_COLUMNS =
   'id, slug, name, city_slug, area, address, lat, lng, instagram_handle, website_url, status, merged_into, updated_at';
-const DRINK_COLUMNS =
+export const DRINK_COLUMNS =
   'id, cafe_id, slug, name, base, style, serving, price, currency, photo_url, photo_credit, tea_product_id, status, merged_into, updated_at';
 const RATING_COLUMNS =
   'drink_id, taster_count, taster_avg, taster_disclosed_count, community_count, community_avg';
 
-type CafeRow = Pick<
+export type CafeRow = Pick<
   Tables['cafes']['Row'],
   | 'id'
   | 'slug'
@@ -47,7 +47,7 @@ type CafeRow = Pick<
   | 'status'
   | 'merged_into'
 >;
-type DrinkRow = Pick<
+export type DrinkRow = Pick<
   Tables['drinks']['Row'],
   | 'id'
   | 'cafe_id'
@@ -133,7 +133,7 @@ const toScores = (row: RatingRow | null | undefined): ScorePair =>
       }
     : NO_SCORES;
 
-const toCafe = (r: CafeRow): Cafe => ({
+export const toCafe = (r: CafeRow): Cafe => ({
   id: r.id,
   slug: r.slug,
   name: r.name,
@@ -147,7 +147,7 @@ const toCafe = (r: CafeRow): Cafe => ({
   status: r.status,
 });
 
-const toDrink = (r: DrinkRow): Drink => ({
+export const toDrink = (r: DrinkRow): Drink => ({
   id: r.id,
   cafeId: r.cafe_id,
   slug: r.slug,

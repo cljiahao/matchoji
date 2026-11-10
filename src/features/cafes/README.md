@@ -2,16 +2,20 @@
 
 ## Purpose
 
-The read side of café drinks: Singapore and Johor Bahru cafés, the hojicha and matcha drinks on their menus, and how well tasters and the community rate each drink. Taster and community scores are separate everywhere (`ScorePair` shows both side by side, never averaged), and a disclosed taster review (gifted, paid or invited) still counts, with "n of m taster reviews were gifted/paid" under the score.
+Café drinks: Singapore and Johor Bahru cafés, the hojicha and matcha drinks on their menus, and how well tasters and the community rate each drink. Taster and community scores are separate everywhere (`ScorePair` shows both side by side, never averaged), and a disclosed taster review (gifted, paid or invited) still counts, with "n of m taster reviews were gifted/paid" under the score.
 
 `types.ts` defines `Cafe`, `Drink`, their `…Listing` forms with scores, `ScorePair` (exported as `ScorePairData` because the component takes the name `ScorePair`) and the page results. A page result is `found`, `redirect` or `missing`: a merged café or drink forwards to its survivor and a rejected drink to its café, so a link posted to Instagram never 404s. No migration; the schema comes from the S1 café migration, and every read returns empty before it is applied.
+
+The write side: a signed-in person logs a café drink by finding or adding the café, finding or adding the drink, then rating it (`DrinkLogFlow`, opened from the app-wide `LogDialog` widget or from a drink page's `RateThisDrink`). A trusted taster must also give the link to their Instagram post and say whether the drink was gifted, paid or invited, with no answer preselected; everyone else sees neither field. Schemas in `schemas/` validate every form, `hooks/` wraps the mutations and searches, and the database's own pending-review cap is shown as a plain message.
 
 ## Contents
 
 - `api/`
 - `components/`
+- `hooks/`
 - `index.ts`
 - `lib/`
+- `schemas/`
 - `types.ts`
 
 ## Connectivity

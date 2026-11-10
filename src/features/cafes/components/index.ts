@@ -1,5 +1,8 @@
 export { CafeCard } from './cafe-card';
 export { CafeFilters } from './cafe-filters';
 export { CitySwitch } from './city-switch';
+export { DrinkReviewForm } from './drink-review-form';
 export { DrinkRow } from './drink-row';
+export { LazyDrinkLogFlow } from './lazy-drink-log-flow';
+export { RateThisDrink } from './rate-this-drink';
 export { ScorePair } from './score-pair';

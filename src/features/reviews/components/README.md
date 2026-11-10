@@ -45,6 +45,8 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 
 `DisclosureBadge` labels an invited, gifted or paid review ("Invited", "Gifted", "Paid partnership") and renders nothing for none; `InstagramPostLink` links out to a taster's post (new tab, `noopener noreferrer`) and renders nothing unless the URL is `https://www.instagram.com/...`. `ReviewItem` shows a "Trusted taster" chip, the badge and the link for drink reviews, and every other surface that lists a drink review reuses the first two.
 
+`lazy-log-tasting-flow.tsx` holds the `next/dynamic` wrapper for `LogTastingFlow` (exported through `index.ts` with `FlavorNotePicker`), so the app-wide `LogDialog` widget can load the tea flow without importing the form eagerly; `LogTastingDialog` imports it from there.
+
 ## Contents
 
 - `community-reviews.tsx`
@@ -58,6 +60,7 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 - `index.ts`
 - `instagram-post-link.test.tsx`
 - `instagram-post-link.tsx`
+- `lazy-log-tasting-flow.tsx`
 - `log-tasting-dialog.test.tsx`
 - `log-tasting-dialog.tsx`
 - `log-tasting-flow.tsx`

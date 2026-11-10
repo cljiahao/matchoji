@@ -7,7 +7,7 @@ renders inside. Navbar and footer share the `max-w-site` column so their edges l
 page content; the navbar carries the logo, a search pill (off on home and Explore, which have their own),
 Explore, Regions, Learn and Journal links (handed to `MobileTabBar`, a fixed bottom bar with Home, Explore,
 Log, Learn and Journal, below `md`, where Regions counts as Explore), the global "Log a
-tasting" dialog and `NotificationBell` and `AuthStatus` (sign-in button or user menu). The footer has
+tasting" dialog (`LogDialog`: a café drink or a tea) and `NotificationBell` and `AuthStatus` (sign-in button or user menu). The footer has
 the wordmark and tagline, the links the navbar lacks (Tea supply, Sell on Matchoji (only while `MARKETPLACE_ENABLED` is on), plus Regions
 on phones, where the tab bar has no Regions tab), and a fine-print row. `Providers` wraps the app in `SessionProvider`,
 so every component shares one sign-in session.

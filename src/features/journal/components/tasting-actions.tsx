@@ -13,18 +13,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { DrinkReviewForm } from '@/features/cafes';
 import { RateProductForm, deleteReview } from '@/features/reviews';
 import { createClient } from '@/integrations/supabase/client';
 
-import type { JournalEntry } from '../types';
+import type { JournalItem } from '../types';
 
-// Edit or delete one of your own tastings from the journal, as Vivino lets you change a rating.
-export function TastingActions({ entry }: { entry: JournalEntry }) {
+// Edit or delete one of your own tastings (a tea or a café drink) from the journal, as Vivino
+// lets you change a rating.
+export function TastingActions({ entry }: { entry: JournalItem }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const name = entry.product.name;
+  const name = 'drink' in entry ? entry.drink.name : entry.product.name;
 
   async function remove() {
     setDeleting(true);
@@ -67,11 +69,20 @@ export function TastingActions({ entry }: { entry: JournalEntry }) {
             <DialogTitle>Edit your tasting of {name}</DialogTitle>
             <DialogDescription>Change anything; your score updates everywhere.</DialogDescription>
           </DialogHeader>
-          <RateProductForm
-            product={entry.product}
-            review={entry}
-            onLogged={() => setEditing(false)}
-          />
+          {'drink' in entry ? (
+            <DrinkReviewForm
+              drink={entry.drink}
+              isTaster={entry.byTrustedTaster}
+              review={entry}
+              onLogged={() => setEditing(false)}
+            />
+          ) : (
+            <RateProductForm
+              product={entry.product}
+              review={entry}
+              onLogged={() => setEditing(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
 

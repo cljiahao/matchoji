@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
+import { LogDialog } from '@/components/widgets/log-dialog';
 import { WantToTryButton } from '@/features/journal';
 import {
   CATEGORY_STYLES,
@@ -21,7 +22,6 @@ import {
   valueScoresFor,
   type DiscoverFilters,
 } from '@/features/products';
-import { LogTastingDialog } from '@/features/reviews';
 import { MatchBadge, loadMatches } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
 
@@ -167,7 +167,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                     ? `No ${teaName.toLowerCase()} rated yet. Be the first to rate one.`
                     : 'No teas rated yet. Be the first to rate a matcha or hojicha.'}
                 </p>
-                <LogTastingDialog />
+                <LogDialog />
               </div>
             )}
           </div>

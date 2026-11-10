@@ -1,5 +1,6 @@
 export { drinkHref } from './drink-href';
 export { localToday } from './local-date';
+export { handleRadioKeyDown, radioTabIndex } from './roving-radio';
 export { summarizeReviews, type ReviewSummary, type StarCount } from './summarize-reviews';
 export {
   ALL_FLAVOR_NOTES,

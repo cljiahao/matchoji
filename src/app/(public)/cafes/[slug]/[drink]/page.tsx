@@ -6,6 +6,7 @@ import { cache } from 'react';
 import {
   BASE_LABELS,
   DrinkRow,
+  RateThisDrink,
   SERVING_LABELS,
   STYLE_LABELS,
   ScorePair,
@@ -130,6 +131,10 @@ export default async function DrinkPage({ params }: DrinkPageProps) {
 
       <div className="max-w-site mx-auto w-full px-6 py-10 sm:py-14">
         <ScorePair scores={drink.scores} />
+
+        <div className="mt-6">
+          <RateThisDrink drink={drink} />
+        </div>
 
         {teaProduct && (
           <p className="mt-6 text-sm">
