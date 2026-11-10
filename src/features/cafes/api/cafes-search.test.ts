@@ -53,6 +53,21 @@ describe('searchCafes', () => {
   });
 });
 
+describe('search term validation', () => {
+  it('returns no cafés without a request for an empty term', async () => {
+    const fake = createFakeSupabase({ cafes: { data: [CAFE_ROW], error: null } });
+    await expect(searchCafes(fake.client, '   ')).resolves.toEqual([]);
+    expect(fake.calls).toHaveLength(0);
+  });
+
+  it('rejects terms over 80 characters before any request', async () => {
+    const fake = createFakeSupabase({ cafes: { data: [], error: null } });
+    await expect(searchCafes(fake.client, 'a'.repeat(81))).rejects.toThrow();
+    await expect(searchDrinks(fake.client, 'c1', 'a'.repeat(81))).rejects.toThrow();
+    expect(fake.calls).toHaveLength(0);
+  });
+});
+
 describe('searchDrinks', () => {
   it('lists a café’s drinks, filtered only when something was typed', async () => {
     const fake = createFakeSupabase({ drinks: { data: [], error: null } });
@@ -87,8 +102,8 @@ describe('loadIsTrustedTaster', () => {
     await expect(loadIsTrustedTaster(none.client, 'u1')).resolves.toBe(false);
   });
 
-  it('is false when the read fails', async () => {
+  it('throws when the read fails, so a taster is never given the wrong form', async () => {
     const fake = createFakeSupabase({ public_profiles: { data: null, error: { code: 'x' } } });
-    await expect(loadIsTrustedTaster(fake.client, 'u1')).resolves.toBe(false);
+    await expect(loadIsTrustedTaster(fake.client, 'u1')).rejects.toMatchObject({ code: 'x' });
   });
 });

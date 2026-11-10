@@ -30,7 +30,7 @@ export function RateThisDrink({ drink }: RateThisDrinkProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={sessionLoading}>
         <Button size="lg" className="min-h-11">
           Rate this drink
         </Button>

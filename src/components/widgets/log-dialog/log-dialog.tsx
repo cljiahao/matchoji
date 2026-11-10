@@ -57,7 +57,7 @@ export function LogDialog({ trigger, initial }: LogDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={sessionLoading}>
         {trigger ?? <Button className="min-h-11">Log a tasting</Button>}
       </DialogTrigger>
       <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-3xl sm:max-w-lg">

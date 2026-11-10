@@ -73,6 +73,7 @@ export function SearchCombobox({
     <div className="space-y-3">
       <Input
         autoFocus
+        maxLength={80}
         role="combobox"
         aria-label={label}
         aria-autocomplete="list"

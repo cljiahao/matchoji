@@ -158,6 +158,31 @@ describe('DrinkLogFlow', () => {
     expect(screen.queryByRole('combobox', { name: 'Search cafés' })).not.toBeInTheDocument();
   });
 
+  it('moves focus to the new step heading', async () => {
+    setup({ cafes: { data: [], error: null } });
+
+    await userEvent.click(await screen.findByRole('combobox', { name: 'Search cafés' }));
+    await userEvent.paste('Kissa');
+    await userEvent.click(await screen.findByRole('button', { name: 'Add this café' }));
+
+    expect(await screen.findByRole('heading', { name: 'Log a café drink' })).toHaveFocus();
+  });
+
+  it('offers a retry instead of the community form when the taster lookup fails', async () => {
+    setup(
+      {
+        public_profiles: [
+          { data: null, error: { code: 'x' } },
+          { data: null, error: { code: 'x' } },
+        ],
+      },
+      { initialDrink: { id: 'd1', name: 'Hojicha latte', base: 'hojicha' } }
+    );
+
+    expect(await screen.findByRole('button', { name: 'Try again' })).toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: '5 stars' })).not.toBeInTheDocument();
+  });
+
   it('tells the person when they have too many items waiting for review', async () => {
     setup({
       cafes: [

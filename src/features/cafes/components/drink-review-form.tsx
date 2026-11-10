@@ -8,6 +8,7 @@ import { Controller, useForm, useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { FieldError } from '@/components/ui/field';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -169,9 +170,23 @@ export function DrinkReviewForm({ drink, isTaster, review, onLogged }: DrinkRevi
                 placeholder="https://www.instagram.com/p/…"
               />
             </CustomFormField>
-            <CustomFormField name="disclosure" label="Was this drink gifted, paid or invited?">
-              <DisclosureRadios />
-            </CustomFormField>
+            <Controller
+              name="disclosure"
+              control={form.control}
+              render={({ field: { ref, value, onChange, onBlur }, fieldState }) => (
+                <div className="space-y-2">
+                  <DisclosureRadios
+                    ref={ref}
+                    legend="Was this drink gifted, paid or invited?"
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </div>
+              )}
+            />
           </fieldset>
         )}
 

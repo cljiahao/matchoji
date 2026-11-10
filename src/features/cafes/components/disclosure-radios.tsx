@@ -15,19 +15,21 @@ const LABELS: Record<Disclosure, string> = {
 };
 
 interface DisclosureRadiosProps {
+  // The visible question, rendered as the group's legend so it is the accessible name.
+  legend: string;
   value?: Disclosure;
   onChange?: (value: Disclosure) => void;
   onBlur?: () => void;
-  id?: string;
-  'aria-invalid'?: boolean;
+  invalid?: boolean;
 }
 
 // Native radios with none checked: the taster has to say it, so a gifted drink can't go out as
 // "none" by default.
 export const DisclosureRadios = forwardRef<HTMLFieldSetElement, DisclosureRadiosProps>(
-  function DisclosureRadios({ value, onChange, onBlur, id, ...aria }, ref) {
+  function DisclosureRadios({ legend, value, onChange, onBlur, invalid }, ref) {
     return (
-      <fieldset ref={ref} id={id} aria-label="Disclosure" className="space-y-1" {...aria}>
+      <fieldset ref={ref} aria-invalid={invalid} className="space-y-1">
+        <legend className="mb-2 text-sm font-medium">{legend}</legend>
         {DISCLOSURES.map((option) => (
           <label
             key={option}

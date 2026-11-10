@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { DrinkBase } from '@/integrations/supabase/database.types';
 
@@ -51,9 +52,22 @@ export default function DrinkLogFlow({ initialDrink, onDone }: DrinkLogFlowProps
   const [cafeQuery, setCafeQuery] = useState('');
   const [drinkQuery, setDrinkQuery] = useState('');
 
-  const isTaster = useIsTrustedTaster();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const firstStep = useRef(true);
+
+  const { isTaster, isError: tasterError, refetch: retryTaster } = useIsTrustedTaster();
   const cafes = useCafeSearch(cafeQuery);
   const drinks = useDrinkSearch(cafe?.id ?? '', drinkQuery);
+
+  // The comboboxes autofocus themselves; the other steps replace the form the person was in, so
+  // focus moves to the new heading rather than being dropped on the dialog.
+  useEffect(() => {
+    if (firstStep.current) {
+      firstStep.current = false;
+      return;
+    }
+    if (step !== 'cafe' && step !== 'drink') headingRef.current?.focus();
+  }, [step]);
 
   function pickCafe(picked: Cafe) {
     setCafe(picked);
@@ -69,7 +83,7 @@ export default function DrinkLogFlow({ initialDrink, onDone }: DrinkLogFlowProps
   return (
     <>
       <DialogHeader>
-        <DialogTitle>
+        <DialogTitle ref={headingRef} tabIndex={-1} className="outline-none">
           {step === 'rate' && target ? `Rate ${target.name}` : 'Log a café drink'}
         </DialogTitle>
         <DialogDescription>
@@ -148,13 +162,22 @@ export default function DrinkLogFlow({ initialDrink, onDone }: DrinkLogFlowProps
         />
       )}
 
-      {step === 'rate' &&
-        target &&
-        (isTaster === undefined ? (
-          <p className="text-muted-foreground text-sm">Loading…</p>
-        ) : (
-          <DrinkReviewForm drink={target} isTaster={isTaster} onLogged={onDone} />
-        ))}
+      {step === 'rate' && target && tasterError && (
+        <div role="alert" className="space-y-3">
+          <p className="text-sm">
+            Could not check your tasting badge, so we cannot show the right form.
+          </p>
+          <Button type="button" variant="outline" onClick={() => void retryTaster()}>
+            Try again
+          </Button>
+        </div>
+      )}
+      {step === 'rate' && target && !tasterError && isTaster === undefined && (
+        <p className="text-muted-foreground text-sm">Loading…</p>
+      )}
+      {step === 'rate' && target && isTaster !== undefined && (
+        <DrinkReviewForm drink={target} isTaster={isTaster} onLogged={onDone} />
+      )}
     </>
   );
 }

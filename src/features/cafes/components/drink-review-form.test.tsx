@@ -64,6 +64,14 @@ describe('DrinkReviewForm', () => {
     });
   });
 
+  it('names the disclosure group by its visible question', () => {
+    setup(true);
+
+    expect(
+      screen.getByRole('group', { name: 'Was this drink gifted, paid or invited?' })
+    ).toBeInTheDocument();
+  });
+
   it('shows community members no Instagram or disclosure fields', async () => {
     const { calls } = setup(false);
 
