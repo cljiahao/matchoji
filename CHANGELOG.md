@@ -5,18 +5,9 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
-### Changed
-
-- The Playwright smoke spec no longer needs data in production: Explore, a tea page, regions, shops and the sitemap accept the empty state. New steps cover `/cafes`, an unknown `/c/<slug>` ending in a real 404, `/tasters` and `/about/how-we-rate`.
-
-### Removed
-
-- Unused code: the `CategoryCircles`, `ProductGrid`, `StarRatingDisplay` and `TasteProfileBars` components and the `listCities` and `shortCafeHref` barrel exports.
-
 ### Added
 
 - Tests for `CitySwitch`, `CafeFilters`, `TeaSelect`, the admin moderation controls and the café and drink link-preview routes, and `test/db/cafes-edge-cases.test.ts` for the taster-public trigger, shared-reviewer drink merges, merges into an already merged café, `cities` write refusal and the pending-drink cap.
-
 - Database schema for café drinks (migration `20261110000000_cafes_and_drinks.sql`, slice S1 of the repositioning; the owner applies it in the Supabase SQL editor before the app slices that use it merge): cities (Singapore, Johor Bahru), cafés and drinks that anyone signed in can suggest for review, trusted tasters with Instagram-linked drink reviews kept apart from the community score, café and drink rating views, merges, admin edit functions and moderation notifications. Deleting an account also unlinks a taster's reviews, and a rejected café hides its drinks. Nothing in the app uses it yet, and teas are unchanged.
 
 - Café and drink pages, the read side of the repositioning (slice S3; needs the S1 schema applied, and shows empty lists before). `/cafes` lists a city's cafés with a map, an area filter and a taster-reviewed-only filter (`?city=`, else a remembered city cookie, else Singapore); `/cafes/<slug>` shows a café's drinks and latest trusted-taster reviews; `/cafes/<slug>/<drink>` shows the taster score and community score side by side, never blended, with the trusted-taster reviews first, "n of m taster reviews were gifted/paid" where it applies, the tea used and similar drinks. `/c/<slug>` is a 308 short link to the café. A merged café or drink forwards to its survivor and a rejected drink to its café, so links shared on Instagram never 404. Link-preview images, JSON-LD, metadata and sitemap entries cover approved cafés and drinks. A chain of merges is followed to its final survivor in one redirect, and a loop is not-found. The drink page shows its photo with the credit. The sitemap reads every café and drink past the 1000-row API cap. Rating a drink and adding a café come in later slices.
@@ -47,6 +38,14 @@ All notable changes to this project are documented here. Format follows
 - `test/scripts/schema-check.test.ts` no longer times out intermittently on CI runners. `extractShape` re-parsed about 60 TypeScript lib files for every program it built; those are now parsed once per process and shared, which also speeds up `pnpm schema:check`.
 - A `.pnpm-store/` cache inside a worktree no longer fails `pnpm check` (Prettier and ESLint now skip it; it is also git-ignored).
 - The loading-boundary test now ignores status calls that only appear in comments, also scans `layout.tsx` (only a `loading.tsx` in a parent folder counts) and has unit cases; the `(public)` README contents list is back in alphabetical order. No app change.
+
+### Changed
+
+- The Playwright smoke spec no longer needs data in production: Explore, a tea page, regions, shops and the sitemap accept the empty state. New steps cover `/cafes`, an unknown `/c/<slug>` ending in a real 404, `/tasters` and `/about/how-we-rate`.
+
+### Removed
+
+- Unused code: the `CategoryCircles`, `ProductGrid`, `StarRatingDisplay` and `TasteProfileBars` components and the `listCities` and `shortCafeHref` barrel exports.
 
 ## [0.1.0] - 2026-11-03
 

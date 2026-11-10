@@ -56,10 +56,12 @@ test.describe('public pages', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Tea regions' })).toBeVisible();
     const map = page.getByRole('region', { name: 'Map of tea-growing regions' });
     const empty = page.getByText('No regions listed yet.');
-    await expect(map.or(empty)).toBeVisible();
+    const list = page.locator('main ul a[href^="/explore"]').first();
+    // The map only draws when a region has coordinates; the list alone is a valid page.
+    await expect(map.or(list).or(empty)).toBeVisible();
     if (await empty.isVisible()) return;
-    await expect(map).toHaveClass(/leaflet-container/);
-    await expect(page.locator('main ul a[href^="/explore"]').first()).toBeVisible();
+    await expect(list).toBeVisible();
+    if (await map.count()) await expect(map).toHaveClass(/leaflet-container/);
   });
 
   test('shops lists shops beside a map, or says there are none', async ({ page }) => {

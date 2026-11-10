@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -9,7 +11,6 @@ const ADMIN = '11111111-1111-4111-8111-111111111111';
 const ALICE = '22222222-2222-4222-8222-222222222222';
 const BOB = '33333333-3333-4333-8333-333333333333';
 const TASTER = '44444444-4444-4444-8444-444444444444';
-const CAPPED = '55555555-5555-4555-8555-555555555555';
 const OTHER = '66666666-6666-4666-8666-666666666666';
 
 let db: PGlite;
@@ -70,7 +71,7 @@ const review = async (userId: string, drinkId: string, stars: number, daysAgo = 
 
 beforeAll(async () => {
   db = await createMigratedDb();
-  for (const id of [ADMIN, ALICE, BOB, TASTER, CAPPED, OTHER])
+  for (const id of [ADMIN, ALICE, BOB, TASTER, OTHER])
     await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, '{}')`, [
       id,
       `${id.slice(0, 4)}@example.com`,
@@ -236,37 +237,58 @@ describe('writes to cities', () => {
 });
 
 describe('limit_pending_rows on drinks', () => {
-  it('refuses the 21st pending drink for one person, and only counts pending ones', async () => {
-    const c = await cafe();
-    for (let i = 0; i < 20; i++) await drink(c, { status: 'pending', addedBy: CAPPED });
-    await expect(drink(c, { status: 'pending', addedBy: CAPPED })).rejects.toThrow(
+  const person = async () => {
+    const id = randomUUID();
+    await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, '{}')`, [
+      id,
+      `${id.slice(0, 8)}@example.com`,
+    ]);
+    return id;
+  };
+  const fillPending = async (cafeId: string, who: string) => {
+    for (let i = 0; i < 20; i++) await drink(cafeId, { status: 'pending', addedBy: who });
+  };
+
+  it('refuses the 21st pending drink for one person', async () => {
+    const [c, who] = [await cafe(), await person()];
+    await fillPending(c, who);
+    await expect(drink(c, { status: 'pending', addedBy: who })).rejects.toThrow(
       /too many drinks waiting for review/
     );
+  });
 
-    await drink(c, { status: 'approved', addedBy: CAPPED });
-    await drink(c, { status: 'pending', addedBy: ALICE });
+  it('counts only pending drinks, and only the same person', async () => {
+    const [c, who, other] = [await cafe(), await person(), await person()];
+    await fillPending(c, who);
+    await drink(c, { status: 'approved', addedBy: who });
+    await drink(c, { status: 'pending', addedBy: other });
     await drink(c, { status: 'pending', addedBy: null });
+    expect(
+      await rows(`select 1 from public.drinks where added_by = $1 and status = 'pending'`, [who])
+    ).toHaveLength(20);
   });
 
   it('frees a slot once one of the pending drinks is reviewed', async () => {
+    const [c, who] = [await cafe(), await person()];
+    await fillPending(c, who);
     const [{ id }] = await rows<{ id: string }>(
-      `select id from public.drinks where added_by = $1 and status = 'pending' limit 1`,
-      [CAPPED]
+      `select id from public.drinks where added_by = $1 limit 1`,
+      [who]
     );
     await db.query(`update public.drinks set status = 'rejected' where id = $1`, [id]);
-    await drink(await cafe(), { status: 'pending', addedBy: CAPPED });
-    await expect(drink(await cafe(), { status: 'pending', addedBy: CAPPED })).rejects.toThrow(
-      /too many drinks/
-    );
+    await drink(c, { status: 'pending', addedBy: who });
+    await expect(drink(c, { status: 'pending', addedBy: who })).rejects.toThrow(/too many drinks/);
   });
 
   it('keeps the café cap apart from the drink cap', async () => {
+    const [c, who] = [await cafe(), await person()];
+    await fillPending(c, who);
     await db.query(
       `insert into public.cafes (name, city_slug, status, added_by) values ($1, 'singapore', 'pending', $2)`,
-      [unique('Capped cafe'), CAPPED]
+      [unique('Capped cafe'), who]
     );
     expect(
-      await rows(`select 1 from public.cafes where added_by = $1 and status = 'pending'`, [CAPPED])
+      await rows(`select 1 from public.cafes where added_by = $1 and status = 'pending'`, [who])
     ).toHaveLength(1);
   });
 });
