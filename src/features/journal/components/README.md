@@ -28,12 +28,15 @@ The compact want-to-try button extends its hit area to 44px without growing visu
 
 `StashEditor` fields and buttons are 44px tall.
 
+`JournalTimeline` renders a drink tasting as a row with the drink, its café, the stars, the disclosure badge, notes and the Instagram link; drink rows have no edit or delete actions yet.
+
 ## Contents
 
 - `freshness-hint.test.tsx`
 - `freshness-hint.tsx`
 - `index.ts`
 - `journal-stats-strip.tsx`
+- `journal-timeline.test.tsx`
 - `journal-timeline.tsx`
 - `public-stats-strip.tsx`
 - `stash-editor.test.tsx`

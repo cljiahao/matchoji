@@ -16,6 +16,8 @@ component tests;
 
 `journal.ts` provides `makeEntry`, a journal entry (a `makeReview` with a tea and no region by default) whose tea fields can be overridden, for the stats, year-in-tea and year-page tests.
 
+`makeReview` defaults the drink-review fields (no drink, no trusted taster, no Instagram link, disclosure none).
+
 ## Contents
 
 - `fake-browser-client.ts`

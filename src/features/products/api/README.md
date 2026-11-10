@@ -27,6 +27,8 @@ fake Supabase client (`test/support/fake-supabase.ts`).
 
 `listPriceHistory` reads a tea's `tea_price_history` rows, oldest first; a missing table (`42P01`, `PGRST205`, the migration is applied by hand) gives no history.
 
+`topNotesByProduct` skips reviews with no tea (drink reviews).
+
 ## Contents
 
 - `index.ts`

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { REVIEW_COLUMNS, mapReviewRow } from '@/features/reviews';
+import { REVIEW_COLUMNS, loadDrinkSummaries, mapReviewRow } from '@/features/reviews';
 import type { Database } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
@@ -11,21 +11,29 @@ type ReviewRow = Database['public']['Tables']['reviews']['Row'];
 
 const RECENT = 20;
 
-// Pairs tastings with their tea and the author's name, keeping only tastings whose tea the
-// reader can still see.
-async function withProducts(
+// Pairs tastings with their tea or drink and the author's name, keeping only tastings whose
+// subject the reader can still see.
+async function withSubjects(
   supabase: Client,
   rows: ReviewRow[],
   nameOf: (userId: string | null) => string
 ): Promise<Tasting[]> {
   const { data: products, error } = await selectIn(
-    [...new Set(rows.map((r) => r.product_id))],
+    rows.flatMap((r) => (r.product_id ? [r.product_id] : [])),
     (ids) => supabase.from('products').select('id, name, brand, category').in('id', ids)
   );
   if (error) throw error;
+  const drinks = await loadDrinkSummaries(
+    supabase,
+    rows.flatMap((r) => (r.drink_id ? [r.drink_id] : []))
+  );
   const byId = new Map(products.map((p) => [p.id, p]));
-  return rows.flatMap((r) => {
-    const product = byId.get(r.product_id);
+  return rows.flatMap((r): Tasting[] => {
+    if (r.drink_id) {
+      const drink = drinks.get(r.drink_id);
+      return drink ? [{ ...mapReviewRow(r, nameOf(r.user_id)), drink }] : [];
+    }
+    const product = r.product_id ? byId.get(r.product_id) : undefined;
     return product ? [{ ...mapReviewRow(r, nameOf(r.user_id)), product }] : [];
   });
 }
@@ -54,7 +62,12 @@ export async function getProfileView(
   const count = { count: 'exact' as const, head: true };
 
   const [teas, followers, following, follows, blocked, recent] = await Promise.all([
-    supabase.from('latest_reviews').select('id', count).eq('user_id', profileId),
+    supabase
+      .from('latest_reviews')
+      .select('id', count)
+      .eq('user_id', profileId)
+      // The profile's "teas" count is packaged teas; drink tastings aren't teas.
+      .not('product_id', 'is', null),
     supabase.from('follows').select('follower_id', count).eq('followee_id', profileId),
     supabase.from('follows').select('followee_id', count).eq('follower_id', profileId),
     viewerId && !isSelf
@@ -93,7 +106,7 @@ export async function getProfileView(
       following: following.count ?? 0,
     },
     viewer: { isSelf, follows: follows.data !== null, blocked: blocked.data !== null },
-    recent: await withProducts(supabase, recent.data ?? [], () => profile.name),
+    recent: await withSubjects(supabase, recent.data ?? [], () => profile.name),
   };
 }
 
@@ -108,7 +121,7 @@ export async function loadFeed(supabase: Client, limit = 12): Promise<Tasting[]>
   );
   if (namesError) throw namesError;
   const nameById = new Map(names.map((n) => [n.id, n.display_name]));
-  return withProducts(supabase, data, (id) => (id && nameById.get(id)) || 'Former taster');
+  return withSubjects(supabase, data, (id) => (id && nameById.get(id)) || 'Former taster');
 }
 
 export async function setFollowing(

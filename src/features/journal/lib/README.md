@@ -11,6 +11,8 @@ source URL (Ippodo and Aiya; Marukyu Koyamaen states no figure, so it has none),
 `freshnessHint`, which falls back to general advice for any other maker. Add a maker only
 when its own site states a figure.
 
+`teaEntries(items)` narrows a mixed journal to its teas; `computeJournalStats`, `computePublicStats`, `buildYearInTea` and `qualifyingYears` take the mixed list and count teas only, so a drink review never counts toward the three-tasting bar or the favourites. `groupByMonth` keeps both kinds.
+
 ## Contents
 
 - `index.ts`

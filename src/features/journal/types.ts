@@ -1,10 +1,19 @@
 import type { ProductSummary } from '@/features/products';
-import type { PrepMethod, Review, TasteAttribute } from '@/features/reviews';
+import type { DrinkSummary, PrepMethod, Review, TasteAttribute } from '@/features/reviews';
 
+// A tea tasting. Stats, the year recap and the taste profile only ever read these.
 export interface JournalEntry extends Review {
   product: ProductSummary;
   regionName: string | null;
 }
+
+// A café-drink tasting; it has a drink and no tea.
+export interface DrinkJournalEntry extends Review {
+  drink: DrinkSummary;
+}
+
+// What the journal timeline lists: both kinds, newest first.
+export type JournalItem = JournalEntry | DrinkJournalEntry;
 
 export interface Ranked {
   name: string;

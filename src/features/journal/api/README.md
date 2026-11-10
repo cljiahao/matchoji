@@ -10,6 +10,8 @@ tea readable to anyone who tasted or saved it).
 `listWishlist` returns each saved tea's stash (how many you have, when you opened one) and
 `setStash` saves it; `getStash` reads one tea's stash for the tea page.
 
+`listUserTastings` returns `JournalItem[]`: tea tastings paired with their product, drink tastings with their drink and café (`loadDrinkSummaries`). A drink review whose drink is no longer visible is dropped, as is a tea review whose tea is gone.
+
 ## Contents
 
 - `index.ts`

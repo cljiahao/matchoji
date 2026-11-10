@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '@/integrations/supabase/database.types';
+import { isMissingTable } from '@/integrations/supabase/missing-table';
 
 type Client = SupabaseClient<Database>;
 
@@ -37,7 +38,7 @@ export async function updateDisplayName(
 
 // Everything Matchoji holds about the signed-in person, as plain JSON they can keep.
 export async function exportMyData(supabase: Client, userId: string) {
-  const [profile, tastings, wishlist, stock, shop] = await Promise.all([
+  const [profile, tastings, wishlist, stock, shop, cafes, drinks] = await Promise.all([
     supabase
       .from('profiles')
       .select('email, display_name, created_at')
@@ -47,9 +48,16 @@ export async function exportMyData(supabase: Client, userId: string) {
     supabase.from('wishlist').select('product_id, created_at').eq('user_id', userId),
     supabase.from('stock_reports').select('product_id, status, created_at').eq('user_id', userId),
     supabase.from('vendors').select('*').eq('user_id', userId).maybeSingle(),
+    // cafes and drinks hide added_by and the review fields from direct selects; the adder's own
+    // rows, with those fields, come from these views.
+    supabase.from('my_cafes').select('*').eq('added_by', userId),
+    supabase.from('my_drinks').select('*').eq('added_by', userId),
   ]);
   for (const result of [profile, tastings, wishlist, stock, shop])
     if (result.error) throw result.error;
+  // Until the café migration is applied there is nothing of theirs to export.
+  for (const result of [cafes, drinks])
+    if (result.error && !isMissingTable(result.error)) throw result.error;
   return {
     exportedAt: new Date().toISOString(),
     profile: profile.data,
@@ -57,6 +65,8 @@ export async function exportMyData(supabase: Client, userId: string) {
     wantToTry: wishlist.data,
     stockReports: stock.data,
     shop: shop.data,
+    cafesAdded: cafes.data ?? [],
+    drinksAdded: drinks.data ?? [],
   };
 }
 

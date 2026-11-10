@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 
 import { FLAVOR_NOTES, editionLabel, noteLabel, truncateNotes } from '../lib';
 import type { Review } from '../types';
+import { DisclosureBadge } from './disclosure-badge';
+import { InstagramPostLink } from './instagram-post-link';
 import { PrepSummary } from './prep-summary';
 
 // Roughly four lines at the max-w-prose width.
@@ -48,6 +50,16 @@ export function ReviewItem({ review, category, footer }: ReviewItemProps) {
         {review.stars.toFixed(1)}
         <span className="sr-only"> out of 5 stars</span>
       </p>
+      {(review.byTrustedTaster || review.disclosure !== 'none') && (
+        <p className="mt-3 flex flex-wrap items-center gap-2">
+          {review.byTrustedTaster && (
+            <span className="bg-brand/10 text-brand inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold">
+              Trusted taster
+            </span>
+          )}
+          <DisclosureBadge disclosure={review.disclosure} />
+        </p>
+      )}
 
       {review.notes && preview && (
         <p className="mt-3 max-w-prose whitespace-pre-line">
@@ -93,6 +105,11 @@ export function ReviewItem({ review, category, footer }: ReviewItemProps) {
           alt="Review"
           className="mt-3 h-40 w-40 rounded-xl object-cover"
         />
+      )}
+      {review.instagramUrl && (
+        <p className="mt-3">
+          <InstagramPostLink url={review.instagramUrl} />
+        </p>
       )}
       <footer className="border-border mt-4 flex items-center gap-2 border-t pt-3 text-sm">
         <span

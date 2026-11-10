@@ -31,6 +31,12 @@ const entry = {
   edition: { harvestYear: null, flush: null },
   product: { id: 'p1', name: 'Kyoto Bancha', brand: null, category: 'hojicha' as const },
   regionName: null,
+  drinkId: null,
+  byTrustedTaster: false,
+  instagramUrl: null,
+  disclosure: 'none' as const,
+  teaStrength: null,
+  roast: null,
 };
 
 beforeEach(() => {

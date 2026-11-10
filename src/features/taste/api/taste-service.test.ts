@@ -51,6 +51,34 @@ describe('loadMatches', () => {
     });
   });
 
+  it('taste match ignores drink reviews', async () => {
+    const { client, calls } = createFakeSupabase({
+      latest_reviews: {
+        data: [
+          { product_id: 'sayaka', stars: 5 },
+          { product_id: null, stars: 1 },
+        ],
+        error: null,
+      },
+      products: { data: products, error: null },
+      tea_taste_profiles: { data: profiles, error: null },
+    });
+    const result = await loadMatches(client, 'u1', ['kan']);
+    expect([...result.ownStars]).toEqual([['sayaka', 5]]);
+    expect(calls).toContainEqual({
+      table: 'latest_reviews',
+      method: 'not',
+      args: ['product_id', 'is', null],
+    });
+  });
+
+  it('has no ratings when every rating is of a drink', async () => {
+    const { client } = createFakeSupabase({
+      latest_reviews: { data: [{ product_id: null, stars: 5 }], error: null },
+    });
+    expect(await loadMatches(client, 'u1', ['kan'])).toMatchObject({ hasRatings: false });
+  });
+
   it('skips the feature reads for someone who has rated nothing', async () => {
     const { client, calls } = createFakeSupabase({ latest_reviews: { data: [], error: null } });
     const result = await loadMatches(client, 'u1', ['kan']);

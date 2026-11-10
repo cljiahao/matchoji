@@ -3,7 +3,9 @@ export * from './components';
 export * from './hooks';
 export * from './lib';
 export type {
+  DrinkJournalEntry,
   JournalEntry,
+  JournalItem,
   JournalStats,
   PublicStats,
   Ranked,

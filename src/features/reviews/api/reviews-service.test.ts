@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
-import { listEditions, listReviews } from './reviews-service';
+import { listEditions, listReviews, mapReviewRow, type ReviewRow } from './reviews-service';
 
 const review = (id: string, userId: string) => ({
   id,
@@ -135,5 +135,65 @@ describe('listEditions', () => {
     const error = new Error('down');
     const { client } = createFakeSupabase({ edition_ratings: { data: null, error } });
     await expect(listEditions(client, 'p1')).rejects.toBe(error);
+  });
+});
+
+describe('mapReviewRow', () => {
+  const teaRow: ReviewRow = {
+    id: 'r1',
+    product_id: 'p1',
+    user_id: 'u1',
+    stars: 4,
+    notes: 'nutty',
+    photo_url: null,
+    created_at: '2026-09-01T00:00:00Z',
+    flavor_notes: ['nutty'],
+    sweetness: null,
+    umami: 4,
+    bitterness: null,
+    body: 3,
+    prep_method: 'latte',
+    dose_g: 2.5,
+    water_ml: null,
+    water_temp_c: 75,
+    tasted_on: '2026-09-01',
+    harvest_year: null,
+    flush: null,
+  };
+
+  it('maps drink review fields', () => {
+    const mapped = mapReviewRow(
+      {
+        ...teaRow,
+        product_id: null,
+        drink_id: 'd1',
+        instagram_url: 'https://www.instagram.com/p/Cabc123/',
+        disclosure: 'gifted',
+        tea_strength: 4,
+        roast: 3,
+        by_trusted_taster: true,
+      },
+      'Clarence'
+    );
+    expect(mapped).toMatchObject({
+      productId: null,
+      drinkId: 'd1',
+      instagramUrl: 'https://www.instagram.com/p/Cabc123/',
+      disclosure: 'gifted',
+      teaStrength: 4,
+      roast: 3,
+      byTrustedTaster: true,
+    });
+  });
+
+  it('reads a tea review from product_reviews, which omits the drink columns, as a plain one', () => {
+    expect(mapReviewRow(teaRow, 'A')).toMatchObject({
+      drinkId: null,
+      instagramUrl: null,
+      disclosure: 'none',
+      teaStrength: null,
+      roast: null,
+      byTrustedTaster: false,
+    });
   });
 });

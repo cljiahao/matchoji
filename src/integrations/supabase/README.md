@@ -31,7 +31,9 @@ this file's tables, columns, nullability and enums with the live database (see `
 
 The types include `shop_locations` and the `ShopKind` union, and `tea_price_history`.
 
-The types also cover the café-drinks schema: `cities`, `cafes` and `drinks` (suggestion-only inserts), the `drink_ratings` and `cafe_ratings` views, the `my_cafes`, `my_drinks`, `admin_cafes` and `admin_drinks` views (the only way to read `added_by` and `review_note`), `drink_reviews`, `review_cafe`, `review_drink`, `merge_cafe`, `merge_drink`, `update_cafe` and `update_drink` (admin edits taking a `fields` JSON of the editable columns) and `set_trusted_taster`, the new `profiles` columns (`is_trusted_taster`, `instagram_handle`, `bio`, also on `public_profiles`), `notifications.drink_id` and `cafe_id` with the two new kinds, and the new `reviews` insert and update columns (`drink_id`, `instagram_url`, `disclosure`, `tea_strength`, `roast`). The `reviews` and `latest_reviews` `Row` types stay tea-only until the review consumers are made drink-safe.
+The types also cover the café-drinks schema: `cities`, `cafes` and `drinks` (suggestion-only inserts), the `drink_ratings` and `cafe_ratings` views, the `my_cafes`, `my_drinks`, `admin_cafes` and `admin_drinks` views (the only way to read `added_by` and `review_note`), `drink_reviews`, `review_cafe`, `review_drink`, `merge_cafe`, `merge_drink`, `update_cafe` and `update_drink` (admin edits taking a `fields` JSON of the editable columns) and `set_trusted_taster`, the new `profiles` columns (`is_trusted_taster`, `instagram_handle`, `bio`, also on `public_profiles`), `notifications.drink_id` and `cafe_id` with the two new kinds, and the new `reviews` insert and update columns (`drink_id`, `instagram_url`, `disclosure`, `tea_strength`, `roast`). The `reviews` and `latest_reviews` `Row` types carry them too, with `product_id` nullable (`latest_reviews` adds `by_trusted_taster`); `product_reviews` returns only the tea columns (`DrinkReviewColumn` names the rest).
+
+`missing-table.ts` has `isMissingTable(error)` for the Postgres and PostgREST codes (`42P01`, `PGRST205`) a reader of a not-yet-applied table gets, so it can return nothing instead of throwing.
 
 ## Contents
 
@@ -41,6 +43,8 @@ The types also cover the café-drinks schema: `cities`, `cafes` and `drinks` (su
 - `env.test.ts`
 - `env.ts`
 - `middleware.ts`
+- `missing-table.test.ts`
+- `missing-table.ts`
 - `select-in.test.ts`
 - `select-in.ts`
 - `server.ts`

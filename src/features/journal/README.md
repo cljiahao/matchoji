@@ -4,6 +4,8 @@
 
 A taster's personal record: their own tastings over time, the stats and yearly recap computed from them, and the teas they want to try next. Depends on `reviews`, `products` and `taste` through their `index.ts`.
 
+The journal also holds café drink tastings: `JournalItem` is a tea `JournalEntry` or a `DrinkJournalEntry` (a review plus its `DrinkSummary`). Stats, year-in-tea, the taste profile and public stats count teas only (`teaEntries`).
+
 ## Contents
 
 - `api/`
