@@ -13,7 +13,7 @@ The account page also edits an optional Instagram handle (stored without `@`, le
 ## Contents
 
 - `api/`
-- `components/
+- `components/`
 - `schemas/`
 - `index.ts`
 

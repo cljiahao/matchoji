@@ -30,7 +30,7 @@ The notification bell's unread badge uses the 11px type step.
 - `social-components.test.tsx`
 - `tasting-feed.tsx`
 - `trusted-taster-badge.test.tsx`
-- `trusted-taster-badge.tsx
+- `trusted-taster-badge.tsx`
 
 ## Parent
 
