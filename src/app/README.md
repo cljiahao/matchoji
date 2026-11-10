@@ -53,6 +53,8 @@ any `@layer` so utilities can't hide it) and themed number/date inputs and summa
 `layout.tsx`, `globals.css`, and `error.tsx` form the shared root shell (fonts, theme,
 providers, global error boundary) every route renders inside.
 
+`error.tsx` and `global-error.tsx` call Next's `retry`, which re-fetches the route, rather than `reset`, which would re-render with the same failed data.
+
 ## Parent
 
 [src](../README.md)

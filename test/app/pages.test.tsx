@@ -844,24 +844,24 @@ describe('Admin page', () => {
 });
 
 describe('Public error boundary', () => {
-  it('offers a retry and ways back to cafés and Explore, with the reference', async () => {
-    const reset = vi.fn();
+  it('offers a retry and a way back to cafés, with the reference', async () => {
+    const retry = vi.fn();
     const error = Object.assign(new Error('boom'), { digest: 'abc123' });
 
-    render(<PublicError error={error} reset={reset} />);
+    render(<PublicError error={error} retry={retry} />);
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'We couldn’t load this page' })
     ).toBeInTheDocument();
     expect(screen.getByText('Reference: abc123')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Browse cafés' })).toHaveAttribute('href', '/cafes');
-    expect(screen.getByRole('link', { name: 'Explore teas' })).toHaveAttribute('href', '/explore');
+    expect(screen.queryByRole('link', { name: 'Explore teas' })).not.toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole('button', { name: 'Try again' }));
-    expect(reset).toHaveBeenCalledOnce();
+    expect(retry).toHaveBeenCalledOnce();
   });
 
   it('handles a thrown value that is not an Error', () => {
-    render(<PublicError error="nope" reset={() => {}} />);
+    render(<PublicError error="nope" retry={() => {}} />);
     expect(screen.queryByText(/Reference/)).not.toBeInTheDocument();
   });
 });

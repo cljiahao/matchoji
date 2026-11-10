@@ -53,10 +53,13 @@ export default async function CafesPage({ searchParams }: CafesPageProps) {
   const area = first(query.area) || undefined;
   const tasterOnly = first(query.taster) === '1';
 
-  const supabase = await createClient();
-  const cafes = await listCafes(supabase, { city, area, tasterOnly });
+  // An unfiltered view is the list generateMetadata already read, so it shares that one query.
+  const cafes =
+    area || tasterOnly
+      ? await listCafes(await createClient(), { city, area, tasterOnly })
+      : await loadCityCafes(city);
   // The area list stays complete while an area is chosen, or the choice could not be undone.
-  const everyCafe = area ? await listCafes(supabase, { city }) : cafes;
+  const everyCafe = area ? await loadCityCafes(city) : cafes;
   const areas = [...new Set(everyCafe.flatMap((c) => (c.area ? [c.area] : [])))].sort();
 
   return (

@@ -5,7 +5,6 @@ import {
   CITIES,
   cityHref,
   listCafeSitemapEntries,
-  listCafes,
   listTopDrinkLists,
   topTeasHref,
 } from '@/features/cafes';
@@ -20,27 +19,28 @@ import {
   recipeHref,
 } from '@/features/learn';
 import { listCatalogue } from '@/features/products';
-import { listTasters } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
 import { MARKETPLACE_ENABLED, SITE_URL } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
+
+import { cityHasCafes, hasTrustedTasters } from './sitemap-counts';
 
 // Catalogue teas plus the public browse, top-list and Learn pages. Read per request so builds need no database.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
   const supabase = await createClient();
-  const [catalogue, cafeEntries, drinkLists, cityCafes, tasters] = await Promise.all([
+  const [catalogue, cafeEntries, drinkLists, cityHasList, hasTasters] = await Promise.all([
     listCatalogue(supabase),
     listCafeSitemapEntries(supabase),
     listTopDrinkLists(supabase),
-    Promise.all(CITIES.map((city) => listCafes(supabase, { city: city.slug }))),
-    listTasters(supabase),
+    Promise.all(CITIES.map((city) => cityHasCafes(supabase, city.slug))),
+    hasTrustedTasters(supabase),
   ]);
   // Each city's home and café list is its own canonical URL (see the pages' generateMetadata).
   // A list with nothing on it is noindex, so it stays out of here too.
   const cityPages = CITIES.flatMap((city, i) => [
     cityHref(PAGE_ROUTES.HOME, city.slug),
-    ...(cityCafes[i].length > 0 ? [cityHref(PAGE_ROUTES.CAFES, city.slug)] : []),
+    ...(cityHasList[i] ? [cityHref(PAGE_ROUTES.CAFES, city.slug)] : []),
   ]);
 
   const pages = [
@@ -51,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.REGIONS,
     PAGE_ROUTES.SUPPLY,
     PAGE_ROUTES.SHOPS,
-    ...(tasters.length > 0 ? [PAGE_ROUTES.TASTERS] : []),
+    ...(hasTasters ? [PAGE_ROUTES.TASTERS] : []),
     PAGE_ROUTES.HOW_WE_RATE,
     PAGE_ROUTES.LEARN,
     ...(MARKETPLACE_ENABLED ? [PAGE_ROUTES.SELL] : []),

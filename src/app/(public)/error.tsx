@@ -9,7 +9,7 @@ import { logError } from '@/lib/errors/error-log-handler';
 
 // Sits inside the public layout, so a failed read (Supabase down, a query error) keeps the
 // navbar and tab bar and the visitor can move on instead of landing on a bare page.
-export default function PublicError({ error, reset }: { error: unknown; reset: () => void }) {
+export default function PublicError({ error, retry }: { error: unknown; retry: () => void }) {
   useEffect(() => {
     logError('public.error-boundary', error);
   }, [error]);
@@ -26,12 +26,9 @@ export default function PublicError({ error, reset }: { error: unknown; reset: (
         Something went wrong on our side. Try again, or head to the cafés and drinks.
       </p>
       <div className="flex items-center gap-3">
-        <Button onClick={() => reset()}>Try again</Button>
+        <Button onClick={() => retry()}>Try again</Button>
         <Button asChild variant="outline">
           <Link href={PAGE_ROUTES.CAFES}>Browse cafés</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href={PAGE_ROUTES.EXPLORE}>Explore teas</Link>
         </Button>
       </div>
       {digest && <p className="text-muted-foreground text-xs">Reference: {digest}</p>}

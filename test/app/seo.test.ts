@@ -55,6 +55,7 @@ describe('sitemap', () => {
       cafes: {
         data: [{ id: 'c1', slug: 'kurasu-bugis', updated_at: '2026-11-01T00:00:00Z' }],
         error: null,
+        count: 1,
       },
       drinks: {
         data: [{ cafe_id: 'c1', slug: 'hojicha-latte', updated_at: '2026-11-02T00:00:00Z' }],

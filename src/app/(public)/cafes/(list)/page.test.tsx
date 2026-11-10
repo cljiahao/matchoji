@@ -57,11 +57,7 @@ beforeEach(() => {
 describe('cafés page', () => {
   it('lists the café cards and area options for the default city', async () => {
     render(await CafesPage(search()));
-    expect(state.listCafes).toHaveBeenLastCalledWith(expect.anything(), {
-      city: 'singapore',
-      area: undefined,
-      tasterOnly: false,
-    });
+    expect(state.listCafes).toHaveBeenLastCalledWith(expect.anything(), { city: 'singapore' });
     expect(screen.getByRole('link', { name: /Café 1/ }).getAttribute('href')).toBe('/cafes/cafe-1');
     expect(screen.getByRole('option', { name: 'Bugis' })).toBeTruthy();
   });

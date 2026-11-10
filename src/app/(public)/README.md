@@ -9,7 +9,7 @@ official harvest figures), `learn/` (recipes and guides), product pages, the jou
 only).
 Every page sets its own title. `not-found.tsx` answers an unknown or hidden tea (and any
 `notFound()` here) inside the shell. `error.tsx` catches a failed read inside the layout, so the navbar stays and the visitor
-can retry or go to Explore. Every page reads Supabase directly; there is no mock fallback. Skeletons live in `(home)/loading.tsx` and the list routes only, never above a page that redirects or calls `notFound()`: a streamed response has already sent its 200.
+can retry or browse the cafés. Every page reads Supabase directly; there is no mock fallback. Skeletons live in `(home)/loading.tsx` and the list routes only, never above a page that redirects or calls `notFound()`: a streamed response has already sent its 200.
 
 The layout renders its pages inside `SiteShell`, whose `main` is the skip link's target.
 
@@ -21,7 +21,7 @@ The "Log a drink" buttons on the home page, Explore and the journal open `LogDia
 
 `tasters/` lists the trusted tasters (one quiet line when there are none) and `about/how-we-rate/` explains the taster and community scores and the disclosure labels in plain words.
 
-`error.tsx` takes `reset` (the prop Next passes to an error boundary) and, with `not-found.tsx`, points to cafés, top drinks and Explore before teas.
+`error.tsx` takes `retry`, which re-fetches and re-renders the route (like `src/app/error.tsx` and `global-error.tsx`), and, with `not-found.tsx`, points to cafés, top drinks and Explore before teas.
 
 ## Contents
 

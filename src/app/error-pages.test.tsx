@@ -12,7 +12,7 @@ vi.mock('@/lib/sentry/capture', () => ({ captureClientError: vi.fn() }));
 describe('standalone error pages', () => {
   it('give the global error boundary a main landmark and one h1', () => {
     render(
-      <GlobalError error={Object.assign(new Error('x'), { digest: 'abc' })} reset={vi.fn()} />
+      <GlobalError error={Object.assign(new Error('x'), { digest: 'abc' })} retry={vi.fn()} />
     );
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(

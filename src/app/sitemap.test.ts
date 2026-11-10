@@ -10,12 +10,14 @@ const state = vi.hoisted(() => ({
   drinkLists: [{ slug: 'singapore-hojicha-latte' }] as unknown[],
 }));
 
-vi.mock('@/features/social', () => ({ listTasters: async () => state.tasters }));
+vi.mock('./sitemap-counts', () => ({
+  cityHasCafes: async (_: unknown, city: 'singapore' | 'johor-bahru') =>
+    state.cafesByCity[city].length > 0,
+  hasTrustedTasters: async () => state.tasters.length > 0,
+}));
 vi.mock('@/features/cafes', () => ({
   CITIES: [{ slug: 'singapore' }, { slug: 'johor-bahru' }],
   cityHref: (path: string, city: string) => `${path}?city=${city}`,
-  listCafes: async (_: unknown, { city }: { city: 'singapore' | 'johor-bahru' }) =>
-    state.cafesByCity[city],
   topTeasHref: (slug?: string) => (slug ? `/top/teas/${slug}` : '/top/teas'),
   listTopDrinkLists: async () => state.drinkLists,
   listCafeSitemapEntries: async () => [
