@@ -12,18 +12,19 @@ an explicit `## Human Approval Override` section in the PR description.
 
 - `Product` (catalog item) stays seller-agnostic — it must never gain a
   required foreign key to `Vendor` or `Listing`. Vendors/listings attach to
-  products, never the reverse; this is what lets Phase 3 (marketplace) and
-  Phase 4 (farm tools) bolt on additively without reworking Phase 1 tables.
-  See `docs/superpowers/specs/2026-09-14-matchoji-design.md`.
+  products, never the reverse; this is what lets the marketplace and farm tools bolt on later without
+  reworking the catalog tables. Likewise a `Product` never references a café or
+  drink; drinks may point at a product (`drinks.tea_product_id`), never the
+  reverse. See `docs/superpowers/specs/2026-09-14-matchoji-design.md`.
 - Feature modules live under `src/features/<name>/` with `api/`,
   `components/`, `hooks/`, `types.ts` — no cross-feature imports except
   through a feature's public `index.ts`.
 - Supabase is accessed directly (client + server SDK) for Postgres, Auth,
   and Storage — not through `templatecentral:add (database)`, which only
   wires up Drizzle/Kysely/Mongoose.
-- Do not build Phase 3 (marketplace) or Phase 4 (farm-facing tools) features
-  without the user explicitly asking to move to that phase — see `PRODUCT.md`
-  and the design spec's phase breakdown.
+- Do not build marketplace checkout or farm/vendor-facing tools, or enable the
+  parked marketplace (`MARKETPLACE_ENABLED`), without the owner's explicit
+  go-ahead — see `PRODUCT.md`.
 
 ## 3. Security Invariants
 

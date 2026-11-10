@@ -109,12 +109,16 @@ Before branching: `git fetch -p` then update `main` (`git checkout main && git p
 
 Supabase is used directly (client + server SDK) for Postgres, Auth, and Storage — not via
 `templatecentral:add (database)`, which only wires up Drizzle/Kysely/Mongoose. Supabase
-client setup lives under `src/integrations/supabase/` once Phase 1 data layer is built.
+client setup lives under `src/integrations/supabase/`.
 
-Full product context: `PRODUCT.md`. Full phased design spec (all 4 phases, data model,
-rationale): `docs/superpowers/specs/2026-09-14-matchoji-design.md`. Phase 1 only is being
-built now — do not build Phase 3/4 features (marketplace, vendor tools) without the user
-explicitly asking to move to that phase.
+Full product context: `PRODUCT.md`. Current positioning (2026-11-10): the trusted guide to
+hojicha and matcha drinks in Singapore and JB, rated drink by drink — spec
+`docs/superpowers/specs/2026-11-10-cafe-drinks-repositioning-design.md`. The original phased
+spec `docs/superpowers/specs/2026-09-14-matchoji-design.md` is background for the data model.
+Parked: the marketplace (vendor and listing code stays, hidden behind `MARKETPLACE_ENABLED`
+in `src/lib/constants/env.ts`, which stays `false`); AI label scanning and Sentry are merged
+but inert. Do not build marketplace checkout or farm/vendor tools, or switch on label
+scanning or Sentry, without the owner explicitly asking.
 
 Local patches to templateCentral-owned files (a harness re-sync overwrites them, so re-apply
 these afterwards and refresh their `origin_hash`):

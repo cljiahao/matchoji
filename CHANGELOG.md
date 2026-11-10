@@ -28,6 +28,7 @@ All notable changes to this project are documented here. Format follows
 - Explore's grade filter lists matcha grades apart from hojicha grades, and `/offline` no longer reads as tea-only.
 
 - Claude Code harness re-synced to templateCentral 7.2.2: the SessionStart hook re-injects the CONSTITUTION instead of the head of `AGENTS.md`, the dependency-audit gate parses `package.json` for advisory suppressions, `settings.json` drops the broad `.env.*` read denies, and `AGENTS.md` documents the user-scoped `superpowers` plugin install.
+- `AGENTS.md` and `docs/CONSTITUTION.md` no longer say "Phase 1 only". They now state the café-drinks positioning, that the marketplace and farm/vendor tools stay parked (`MARKETPLACE_ENABLED` stays `false`) and that label scanning and Sentry stay off until the owner asks, and the product-never-references-a-café rule is added (slice S9; owner-approved wording). Docs only, no migration.
 
 ### Fixed
 
