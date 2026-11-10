@@ -37,10 +37,10 @@ import { ReviewReactions, loadReactions } from '@/features/social';
 import { StockPanel, getLatestStockReport } from '@/features/stock';
 import { MatchSummary, loadMatches } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
+import { MARKETPLACE_ENABLED } from '@/lib/constants/env';
 import { cn } from '@/lib/utils';
 
 function ratingCountLabel(count: number): string {
-  if (count === 0) return 'Not yet rated';
   return `${count} ${count === 1 ? 'rating' : 'ratings'}`;
 }
 
@@ -70,7 +70,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       loadProduct(id),
       listReviews(supabase, id),
       getLatestStockReport(supabase, id),
-      listProductOffers(supabase, id),
+      // Offers only matter while the marketplace is switched on.
+      MARKETPLACE_ENABLED ? listProductOffers(supabase, id) : Promise.resolve([]),
       supabase.auth.getUser(),
       listEditions(supabase, id),
       // Comparisons with other teas are extras: if the read fails the page just omits them.
@@ -190,18 +191,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </p>
             )}
 
-            <div className="mt-6 flex items-center gap-4">
-              <ScoreNumeral value={product.avgStars} size="lg" />
-              <div className="space-y-1">
-                {product.avgStars !== null && (
-                  <Stars value={product.avgStars} category={product.category} />
-                )}
-                <p className="text-muted-foreground text-sm">
-                  {ratingCountLabel(product.reviewCount)}
-                </p>
-              </div>
-            </div>
-            <ValueBadge value={value} className="mt-3" />
+            {product.avgStars === null ? (
+              <p className="text-muted-foreground mt-6 text-sm">Not yet rated</p>
+            ) : (
+              <>
+                <div className="mt-6 flex items-center gap-4">
+                  <ScoreNumeral value={product.avgStars} size="lg" />
+                  <div className="space-y-1">
+                    <Stars value={product.avgStars} category={product.category} />
+                    <p className="text-muted-foreground text-sm">
+                      {ratingCountLabel(product.reviewCount)}
+                    </p>
+                  </div>
+                </div>
+                <ValueBadge value={value} className="mt-3" />
+              </>
+            )}
 
             {taste && !rated && (
               <MatchSummary
@@ -231,7 +236,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             )}
 
-            {listed && (
+            {/* An empty stock panel only invites a first report from someone signed in. */}
+            {listed && (stockReport || auth.user) && (
               <StockPanel
                 productId={product.id}
                 brand={product.brand}
@@ -247,7 +253,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="max-w-site mx-auto w-full space-y-10 px-6 py-12 sm:space-y-16 sm:py-16">
         <TeaHighlights lines={highlights} />
         <ProductInsights summary={summary} category={product.category} productName={product.name} />
-        {listed && <WhereToBuy offers={offers} />}
+        {listed && MARKETPLACE_ENABLED && offers.length > 0 && <WhereToBuy offers={offers} />}
         {product.brand && inPerson && (
           <p className="text-sm">
             <Link

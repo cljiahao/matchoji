@@ -10,7 +10,7 @@ export {
   type DiscoverSort,
   type MinRating,
 } from './discover-params';
-export { gradeOptions } from './filter-products';
+export { gradeGroups, gradeOptions, type GradeGroup } from './filter-products';
 export {
   formatMonth,
   formatPerGram,

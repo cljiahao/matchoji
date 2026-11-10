@@ -9,7 +9,7 @@ Sign-in/sign-out UI for the `auth` feature. `auth-components.test.tsx` covers th
 it through the sign-in prompt and takes an `outline` variant and a label. `UserMenu` holds
 only account actions. Tests run the real hooks against a fake browser Supabase client.
 
-`UserMenu` links to Your account and Sell on Matchoji above Sign out.
+`UserMenu` links to Your account, and to Sell on Matchoji only while `MARKETPLACE_ENABLED` is on, above Sign out.
 
 The account menu trigger has a 44px touch target.
 

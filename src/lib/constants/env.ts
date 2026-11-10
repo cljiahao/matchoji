@@ -23,3 +23,7 @@ export const SITE_URL =
 export const SENTRY_DSN = process.env.SENTRY_DSN;
 export const NEXT_PUBLIC_SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 export const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
+
+// Commerce is parked until Matchoji has a business entity and a payment provider. The vendor and
+// listing tables and code stay in place; this one switch hides every surface that leads to them.
+export const MARKETPLACE_ENABLED: boolean = false;

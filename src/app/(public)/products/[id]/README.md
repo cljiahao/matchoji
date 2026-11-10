@@ -5,7 +5,7 @@
 One product's detail page, in Vivino's order: a category-tinted hero (tile, brand, name,
 score, "Rate it" stars, "Want to try", and `StockPanel` with the latest community stock
 report and a link to the maker's shop), "What does it taste like?" (`ProductInsights`),
-"Where to buy" (`WhereToBuy`, approved vendors' listings), facts, photos, and `CommunityReviews` (the `#rate` anchor sign-in returns to). The product, its reviews, its latest stock report and its
+"Where to buy" (`WhereToBuy`, approved vendors' listings; only while `MARKETPLACE_ENABLED` is on and the tea has an offer), facts, photos, and `CommunityReviews` (the `#rate` anchor sign-in returns to). The product, its reviews, its latest stock report and its
 offers load from Supabase in parallel; an unknown id 404s. A tea awaiting review shows "Awaiting review"
 under its badges (like Vivino's "processing" label on an unmatched scan); a rejected one,
 visible only to the taster who added it, says it was not added to the catalogue. Rating and want-to-try appear only on catalogue teas
@@ -18,6 +18,8 @@ React `cache`. Signed-in tasters who have not rated the tea see `MatchSummary`. 
 `ReviewReactions` (likes, comments, report), loaded with the page.
 
 Under the photo, a muted "Photo: <credit>" caption shows when the tea has both a photo and a credit.
+
+An unrated tea shows one quiet "Not yet rated" line in place of the score numeral, stars and count, and `StockPanel` renders only when a stock report exists or the visitor is signed in.
 
 Tasting photos load lazily. Its `loading.tsx` skeleton is announced as a busy `status`.
 
@@ -35,6 +37,7 @@ A catalogue tea also emits `Product` JSON-LD (`teaJsonLd`); `aggregateRating` ap
 
 - `loading.tsx`
 - `opengraph-image.tsx`
+- `page.test.tsx`
 - `page.tsx`
 
 ## Parent

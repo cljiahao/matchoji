@@ -171,7 +171,11 @@ describe('listGradeOptions', () => {
   it('lists distinct grades among teas matching everything but grade and rating', async () => {
     const { client, calls } = createFakeSupabase({
       catalogue_teas: {
-        data: [{ grade: 'Ceremonial' }, { grade: 'ceremonial ' }, { grade: 'Koicha' }],
+        data: [
+          { grade: 'Ceremonial', category: 'matcha' },
+          { grade: 'ceremonial ', category: 'matcha' },
+          { grade: 'Koicha', category: 'matcha' },
+        ],
         error: null,
       },
     });
@@ -183,7 +187,7 @@ describe('listGradeOptions', () => {
         minRating: 4,
         sort: 'top',
       })
-    ).toEqual(['Ceremonial', 'Koicha']);
+    ).toEqual([{ category: 'matcha', grades: ['Ceremonial', 'Koicha'] }]);
     expect(calls.filter((c) => c.method === 'eq').map((c) => c.args)).toEqual([
       ['category', 'matcha'],
     ]);
