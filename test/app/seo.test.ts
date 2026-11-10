@@ -15,7 +15,12 @@ const NO_ROWS: QueryResult = { data: [], error: null };
 
 function useServer(results: Record<string, QueryResult>) {
   // Cafés and drinks are read for the sitemap too; most cases have none.
-  const fake = createFakeSupabase({ cafes: NO_ROWS, drinks: NO_ROWS, ...results });
+  const fake = createFakeSupabase({
+    cafes: NO_ROWS,
+    drinks: NO_ROWS,
+    drink_ratings: NO_ROWS,
+    ...results,
+  });
   server.current = fake.client;
   return fake;
 }
@@ -59,6 +64,7 @@ describe('sitemap', () => {
       'http://localhost:3000/',
       'http://localhost:3000/explore',
       'http://localhost:3000/top',
+      'http://localhost:3000/top/teas',
       'http://localhost:3000/regions',
       'http://localhost:3000/regions/supply',
       'http://localhost:3000/shops',
@@ -84,8 +90,63 @@ describe('sitemap', () => {
     );
     useServer({ catalogue_teas: { data: rated, error: null } });
     const urls = (await sitemap()).map((entry) => entry.url);
-    expect(urls).toContain('http://localhost:3000/top/matcha');
-    expect(urls).not.toContain('http://localhost:3000/top/hojicha');
+    expect(urls).toContain('http://localhost:3000/top/teas');
+    expect(urls).toContain('http://localhost:3000/top/teas/matcha');
+    expect(urls).not.toContain('http://localhost:3000/top/teas/hojicha');
+    expect(urls).not.toContain('http://localhost:3000/top/matcha');
+  });
+
+  it('adds a drink top list only once a drink qualifies', async () => {
+    useServer({
+      catalogue_teas: NO_ROWS,
+      cafes: {
+        data: [
+          {
+            id: 'c1',
+            slug: 'kurasu-bugis',
+            name: 'Kurasu',
+            city_slug: 'singapore',
+            area: 'Bugis',
+            updated_at: '2026-11-01T00:00:00Z',
+          },
+        ],
+        error: null,
+      },
+      drinks: {
+        data: [
+          {
+            id: 'd1',
+            cafe_id: 'c1',
+            slug: 'hojicha-latte',
+            name: 'Hojicha Latte',
+            base: 'hojicha',
+            style: 'latte',
+            serving: 'both',
+            price: null,
+            currency: 'SGD',
+            status: 'approved',
+            updated_at: '2026-11-02T00:00:00Z',
+          },
+        ],
+        error: null,
+      },
+      drink_ratings: {
+        data: [
+          {
+            drink_id: 'd1',
+            taster_count: 1,
+            taster_avg: 4,
+            taster_disclosed_count: 0,
+            community_count: 0,
+            community_avg: null,
+          },
+        ],
+        error: null,
+      },
+    });
+    const urls = (await sitemap()).map((entry) => entry.url);
+    expect(urls).toContain('http://localhost:3000/top/singapore-hojicha-latte');
+    expect(urls).not.toContain('http://localhost:3000/top/singapore-matcha-latte');
   });
 
   it('throws the Supabase error', async () => {

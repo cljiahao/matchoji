@@ -48,7 +48,7 @@ describe('top list components', () => {
 
   it('links a card to its list page and names the leader', () => {
     render(<TopListCard list={list} />);
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/top/matcha');
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/top/teas/matcha');
     expect(screen.getByText('Tea 0')).toBeInTheDocument();
   });
 });

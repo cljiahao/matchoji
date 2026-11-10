@@ -2,8 +2,7 @@
 
 ## Purpose
 
-The public route group, all readable without signing in: the home page (`page.tsx`: hero,
-search, category circles and shelves), Explore (`explore/`: the filtered list, filters in
+The public route group, all readable without signing in: the home page (`page.tsx`: the café-first hero with `CitySwitch`, then sections that each hide when empty: latest taster reviews, the city's top hojicha lattes, cafés by area, who you follow, and always "Brew it at home"), Explore (`explore/`: the filtered list, filters in
 the URL as `?q=&category=&region=&grade=&rating=&sort=`), the regions page (`regions/`:
 every region with its tea counts, each linking to Explore, and `regions/supply/` with the
 official harvest figures), `learn/` (recipes and guides), product pages, the journal and `sell/` (vendor applications and listings), `account/` (your name, data and account deletion) and `admin/` (the review queue, admins
@@ -14,13 +13,11 @@ can retry or go to Explore. Every page reads Supabase directly; there is no mock
 
 The layout renders its pages inside `SiteShell`, whose `main` is the skip link's target.
 
-Home titles a shelf "Matcha to try" / "Hojicha to try" while none of its teas is rated, rather than "Top-rated".
-
-The "Log a tasting" buttons on the home page, Explore and the journal open `LogDialog`, which asks whether it was a café drink or a tea.
+The "Log a drink" buttons on the home page, Explore and the journal open `LogDialog`, which asks whether it was a café drink or a tea.
 
 `cafes/` holds the café list, café pages and drink pages (see its README).
 
-`top/` holds the top-lists index and `top/[slug]/` one list ("Top matcha", "Best value hojicha", "Top from Uji"); a list below its threshold (5 teas with 3 ratings each) is absent from the index and the sitemap and its page is `notFound()`. Home's matcha and hojicha shelves send "See all" to their top list once it exists.
+`top/` holds the drink top-lists index (per city, base and style) and `top/[slug]/` one drink list (`singapore-hojicha-latte`); tea lists live under `top/teas/`, and an old `/top/<tea-slug>` is a 308 to `/top/teas/<slug>`. Home reads `?city=` through `resolveCity`, else the city cookie, else Singapore.
 
 `tasters/` lists the trusted tasters (one quiet line when there are none) and `about/how-we-rate/` explains the taster and community scores and the disclosure labels in plain words.
 
@@ -47,7 +44,7 @@ The "Log a tasting" buttons on the home page, Explore and the journal open `LogD
 
 ## Connectivity
 
-Home's shelves and circles link into `explore/` and `products/[id]`; every page shares
+Home links into `cafes/`, `top/` and `explore/`; every page shares
 `layout.tsx`'s navbar/footer shell, whose providers include the sign-in prompt that any
 write opens for signed-out visitors.
 

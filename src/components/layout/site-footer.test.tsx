@@ -13,41 +13,41 @@ vi.mock('@/lib/constants/env', async (importOriginal) => ({
 import { SiteFooter } from './site-footer';
 
 describe('SiteFooter', () => {
-  it('leaves out the links the desktop navbar already has', () => {
+  it('links Regions, Tea supply, Learn, Tea shops and How we rate', () => {
     render(<SiteFooter />);
     const nav = screen.getByRole('navigation', { name: 'More from Matchoji' });
-    for (const name of ['Explore', 'Learn', 'Journal']) {
-      expect(within(nav).queryByRole('link', { name })).toBeNull();
-    }
     expect(within(nav).getByRole('link', { name: 'Tea supply' })).toHaveAttribute(
       'href',
       '/regions/supply'
     );
-    expect(within(nav).getByRole('link', { name: 'Top lists' })).toHaveAttribute('href', '/top');
-    expect(within(nav).getByRole('link', { name: 'Where to buy in person' })).toHaveAttribute(
+    expect(within(nav).getByRole('link', { name: 'Tea shops' })).toHaveAttribute('href', '/shops');
+    expect(within(nav).getByRole('link', { name: 'How we rate' })).toHaveAttribute(
       'href',
-      '/shops'
+      '/about/how-we-rate'
     );
-    expect(within(nav).queryByRole('link', { name: 'Sell on Matchoji' })).toBeNull();
+    expect(within(nav).getByRole('link', { name: 'Regions' })).toHaveAttribute('href', '/regions');
+    expect(within(nav).getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');
+    for (const name of ['Explore', 'Journal', 'Top lists']) {
+      expect(within(nav).queryByRole('link', { name })).toBeNull();
+    }
   });
 
-  it('links to the sell page only while the marketplace is on', () => {
+  it('has no Sell link and no hobby copy, even with the marketplace on', () => {
     marketplace.enabled = true;
     try {
       render(<SiteFooter />);
-      expect(screen.getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute(
-        'href',
-        '/sell'
-      );
+      expect(screen.queryByRole('link', { name: /Sell/ })).toBeNull();
+      expect(screen.queryByText(/hobby/i)).toBeNull();
     } finally {
       marketplace.enabled = false;
     }
   });
 
-  // The phone tab bar has Home, Explore, Learn and Journal but not Regions.
-  it('shows Regions on phones only', () => {
+  // The desktop navbar's At home menu has Regions and Learn; phones have no such menu.
+  it('shows Regions and Learn on phones only', () => {
     render(<SiteFooter />);
     expect(screen.getByRole('link', { name: 'Regions' }).closest('li')).toHaveClass('md:hidden');
+    expect(screen.getByRole('link', { name: 'Learn' }).closest('li')).toHaveClass('md:hidden');
   });
 
   it('renders extra links from the prop', () => {
@@ -57,9 +57,7 @@ describe('SiteFooter', () => {
 
   it('carries the fine print and the photo takedown link', () => {
     render(<SiteFooter />);
-    expect(
-      screen.getByText(`© ${new Date().getFullYear()} Matchoji · A hobby project`)
-    ).toBeInTheDocument();
+    expect(screen.getByText(`© ${new Date().getFullYear()} Matchoji`)).toBeInTheDocument();
     const link = screen.getByRole('link', { name: 'Ask us to take it down.' });
     expect(link).toHaveAttribute('href', expect.stringContaining('github.com/cljiahao/matchoji'));
     expect(link).toHaveAttribute('target', '_blank');

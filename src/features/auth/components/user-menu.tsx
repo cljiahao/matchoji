@@ -1,6 +1,6 @@
 'use client';
 
-import { LogOut, Store, UserRound } from 'lucide-react';
+import { BookOpen, LogOut, Store, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -49,6 +49,12 @@ export function UserMenu() {
           <Link href={PAGE_ROUTES.ACCOUNT}>
             <UserRound />
             Your account
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={PAGE_ROUTES.JOURNAL}>
+            <BookOpen />
+            Your journal
           </Link>
         </DropdownMenuItem>
         {MARKETPLACE_ENABLED && (

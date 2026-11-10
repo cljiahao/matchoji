@@ -18,6 +18,7 @@ export {
   listCities,
   listLatestTasterDrinkReviews,
   listSimilarDrinks,
+  listTopDrinkLists,
   listTopDrinks,
   type ListCafesOptions,
   type TopDrinksOptions,

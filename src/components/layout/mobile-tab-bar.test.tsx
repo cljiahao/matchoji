@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -23,33 +23,37 @@ beforeEach(() => {
 });
 
 describe('MobileTabBar', () => {
-  it('links Home, Explore, Learn and Journal and marks the current one', () => {
+  it('has five tabs in order: Home, Cafés, Log, Top, Journal', () => {
     renderWithQuery(<MobileTabBar />);
     const nav = screen.getByRole('navigation', { name: 'Sections' });
     expect(nav).toHaveClass('md:hidden');
+    const labels = within(nav)
+      .getAllByRole('listitem')
+      .map((item) => item.textContent);
+    expect(labels).toEqual(['Home', 'Cafés', 'Log', 'Top', 'Journal']);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/explore');
-    expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('href', '/learn');
-    expect(screen.getByRole('link', { name: 'Journal' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Cafés' })).toHaveAttribute('href', '/cafes');
+    expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute('href', '/top');
+    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('href', '/journal');
   });
 
-  it('keeps Explore marked on product pages and Journal on the journal', () => {
-    pathname.current = '/products/p1';
+  it('marks the tab for the current section', () => {
+    pathname.current = '/cafes/kurasu-bugis/hojicha-latte';
     const { unmount } = renderWithQuery(<MobileTabBar />);
-    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Cafés' })).toHaveAttribute('aria-current', 'page');
     unmount();
 
-    pathname.current = '/journal';
-    const { unmount: unmountJournal } = renderWithQuery(<MobileTabBar />);
-    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('aria-current', 'page');
-    unmountJournal();
+    pathname.current = '/top/teas/matcha';
+    const top = renderWithQuery(<MobileTabBar />);
+    expect(screen.getByRole('link', { name: 'Top' })).toHaveAttribute('aria-current', 'page');
+    top.unmount();
 
-    pathname.current = '/learn/recipes/usucha';
+    pathname.current = '/journal';
     renderWithQuery(<MobileTabBar />);
-    expect(screen.getByRole('link', { name: 'Learn' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Journal' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('logs a tasting from the middle tab, asking a signed-out visitor to sign in', async () => {
+  it('logs a drink from the middle tab, asking a signed-out visitor to sign in', async () => {
     renderWithQuery(<MobileTabBar />);
     await userEvent.click(await screen.findByRole('button', { name: 'Log' }));
     expect(screen.queryByRole('dialog', { name: 'Log a tasting' })).not.toBeInTheDocument();
