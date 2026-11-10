@@ -9,8 +9,11 @@ All notable changes to this project are documented here. Format follows
 
 - Database schema for café drinks (migration `20261110000000_cafes_and_drinks.sql`, slice S1 of the repositioning; the owner applies it in the Supabase SQL editor before the app slices that use it merge): cities (Singapore, Johor Bahru), cafés and drinks that anyone signed in can suggest for review, trusted tasters with Instagram-linked drink reviews kept apart from the community score, café and drink rating views, merges, admin edit functions and moderation notifications. Deleting an account also unlinks a taster's reviews, and a rejected café hides its drinks. Nothing in the app uses it yet, and teas are unchanged.
 
+- Admin moderation for cafés, drinks and trusted tasters on `/admin`: Cafés and Drinks tabs list suggestions waiting for review with who added them, and an admin can approve, reject with a note the submitter sees, or merge one into an approved duplicate, and edit an approved café's or drink's details (a drink's photo, photo credit and linked tea too). A Tasters tab searches people by display name (private profiles included) and grants or revokes the trusted-taster badge. The database's own refusals, such as approving a drink at a café that is not approved, are shown as they are. No migration.
+
 ### Changed
 
+- The admin reports queue handles a reported drink review: it names the café and drink instead of a tea, and no longer breaks on a review with no tea.
 - Matchoji's positioning is now "the trusted guide to hojicha and matcha drinks in Singapore and Johor Bahru, rated drink by drink", and `PRODUCT.md` is rewritten to match. The parked marketplace is hidden behind one switch, `MARKETPLACE_ENABLED` in `src/lib/constants/env.ts`: `/sell` returns not-found and drops out of the sitemap, and a tea page shows "Where to buy" only when the switch is on and the tea has an offer. The marketplace tables and code are untouched. No migration.
 - Tea pages show no empty chrome: an unrated tea gets one quiet "Not yet rated" line instead of a dash and a count, and the stock panel appears only once a report exists or the visitor is signed in.
 - Explore's grade filter lists matcha grades apart from hojicha grades, and `/offline` no longer reads as tea-only.

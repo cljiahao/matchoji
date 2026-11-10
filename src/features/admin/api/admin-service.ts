@@ -3,9 +3,30 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
-import type { CatalogueTea, ReviewDecision, ReviewQueue } from '../types';
+import {
+  cafeFieldsSchema,
+  drinkFieldsSchema,
+  idSchema,
+  noteSchema,
+  type CafeFields,
+  type DrinkFields,
+} from '../schemas';
+import type {
+  AdminCafe,
+  AdminDrink,
+  AdminProfile,
+  CatalogueTea,
+  ReviewDecision,
+  ReviewQueue,
+} from '../types';
 
 type Client = SupabaseClient<Database>;
+
+// The café migration is applied by hand, so until it is the new tabs show nothing rather than an
+// error (same fallback as the shops feature).
+const MISSING_TABLE = new Set(['42P01', 'PGRST205']);
+const isMissing = (error: { code?: string }) =>
+  Boolean(error.code && MISSING_TABLE.has(error.code));
 
 // The database decides: is_admin() reads the caller's own flag, and every admin write below
 // re-checks it, so a page that skipped this check still could not act.
@@ -136,6 +157,16 @@ export async function uploadTeaImage(supabase: Client, tea: string, file: File):
   return supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl;
 }
 
+// The generated reviews row predates drink reviews, so the columns this queue reads are typed here.
+interface ReportedReviewRow {
+  id: string;
+  user_id: string | null;
+  product_id: string | null;
+  drink_id: string | null;
+  notes: string | null;
+  stars: number;
+}
+
 export interface OpenReport {
   id: string;
   targetType: 'review' | 'comment';
@@ -144,7 +175,13 @@ export interface OpenReport {
   createdAt: string;
   reporterName: string;
   // What was reported, for the admin to judge; null if it is already gone.
-  content: { text: string; authorName: string; productId: string | null } | null;
+  content: {
+    text: string;
+    authorName: string;
+    productId: string | null;
+    // Set for a drink review: where it was said, shown in place of a tea link.
+    drinkLabel: string | null;
+  } | null;
 }
 
 // Open reports, oldest first, with the reported text alongside (admins can read every report).
@@ -161,7 +198,11 @@ export async function listOpenReports(supabase: Client): Promise<OpenReport[]> {
     reports.filter((r) => r.target_type === type).map((r) => r.target_id);
   const [reviews, comments] = await Promise.all([
     selectIn(ids('review'), (batch) =>
-      supabase.from('reviews').select('id, user_id, product_id, notes, stars').in('id', batch)
+      supabase
+        .from('reviews')
+        .select('id, user_id, product_id, drink_id, notes, stars')
+        .in('id', batch)
+        .returns<ReportedReviewRow[]>()
     ),
     selectIn(ids('comment'), (batch) =>
       supabase.from('review_comments').select('id, user_id, review_id, body').in('id', batch)
@@ -169,6 +210,20 @@ export async function listOpenReports(supabase: Client): Promise<OpenReport[]> {
   ]);
   if (reviews.error) throw reviews.error;
   if (comments.error) throw comments.error;
+
+  const drinkIds = [...new Set(reviews.data.flatMap((r) => (r.drink_id ? [r.drink_id] : [])))];
+  const drinks = await selectIn(drinkIds, (batch) =>
+    supabase.from('admin_drinks').select('id, name, cafe_id').in('id', batch)
+  );
+  if (drinks.error) throw drinks.error;
+  const cafes = await selectIn([...new Set(drinks.data.map((d) => d.cafe_id))], (batch) =>
+    supabase.from('admin_cafes').select('id, name').in('id', batch)
+  );
+  if (cafes.error) throw cafes.error;
+  const cafeName = new Map(cafes.data.map((c) => [c.id, c.name]));
+  const drinkLabel = new Map(
+    drinks.data.map((d) => [d.id, `${cafeName.get(d.cafe_id) ?? 'Unknown café'} · ${d.name}`])
+  );
 
   const people = [
     ...reports.map((r) => r.reporter_id),
@@ -193,11 +248,20 @@ export async function listOpenReports(supabase: Client): Promise<OpenReport[]> {
           text: `${review.stars}★ ${review.notes ?? ''}`.trim(),
           authorName: nameOf(review.user_id),
           productId: review.product_id,
+          // A drink review has no tea; name the café and drink instead of leaving the target blank.
+          drinkLabel: review.drink_id
+            ? (drinkLabel.get(review.drink_id) ?? 'A drink that is no longer listed')
+            : null,
         };
     } else {
       const comment = commentById.get(r.target_id);
       if (comment)
-        content = { text: comment.body, authorName: nameOf(comment.user_id), productId: null };
+        content = {
+          text: comment.body,
+          authorName: nameOf(comment.user_id),
+          productId: null,
+          drinkLabel: null,
+        };
     }
     return {
       id: r.id,
@@ -218,5 +282,228 @@ export async function resolveReport(
   note?: string
 ): Promise<void> {
   const { error } = await supabase.rpc('resolve_report', { report, decision, note });
+  if (error) throw error;
+}
+
+// --- Cafés, drinks and trusted tasters ---
+// Reads go through admin_cafes / admin_drinks: the base tables hide who added a row and the
+// review note from every client, and those views add the adder's name for admins only.
+
+const CAFE_COLUMNS =
+  'id, name, city_slug, area, address, lat, lng, instagram_handle, website_url, status, created_at, adder_name';
+const DRINK_COLUMNS =
+  'id, cafe_id, name, base, style, serving, price, photo_url, photo_credit, tea_product_id, status, created_at, adder_name';
+
+type CafeRow = Pick<
+  Database['public']['Views']['admin_cafes']['Row'],
+  | 'id'
+  | 'name'
+  | 'city_slug'
+  | 'area'
+  | 'address'
+  | 'lat'
+  | 'lng'
+  | 'instagram_handle'
+  | 'website_url'
+  | 'status'
+  | 'created_at'
+  | 'adder_name'
+>;
+
+const toCafe = (r: CafeRow): AdminCafe => ({
+  id: r.id,
+  name: r.name,
+  citySlug: r.city_slug,
+  area: r.area,
+  address: r.address,
+  lat: r.lat,
+  lng: r.lng,
+  instagramHandle: r.instagram_handle,
+  websiteUrl: r.website_url,
+  status: r.status,
+  createdAt: r.created_at,
+  addedByName: r.adder_name,
+});
+
+async function listCafes(supabase: Client, status: 'pending' | 'approved'): Promise<AdminCafe[]> {
+  const { data, error } = await supabase
+    .from('admin_cafes')
+    .select(CAFE_COLUMNS)
+    .eq('status', status)
+    .order(status === 'pending' ? 'created_at' : 'name');
+  if (error) {
+    if (isMissing(error)) return [];
+    throw error;
+  }
+  return data.map(toCafe);
+}
+
+async function listDrinks(supabase: Client, status: 'pending' | 'approved'): Promise<AdminDrink[]> {
+  const { data, error } = await supabase
+    .from('admin_drinks')
+    .select(DRINK_COLUMNS)
+    .eq('status', status)
+    .order(status === 'pending' ? 'created_at' : 'name');
+  if (error) {
+    if (isMissing(error)) return [];
+    throw error;
+  }
+  if (data.length === 0) return [];
+  const cafes = await selectIn([...new Set(data.map((d) => d.cafe_id))], (ids) =>
+    supabase.from('admin_cafes').select('id, name').in('id', ids)
+  );
+  if (cafes.error) {
+    if (isMissing(cafes.error)) return [];
+    throw cafes.error;
+  }
+  const cafeName = new Map(cafes.data.map((c) => [c.id, c.name]));
+  return data.map((r) => ({
+    id: r.id,
+    cafeId: r.cafe_id,
+    cafeName: cafeName.get(r.cafe_id) ?? 'Unknown café',
+    name: r.name,
+    base: r.base,
+    style: r.style,
+    serving: r.serving,
+    price: r.price,
+    photoUrl: r.photo_url,
+    photoCredit: r.photo_credit,
+    teaProductId: r.tea_product_id,
+    status: r.status,
+    createdAt: r.created_at,
+    addedByName: r.adder_name,
+  }));
+}
+
+export const listCafeQueue = (supabase: Client) => listCafes(supabase, 'pending');
+export const listDrinkQueue = (supabase: Client) => listDrinks(supabase, 'pending');
+// Approved rows: the merge targets and the edit pickers.
+export const listApprovedCafes = (supabase: Client) => listCafes(supabase, 'approved');
+export const listApprovedDrinks = (supabase: Client) => listDrinks(supabase, 'approved');
+
+// review_drink('approved') raises for a drink at a café that is not approved; the message goes
+// to the admin as it is.
+export async function reviewCafe(
+  supabase: Client,
+  id: string,
+  decision: ReviewDecision,
+  note?: string
+): Promise<void> {
+  const { error } = await supabase.rpc('review_cafe', {
+    cafe: idSchema.parse(id),
+    decision,
+    note: noteSchema.parse(note),
+  });
+  if (error) throw error;
+}
+
+export async function reviewDrink(
+  supabase: Client,
+  id: string,
+  decision: ReviewDecision,
+  note?: string
+): Promise<void> {
+  const { error } = await supabase.rpc('review_drink', {
+    drink: idSchema.parse(id),
+    decision,
+    note: noteSchema.parse(note),
+  });
+  if (error) throw error;
+}
+
+// The database refuses a cross-city merge, and a merge that clashes into a non-approved drink.
+export async function mergeCafe(supabase: Client, duplicate: string, keep: string): Promise<void> {
+  const { error } = await supabase.rpc('merge_cafe', {
+    duplicate: idSchema.parse(duplicate),
+    keep: idSchema.parse(keep),
+  });
+  if (error) throw error;
+}
+
+export async function mergeDrink(supabase: Client, duplicate: string, keep: string): Promise<void> {
+  const { error } = await supabase.rpc('merge_drink', {
+    duplicate: idSchema.parse(duplicate),
+    keep: idSchema.parse(keep),
+  });
+  if (error) throw error;
+}
+
+// fields holds only the keys to change; an empty string clears an optional text field.
+export async function updateCafe(supabase: Client, id: string, fields: CafeFields): Promise<void> {
+  const { error } = await supabase.rpc('update_cafe', {
+    cafe: idSchema.parse(id),
+    fields: cafeFieldsSchema.parse(fields),
+  });
+  if (error) throw error;
+}
+
+export async function updateDrink(
+  supabase: Client,
+  id: string,
+  fields: DrinkFields
+): Promise<void> {
+  const { error } = await supabase.rpc('update_drink', {
+    drink: idSchema.parse(id),
+    fields: drinkFieldsSchema.parse(fields),
+  });
+  if (error) throw error;
+}
+
+const PROFILE_COLUMNS = 'id, display_name, is_public, is_trusted_taster';
+type ProfileRow = Database['public']['Views']['public_profiles']['Row'];
+const toProfile = (
+  r: Pick<ProfileRow, 'id' | 'display_name' | 'is_public' | 'is_trusted_taster'>
+) =>
+  ({
+    id: r.id,
+    displayName: r.display_name,
+    isPublic: r.is_public,
+    isTrustedTaster: r.is_trusted_taster,
+  }) satisfies AdminProfile;
+
+const SEARCH_LIMIT = 10;
+
+// public_profiles is the one profile list admins can read (profiles itself is owner-only, it
+// holds email), and it includes private profiles. Names only; no email search.
+export async function searchProfiles(supabase: Client, q: string): Promise<AdminProfile[]> {
+  // Escape LIKE wildcards so a typed % or _ matches itself.
+  const term = q.trim().replace(/[\\%_]/g, (c) => `\\${c}`);
+  if (!term) return [];
+  const { data, error } = await supabase
+    .from('public_profiles')
+    .select(PROFILE_COLUMNS)
+    .ilike('display_name', `%${term}%`)
+    .order('display_name')
+    .limit(SEARCH_LIMIT);
+  if (error) {
+    if (isMissing(error)) return [];
+    throw error;
+  }
+  return data.map(toProfile);
+}
+
+export async function listTrustedTasters(supabase: Client): Promise<AdminProfile[]> {
+  const { data, error } = await supabase
+    .from('public_profiles')
+    .select(PROFILE_COLUMNS)
+    .eq('is_trusted_taster', true)
+    .order('display_name');
+  if (error) {
+    if (isMissing(error)) return [];
+    throw error;
+  }
+  return data.map(toProfile);
+}
+
+// Granting also makes the profile public (the database does that); revoking leaves it as is.
+export async function setTrustedTaster(
+  supabase: Client,
+  person: string,
+  value: boolean
+): Promise<void> {
+  const { error } = await supabase.rpc('set_trusted_taster', {
+    person: idSchema.parse(person),
+    value,
+  });
   if (error) throw error;
 }

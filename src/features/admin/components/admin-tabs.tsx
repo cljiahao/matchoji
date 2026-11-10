@@ -6,8 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface AdminTabsProps {
   queueCount: number;
+  cafeCount: number;
+  drinkCount: number;
   reportCount: number;
   queue: ReactNode;
+  cafes: ReactNode;
+  drinks: ReactNode;
+  tasters: ReactNode;
   reports: ReactNode;
   photo: ReactNode;
   price: ReactNode;
@@ -24,17 +29,22 @@ function Count({ n }: { n: number }) {
   );
 }
 
-// Five jobs on one page: two queues that empty out, forms that edit a single tea, and the shop map. The
+// Eight jobs on one page: queues that empty out, forms that edit a single tea, café or drink, the tasters list and the shop map. The
 // counts sit on the queue tabs so a quiet day reads at a glance.
-const TABS = ['queue', 'reports', 'photo', 'price', 'shops'] as const;
+const TABS = ['queue', 'cafes', 'drinks', 'tasters', 'reports', 'photo', 'price', 'shops'] as const;
 type Tab = (typeof TABS)[number];
 
 const fromHash = (hash: string): Tab => TABS.find((t) => `#${t}` === hash) ?? 'queue';
 
 export function AdminTabs({
   queueCount,
+  cafeCount,
+  drinkCount,
   reportCount,
   queue,
+  cafes,
+  drinks,
+  tasters,
   reports,
   photo,
   price,
@@ -65,6 +75,17 @@ export function AdminTabs({
           Review queue
           <Count n={queueCount} />
         </TabsTrigger>
+        <TabsTrigger value="cafes" className={trigger}>
+          Cafés
+          <Count n={cafeCount} />
+        </TabsTrigger>
+        <TabsTrigger value="drinks" className={trigger}>
+          Drinks
+          <Count n={drinkCount} />
+        </TabsTrigger>
+        <TabsTrigger value="tasters" className={trigger}>
+          Tasters
+        </TabsTrigger>
         <TabsTrigger value="reports" className={trigger}>
           Reports
           <Count n={reportCount} />
@@ -81,6 +102,15 @@ export function AdminTabs({
       </TabsList>
       <TabsContent value="queue" forceMount className={panel}>
         {queue}
+      </TabsContent>
+      <TabsContent value="cafes" forceMount className={panel}>
+        {cafes}
+      </TabsContent>
+      <TabsContent value="drinks" forceMount className={panel}>
+        {drinks}
+      </TabsContent>
+      <TabsContent value="tasters" forceMount className={panel}>
+        {tasters}
       </TabsContent>
       <TabsContent value="reports" forceMount className={panel}>
         {reports}
