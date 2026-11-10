@@ -8,7 +8,7 @@ page content; the navbar carries the logo, a search pill (off on home and Explor
 Explore, Regions, Learn and Journal links (handed to `MobileTabBar`, a fixed bottom bar with Home, Explore,
 Log, Learn and Journal, below `md`, where Regions counts as Explore), the global "Log a
 tasting" dialog and `NotificationBell` and `AuthStatus` (sign-in button or user menu). The footer has
-the wordmark and tagline, the links the navbar lacks (Tea supply, Sell on Matchoji, plus Regions
+the wordmark and tagline, the links the navbar lacks (Tea supply, Sell on Matchoji (only while `MARKETPLACE_ENABLED` is on), plus Regions
 on phones, where the tab bar has no Regions tab), and a fine-print row. `Providers` wraps the app in `SessionProvider`,
 so every component shares one sign-in session.
 

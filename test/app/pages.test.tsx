@@ -1544,7 +1544,7 @@ describe('static routes', () => {
     expect(
       screen.getByText('Rate and discover matcha and hojicha, one cup at a time.')
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute('href', '/sell');
+    expect(screen.queryByRole('link', { name: 'Sell on Matchoji' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Regions' })).toHaveAttribute('href', '/regions');
     expect(screen.getByRole('link', { name: 'Tea supply' })).toHaveAttribute(
       'href',
@@ -1555,7 +1555,7 @@ describe('static routes', () => {
       'href',
       '/shops'
     );
-    expect(screen.getAllByRole('link')).toHaveLength(6);
+    expect(screen.getAllByRole('link')).toHaveLength(5);
 
     rerender(<SiteFooter links={[{ label: 'About', href: '/about' }]} />);
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');

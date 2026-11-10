@@ -122,26 +122,21 @@ export function ExploreFilters({ filters, regions, grades }: ExploreFiltersProps
       </FilterGroup>
 
       {(grades.length > 0 || orphanGrade) && (
-        <nav aria-labelledby="filter-grade" className="space-y-3">
-          <h2 id="filter-grade" className="font-bold">
-            Grade
-          </h2>
-          <ul className="flex flex-wrap gap-x-5 lg:block">
-            <FilterLink
-              href={discoverHref(filters, { grade: undefined })}
-              active={!filters.grade}
-              label="All grades"
-            />
-          </ul>
+        <FilterGroup id="filter-grade" title="Grade">
+          <FilterLink
+            href={discoverHref(filters, { grade: undefined })}
+            active={!filters.grade}
+            label="All grades"
+          />
           {grades.map((group) => (
-            <div key={group.category}>
+            <li key={group.category} className="w-full">
               {titled && (
-                <h3
+                <p
                   id={`filter-grade-${group.category}`}
-                  className="text-muted-foreground mb-1 text-xs font-semibold tracking-wide uppercase"
+                  className="text-muted-foreground mt-1 text-xs font-semibold tracking-wide uppercase lg:mt-2"
                 >
                   {GRADE_GROUP_TITLES[group.category]}
-                </h3>
+                </p>
               )}
               <ul
                 aria-labelledby={titled ? `filter-grade-${group.category}` : undefined}
@@ -156,18 +151,16 @@ export function ExploreFilters({ filters, regions, grades }: ExploreFiltersProps
                   />
                 ))}
               </ul>
-            </div>
+            </li>
           ))}
           {orphanGrade && (
-            <ul className="flex flex-wrap gap-x-5 lg:block">
-              <FilterLink
-                href={discoverHref(filters, { grade: orphanGrade })}
-                active
-                label={orphanGrade}
-              />
-            </ul>
+            <FilterLink
+              href={discoverHref(filters, { grade: orphanGrade })}
+              active
+              label={orphanGrade}
+            />
           )}
-        </nav>
+        </FilterGroup>
       )}
 
       {regions.length > 0 && (

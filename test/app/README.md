@@ -27,7 +27,7 @@ The home page tests queue a fourth `catalogue_teas` read for the top-lists check
 
 The page, config and SEO tests cover the shop map's footprint: the footer's `/shops` link, the sitemap entry, the tile host in the CSP, and the tea page's in-person link, shown only when the maker has a listed shop.
 
-`pages.test.tsx` mocks `MARKETPLACE_ENABLED` (off by default, as shipped): the sell page suite and the tea page's "Where to buy" test switch it on, and a tea nobody sells shows no seller or stock prompts to a visitor. Explore's grade test feeds grades with their category.
+`pages.test.tsx` mocks `MARKETPLACE_ENABLED` (off by default, as shipped): the sell page suite and the tea page's "Where to buy" test switch it on, and a tea nobody sells shows no seller or stock prompts to a visitor. Explore's grade test feeds grades with their category. The footer test expects no "Sell on Matchoji" link while the marketplace is off.
 
 `seo.test.ts` also holds `robots.ts` (admin, account, journal, sell, auth and `/api/` kept out).
 
