@@ -1,20 +1,30 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { connection } from 'next/server';
+import { cache } from 'react';
 
 import { CITIES, DrinkRow, listTopDrinkLists, topTeasHref } from '@/features/cafes';
 import { createClient } from '@/integrations/supabase/server';
 
-export const metadata: Metadata = {
-  title: 'Top hojicha and matcha drinks',
-  description:
-    'The best-rated hojicha and matcha drinks in Singapore and Johor Bahru, ranked by trusted tasters first.',
-};
+// One read per request, shared by the page and its metadata.
+const loadLists = cache(async () => listTopDrinkLists(await createClient()));
+
+export async function generateMetadata(): Promise<Metadata> {
+  await connection();
+  const lists = await loadLists();
+  return {
+    title: 'Top hojicha and matcha drinks',
+    description:
+      'The best-rated hojicha and matcha drinks in Singapore and Johor Bahru, ranked by trusted tasters first.',
+    // An index with no lists is a thin page; keep it out of search until there is something to rank.
+    ...(lists.length === 0 && { robots: { index: false } }),
+  };
+}
 
 export default async function TopIndexPage() {
   // Lists are live ratings; see the home page for why this opts out of prerendering.
   await connection();
-  const lists = await listTopDrinkLists(await createClient());
+  const lists = await loadLists();
 
   return (
     <div className="max-w-site mx-auto w-full px-6 py-10 sm:py-14">

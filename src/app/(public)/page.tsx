@@ -79,7 +79,10 @@ export default async function Home({ searchParams }: HomeProps) {
     loadFollowingFeed(),
   ]);
   const areas = groupByArea(cafes);
-  const nothingYet = tasterReviews.length === 0 && topLattes.length === 0 && cafes.length === 0;
+  // The panel stands in for every rail above, so it follows what actually renders (cafés with no
+  // area render no rail).
+  const nothingYet =
+    tasterReviews.length === 0 && topLattes.length === 0 && areas.length === 0 && feed.length === 0;
 
   return (
     <>

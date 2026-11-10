@@ -161,6 +161,16 @@ describe('Home', () => {
     expect(screen.queryByRole('region', { name: 'Cafés by area' })).not.toBeInTheDocument();
   });
 
+  it('cafés with no area still show the invitation, since no rail renders', async () => {
+    state.cafes.mockResolvedValue([cafe('1', null)]);
+    render(await Home(search()));
+    expect(screen.queryByRole('region', { name: 'Cafés by area' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'No drinks rated in Singapore yet' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Log a drink' })).toBeInTheDocument();
+  });
+
   it('with no café data shows one invitation and still the at-home row, with no empty rails', async () => {
     render(await Home(search()));
     expect(

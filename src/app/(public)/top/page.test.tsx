@@ -2,7 +2,11 @@
 import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const state = vi.hoisted(() => ({ lists: vi.fn(), top: vi.fn() }));
+const state = vi.hoisted(() => ({
+  lists: vi.fn(),
+  top: vi.fn(),
+  teaLists: new Set(['best-value-matcha', 'from-uji-kyoto']),
+}));
 
 vi.mock('next/server', () => ({ connection: vi.fn(async () => undefined) }));
 vi.mock('next/navigation', () => ({
@@ -14,6 +18,14 @@ vi.mock('next/navigation', () => ({
   },
 }));
 vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ({}) }));
+vi.mock('@/features/products', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/features/products')>()),
+  listCatalogue: async () => [],
+}));
+vi.mock('@/features/discovery', () => ({
+  findTopList: (_catalogue: unknown, slug: string) =>
+    state.teaLists.has(slug) ? { slug } : undefined,
+}));
 vi.mock('@/features/cafes', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/features/cafes')>()),
   listTopDrinkLists: (...args: unknown[]) => state.lists(...args),
@@ -21,7 +33,7 @@ vi.mock('@/features/cafes', async (importOriginal) => ({
 }));
 
 import TopDrinksPage, { generateMetadata } from './[slug]/page';
-import TopIndexPage from './page';
+import TopIndexPage, { generateMetadata as indexMetadata } from './page';
 
 const scores = {
   tasterAvg: 4.5,
@@ -121,6 +133,17 @@ describe('/top/[slug]', () => {
   it('does not redirect a slug that could point anywhere else', async () => {
     await expect(TopDrinksPage(params('//evil.example'))).rejects.toThrow('NEXT_NOT_FOUND');
     await expect(TopDrinksPage(params('..%2Fadmin'))).rejects.toThrow('NEXT_NOT_FOUND');
+  });
+
+  it('is not found, never redirected, for a well-formed slug that is no tea list', async () => {
+    await expect(TopDrinksPage(params('totally-made-up'))).rejects.toThrow('NEXT_NOT_FOUND');
+  });
+
+  it('keeps an empty /top out of search and indexes it once it has lists', async () => {
+    state.lists.mockResolvedValue([]);
+    expect(await indexMetadata()).toMatchObject({ robots: { index: false } });
+    state.lists.mockResolvedValue([list('singapore', 'Singapore')]);
+    expect(await indexMetadata()).not.toHaveProperty('robots');
   });
 
   it('is not found for a known list with no qualifying drink', async () => {

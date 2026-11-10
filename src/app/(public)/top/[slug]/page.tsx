@@ -10,14 +10,13 @@ import {
   parseDrinkListSlug,
   topTeasHref,
 } from '@/features/cafes';
+import { findTopList } from '@/features/discovery';
+import { listCatalogue } from '@/features/products';
 import { createClient } from '@/integrations/supabase/server';
 
 interface TopDrinksPageProps {
   params: Promise<{ slug: string }>;
 }
-
-// Tea-list slugs are lowercase words and hyphens; anything else is not worth redirecting.
-const TEA_SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 // One read per request, shared by the page and its metadata.
 const loadDrinks = cache(async (slug: string) => {
@@ -43,8 +42,10 @@ export default async function TopDrinksPage({ params }: TopDrinksPageProps) {
   const list = await loadDrinks(slug);
 
   if (!list) {
-    // Before drinks, /top/<slug> was a tea list; those links keep working at their new home.
-    if (TEA_SLUG.test(slug)) permanentRedirect(topTeasHref(slug));
+    // Before drinks, /top/<slug> was a tea list; those links keep working at their new home. Only a
+    // slug that is a tea list today earns a permanent redirect, so junk is never cached as one.
+    const catalogue = await listCatalogue(await createClient());
+    if (findTopList(catalogue, slug)) permanentRedirect(topTeasHref(slug));
     notFound();
   }
   // A list with no qualifying drink does not exist, so a stale link is not-found.
