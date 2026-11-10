@@ -25,17 +25,17 @@ The "Log a drink" buttons on the home page, Explore and the journal open `LogDia
 
 ## Contents
 
-- `account/`
 - `about/`
+- `account/`
 - `admin/`
 - `cafes/`
 - `error.tsx`
-- `(home)/`
-- `layout.tsx`
-- `not-found.tsx`
 - `explore/`
+- `(home)/`
 - `journal/`
+- `layout.tsx`
 - `learn/`
+- `not-found.tsx`
 - `products/`
 - `regions/`
 - `sell/`
