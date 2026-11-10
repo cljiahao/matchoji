@@ -8,6 +8,8 @@ It skips the feature reads for someone who has rated nothing.
 
 `loadTeaFeatures` is the shared step that builds a tea's features (catalogue entry plus community profile); `discovery` calls it to rank similar teas.
 
+`loadMatches` reads tea ratings only (`product_id` not null), so a drink rating neither scores a tea nor counts as having rated.
+
 ## Contents
 
 - `index.ts`

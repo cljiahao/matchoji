@@ -128,3 +128,30 @@ describe('ReviewItem author', () => {
     expect(screen.getByText('Former taster')).toBeInTheDocument();
   });
 });
+
+describe('ReviewItem for café drink reviews', () => {
+  it('shows Gifted badge and IG link for taster review; nothing for none', () => {
+    const { rerender } = render(
+      <ReviewItem
+        review={makeReview(1, {
+          productId: null,
+          drinkId: 'd1',
+          byTrustedTaster: true,
+          disclosure: 'gifted',
+          instagramUrl: 'https://www.instagram.com/p/Cabc123/',
+        })}
+        category="matcha"
+      />
+    );
+    expect(screen.getByText('Gifted')).toBeInTheDocument();
+    expect(screen.getByText('Trusted taster')).toBeInTheDocument();
+    const link = screen.getByRole('link', { name: /See the post on Instagram/ });
+    expect(link).toHaveAttribute('href', 'https://www.instagram.com/p/Cabc123/');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+
+    rerender(<ReviewItem review={makeReview(2)} category="matcha" />);
+    expect(screen.queryByText('Gifted')).not.toBeInTheDocument();
+    expect(screen.queryByText('Trusted taster')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Instagram/ })).not.toBeInTheDocument();
+  });
+});

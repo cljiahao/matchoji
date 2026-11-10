@@ -25,10 +25,12 @@ const CARD_NOTES = 2;
 
 // Counts notes across a product's reviews; ties keep first-seen order (Map + stable sort).
 export function topNotesByProduct(
-  rows: { product_id: string; flavor_notes: string[] | null }[]
+  rows: { product_id: string | null; flavor_notes: string[] | null }[]
 ): Map<string, string[]> {
   const counts = new Map<string, Map<string, number>>();
   for (const row of rows) {
+    // A drink review has no tea to attach its notes to.
+    if (!row.product_id) continue;
     const forProduct = counts.get(row.product_id) ?? new Map<string, number>();
     for (const note of row.flavor_notes ?? [])
       forProduct.set(note, (forProduct.get(note) ?? 0) + 1);

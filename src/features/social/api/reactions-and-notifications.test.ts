@@ -119,6 +119,8 @@ describe('notifications', () => {
     actorName: 'Ben',
     reviewId: null,
     productId: null,
+    drinkPath: null,
+    cafePath: null,
     body: null,
     read: false,
     createdAt: '2026-10-05T00:00:00Z',
@@ -178,5 +180,97 @@ describe('notifications', () => {
       marketplace.enabled = false;
     }
     expect(notificationHref({ ...base, kind: 'report_resolved', actorId: null })).toBeNull();
+  });
+});
+
+describe('drink and café notifications', () => {
+  const base: Notification = {
+    id: 1,
+    kind: 'like',
+    actorId: 'u2',
+    actorName: 'Ben',
+    reviewId: 'r1',
+    productId: null,
+    drinkPath: null,
+    cafePath: null,
+    body: null,
+    read: false,
+    createdAt: '2026-10-05T00:00:00Z',
+  };
+
+  it('notificationHref for drink like → drink page', () => {
+    expect(notificationHref({ ...base, drinkPath: '/cafes/kurasu/hojicha-latte' })).toBe(
+      '/cafes/kurasu/hojicha-latte'
+    );
+  });
+
+  it('links a café decision to the café', () => {
+    expect(notificationHref({ ...base, kind: 'cafe_reviewed', cafePath: '/cafes/kurasu' })).toBe(
+      '/cafes/kurasu'
+    );
+  });
+
+  it('describeNotification drink_reviewed', () => {
+    expect(
+      describeNotification({
+        ...base,
+        kind: 'drink_reviewed',
+        actorName: null,
+        body: 'Hojicha Latte is now listed.',
+      })
+    ).toBe('Hojicha Latte is now listed.');
+  });
+
+  it('resolves drink and café slugs when listing', async () => {
+    const { client } = createFakeSupabase({
+      notifications: {
+        data: [
+          {
+            id: 1,
+            kind: 'like',
+            actor_id: 'u2',
+            review_id: 'r1',
+            product_id: null,
+            drink_id: 'd1',
+            cafe_id: null,
+            body: null,
+            read_at: null,
+            created_at: '2026-10-05T00:00:00Z',
+          },
+          {
+            id: 2,
+            kind: 'cafe_reviewed',
+            actor_id: null,
+            review_id: null,
+            product_id: null,
+            drink_id: null,
+            cafe_id: 'c2',
+            body: 'Kopi is now listed.',
+            read_at: null,
+            created_at: '2026-10-04T00:00:00Z',
+          },
+        ],
+        error: null,
+      },
+      public_profiles: { data: [{ id: 'u2', display_name: 'Ben' }], error: null },
+      drinks: {
+        data: [
+          {
+            id: 'd1',
+            cafe_id: 'c1',
+            slug: 'hojicha-latte',
+            name: 'Hojicha Latte',
+            base: 'hojicha',
+          },
+        ],
+        error: null,
+      },
+      cafes: [
+        { data: [{ id: 'c1', slug: 'kurasu', name: 'Kurasu' }], error: null },
+        { data: [{ id: 'c2', slug: 'kopi' }], error: null },
+      ],
+    });
+    const list = await listNotifications(client);
+    expect(list.map(notificationHref)).toEqual(['/cafes/kurasu/hojicha-latte', '/cafes/kopi']);
   });
 });

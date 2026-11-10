@@ -8,6 +8,8 @@ search-or-create-then-rate dialog that drives the whole flow.
 `types.ts` also defines `PrepPreset` (a recipe's brew settings for the form); its `Review` carries `authorId` (null once the author deleted their account) so names
 can link to profiles, and `edition` (harvest year and flush, tea's vintage).
 
+`Review` also carries the drink-review fields: `productId` is null and `drinkId` set on a café drink's review, with `byTrustedTaster`, `instagramUrl`, `disclosure` (`Disclosure`: none, invited, gifted, paid), `teaStrength` and `roast`. Exactly one of `productId` and `drinkId` is set. `DrinkSummary` (a drink's name, base and café) is what consumers join onto a drink review.
+
 ## Contents
 
 - `api/`

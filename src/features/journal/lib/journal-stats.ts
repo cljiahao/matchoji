@@ -1,6 +1,11 @@
 import type { PrepMethod } from '@/features/reviews';
 
-import type { JournalEntry, JournalStats, PublicStats, Ranked } from '../types';
+import type { JournalEntry, JournalItem, JournalStats, PublicStats, Ranked } from '../types';
+
+// Drink tastings have no tea, so everything tea-shaped (counts, makers, regions, the taste
+// profile) is computed from these alone.
+export const teaEntries = (items: JournalItem[]): JournalEntry[] =>
+  items.filter((e): e is JournalEntry => 'product' in e);
 
 const TOP_NOTES = 3;
 // A "top maker" from one or two tastings is noise, so these wait for three.
@@ -34,9 +39,10 @@ function longestRun(days: string[]): number {
 }
 
 export function computeJournalStats(
-  entries: JournalEntry[],
+  items: JournalItem[],
   today: string = todayUtc()
 ): JournalStats {
+  const entries = teaEntries(items);
   const split = { matcha: 0, hojicha: 0 };
   const noteCounts = new Map<string, number>();
   let starTotal = 0;
@@ -77,7 +83,8 @@ export function computeJournalStats(
 }
 
 // Counts per distinct tea (its latest tasting), so re-logging a favourite doesn't inflate them.
-export function computePublicStats(entries: JournalEntry[]): PublicStats {
+export function computePublicStats(items: JournalItem[]): PublicStats {
+  const entries = teaEntries(items);
   const seen = new Set<string>();
   const teas = entries.filter((e) => !seen.has(e.product.id) && seen.add(e.product.id));
   const split = { matcha: 0, hojicha: 0 };
@@ -103,11 +110,9 @@ function monthLabel(isoDate: string): string {
   });
 }
 
-export function groupByMonth(
-  entries: JournalEntry[]
-): { month: string; entries: JournalEntry[] }[] {
+export function groupByMonth(entries: JournalItem[]): { month: string; entries: JournalItem[] }[] {
   const sorted = [...entries].sort((a, b) => b.tastedOn.localeCompare(a.tastedOn));
-  const groups: { month: string; entries: JournalEntry[] }[] = [];
+  const groups: { month: string; entries: JournalItem[] }[] = [];
   for (const entry of sorted) {
     const month = monthLabel(entry.tastedOn);
     const last = groups.at(-1);

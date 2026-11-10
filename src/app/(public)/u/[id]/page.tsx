@@ -75,7 +75,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         <>
           {stats && <PublicStatsStrip stats={stats} />}
           {recent.length > 0 && (
-            <YourTaste profile={buildTasteProfile(recent)} title={`${profile.name}'s taste`} />
+            <YourTaste
+              profile={buildTasteProfile(recent.filter((t) => 'product' in t))}
+              title={`${profile.name}'s taste`}
+            />
           )}
           <section aria-labelledby="recent" className="space-y-3">
             <h2 id="recent" className="text-2xl font-bold tracking-tight">

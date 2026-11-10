@@ -1,17 +1,17 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { REVIEW_COLUMNS, mapReviewRow } from '@/features/reviews';
+import { REVIEW_COLUMNS, loadDrinkSummaries, mapReviewRow } from '@/features/reviews';
 import type { Database } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
 import { buildYearInTea } from '../lib/year-in-tea';
-import type { JournalEntry, YearInTea } from '../types';
+import type { JournalItem, YearInTea } from '../types';
 
 type Client = SupabaseClient<Database>;
 
 // One taster's tastings, newest first. Row-level security decides whose a caller may read: a
 // public taster's are open, a private taster's are their own.
-export async function listUserTastings(supabase: Client, userId: string): Promise<JournalEntry[]> {
+export async function listUserTastings(supabase: Client, userId: string): Promise<JournalItem[]> {
   const { data: rows, error } = await supabase
     .from('reviews')
     .select(REVIEW_COLUMNS)
@@ -23,7 +23,7 @@ export async function listUserTastings(supabase: Client, userId: string): Promis
   if (rows.length === 0) return [];
 
   const { data: products, error: productsError } = await selectIn(
-    rows.map((r) => r.product_id),
+    rows.flatMap((r) => (r.product_id ? [r.product_id] : [])),
     (ids) =>
       supabase.from('products').select('id, name, brand, category, status, region_id').in('id', ids)
   );
@@ -35,11 +35,20 @@ export async function listUserTastings(supabase: Client, userId: string): Promis
     : { data: [], error: null };
   if (regionsError) throw regionsError;
 
+  const drinks = await loadDrinkSummaries(
+    supabase,
+    rows.flatMap((r) => (r.drink_id ? [r.drink_id] : []))
+  );
+
   const byId = new Map(products.map((p) => [p.id, p]));
   const regionName = new Map(regions.map((r) => [r.id, r.name]));
   // The journal is the reader's own, so their name isn't shown on each entry.
-  return rows.flatMap((r) => {
-    const found = byId.get(r.product_id);
+  return rows.flatMap((r): JournalItem[] => {
+    if (r.drink_id) {
+      const drink = drinks.get(r.drink_id);
+      return drink ? [{ ...mapReviewRow(r, ''), drink }] : [];
+    }
+    const found = r.product_id ? byId.get(r.product_id) : undefined;
     if (!found) return [];
     const { region_id: regionId, ...product } = found;
     return [

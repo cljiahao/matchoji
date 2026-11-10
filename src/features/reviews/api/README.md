@@ -20,8 +20,12 @@ author's own tasting; `reviewPhotoPath` reads a photo's storage path from its UR
 deleted account show as "Former taster". Each `Review` carries `authorId` for profile links and its `edition`. `listEditions` reads a
 tea's ratings per harvest from `edition_ratings`.
 
+`REVIEW_COLUMNS` and `mapReviewRow` also read the drink-review columns; `mapReviewRow` accepts rows from `product_reviews()`, which omits them, and defaults them to a plain tea review. `loadDrinkSummaries` (`drink-summaries.ts`) turns drink ids into `DrinkSummary`s (name, slug, base, and the café's name and slug) for the journal, feed and notifications. It names its columns because `cafes` and `drinks` grant columns individually, omits drinks row-level security hides, and returns an empty map before the café migration is applied.
+
 ## Contents
 
+- `drink-summaries.test.ts`
+- `drink-summaries.ts`
 - `index.ts`
 - `review-edits.test.ts`
 - `reviews-mutations.test.ts`

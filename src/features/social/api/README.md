@@ -11,6 +11,8 @@ named comments per review), `setLiked`, `addComment`, `deleteComment`, `reportCo
 and `describeNotification` / `notificationHref` for each one's copy and link (a `shop_reviewed` notification links to `/sell` only while `MARKETPLACE_ENABLED` is on, else to `/account`). Tested against the
 recording fake client.
 
+`loadFeed` and the profile's recent tastings pair each review with its tea or its drink and café. `listNotifications` also selects `drink_id` and `cafe_id` and resolves them to `drinkPath` and `cafePath`; `notificationHref` links a drink like or comment to the drink, and `cafe_reviewed` / `drink_reviewed` notifications to the café or drink, using the notification's own sentence.
+
 ## Contents
 
 - `index.ts`

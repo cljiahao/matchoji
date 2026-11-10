@@ -1,3 +1,4 @@
+export { loadDrinkSummaries } from './drink-summaries';
 export {
   createReview,
   deleteReview,

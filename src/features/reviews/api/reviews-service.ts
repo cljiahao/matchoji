@@ -1,16 +1,19 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { Database } from '@/integrations/supabase/database.types';
+import type { Database, DrinkReviewColumn } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
 
 import { TASTE_ATTRIBUTES, type PrepMethod } from '../lib/tasting-vocab';
 import type { Review } from '../types';
 
 type Client = SupabaseClient<Database>;
-type ReviewRow = Database['public']['Tables']['reviews']['Row'];
+type FullReviewRow = Database['public']['Tables']['reviews']['Row'];
+// product_reviews() predates drink reviews and omits their columns, which then read as a tea's defaults.
+export type ReviewRow = Omit<FullReviewRow, DrinkReviewColumn> &
+  Partial<Pick<FullReviewRow, DrinkReviewColumn>>;
 
 export const REVIEW_COLUMNS =
-  'id, product_id, user_id, stars, notes, photo_url, created_at, flavor_notes, sweetness, umami, bitterness, body, prep_method, dose_g, water_ml, water_temp_c, tasted_on, harvest_year, flush';
+  'id, product_id, drink_id, user_id, stars, notes, photo_url, created_at, flavor_notes, sweetness, umami, bitterness, body, prep_method, dose_g, water_ml, water_temp_c, tasted_on, harvest_year, flush, instagram_url, disclosure, tea_strength, roast, by_trusted_taster';
 
 // numeric and smallint can arrive as strings depending on PostgREST settings.
 const num = (v: number | string | null) => (v === null ? null : Number(v));
@@ -25,6 +28,7 @@ export function mapReviewRow(r: ReviewRow, reviewerName: string): Review {
     id: r.id,
     authorId: r.user_id,
     productId: r.product_id,
+    drinkId: r.drink_id ?? null,
     reviewerName,
     stars: r.stars,
     notes: r.notes,
@@ -43,6 +47,11 @@ export function mapReviewRow(r: ReviewRow, reviewerName: string): Review {
       harvestYear: r.harvest_year,
       flush: r.flush && r.flush !== 'unspecified' ? r.flush : null,
     },
+    byTrustedTaster: r.by_trusted_taster ?? false,
+    instagramUrl: r.instagram_url ?? null,
+    disclosure: r.disclosure ?? 'none',
+    teaStrength: num(r.tea_strength ?? null),
+    roast: r.roast ?? null,
   };
 }
 

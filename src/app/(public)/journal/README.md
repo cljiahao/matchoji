@@ -9,6 +9,8 @@ Titled "Your journal". Under the stats, a "Year in tea" row links each year with
 
 The page heading uses the same `text-3xl sm:text-4xl` size as the other pages, and the empty panel is shorter on phones.
 
+The timeline also lists café drink tastings; the stats, year row and `YourTaste` profile are built from the teas only (`teaEntries`).
+
 ## Contents
 
 - `loading.tsx`

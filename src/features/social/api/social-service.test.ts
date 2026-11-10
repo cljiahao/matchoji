@@ -88,7 +88,9 @@ describe('loadFeed', () => {
       },
     });
     const feed = await loadFeed(client, 5);
-    expect(feed.map((t) => [t.reviewerName, t.authorId, t.product.name])).toEqual([
+    expect(
+      feed.map((t) => [t.reviewerName, t.authorId, 'product' in t ? t.product.name : null])
+    ).toEqual([
       ['Cho', 'u2', 'Sayaka'],
       ['Former taster', null, 'Sayaka'],
     ]);
@@ -139,5 +141,60 @@ describe('follow, block and privacy writes', () => {
       public_profiles: { data: [{ id: 'u9', display_name: 'Spammy' }], error: null },
     });
     expect(await listBlocked(client, 'me')).toEqual([{ id: 'u9', name: 'Spammy' }]);
+  });
+});
+
+describe('feed with drink reviews', () => {
+  it('renders a drink review with café name', async () => {
+    const { client } = createFakeSupabase({
+      'rpc:following_feed': {
+        data: [
+          { ...review('r1', 'u2'), product_id: null, drink_id: 'd1', disclosure: 'paid' },
+          review('r2', 'u2'),
+        ],
+        error: null,
+      },
+      public_profiles: { data: [{ id: 'u2', display_name: 'Cho' }], error: null },
+      products: {
+        data: [{ id: 'p1', name: 'Sayaka', brand: null, category: 'matcha' }],
+        error: null,
+      },
+      drinks: {
+        data: [
+          { id: 'd1', cafe_id: 'c1', slug: 'matcha-latte', name: 'Matcha Latte', base: 'matcha' },
+        ],
+        error: null,
+      },
+      cafes: { data: [{ id: 'c1', slug: 'cafe-x', name: 'Café X' }], error: null },
+    });
+    const feed = await loadFeed(client, 5);
+    expect(feed[0]).toMatchObject({
+      reviewerName: 'Cho',
+      disclosure: 'paid',
+      drink: { name: 'Matcha Latte', cafe: { name: 'Café X', slug: 'cafe-x' } },
+    });
+    expect(feed[1]).toMatchObject({ product: { name: 'Sayaka' } });
+  });
+
+  it('counts only teas on a profile', async () => {
+    const { client, calls } = createFakeSupabase({
+      public_profiles: {
+        data: {
+          id: 'u1',
+          display_name: 'Ben',
+          is_public: false,
+          created_at: '2026-09-01T00:00:00Z',
+        },
+        error: null,
+      },
+      latest_reviews: { data: null, count: 2, error: null },
+      follows: { data: null, count: 0, error: null },
+    });
+    await getProfileView(client, 'u1', null);
+    expect(calls).toContainEqual({
+      table: 'latest_reviews',
+      method: 'not',
+      args: ['product_id', 'is', null],
+    });
   });
 });

@@ -9,6 +9,8 @@ between two people and stops new ones (the database enforces both). Readers like
 on reviews, report reviews and comments to the admins, and get in-app notifications (follows,
 likes, comments, and the outcome of their tea suggestions, shop applications and reports).
 
+`Tasting` is a tea tasting or a drink tasting (`TeaTasting` | `DrinkTasting`), so the feed and a profile's recent tastings can show café drink reviews; a profile's tea count counts teas only.
+
 ## Contents
 
 - `api/`

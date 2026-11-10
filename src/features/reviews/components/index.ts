@@ -1,7 +1,9 @@
 export { CommunityReviews } from './community-reviews';
+export { DisclosureBadge } from './disclosure-badge';
 export { EditionList } from './edition-list';
 export { FlavorFamilies } from './flavor-families';
 export { CategorySelect, RegionSelect } from './form-selects';
+export { InstagramPostLink } from './instagram-post-link';
 export { LogTastingDialog } from './log-tasting-dialog';
 export { PrepSummary, formatPrep } from './prep-summary';
 export { ProductInsights } from './product-insights';
