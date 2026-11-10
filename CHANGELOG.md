@@ -46,6 +46,7 @@ All notable changes to this project are documented here. Format follows
 - The year-in-tea page (`/journal/year/<year>`) no longer keeps its "Your year in tea" tab title when it renders not-found; `generateMetadata` gives a malformed year or a year with no recap the not-found title, sharing one read with the page.
 - `test/scripts/schema-check.test.ts` no longer times out intermittently on CI runners. `extractShape` re-parsed about 60 TypeScript lib files for every program it built; those are now parsed once per process and shared, which also speeds up `pnpm schema:check`.
 - A `.pnpm-store/` cache inside a worktree no longer fails `pnpm check` (Prettier and ESLint now skip it; it is also git-ignored).
+- The loading-boundary test now ignores status calls that only appear in comments, also scans `layout.tsx` (only a `loading.tsx` in a parent folder counts) and has unit cases; the `(public)` README contents list is back in alphabetical order. No app change.
 
 ## [0.1.0] - 2026-11-03
 
