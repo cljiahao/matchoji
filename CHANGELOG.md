@@ -5,6 +5,10 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- Database schema for café drinks (migration `20261110000000_cafes_and_drinks.sql`, slice S1 of the repositioning; the owner applies it in the Supabase SQL editor before the app slices that use it merge): cities (Singapore, Johor Bahru), cafés and drinks that anyone signed in can suggest for review, trusted tasters with Instagram-linked drink reviews kept apart from the community score, café and drink rating views, merges and moderation notifications. Nothing in the app uses it yet, and teas are unchanged.
+
 ### Changed
 
 - Claude Code harness re-synced to templateCentral 7.2.2: the SessionStart hook re-injects the CONSTITUTION instead of the head of `AGENTS.md`, the dependency-audit gate parses `package.json` for advisory suppressions, `settings.json` drops the broad `.env.*` read denies, and `AGENTS.md` documents the user-scoped `superpowers` plugin install.

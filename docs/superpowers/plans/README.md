@@ -8,6 +8,7 @@ executed task by task.
 ## Contents
 
 - `2026-10-21-tasting-journal-redesign.md`
+- `2026-11-10-cafe-drinks-repositioning.md`
 
 ## Parent
 

@@ -18,14 +18,114 @@ export type TeaStatSource = 'maff' | 'zencharen';
 export type StockStatus = 'in_stock' | 'sold_out';
 export type VendorStatus = 'pending' | 'approved' | 'rejected';
 export type NotificationKind =
-  'follow' | 'like' | 'comment' | 'tea_reviewed' | 'shop_reviewed' | 'report_resolved';
+  | 'follow'
+  | 'like'
+  | 'comment'
+  | 'tea_reviewed'
+  | 'shop_reviewed'
+  | 'report_resolved'
+  | 'cafe_reviewed'
+  | 'drink_reviewed';
 export type ReportTarget = 'review' | 'comment';
 export type Flush = 'first' | 'second' | 'autumn' | 'unspecified';
 export type ProductStatus = 'pending' | 'approved' | 'rejected';
+export type CafeStatus = 'pending' | 'approved' | 'rejected';
+export type DrinkStatus = 'pending' | 'approved' | 'rejected';
+export type CityCountry = 'SG' | 'MY';
+export type DrinkCurrency = 'SGD' | 'MYR';
+export type DrinkBase = 'hojicha' | 'matcha';
+export type DrinkStyle = 'latte' | 'straight' | 'iced_latte' | 'float' | 'other';
+export type DrinkServing = 'hot' | 'iced' | 'both';
+export type Disclosure = 'none' | 'invited' | 'gifted' | 'paid';
 
+// The migration 20261110000000_cafes_and_drinks.sql makes reviews.product_id nullable and adds
+// drink_id, instagram_url, disclosure, tea_strength, roast and by_trusted_taster to reviews and
+// latest_reviews. Their Row types below still show the tea-only shape until the review
+// consumers are made drink-safe (slice S2), which changes Row and REVIEW_COLUMNS together.
 export interface Database {
   public: {
     Tables: {
+      cities: {
+        Row: {
+          slug: string;
+          name: string;
+          country: CityCountry;
+          currency: DrinkCurrency;
+          sort_order: number;
+        };
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      cafes: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          city_slug: string;
+          area: string | null;
+          address: string | null;
+          lat: number | null;
+          lng: number | null;
+          instagram_handle: string | null;
+          website_url: string | null;
+          status: CafeStatus;
+          added_by: string | null;
+          review_note: string | null;
+          merged_into: string | null;
+          reviewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        // Suggestions only: status, credit, slug and review fields are set by the database.
+        Insert: {
+          name: string;
+          city_slug: string;
+          area?: string | null;
+          address?: string | null;
+          lat?: number | null;
+          lng?: number | null;
+          instagram_handle?: string | null;
+          website_url?: string | null;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      drinks: {
+        Row: {
+          id: string;
+          cafe_id: string;
+          slug: string;
+          name: string;
+          base: DrinkBase;
+          style: DrinkStyle;
+          serving: DrinkServing;
+          price: number | null;
+          currency: DrinkCurrency;
+          photo_url: string | null;
+          photo_credit: string | null;
+          tea_product_id: string | null;
+          status: DrinkStatus;
+          added_by: string | null;
+          review_note: string | null;
+          merged_into: string | null;
+          reviewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        // Suggestions only: a photo, status, currency and slug are never set by the client.
+        Insert: {
+          cafe_id: string;
+          name: string;
+          base: DrinkBase;
+          style: DrinkStyle;
+          serving: DrinkServing;
+          price?: number | null;
+          tea_product_id?: string | null;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       audit_log: {
         Row: {
           id: number;
@@ -80,6 +180,9 @@ export interface Database {
           is_admin: boolean;
           is_public: boolean;
           created_at: string;
+          is_trusted_taster: boolean;
+          instagram_handle: string | null;
+          bio: string | null;
         };
         Insert: {
           id: string;
@@ -89,6 +192,9 @@ export interface Database {
           is_admin?: boolean;
           is_public?: boolean;
           created_at?: string;
+          is_trusted_taster?: boolean;
+          instagram_handle?: string | null;
+          bio?: string | null;
         };
         Update: {
           id?: string;
@@ -97,6 +203,9 @@ export interface Database {
           role?: ProfileRole;
           is_public?: boolean;
           created_at?: string;
+          is_trusted_taster?: boolean;
+          instagram_handle?: string | null;
+          bio?: string | null;
         };
         Relationships: [];
       };
@@ -242,6 +351,8 @@ export interface Database {
           actor_id: string | null;
           review_id: string | null;
           product_id: string | null;
+          drink_id: string | null;
+          cafe_id: string | null;
           body: string | null;
           read_at: string | null;
           created_at: string;
@@ -511,7 +622,8 @@ export interface Database {
         Insert: {
           id?: string;
           user_id: string;
-          product_id: string;
+          product_id?: string | null;
+          drink_id?: string | null;
           stars: number;
           notes?: string | null;
           photo_url?: string | null;
@@ -528,11 +640,16 @@ export interface Database {
           tasted_on?: string;
           harvest_year?: number | null;
           flush?: Flush | null;
+          instagram_url?: string | null;
+          disclosure?: Disclosure;
+          tea_strength?: number | null;
+          roast?: number | null;
         };
         Update: {
           id?: string;
           user_id?: string;
-          product_id?: string;
+          product_id?: string | null;
+          drink_id?: string | null;
           stars?: number;
           notes?: string | null;
           photo_url?: string | null;
@@ -549,6 +666,10 @@ export interface Database {
           tasted_on?: string;
           harvest_year?: number | null;
           flush?: Flush | null;
+          instagram_url?: string | null;
+          disclosure?: Disclosure;
+          tea_strength?: number | null;
+          roast?: number | null;
         };
         Relationships: [];
       };
@@ -678,6 +799,32 @@ export interface Database {
           display_name: string;
           is_public: boolean;
           created_at: string;
+          is_trusted_taster: boolean;
+          instagram_handle: string | null;
+          bio: string | null;
+        };
+        Relationships: [];
+      };
+      // Approved drinks at approved cafés. Taster and community scores are never blended.
+      drink_ratings: {
+        Row: {
+          drink_id: string;
+          taster_count: number;
+          taster_avg: number | null;
+          taster_disclosed_count: number;
+          community_count: number;
+          community_avg: number | null;
+        };
+        Relationships: [];
+      };
+      cafe_ratings: {
+        Row: {
+          cafe_id: string;
+          drink_count: number;
+          taster_count: number;
+          taster_avg: number | null;
+          community_count: number;
+          community_avg: number | null;
         };
         Relationships: [];
       };
@@ -716,6 +863,31 @@ export interface Database {
       product_reviews: {
         Args: { product: string };
         Returns: (Database['public']['Tables']['reviews']['Row'] & { author_private: boolean })[];
+      };
+      slugify: { Args: { txt: string }; Returns: string };
+      set_trusted_taster: { Args: { person: string; value: boolean }; Returns: undefined };
+      review_cafe: {
+        Args: { cafe: string; decision: 'approved' | 'rejected'; note?: string };
+        Returns: undefined;
+      };
+      review_drink: {
+        Args: { drink: string; decision: 'approved' | 'rejected'; note?: string };
+        Returns: undefined;
+      };
+      merge_cafe: { Args: { duplicate: string; keep: string }; Returns: undefined };
+      merge_drink: { Args: { duplicate: string; keep: string }; Returns: undefined };
+      drink_reviews: {
+        Args: { drink: string };
+        Returns: (Omit<Database['public']['Tables']['reviews']['Row'], 'product_id'> & {
+          product_id: string | null;
+          drink_id: string | null;
+          author_private: boolean;
+          instagram_url: string | null;
+          disclosure: Disclosure;
+          tea_strength: number | null;
+          roast: number | null;
+          by_trusted_taster: boolean;
+        })[];
       };
       is_public_profile: { Args: { person: string }; Returns: boolean };
       search_teas: {

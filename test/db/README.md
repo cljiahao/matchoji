@@ -43,7 +43,7 @@ and admin-only fields. `lesson-progress.test.ts` checks lesson progress is priva
 signed-in learner with a server time and valid slugs, unmarkable only by its owner, audited and
 deleted with the account. `tea-prices.test.ts` checks only admins set prices (both values or neither,
 within range), suggested teas arrive unpriced, the per-gram figure and bands (none until 3 teas of a
-category are priced), pending teas left out of the comparison, and that price changes are audited. `tea-price-history.test.ts` checks the trigger records a priced insert and each price or pack-size change but not a no-change or clearing update, history goes with the tea, everyone can read it, no client can write it, and it is audited.
+category are priced), pending teas left out of the comparison, and that price changes are audited. `tea-price-history.test.ts` checks the trigger records a priced insert and each price or pack-size change but not a no-change or clearing update, history goes with the tea, everyone can read it, no client can write it, and it is audited. `cafes-and-drinks.test.ts` covers the café-drinks schema: the two seeded cities, pending-only suggestions and their caps, generated slugs, currency by city, exactly one review target, trusted-taster rules (Instagram link, disclosure, unspoofable flag, forced public profile), `drink_ratings` and `cafe_ratings` counting each person's latest review and keeping taster and community scores apart, private authors hidden, merges, moderation notifications, tea views unaffected, and the audit log.
 
 `admin-review.test.ts` also covers photo credits: set, kept on a null image, cleared with the photo, the 120-character limit, admin-only, and refused on a suggested tea.
 
@@ -70,6 +70,7 @@ category are priced), pending teas left out of the comparison, and that price ch
 - `tea-review-queue.test.ts`
 - `tea-taste-profiles.test.ts`
 - `tea-production-stats.test.ts`
+- `cafes-and-drinks.test.ts`
 
 ## Parent
 
