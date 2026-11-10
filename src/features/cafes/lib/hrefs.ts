@@ -4,6 +4,3 @@ import { drinkHref } from '@/features/reviews';
 export { drinkHref };
 
 export const cafeHref = (slug: string): string => `/cafes/${slug}`;
-
-// Short enough for an Instagram bio; /c/<slug> forwards to the café page.
-export const shortCafeHref = (slug: string): string => `/c/${slug}`;
