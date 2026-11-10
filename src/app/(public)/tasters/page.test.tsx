@@ -5,6 +5,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const listTasters = vi.fn();
 
 vi.mock('next/server', () => ({ connection: async () => undefined }));
+vi.mock('@/components/widgets/log-dialog', () => ({
+  AddCafeCta: () => <button>Add a café</button>,
+}));
 vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ({}) }));
 vi.mock('@/features/social', () => ({
   InstagramHandleLink: ({ handle }: { handle: string }) => <a href="#ig">@{handle}</a>,
@@ -12,7 +15,7 @@ vi.mock('@/features/social', () => ({
   listTasters: (...a: unknown[]) => listTasters(...a),
 }));
 
-import TastersPage from './page';
+import TastersPage, { generateMetadata } from './page';
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -20,7 +23,8 @@ describe('tasters page', () => {
   it('shows one line, not an empty grid, when there are no tasters', async () => {
     listTasters.mockResolvedValue([]);
     render(await TastersPage());
-    expect(screen.getByText('No trusted tasters yet.')).toBeInTheDocument();
+    expect(screen.getByText(/No trusted tasters yet/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add a café' })).toBeInTheDocument();
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
@@ -46,7 +50,7 @@ describe('tasters page', () => {
       },
     ]);
     render(await TastersPage());
-    expect(screen.queryByText('No trusted tasters yet.')).not.toBeInTheDocument();
+    expect(screen.queryByText(/No trusted tasters yet/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Foodcnl' })).toHaveAttribute('href', '/u/u1');
     expect(screen.getByText('Hojicha first.')).toBeInTheDocument();
     expect(screen.getByText('@foodcnl')).toBeInTheDocument();
@@ -55,6 +59,13 @@ describe('tasters page', () => {
       '/cafes/kurasu/hojicha-latte'
     );
     expect(screen.getByText(/0 drinks rated/)).toBeInTheDocument();
+  });
+
+  it('is noindex while there are no tasters, indexable once there is one', async () => {
+    listTasters.mockResolvedValue([]);
+    expect((await generateMetadata()).robots).toEqual({ index: false });
+    listTasters.mockResolvedValue([{ id: 'u1' }]);
+    expect((await generateMetadata()).robots).toBeUndefined();
   });
 
   // A failed read must reach (public)/error.tsx, which keeps the navbar and offers a retry.

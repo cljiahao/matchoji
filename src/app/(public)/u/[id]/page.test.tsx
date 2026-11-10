@@ -45,16 +45,25 @@ describe('profile generateMetadata', () => {
   it('shares a public profile with its tea count', async () => {
     getProfileView.mockResolvedValue({
       profile: { id: ID, name: 'Mei', isPublic: true, joinedAt: '2026-01-01' },
-      counts: { teas: 5, followers: 0, following: 0 },
+      counts: { drinks: 0, teas: 5, followers: 0, following: 0 },
     });
     const meta = await generateMetadata({ params: params(ID) });
     expect(meta.description).toBe('Mei has rated 5 teas on Matchoji.');
   });
 
+  it('counts drink reviews as well as teas', async () => {
+    getProfileView.mockResolvedValue({
+      profile: { id: ID, name: 'Mei', isPublic: true, joinedAt: '2026-01-01' },
+      counts: { drinks: 7, teas: 5, followers: 0, following: 0 },
+    });
+    const meta = await generateMetadata({ params: params(ID) });
+    expect(meta.description).toBe('Mei has rated 7 drinks and 5 teas on Matchoji.');
+  });
+
   it('shares a private profile without counts', async () => {
     getProfileView.mockResolvedValue({
       profile: { id: ID, name: 'Mei', isPublic: false, joinedAt: '2026-01-01' },
-      counts: { teas: 5, followers: 0, following: 0 },
+      counts: { drinks: 0, teas: 5, followers: 0, following: 0 },
     });
     const meta = await generateMetadata({ params: params(ID) });
     expect(meta.description).toBe('A taster on Matchoji.');
@@ -71,7 +80,7 @@ describe('profile generateMetadata', () => {
 describe('profile stats strip', () => {
   const view = (isPublic: boolean, isSelf: boolean) => ({
     profile: { ...PROFILE, isPublic },
-    counts: { teas: 2, followers: 0, following: 0 },
+    counts: { drinks: 0, teas: 2, followers: 0, following: 0 },
     viewer: { isSelf, follows: false, blocked: false },
     recent: [],
     drinkReviews: [],
@@ -102,7 +111,7 @@ describe('profile stats strip', () => {
 describe('taster profile', () => {
   const taster = (overrides: Partial<typeof PROFILE>) => ({
     profile: { ...PROFILE, ...overrides },
-    counts: { teas: 0, followers: 0, following: 0 },
+    counts: { drinks: 0, teas: 0, followers: 0, following: 0 },
     viewer: { isSelf: false, follows: false, blocked: false },
     recent: [{ id: 'r1', drink: {} }],
     drinkReviews: [{ id: 'r1', drink: {} }],

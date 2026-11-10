@@ -9,10 +9,10 @@ import { captureClientError } from '@/lib/sentry/capture';
 // rely on app styles or providers.
 export default function GlobalError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string };
-  reset: () => void;
+  retry: () => void;
 }) {
   useEffect(() => {
     logError('app.global-error-boundary', error);
@@ -37,7 +37,7 @@ export default function GlobalError({
         >
           <h1 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Something went wrong</h1>
           {error.digest && <p>Reference: {error.digest}</p>}
-          <button type="button" onClick={reset} style={{ minHeight: 44, padding: '0 1rem' }}>
+          <button type="button" onClick={retry} style={{ minHeight: 44, padding: '0 1rem' }}>
             Try again
           </button>
         </main>

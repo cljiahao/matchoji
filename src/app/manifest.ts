@@ -1,13 +1,14 @@
 import type { MetadataRoute } from 'next';
 
 import { OG } from '@/features/share';
+import { SITE_DESCRIPTION } from '@/lib/constants/site';
 
 // Installable; public/sw.js adds only an offline fallback page, not offline browsing.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Matchoji',
     short_name: 'Matchoji',
-    description: 'Rate and discover hojicha and matcha, one cup at a time.',
+    description: SITE_DESCRIPTION,
     start_url: '/',
     scope: '/',
     display: 'standalone',

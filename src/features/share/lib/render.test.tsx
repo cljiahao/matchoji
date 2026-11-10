@@ -120,7 +120,7 @@ describe('renderTeaImage', () => {
 describe('renderProfileImage', () => {
   const view = (isPublic: boolean) => ({
     profile: { id: 'p', name: 'Mei', isPublic, joinedAt: '2026-01-01' },
-    counts: { teas: 4, followers: 0, following: 0 },
+    counts: { drinks: 0, teas: 4, followers: 0, following: 0 },
   });
 
   it('reads the profile as an anonymous viewer', async () => {

@@ -9,7 +9,7 @@ official harvest figures), `learn/` (recipes and guides), product pages, the jou
 only).
 Every page sets its own title. `not-found.tsx` answers an unknown or hidden tea (and any
 `notFound()` here) inside the shell. `error.tsx` catches a failed read inside the layout, so the navbar stays and the visitor
-can retry or go to Explore. Every page reads Supabase directly; there is no mock fallback. Skeletons live in `(home)/loading.tsx` and the list routes only, never above a page that redirects or calls `notFound()`: a streamed response has already sent its 200.
+can retry or browse the cafés. Every page reads Supabase directly; there is no mock fallback. Skeletons live in `(home)/loading.tsx` and the list routes only, never above a page that redirects or calls `notFound()`: a streamed response has already sent its 200.
 
 The layout renders its pages inside `SiteShell`, whose `main` is the skip link's target.
 
@@ -20,6 +20,8 @@ The "Log a drink" buttons on the home page, Explore and the journal open `LogDia
 `top/` holds the drink top-lists index (per city, base and style) and `top/[slug]/` one drink list (`singapore-hojicha-latte`); tea lists live under `top/teas/`, and an old `/top/<tea-slug>` is a 308 to `/top/teas/<slug>`. The "No drinks rated yet" panel shows whenever no café rail (taster reviews, top lattes, areas, feed) renders. Home reads `?city=` through `resolveCity`, else the city cookie, else Singapore.
 
 `tasters/` lists the trusted tasters (one quiet line when there are none) and `about/how-we-rate/` explains the taster and community scores and the disclosure labels in plain words.
+
+`error.tsx` takes `retry`, which re-fetches and re-renders the route (like `src/app/error.tsx` and `global-error.tsx`), and, with `not-found.tsx`, points to cafés, top drinks and Explore before teas.
 
 ## Contents
 

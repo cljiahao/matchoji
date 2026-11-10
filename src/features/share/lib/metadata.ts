@@ -46,16 +46,23 @@ export function teaMetadata(product: ShareableTea): Metadata {
   };
 }
 
+const plural = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+
 // A private profile shares as a bare taster with no counts, matching its site-default image.
 export function profileMetadata(profile: {
   id: string;
   name: string;
   isPublic: boolean;
   teas: number;
+  drinks: number;
 }): Metadata {
-  const noun = profile.teas === 1 ? 'tea' : 'teas';
+  // Drinks lead because the site is drink-first; a tea-only reviewer reads as before.
+  const rated = [
+    ...(profile.drinks > 0 ? [plural(profile.drinks, 'drink')] : []),
+    ...(profile.teas > 0 || profile.drinks === 0 ? [plural(profile.teas, 'tea')] : []),
+  ].join(' and ');
   const description = profile.isPublic
-    ? `${profile.name} has rated ${profile.teas} ${noun} on Matchoji.`
+    ? `${profile.name} has rated ${rated} on Matchoji.`
     : 'A taster on Matchoji.';
   return {
     ...card(profile.name, description, `/u/${profile.id}`),
@@ -76,8 +83,6 @@ export function yearMetadata(year: {
     `/u/${year.id}/year/${year.year}`
   );
 }
-
-const plural = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`;
 
 export function cafeMetadata(cafe: {
   slug: string;

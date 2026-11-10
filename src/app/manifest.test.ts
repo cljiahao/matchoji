@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { SITE_DESCRIPTION } from '@/lib/constants/site';
+
 import manifest from './manifest';
 
 describe('manifest', () => {
@@ -14,6 +16,10 @@ describe('manifest', () => {
       background_color: '#ffffff',
       theme_color: '#2f5233',
     });
+  });
+
+  it('carries the café-drink description', () => {
+    expect(m.description).toBe(SITE_DESCRIPTION);
   });
 
   it('lists 192, 512 and a maskable 512 icon', () => {

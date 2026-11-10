@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Coffee, Home, Plus, Trophy, type LucideIcon } from 'lucide-react';
+import { Coffee, Home, Plus, Trophy, Users, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -37,7 +37,8 @@ function Tab({
 }
 
 // Phones get an app-style tab bar, so the header stays one clean row and logging a drink
-// is always one thumb away.
+// is always one thumb away. The tabs are the café-first sections; Journal lives in the account
+// menu and tea search behind the header's search icon.
 export function MobileTabBar() {
   const pathname = usePathname();
 
@@ -76,10 +77,10 @@ export function MobileTabBar() {
           active={pathname.startsWith(PAGE_ROUTES.TOP)}
         />
         <Tab
-          href={PAGE_ROUTES.JOURNAL}
-          label="Journal"
-          icon={BookOpen}
-          active={pathname.startsWith(PAGE_ROUTES.JOURNAL)}
+          href={PAGE_ROUTES.TASTERS}
+          label="Tasters"
+          icon={Users}
+          active={pathname.startsWith(PAGE_ROUTES.TASTERS)}
         />
       </ul>
     </nav>
