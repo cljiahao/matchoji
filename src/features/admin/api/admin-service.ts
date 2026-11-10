@@ -5,9 +5,11 @@ import { selectIn } from '@/integrations/supabase/select-in';
 
 import {
   cafeFieldsSchema,
+  decisionSchema,
   drinkFieldsSchema,
   idSchema,
   noteSchema,
+  searchTermSchema,
   type CafeFields,
   type DrinkFields,
 } from '../schemas';
@@ -391,7 +393,7 @@ export async function reviewCafe(
 ): Promise<void> {
   const { error } = await supabase.rpc('review_cafe', {
     cafe: idSchema.parse(id),
-    decision,
+    decision: decisionSchema.parse(decision),
     note: noteSchema.parse(note),
   });
   if (error) throw error;
@@ -405,7 +407,7 @@ export async function reviewDrink(
 ): Promise<void> {
   const { error } = await supabase.rpc('review_drink', {
     drink: idSchema.parse(id),
-    decision,
+    decision: decisionSchema.parse(decision),
     note: noteSchema.parse(note),
   });
   if (error) throw error;
@@ -467,7 +469,7 @@ const SEARCH_LIMIT = 10;
 // holds email), and it includes private profiles. Names only; no email search.
 export async function searchProfiles(supabase: Client, q: string): Promise<AdminProfile[]> {
   // Escape LIKE wildcards so a typed % or _ matches itself.
-  const term = q.trim().replace(/[\\%_]/g, (c) => `\\${c}`);
+  const term = searchTermSchema.parse(q).replace(/[\\%_]/g, (c) => `\\${c}`);
   if (!term) return [];
   const { data, error } = await supabase
     .from('public_profiles')

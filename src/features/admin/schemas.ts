@@ -35,3 +35,5 @@ export type DrinkFields = z.infer<typeof drinkFieldsSchema>;
 
 export const idSchema = z.uuid();
 export const noteSchema = z.string().trim().max(500).optional();
+export const decisionSchema = z.enum(['approved', 'rejected']);
+export const searchTermSchema = z.string().trim().max(80);

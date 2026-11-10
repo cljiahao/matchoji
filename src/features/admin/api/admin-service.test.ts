@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
+import { cafeFieldsSchema } from '../schemas';
 import {
   isAdmin,
   listApprovedTeas,
@@ -314,6 +315,14 @@ describe('café and drink moderation', () => {
     await expect(reviewDrink(client, ID, 'approved')).rejects.toBe(error);
   });
 
+  it('rejects a decision that is not approved or rejected, without calling the database', async () => {
+    const { client, calls } = createFakeSupabase({});
+    const bad = JSON.parse('"maybe"') as 'approved';
+    await expect(reviewCafe(client, ID, bad)).rejects.toThrow();
+    await expect(reviewDrink(client, ID, bad)).rejects.toThrow();
+    expect(calls).toHaveLength(0);
+  });
+
   it('rejects an id that is not a uuid before calling the database', async () => {
     const { client, calls } = createFakeSupabase({});
     await expect(reviewCafe(client, 'nope', 'approved')).rejects.toThrow();
@@ -439,13 +448,15 @@ describe('updateCafe and updateDrink', () => {
     await expect(updateCafe(client, ID, { name: 'x' })).rejects.toBe(error);
   });
 
-  it('updateCafe refuses a key the database does not allow, without calling it', async () => {
+  it('updateCafe refuses an invalid field, without calling the database', async () => {
     const { client, calls } = createFakeSupabase({});
-    await expect(
-      updateCafe(client, ID, { slug: 'hack' } as unknown as Parameters<typeof updateCafe>[2])
-    ).rejects.toThrow();
     await expect(updateCafe(client, ID, { website_url: 'http://x.test' })).rejects.toThrow();
     expect(calls).toHaveLength(0);
+  });
+
+  it('the café field schema refuses keys the database does not allow', () => {
+    const unknownKey: Record<string, unknown> = { slug: 'hack' };
+    expect(cafeFieldsSchema.safeParse(unknownKey).success).toBe(false);
   });
 
   it('updateDrink sends photo, credit and tea link', async () => {
@@ -483,6 +494,12 @@ describe('searchProfiles and listTrustedTasters', () => {
     expect(calls).toContainEqual(
       expect.objectContaining({ method: 'ilike', args: ['display_name', '%50\\%\\_%'] })
     );
+  });
+
+  it('refuses an over-long search term without querying', async () => {
+    const { client, calls } = createFakeSupabase({});
+    await expect(searchProfiles(client, 'a'.repeat(81))).rejects.toThrow();
+    expect(calls).toHaveLength(0);
   });
 
   it('does not query for a blank search', async () => {
