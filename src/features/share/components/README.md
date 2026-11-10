@@ -6,6 +6,8 @@ The share-image layouts, drawn with inline styles and SVG because `next/og` rend
 
 `ProfileCard` takes an optional `taster` (bio and a pre-validated handle): a trusted taster's card reads "Trusted taster on Matchoji" with the bio (clipped to 140 characters) and `@handle`.
 
+`DrinkCard` words the partnership line as "n of m taster reviews were invited, gifted or paid".
+
 ## Contents
 
 - `logo-mark.tsx`

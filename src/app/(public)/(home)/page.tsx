@@ -1,51 +1,40 @@
+import { Plus } from 'lucide-react';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { connection } from 'next/server';
 
+import { Button } from '@/components/ui/button';
 import { LogDialog } from '@/components/widgets/log-dialog';
-import { buildTopLists } from '@/features/discovery';
-import { WantToTryButton } from '@/features/journal';
 import {
-  CategoryCircles,
-  ProductShelf,
-  SearchPill,
-  listCatalogue,
-  listProducts,
-  type DiscoverFilters,
-  type Product,
-} from '@/features/products';
+  CITY_COOKIE,
+  CitySwitch,
+  DrinkRow,
+  cityBySlug,
+  drinkHref,
+  listCafes,
+  listLatestTasterDrinkReviews,
+  listTopDrinks,
+  resolveCity,
+  topDrinksHref,
+  topTeasHref,
+  type CafeListing,
+} from '@/features/cafes';
+import { ReviewItem } from '@/features/reviews';
 import { TastingFeed, loadFeed, type Tasting } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
+import { PAGE_ROUTES } from '@/lib/constants/routes';
 
-const SHELF_SIZE = 12;
+const RAIL_SIZE = 3;
+const TOP_SIZE = 5;
 
-const SHELVES: {
-  title: string;
-  // "Top-rated" over a shelf of teas nobody has rated would be a false claim.
-  unratedTitle?: string;
-  filters: DiscoverFilters;
-  href: string;
-  // The top list this shelf's "See all" prefers, once that list exists.
-  topSlug?: string;
-}[] = [
-  {
-    title: 'Top-rated matcha',
-    unratedTitle: 'Matcha to try',
-    filters: { category: 'matcha', sort: 'top' },
-    href: '/explore?category=matcha',
-    topSlug: 'matcha',
-  },
-  {
-    title: 'Top-rated hojicha',
-    unratedTitle: 'Hojicha to try',
-    filters: { category: 'hojicha', sort: 'top' },
-    href: '/explore?category=hojicha',
-    topSlug: 'hojicha',
-  },
-  { title: 'Newly added', filters: { sort: 'newest' }, href: '/explore?sort=newest' },
-];
+interface HomeProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-const unrated = (products: Product[]) => products.every((p) => p.avgStars === null);
+const first = (value: string | string[] | undefined) =>
+  typeof value === 'string' ? value : undefined;
 
-// Signed-in readers who follow people see their latest tastings first, as on Vivino.
+// Signed-in readers who follow people see their latest tastings, as on Vivino.
 async function loadFollowingFeed(): Promise<Tasting[]> {
   const supabase = await createClient();
   const {
@@ -54,55 +43,170 @@ async function loadFollowingFeed(): Promise<Tasting[]> {
   return user ? loadFeed(supabase) : [];
 }
 
-// Top lists that exist yet; a read failure just leaves "See all" pointing at Explore.
-async function loadTopSlugs(): Promise<Set<string>> {
-  const supabase = await createClient();
-  const lists = await listCatalogue(supabase).then(buildTopLists, () => []);
-  return new Set(lists.map((l) => l.slug));
+// Cafés grouped by their area, biggest area first; a café with no area is left out of this
+// list rather than filed under an invented one.
+function groupByArea(cafes: CafeListing[]): { area: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const cafe of cafes) {
+    if (cafe.area) counts.set(cafe.area, (counts.get(cafe.area) ?? 0) + 1);
+  }
+  return [...counts]
+    .map(([area, count]) => ({ area, count }))
+    .sort((a, b) => b.count - a.count || a.area.localeCompare(b.area));
 }
 
-// Each shelf fetches only the teas it shows.
-async function loadShelves(): Promise<Product[][]> {
-  const supabase = await createClient();
-  const pages = await Promise.all(
-    SHELVES.map(({ filters }) => listProducts(supabase, filters, { limit: SHELF_SIZE }))
-  );
-  return pages.map((p) => p.products);
-}
+const HOME_LINKS = [
+  { label: 'Explore teas', href: PAGE_ROUTES.EXPLORE },
+  { label: 'Top teas', href: topTeasHref() },
+  { label: 'Learn', href: PAGE_ROUTES.LEARN },
+  { label: 'Regions', href: PAGE_ROUTES.REGIONS },
+] as const;
 
-export default async function Home() {
-  // Shelves are live ratings, so the page renders per request. Without this Next may
-  // prerender it at build time, and a build without Supabase env vars (CI, Vercel Preview)
-  // fails in supabaseEnv().
+export default async function Home({ searchParams }: HomeProps) {
+  // Ratings are live, so the page renders per request. Without this Next may prerender it at
+  // build time, and a build without Supabase env vars (CI, Vercel Preview) fails in supabaseEnv().
   await connection();
-  const [shelves, feed, topSlugs] = await Promise.all([
-    loadShelves(),
+  const query = await searchParams;
+  const jar = await cookies();
+  const city = resolveCity(first(query.city), jar.get(CITY_COOKIE)?.value);
+  const cityName = cityBySlug(city)?.name ?? city;
+
+  const supabase = await createClient();
+  const [tasterReviews, topLattes, cafes, feed] = await Promise.all([
+    listLatestTasterDrinkReviews(supabase, { city, limit: RAIL_SIZE }),
+    listTopDrinks(supabase, { city, base: 'hojicha', style: 'latte', limit: TOP_SIZE }),
+    listCafes(supabase, { city }),
     loadFollowingFeed(),
-    loadTopSlugs(),
   ]);
-  const empty = shelves.every((products) => products.length === 0);
-  // On a small catalogue "Newly added" would only repeat the two shelves above; it earns its
-  // place once it holds a tea they don't show.
-  const shown = new Set(
-    shelves.slice(0, 2).flatMap((s) => s.slice(0, SHELF_SIZE).map((p) => p.id))
-  );
-  const newest = shelves[2].slice(0, SHELF_SIZE);
-  if (newest.every((p) => shown.has(p.id))) shelves[2] = [];
+  const areas = groupByArea(cafes);
+  // The panel stands in for every rail above, so it follows what actually renders (cafés with no
+  // area render no rail).
+  const nothingYet =
+    tasterReviews.length === 0 && topLattes.length === 0 && areas.length === 0 && feed.length === 0;
 
   return (
     <>
       <section className="max-w-site mx-auto w-full px-6 pt-12 pb-4 text-center sm:pt-20 sm:pb-10">
-        <h1 className="mx-auto max-w-2xl text-4xl font-bold tracking-tight text-balance sm:text-6xl">
-          Find your next matcha or hojicha
+        <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-balance sm:text-6xl">
+          The trusted guide to hojicha and matcha drinks in Singapore and JB
         </h1>
         <p className="text-muted-foreground mx-auto mt-4 max-w-md text-lg">
-          Ratings, tasting notes and brewing tips from people who drink it.
+          Rated drink by drink, by tasters you can follow.
         </p>
-        <SearchPill size="lg" className="mx-auto mt-8 max-w-xl" />
-        <CategoryCircles className="mt-8 sm:mt-12" />
+        <div className="mt-8 flex justify-center">
+          <CitySwitch current={city} />
+        </div>
       </section>
 
       <div className="max-w-site mx-auto w-full space-y-14 px-6 pt-6 pb-16 sm:pb-24">
+        {tasterReviews.length > 0 && (
+          <section aria-labelledby="latest-tasters" className="space-y-4">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 id="latest-tasters" className="text-2xl font-bold tracking-tight">
+                Latest from our tasters
+              </h2>
+              <Link
+                href={PAGE_ROUTES.TASTERS}
+                className="text-brand shrink-0 text-sm font-semibold hover:underline"
+              >
+                Meet the tasters
+              </Link>
+            </div>
+            <ul className="grid gap-4 md:grid-cols-3">
+              {tasterReviews.map(({ review, drink }) => (
+                <li key={review.id}>
+                  <ReviewItem
+                    review={review}
+                    category={drink.base}
+                    footer={
+                      <Link
+                        href={drinkHref(drink.cafe.slug, drink.slug)}
+                        className="text-sm font-semibold underline underline-offset-4"
+                      >
+                        {drink.name} · {drink.cafe.name}
+                      </Link>
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {topLattes.length > 0 && (
+          <section aria-labelledby="top-lattes" className="space-y-4">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 id="top-lattes" className="text-2xl font-bold tracking-tight">
+                Top hojicha lattes in {cityName}
+              </h2>
+              <Link
+                href={topDrinksHref({ city, base: 'hojicha', style: 'latte' })}
+                className="text-brand shrink-0 text-sm font-semibold hover:underline"
+              >
+                See all
+              </Link>
+            </div>
+            <ol className="grid gap-4 md:grid-cols-2">
+              {topLattes.map((drink) => (
+                <li key={drink.id}>
+                  <DrinkRow drink={drink} showCafe />
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {areas.length > 0 && (
+          <section aria-labelledby="cafes-by-area" className="space-y-4">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 id="cafes-by-area" className="text-2xl font-bold tracking-tight">
+                Cafés by area
+              </h2>
+              <Link
+                href={`${PAGE_ROUTES.CAFES}?city=${city}`}
+                className="text-brand shrink-0 text-sm font-semibold hover:underline"
+              >
+                All cafés
+              </Link>
+            </div>
+            <ul className="flex flex-wrap gap-2">
+              {areas.map(({ area, count }) => (
+                <li key={area}>
+                  <Link
+                    href={`${PAGE_ROUTES.CAFES}?city=${city}&area=${encodeURIComponent(area)}`}
+                    className="border-border hover:bg-muted inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold"
+                  >
+                    {area}
+                    <span className="text-muted-foreground font-normal">{count}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {nothingYet && (
+          <section
+            aria-labelledby="first-drink"
+            className="bg-muted flex-center flex-col gap-4 rounded-3xl px-6 py-16 text-center"
+          >
+            <h2 id="first-drink" className="text-2xl font-bold tracking-tight">
+              No drinks rated in {cityName} yet
+            </h2>
+            <p className="text-muted-foreground max-w-sm">
+              Be the first. Log a hojicha or matcha drink you&rsquo;ve had and it starts the list.
+            </p>
+            <LogDialog
+              trigger={
+                <Button className="min-h-11">
+                  <Plus aria-hidden="true" />
+                  Log a drink
+                </Button>
+              }
+            />
+          </section>
+        )}
+
         {feed.length > 0 && (
           <section aria-labelledby="feed" className="space-y-4">
             <h2 id="feed" className="text-2xl font-bold tracking-tight">
@@ -111,27 +215,24 @@ export default async function Home() {
             <TastingFeed tastings={feed} />
           </section>
         )}
-        {empty ? (
-          <div className="bg-muted flex-center flex-col gap-4 rounded-3xl px-6 py-16 text-center">
-            <h2 className="text-2xl font-bold tracking-tight">No teas rated yet</h2>
-            <p className="text-muted-foreground max-w-sm">
-              Be the first. Log a matcha or hojicha you&rsquo;ve tried and it starts the shelf.
-            </p>
-            <LogDialog />
-          </div>
-        ) : (
-          SHELVES.map((shelf, i) => (
-            <ProductShelf
-              key={shelf.title}
-              title={unrated(shelves[i]) ? (shelf.unratedTitle ?? shelf.title) : shelf.title}
-              seeAllHref={
-                shelf.topSlug && topSlugs.has(shelf.topSlug) ? `/top/${shelf.topSlug}` : shelf.href
-              }
-              products={shelves[i].slice(0, SHELF_SIZE)}
-              renderAction={(product) => <WantToTryButton productId={product.id} compact />}
-            />
-          ))
-        )}
+
+        <section aria-labelledby="at-home" className="space-y-4">
+          <h2 id="at-home" className="text-2xl font-bold tracking-tight">
+            Brew it at home
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {HOME_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="border-border hover:bg-muted inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-semibold"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </>
   );

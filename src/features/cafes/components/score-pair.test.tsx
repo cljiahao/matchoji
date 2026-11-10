@@ -28,9 +28,9 @@ describe('ScorePair', () => {
     const { rerender } = render(<ScorePair scores={scores()} />);
     expect(screen.queryByText(/gifted\/paid/)).toBeNull();
     rerender(<ScorePair scores={scores({ tasterDisclosedCount: 1 })} />);
-    expect(screen.getByText('1 of 2 taster reviews were gifted/paid')).toBeTruthy();
+    expect(screen.getByText('1 of 2 taster reviews were invited, gifted or paid')).toBeTruthy();
     rerender(<ScorePair scores={scores({ tasterCount: 1, tasterDisclosedCount: 1 })} />);
-    expect(screen.getByText('1 of 1 taster review was gifted/paid')).toBeTruthy();
+    expect(screen.getByText('1 of 1 taster review was invited, gifted or paid')).toBeTruthy();
   });
 
   it('hides an empty side', () => {
@@ -54,6 +54,6 @@ describe('ScorePair', () => {
   it('has a compact form for lists', () => {
     render(<ScorePair scores={scores({ tasterDisclosedCount: 1 })} compact />);
     expect(screen.getByText(/Taster/)).toBeTruthy();
-    expect(screen.getByText('1 of 2 taster reviews were gifted/paid')).toBeTruthy();
+    expect(screen.getByText('1 of 2 taster reviews were invited, gifted or paid')).toBeTruthy();
   });
 });

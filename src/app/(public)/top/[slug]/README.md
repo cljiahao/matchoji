@@ -2,9 +2,7 @@
 
 ## Purpose
 
-One top list, numbered. The slug is `matcha`, `hojicha`, `best-value-matcha`, `best-value-hojicha`
-or `from-<region>`. A list that does not exist yet (fewer than 5 teas with 3 ratings each), or an
-unknown slug, is `notFound()`. The catalogue is read once per request for the page and its metadata.
+One drink top list, numbered, for a slug such as `singapore-hojicha-latte` (city, base, style). A known list with no qualifying drink is `notFound()`. A slug that is not a drink list but is a tea list today (`findTopList`) is a 308 (`permanentRedirect`) to `/top/teas/<slug>`, so old links keep working; any other slug is `notFound()`, so no permanent redirect is cached for junk.
 
 ## Contents
 

@@ -9,6 +9,7 @@ import {
   listCities,
   listLatestTasterDrinkReviews,
   listSimilarDrinks,
+  listTopDrinkLists,
   listTopDrinks,
 } from './cafes-service';
 
@@ -493,6 +494,38 @@ describe('listTopDrinks', () => {
     expect(await listTopDrinks(gone.client, { city: 'singapore' })).toEqual([]);
     const noDrinks = createFakeSupabase({ cafes: ok([cafeRow()]), drinks: missing });
     expect(await listTopDrinks(noDrinks.client, { city: 'singapore' })).toEqual([]);
+  });
+});
+
+describe('listTopDrinkLists', () => {
+  it('groups qualifying drinks by city, base and style and leaves out empty lists', async () => {
+    const { client } = createFakeSupabase({
+      // Singapore has a café; Johor Bahru has none yet.
+      cafes: [ok([cafeRow()]), ok([])],
+      drinks: ok([
+        drinkRow({ id: 'd1', name: 'A' }),
+        drinkRow({ id: 'd2', name: 'B', base: 'matcha', style: 'straight' }),
+        drinkRow({ id: 'd3', name: 'C', base: 'matcha', style: 'float' }),
+      ]),
+      drink_ratings: ok([
+        ratingRow('d1', { taster_count: 1, taster_avg: 4 }),
+        ratingRow('d2', { community_count: 3, community_avg: 4 }),
+        ratingRow('d3'),
+      ]),
+    });
+
+    const lists = await listTopDrinkLists(client);
+
+    expect(lists.map((l) => [l.slug, l.title, l.count])).toEqual([
+      ['singapore-hojicha-latte', 'Top hojicha lattes in Singapore', 1],
+      ['singapore-matcha-straight', 'Top straight matcha in Singapore', 1],
+    ]);
+    expect(lists[0]?.drinks.map((d) => d.id)).toEqual(['d1']);
+  });
+
+  it('returns [] before the café tables exist', async () => {
+    const { client } = createFakeSupabase({ cafes: missing });
+    expect(await listTopDrinkLists(client)).toEqual([]);
   });
 });
 

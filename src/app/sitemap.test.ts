@@ -5,6 +5,8 @@ vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ({}
 vi.mock('@/features/products', () => ({ listCatalogue: async () => [] }));
 
 vi.mock('@/features/cafes', () => ({
+  topTeasHref: (slug?: string) => (slug ? `/top/teas/${slug}` : '/top/teas'),
+  listTopDrinkLists: async () => [{ slug: 'singapore-hojicha-latte' }],
   listCafeSitemapEntries: async () => [
     { path: '/cafes/kurasu-bugis', lastModified: '2026-11-01T00:00:00Z' },
     { path: '/cafes/kurasu-bugis/hojicha-latte', lastModified: undefined },
@@ -29,6 +31,12 @@ describe('sitemap', () => {
     const urls = (await sitemap()).map((entry) => new URL(entry.url).pathname);
     expect(urls).toContain('/tasters');
     expect(urls).toContain('/about/how-we-rate');
+  });
+
+  it('lists the drink top lists and the tea lists index', async () => {
+    const urls = (await sitemap()).map((entry) => new URL(entry.url).pathname);
+    expect(urls).toContain('/top/singapore-hojicha-latte');
+    expect(urls).toContain('/top/teas');
   });
 
   it('omits /sell', async () => {

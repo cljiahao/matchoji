@@ -31,7 +31,7 @@ export function TopListCard({ list }: { list: TopList }) {
   const leader = list.teas[0]?.tea;
   return (
     <Link
-      href={`/top/${list.slug}`}
+      href={`/top/teas/${list.slug}`}
       className="bg-muted hover:bg-muted/70 flex h-full min-h-11 flex-col rounded-2xl px-5 py-4 transition-colors"
     >
       <h2 className="text-lg font-bold tracking-tight">{list.title}</h2>

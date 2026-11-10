@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Café drinks: Singapore and Johor Bahru cafés, the hojicha and matcha drinks on their menus, and how well tasters and the community rate each drink. Taster and community scores are separate everywhere (`ScorePair` shows both side by side, never averaged), and a disclosed taster review (gifted, paid or invited) still counts, with "n of m taster reviews were gifted/paid" under the score.
+Café drinks: Singapore and Johor Bahru cafés, the hojicha and matcha drinks on their menus, and how well tasters and the community rate each drink. Taster and community scores are separate everywhere (`ScorePair` shows both side by side, never averaged), and a disclosed taster review (invited, gifted or paid) still counts, with "n of m taster reviews were invited, gifted or paid" under the score.
 
 `types.ts` defines `Cafe`, `Drink`, their `…Listing` forms with scores, `ScorePair` (exported as `ScorePairData` because the component takes the name `ScorePair`) and the page results. A page result is `found`, `redirect` or `missing`: a merged café or drink forwards to its survivor and a rejected drink to its café, so a link posted to Instagram never 404s. No migration; the schema comes from the S1 café migration, and every read returns empty before it is applied.
 

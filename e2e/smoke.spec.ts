@@ -1,13 +1,21 @@
 import { expect, test } from './fixtures';
 
 test.describe('public pages', () => {
-  test('home renders the tea shelves', async ({ page }) => {
+  test('home leads with the café guide and keeps the at-home row', async ({ page }) => {
     await page.goto('/');
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Find your next matcha or hojicha' })
+      page.getByRole('heading', {
+        level: 1,
+        name: 'The trusted guide to hojicha and matcha drinks in Singapore and JB',
+      })
     ).toBeVisible();
-    await expect(page.locator('main h2').first()).toBeVisible();
-    await expect(page.locator('main a[href^="/products/"]').first()).toBeVisible();
+    // Café rails hide until there is café data, so the always-on row is what we can rely on.
+    const atHome = page.getByRole('region', { name: 'Brew it at home' });
+    await expect(atHome).toBeVisible();
+    await expect(atHome.getByRole('link', { name: 'Explore teas' })).toHaveAttribute(
+      'href',
+      '/explore'
+    );
   });
 
   test('searching from the header lands on Explore with results', async ({ page, isMobile }) => {
@@ -41,9 +49,7 @@ test.describe('public pages', () => {
 
   test('shops lists shops beside a map', async ({ page }) => {
     await page.goto('/shops');
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'Where to buy in person' })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Tea shops' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Map of shops' })).toHaveClass(
       /leaflet-container/
     );
@@ -52,16 +58,40 @@ test.describe('public pages', () => {
 
   test('top lists renders', async ({ page }) => {
     await page.goto('/top');
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Top drinks' })).toBeVisible();
+  });
+
+  test('tea lists live under /top/teas', async ({ page }) => {
+    await page.goto('/top/teas');
+    await expect(page.getByRole('heading', { level: 1, name: 'Top teas at home' })).toBeVisible();
+  });
+
+  test('an old tea list link lands on /top/teas, and a junk slug is not found', async ({
+    page,
+  }) => {
+    // The group's loading boundary flushes the shell first, so over HTTP the 308 shows as a 200
+    // plus a client redirect; the unit tests hold the 308 itself. /top/matcha is a list only once
+    // enough teas are rated, so either outcome is right, but never a page left at /top/matcha.
+    await page.goto('/top/matcha');
+    await page.waitForLoadState('networkidle');
+    if (page.url().endsWith('/top/teas/matcha')) {
+      await expect(page.getByRole('link', { name: 'All tea lists' })).toBeVisible();
+    } else {
+      await expect(page.getByRole('heading', { level: 1 })).not.toHaveText('Top drinks');
+    }
   });
 });
 
 test.describe('interactions', () => {
-  test('Log a tasting asks a signed-out visitor to sign in', async ({ page }) => {
+  test('Log a drink asks a signed-out visitor to sign in', async ({ page }) => {
     await page.goto('/');
-    // Until the session resolves the button does nothing, so retry the click.
+    // Until the session resolves the button does nothing, so retry the click. Phones have the
+    // tab bar's "Log"; desktop has the navbar's "Log a drink".
     await expect(async () => {
-      await page.getByRole('button', { name: 'Log a tasting' }).first().click();
+      await page
+        .getByRole('button', { name: /^Log( a drink)?$/ })
+        .first()
+        .click();
       await expect(page.getByRole('dialog', { name: 'Join Matchoji' })).toBeVisible({
         timeout: 1_500,
       });

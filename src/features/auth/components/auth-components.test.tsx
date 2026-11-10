@@ -232,6 +232,10 @@ describe('AuthStatus', () => {
       'href',
       '/account'
     );
+    expect(screen.getByRole('menuitem', { name: 'Your journal' })).toHaveAttribute(
+      'href',
+      '/journal'
+    );
     expect(screen.queryByRole('menuitem', { name: 'Sell on Matchoji' })).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }));

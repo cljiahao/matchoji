@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Compass, GraduationCap, Home, Plus, type LucideIcon } from 'lucide-react';
+import { BookOpen, Coffee, Home, Plus, Trophy, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -36,15 +36,10 @@ function Tab({
   );
 }
 
-// Phones get an app-style tab bar, so the header stays one clean row and logging a tasting
+// Phones get an app-style tab bar, so the header stays one clean row and logging a drink
 // is always one thumb away.
 export function MobileTabBar() {
   const pathname = usePathname();
-  // Phones have no Regions tab; regions are reached from Explore, so they count as exploring.
-  const exploring =
-    pathname.startsWith(PAGE_ROUTES.EXPLORE) ||
-    pathname.startsWith(PAGE_ROUTES.REGIONS) ||
-    pathname.startsWith('/products/');
 
   return (
     <nav
@@ -53,7 +48,12 @@ export function MobileTabBar() {
     >
       <ul className="flex items-center">
         <Tab href={PAGE_ROUTES.HOME} label="Home" icon={Home} active={pathname === '/'} />
-        <Tab href={PAGE_ROUTES.EXPLORE} label="Explore" icon={Compass} active={exploring} />
+        <Tab
+          href={PAGE_ROUTES.CAFES}
+          label="Cafés"
+          icon={Coffee}
+          active={pathname.startsWith(PAGE_ROUTES.CAFES)}
+        />
         <li className="flex-1">
           <LogDialog
             trigger={
@@ -70,10 +70,10 @@ export function MobileTabBar() {
           />
         </li>
         <Tab
-          href={PAGE_ROUTES.LEARN}
-          label="Learn"
-          icon={GraduationCap}
-          active={pathname.startsWith(PAGE_ROUTES.LEARN)}
+          href={PAGE_ROUTES.TOP}
+          label="Top"
+          icon={Trophy}
+          active={pathname.startsWith(PAGE_ROUTES.TOP)}
         />
         <Tab
           href={PAGE_ROUTES.JOURNAL}

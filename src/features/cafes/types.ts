@@ -102,3 +102,14 @@ export interface CafeSitemapEntry {
   path: string;
   lastModified?: string;
 }
+
+// A /top drink list with at least one qualifying drink; `drinks` is only its first few.
+export interface TopDrinkList {
+  slug: string;
+  title: string;
+  city: CitySlug;
+  base: DrinkBase;
+  style: DrinkStyle;
+  count: number;
+  drinks: DrinkListing[];
+}

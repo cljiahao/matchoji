@@ -569,7 +569,7 @@ export function DrinkCard({ drink }: { drink: DrinkCardData }) {
             {drink.tasterDisclosedCount > 0 && (
               <div style={{ display: 'flex', marginTop: 12, fontSize: 28, color: OG.mutedInk }}>
                 {drink.tasterDisclosedCount} of {drink.tasterCount} taster{' '}
-                {drink.tasterCount === 1 ? 'review was' : 'reviews were'} gifted/paid
+                {drink.tasterCount === 1 ? 'review was' : 'reviews were'} invited, gifted or paid
               </div>
             )}
           </div>
