@@ -29,6 +29,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- A merged or deleted café, drink or tea, and an unknown or below-threshold top list, now answer with a real 308 or 404 instead of a 200 that redirected in the browser. The skeleton above them streamed the page before it could decide, so Google saw a 200; the home and café-list skeletons moved into `(home)` and `(list)` route groups (URLs unchanged) and the café, drink and tea pages no longer have a skeleton of their own. No migration.
+
 - The year-in-tea page (`/journal/year/<year>`) no longer keeps its "Your year in tea" tab title when it renders not-found; `generateMetadata` gives a malformed year or a year with no recap the not-found title, sharing one read with the page.
 - `test/scripts/schema-check.test.ts` no longer times out intermittently on CI runners. `extractShape` re-parsed about 60 TypeScript lib files for every program it built; those are now parsed once per process and shared, which also speeds up `pnpm schema:check`.
 - A `.pnpm-store/` cache inside a worktree no longer fails `pnpm check` (Prettier and ESLint now skip it; it is also git-ignored).

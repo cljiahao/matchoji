@@ -7,7 +7,6 @@ One café: name, area, address, Instagram handle and website links, its taster a
 ## Contents
 
 - `[drink]/`
-- `loading.tsx`
 - `opengraph-image.tsx`
 - `page.test.tsx`
 - `page.tsx`

@@ -21,7 +21,7 @@ Under the photo, a muted "Photo: <credit>" caption shows when the tea has both a
 
 An unrated tea shows one quiet "Not yet rated" line in place of the score numeral, stars and count, and `StockPanel` renders only when a stock report exists or the visitor is signed in.
 
-Tasting photos load lazily. Its `loading.tsx` skeleton is announced as a busy `status`.
+Tasting photos load lazily. It has no `loading.tsx`: streaming would send a merged tea's redirect and a missing tea's `notFound()` as a 200.
 
 The hero is compact on phones (a 160px image well, tighter gaps) and the content sections stack closer together below `sm`.
 
@@ -35,7 +35,6 @@ A catalogue tea also emits `Product` JSON-LD (`teaJsonLd`); `aggregateRating` ap
 
 ## Contents
 
-- `loading.tsx`
 - `opengraph-image.tsx`
 - `page.test.tsx`
 - `page.tsx`
