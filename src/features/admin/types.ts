@@ -37,3 +37,44 @@ export interface ReviewQueue {
 }
 
 export type ReviewDecision = 'approved' | 'rejected';
+
+export interface AdminCafe {
+  id: string;
+  name: string;
+  citySlug: string;
+  area: string | null;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+  instagramHandle: string | null;
+  websiteUrl: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  addedByName: string | null;
+}
+
+export interface AdminDrink {
+  id: string;
+  cafeId: string;
+  cafeName: string;
+  name: string;
+  base: 'hojicha' | 'matcha';
+  style: 'latte' | 'straight' | 'iced_latte' | 'float' | 'other';
+  serving: 'hot' | 'iced' | 'both';
+  price: number | null;
+  photoUrl: string | null;
+  photoCredit: string | null;
+  teaProductId: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  addedByName: string | null;
+}
+
+// Found through public_profiles, which lists private profiles too (it hides only their bio and
+// handle), so an admin can badge a taster who has not made their profile public yet.
+export interface AdminProfile {
+  id: string;
+  displayName: string;
+  isPublic: boolean;
+  isTrustedTaster: boolean;
+}

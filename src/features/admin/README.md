@@ -11,11 +11,22 @@ check is a convenience, not the guard. The links form starts from the tea's save
 
 The Shops tab lists and edits `shop_locations` through the `shops` feature's public API.
 
+The Cafés and Drinks tabs hold the café-drinks moderation: pending suggestions (read from the
+`admin_cafes` and `admin_drinks` views, which add the adder's name; the base tables hide who added
+a row and the review note) with approve, reject-with-note and merge into an approved duplicate,
+plus a form to edit an approved café's or drink's details. The Tasters tab searches
+`public_profiles` by display name (it lists private profiles too) and grants or revokes
+`is_trusted_taster` through `set_trusted_taster`. Every write is an audited admin-only database
+function; `schemas.ts` Zod-checks the ids, notes and edit fields before they are sent, and a
+missing café table makes the lists empty rather than an error. The reports queue also names the
+café and drink of a reported drink review.
+
 ## Contents
 
 - `api/`
 - `components/`
 - `index.ts`
+- `schemas.ts`
 - `types.ts`
 
 ## Connectivity

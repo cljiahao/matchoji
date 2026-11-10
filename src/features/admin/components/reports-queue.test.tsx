@@ -22,7 +22,7 @@ const report = {
   reason: 'Not about tea',
   createdAt: 'x',
   reporterName: 'Aiko',
-  content: { text: '1★ buy my stuff', authorName: 'Spammy', productId: 'p1' },
+  content: { text: '1★ buy my stuff', authorName: 'Spammy', productId: 'p1', drinkLabel: null },
 };
 
 beforeEach(() => {

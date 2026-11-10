@@ -967,6 +967,9 @@ describe('Admin page', () => {
         vendors: { data: [], error: null },
         content_reports: { data: [], error: null },
         shop_locations: { data: [], error: null },
+        admin_cafes: { data: [], error: null },
+        admin_drinks: { data: [], error: null },
+        public_profiles: { data: [], error: null },
       },
       { id: 'admin' }
     );
@@ -985,6 +988,11 @@ describe('Admin page', () => {
 
     await user.click(screen.getByRole('tab', { name: 'Reports' }));
     expect(screen.getByRole('heading', { name: 'Reports (0)' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: 'Cafés' }));
+    expect(screen.getByRole('heading', { name: 'Cafés awaiting review (0)' })).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: 'Tasters' }));
+    expect(screen.getByRole('heading', { name: 'Trusted tasters (0)' })).toBeInTheDocument();
   });
 });
 

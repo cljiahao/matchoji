@@ -12,6 +12,11 @@ beforeEach(() => {
 function setup(counts = { queueCount: 3, reportCount: 0 }) {
   render(
     <AdminTabs
+      cafeCount={0}
+      drinkCount={0}
+      cafes={<p>cafes body</p>}
+      drinks={<p>drinks body</p>}
+      tasters={<p>tasters body</p>}
       {...counts}
       queue={<p>queue body</p>}
       reports={<p>reports body</p>}
@@ -71,6 +76,11 @@ describe('AdminTabs', () => {
   it('keeps what was typed in a panel when its tab is left and come back to', async () => {
     render(
       <AdminTabs
+        cafeCount={0}
+        drinkCount={0}
+        cafes={<p>cafes body</p>}
+        drinks={<p>drinks body</p>}
+        tasters={<p>tasters body</p>}
         queueCount={0}
         reportCount={0}
         queue={<p>queue body</p>}
@@ -87,6 +97,34 @@ describe('AdminTabs', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Tea photo' }));
 
     expect(screen.getByLabelText('Credit')).toHaveValue('Ippodo');
+  });
+
+  it('has tabs for cafés, drinks and tasters, with counts on the two queues', async () => {
+    render(
+      <AdminTabs
+        queueCount={0}
+        cafeCount={2}
+        drinkCount={0}
+        reportCount={0}
+        queue={<p>queue body</p>}
+        cafes={<p>cafes body</p>}
+        drinks={<p>drinks body</p>}
+        tasters={<p>tasters body</p>}
+        reports={<p>reports body</p>}
+        photo={<p>photo body</p>}
+        price={<p>price body</p>}
+        shops={<p>shops body</p>}
+      />
+    );
+
+    expect(screen.getByRole('tab', { name: 'Cafés, 2 waiting' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Drinks' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Tasters' }));
+    expect(window.location.hash).toBe('#tasters');
+    expect(screen.getByText('tasters body').closest('[role=tabpanel]')).toHaveAttribute(
+      'data-state',
+      'active'
+    );
   });
 
   it('keeps the tab buttons 44px tall', () => {
