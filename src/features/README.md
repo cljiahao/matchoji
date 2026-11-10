@@ -10,6 +10,7 @@ Self-contained feature modules, each with its own `api/`, `components/`, `hooks/
 - `account/`
 - `admin/`
 - `auth/`
+- `cafes/`
 - `discovery/`
 - `journal/`
 - `label-scan/`
@@ -36,6 +37,8 @@ and `auth`. `learn` depends on `products` (category styles, Explore links) and `
 `products` needs another feature's control on a card it takes a render slot instead.
 
 `pairing` depends on `products` (the category type) and is used by the tea page. `offline` depends on nothing; the root layout and `app/offline` use it.
+
+`cafes` depends on `reviews` (review rows and the one `drinkHref`) and `products` (score numeral, category styles); `share` depends on it for café and drink metadata and images, and the `/cafes` pages and the sitemap use it.
 
 `discovery` depends on `products` and `taste`; the tea page, `/top`, home and the sitemap use it.
 `share` depends on `products` and `social`, and is used by the root metadata, manifest and icon routes.

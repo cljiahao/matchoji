@@ -11,8 +11,11 @@ vi.mock('next/server', () => ({ connection: vi.fn(async () => undefined) }));
 import robots from '@/app/robots';
 import sitemap from '@/app/sitemap';
 
+const NO_ROWS: QueryResult = { data: [], error: null };
+
 function useServer(results: Record<string, QueryResult>) {
-  const fake = createFakeSupabase(results);
+  // Cafés and drinks are read for the sitemap too; most cases have none.
+  const fake = createFakeSupabase({ cafes: NO_ROWS, drinks: NO_ROWS, ...results });
   server.current = fake.client;
   return fake;
 }
@@ -42,6 +45,14 @@ describe('sitemap', () => {
   it('lists the browse and Learn pages and every catalogue tea', async () => {
     useServer({
       catalogue_teas: { data: [catalogueRow('t1')], error: null },
+      cafes: {
+        data: [{ id: 'c1', slug: 'kurasu-bugis', updated_at: '2026-11-01T00:00:00Z' }],
+        error: null,
+      },
+      drinks: {
+        data: [{ cafe_id: 'c1', slug: 'hojicha-latte', updated_at: '2026-11-02T00:00:00Z' }],
+        error: null,
+      },
     });
     const urls = (await sitemap()).map((entry) => entry.url);
     expect(urls).toEqual([
@@ -51,6 +62,7 @@ describe('sitemap', () => {
       'http://localhost:3000/regions',
       'http://localhost:3000/regions/supply',
       'http://localhost:3000/shops',
+      'http://localhost:3000/cafes',
       'http://localhost:3000/learn',
       ...RECIPES.map((r) => `http://localhost:3000/learn/recipes/${r.slug}`),
       ...GUIDES.map((g) => `http://localhost:3000/learn/guides/${g.slug}`),
@@ -59,6 +71,8 @@ describe('sitemap', () => {
         ...c.lessons.map((l) => `http://localhost:3000/learn/courses/${c.slug}/${l.slug}`),
       ]),
       'http://localhost:3000/products/t1',
+      'http://localhost:3000/cafes/kurasu-bugis',
+      'http://localhost:3000/cafes/kurasu-bugis/hojicha-latte',
     ]);
   });
 

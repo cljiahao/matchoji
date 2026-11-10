@@ -76,3 +76,60 @@ export function yearMetadata(year: {
     `/u/${year.id}/year/${year.year}`
   );
 }
+
+const plural = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+
+export function cafeMetadata(cafe: {
+  slug: string;
+  name: string;
+  area: string | null;
+  cityName: string;
+  drinkCount: number;
+  status: string;
+  tasterAvg: number | null;
+  tasterCount: number;
+}): Metadata {
+  const title = cafe.area ? `${cafe.name} · ${cafe.area}` : cafe.name;
+  const rating =
+    cafe.tasterAvg === null || cafe.tasterCount === 0
+      ? 'Not yet rated'
+      : `${cafe.tasterAvg.toFixed(1)} out of 5 from ${plural(cafe.tasterCount, 'taster review')}`;
+  return {
+    ...card(
+      title,
+      `${cafe.name}, ${cafe.cityName}: ${plural(cafe.drinkCount, 'drink')} listed. ${rating} on Matchoji.`,
+      `/cafes/${cafe.slug}`
+    ),
+    robots: cafe.status === 'approved' ? undefined : { index: false },
+  };
+}
+
+// The taster score is quoted when there is one, then the community score labelled as such;
+// the two are never blended into one figure.
+export function drinkMetadata(drink: {
+  slug: string;
+  name: string;
+  cafeName: string;
+  cafeSlug: string;
+  status: string;
+  tasterAvg: number | null;
+  tasterCount: number;
+  communityAvg: number | null;
+  communityCount: number;
+}): Metadata {
+  const title = `${drink.name} · ${drink.cafeName}`;
+  let rating = 'Not yet rated';
+  if (drink.tasterAvg !== null && drink.tasterCount > 0) {
+    rating = `${drink.tasterAvg.toFixed(1)} out of 5 from ${plural(drink.tasterCount, 'taster review')}`;
+  } else if (drink.communityAvg !== null && drink.communityCount > 0) {
+    rating = `${drink.communityAvg.toFixed(1)} out of 5 from ${plural(drink.communityCount, 'community review')}`;
+  }
+  return {
+    ...card(
+      title,
+      `${drink.name} at ${drink.cafeName}. ${rating} on Matchoji.`,
+      `/cafes/${drink.cafeSlug}/${drink.slug}`
+    ),
+    robots: drink.status === 'approved' ? undefined : { index: false },
+  };
+}

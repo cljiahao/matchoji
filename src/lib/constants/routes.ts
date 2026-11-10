@@ -5,6 +5,7 @@ export const PAGE_ROUTES = {
   REGIONS: '/regions',
   SUPPLY: '/regions/supply',
   SHOPS: '/shops',
+  CAFES: '/cafes',
   JOURNAL: '/journal',
   LEARN: '/learn',
   SELL: '/sell',

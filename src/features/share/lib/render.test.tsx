@@ -19,7 +19,60 @@ vi.mock('@/features/journal', async (importOriginal) => ({
 }));
 vi.mock('./fetch-photo', () => ({ fetchPhoto: (...args: unknown[]) => fetchPhoto(...args) }));
 
-import { renderProfileImage, renderSiteImage, renderTeaImage, renderYearImage } from './render';
+const getCafePage = vi.fn();
+const getDrinkPage = vi.fn();
+vi.mock('@/features/cafes', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/features/cafes')>()),
+  getCafePage: (...args: unknown[]) => getCafePage(...args),
+  getDrinkPage: (...args: unknown[]) => getDrinkPage(...args),
+}));
+
+import {
+  renderCafeImage,
+  renderDrinkImage,
+  renderProfileImage,
+  renderSiteImage,
+  renderTeaImage,
+  renderYearImage,
+} from './render';
+
+const scores = {
+  tasterAvg: 4.5,
+  tasterCount: 2,
+  tasterDisclosedCount: 1,
+  communityAvg: null,
+  communityCount: 0,
+};
+const cafe = {
+  id: 'c1',
+  slug: 'kurasu-bugis',
+  name: 'Kurasu',
+  citySlug: 'singapore',
+  area: 'Bugis',
+  address: null,
+  lat: null,
+  lng: null,
+  instagramHandle: null,
+  websiteUrl: null,
+  status: 'approved',
+};
+const drink = {
+  id: 'd1',
+  cafeId: 'c1',
+  slug: 'hojicha-latte',
+  name: 'Hojicha Latte',
+  base: 'hojicha',
+  style: 'latte',
+  serving: 'both',
+  price: 7.5,
+  currency: 'SGD',
+  photoUrl: 'https://x.test/d.png',
+  photoCredit: null,
+  teaProductId: null,
+  status: 'approved',
+  scores,
+  cafe: { slug: 'kurasu-bugis', name: 'Kurasu', area: 'Bugis', citySlug: 'singapore' },
+};
 
 const tea = {
   id: 'a',
@@ -109,5 +162,57 @@ describe('renderYearImage', () => {
     getPublicYear.mockResolvedValue(null);
     const site = await isPng(await renderSiteImage());
     expect(await isPng(await renderYearImage('u1', 2026))).toBe(site);
+  });
+});
+
+describe('renderCafeImage', () => {
+  it('draws an approved café', async () => {
+    getCafePage.mockResolvedValue({ kind: 'found', cafe, scores, drinks: [drink] });
+    expect(await isPng(await renderCafeImage('kurasu-bugis'))).toBeGreaterThan(1000);
+  });
+
+  it('shares the site card for a missing, redirected or unapproved café', async () => {
+    const site = await isPng(await renderSiteImage());
+    getCafePage.mockResolvedValue({ kind: 'missing' });
+    expect(await isPng(await renderCafeImage('x'))).toBe(site);
+    getCafePage.mockResolvedValue({ kind: 'redirect', to: '/cafes/y' });
+    expect(await isPng(await renderCafeImage('x'))).toBe(site);
+    getCafePage.mockResolvedValue({
+      kind: 'found',
+      cafe: { ...cafe, status: 'pending' },
+      scores,
+      drinks: [],
+    });
+    expect(await isPng(await renderCafeImage('x'))).toBe(site);
+  });
+});
+
+describe('renderDrinkImage', () => {
+  it('draws the drink with its photo', async () => {
+    getDrinkPage.mockResolvedValue({
+      kind: 'found',
+      drink,
+      tasterReviews: [],
+      communityReviews: [],
+      teaProduct: null,
+    });
+    expect(await isPng(await renderDrinkImage('kurasu-bugis', 'hojicha-latte'))).toBeGreaterThan(
+      1000
+    );
+    expect(fetchPhoto).toHaveBeenCalledWith('https://x.test/d.png');
+  });
+
+  it('shares the site card when the drink is missing or unapproved', async () => {
+    const site = await isPng(await renderSiteImage());
+    getDrinkPage.mockResolvedValue({ kind: 'missing' });
+    expect(await isPng(await renderDrinkImage('a', 'b'))).toBe(site);
+    getDrinkPage.mockResolvedValue({
+      kind: 'found',
+      drink: { ...drink, status: 'pending' },
+      tasterReviews: [],
+      communityReviews: [],
+      teaProduct: null,
+    });
+    expect(await isPng(await renderDrinkImage('a', 'b'))).toBe(site);
   });
 });

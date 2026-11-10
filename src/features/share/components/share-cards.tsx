@@ -315,3 +315,237 @@ export function YearCard({ data }: { data: YearCardData }) {
     </div>
   );
 }
+
+interface ScoreLine {
+  value: number;
+  label: string;
+}
+
+// The taster score leads; a community score is shown only when there is no taster score, and
+// labelled as the community's. The two are never combined.
+function scoreLine(s: {
+  tasterAvg: number | null;
+  tasterCount: number;
+  communityAvg: number | null;
+  communityCount: number;
+}): ScoreLine | null {
+  if (s.tasterAvg !== null && s.tasterCount > 0) {
+    return {
+      value: s.tasterAvg,
+      label: `Taster score · ${s.tasterCount} ${s.tasterCount === 1 ? 'review' : 'reviews'}`,
+    };
+  }
+  if (s.communityAvg !== null && s.communityCount > 0) {
+    return {
+      value: s.communityAvg,
+      label: `Community score · ${s.communityCount} ${s.communityCount === 1 ? 'review' : 'reviews'}`,
+    };
+  }
+  return null;
+}
+
+function ScoreBlock({ line, colour }: { line: ScoreLine | null; colour: string }) {
+  if (!line) {
+    return (
+      <div style={{ display: 'flex', fontSize: 44, fontWeight: 700, color: OG.mutedInk }}>
+        Not yet rated
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div
+        style={{
+          display: 'flex',
+          fontSize: 88,
+          fontWeight: 800,
+          letterSpacing: '-0.025em',
+          lineHeight: 1,
+          marginRight: 24,
+        }}
+      >
+        {line.value.toFixed(1)}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex' }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Star
+              key={i}
+              size={36}
+              colour={colour}
+              fill={Math.max(0, Math.min(1, line.value - i))}
+            />
+          ))}
+        </div>
+        <div style={{ display: 'flex', marginTop: 8, fontSize: 28, color: OG.mutedInk }}>
+          {line.label}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export interface CafeCardData {
+  name: string;
+  area: string | null;
+  cityName: string;
+  drinkCount: number;
+  tasterAvg: number | null;
+  tasterCount: number;
+}
+
+export function CafeCard({ cafe }: { cafe: CafeCardData }) {
+  return (
+    <div
+      style={{
+        ...OG_SIZE,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '64px 96px',
+        background: OG.shelfTile,
+        fontFamily: 'Figtree',
+        color: OG.ink,
+      }}
+    >
+      <div style={{ display: 'flex', fontSize: 36, fontWeight: 700, color: OG.matchaGreen }}>
+        Café on Matchoji
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: nameSize(cafe.name) + 24,
+            fontWeight: 800,
+            letterSpacing: '-0.025em',
+            lineHeight: 1.05,
+          }}
+        >
+          {cafe.name}
+        </div>
+        <div style={{ display: 'flex', marginTop: 16, fontSize: 40, color: OG.mutedInk }}>
+          {cafe.area ? `${cafe.area}, ${cafe.cityName}` : cafe.cityName} · {cafe.drinkCount}{' '}
+          {cafe.drinkCount === 1 ? 'drink' : 'drinks'}
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', marginBottom: 40 }}>
+          <ScoreBlock
+            line={scoreLine({
+              tasterAvg: cafe.tasterAvg,
+              tasterCount: cafe.tasterCount,
+              communityAvg: null,
+              communityCount: 0,
+            })}
+            colour={OG.matchaJade}
+          />
+        </div>
+        <Wordmark />
+      </div>
+    </div>
+  );
+}
+
+export interface DrinkCardData {
+  name: string;
+  base: ProductCategory;
+  cafeName: string;
+  area: string | null;
+  photo: string | null;
+  tasterAvg: number | null;
+  tasterCount: number;
+  tasterDisclosedCount: number;
+  communityAvg: number | null;
+  communityCount: number;
+}
+
+export function DrinkCard({ drink }: { drink: DrinkCardData }) {
+  const base = CATEGORY[drink.base];
+  return (
+    <div
+      style={{
+        ...OG_SIZE,
+        display: 'flex',
+        background: OG.pageWhite,
+        fontFamily: 'Figtree',
+        color: OG.ink,
+      }}
+    >
+      <div
+        style={{
+          width: 480,
+          height: OG_SIZE.height,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: drink.photo ? OG.shelfTile : base.colour,
+        }}
+      >
+        {drink.photo && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={drink.photo}
+            alt=""
+            width={480}
+            height={OG_SIZE.height}
+            style={{ objectFit: 'cover' }}
+          />
+        )}
+      </div>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '64px 72px',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex' }}>
+            <div
+              style={{
+                display: 'flex',
+                padding: '6px 22px',
+                borderRadius: 9999,
+                background: base.colour,
+                color: OG.pageWhite,
+                fontSize: 28,
+                fontWeight: 700,
+              }}
+            >
+              {base.label}
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              marginTop: 28,
+              fontSize: nameSize(drink.name),
+              fontWeight: 800,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.05,
+            }}
+          >
+            {drink.name}
+          </div>
+          <div style={{ display: 'flex', marginTop: 16, fontSize: 40, color: OG.mutedInk }}>
+            {drink.area ? `${drink.cafeName} · ${drink.area}` : drink.cafeName}
+          </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 40 }}>
+            <ScoreBlock line={scoreLine(drink)} colour={base.colour} />
+            {drink.tasterDisclosedCount > 0 && (
+              <div style={{ display: 'flex', marginTop: 12, fontSize: 28, color: OG.mutedInk }}>
+                {drink.tasterDisclosedCount} of {drink.tasterCount} taster{' '}
+                {drink.tasterCount === 1 ? 'review was' : 'reviews were'} gifted/paid
+              </div>
+            )}
+          </div>
+          <Wordmark />
+        </div>
+      </div>
+    </div>
+  );
+}
