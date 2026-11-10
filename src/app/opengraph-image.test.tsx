@@ -26,6 +26,10 @@ describe('opengraph-image routes', () => {
     }
   });
 
+  it('site image alt states the positioning', () => {
+    expect(siteFile.alt).toContain('trusted guide to hojicha and matcha drinks');
+  });
+
   it('site image renders the site card', () => {
     renderSiteImage.mockReturnValue('site');
     expect(SiteImage()).toBe('site');

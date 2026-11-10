@@ -8,6 +8,8 @@
 
 `renderProfileImage` passes the bio and handle to the card only for a public trusted taster, and only a handle that passes the handle pattern.
 
+`profileMetadata` and the profile image count drink reviews as well as teas.
+
 ## Contents
 
 - `cafe-share.test.ts`

@@ -19,6 +19,8 @@ function useServer(results: Record<string, QueryResult>) {
     cafes: NO_ROWS,
     drinks: NO_ROWS,
     drink_ratings: NO_ROWS,
+    public_profiles: NO_ROWS,
+    cafe_ratings: NO_ROWS,
     ...results,
   });
   server.current = fake.client;
@@ -53,6 +55,7 @@ describe('sitemap', () => {
       cafes: {
         data: [{ id: 'c1', slug: 'kurasu-bugis', updated_at: '2026-11-01T00:00:00Z' }],
         error: null,
+        count: 1,
       },
       drinks: {
         data: [{ cafe_id: 'c1', slug: 'hojicha-latte', updated_at: '2026-11-02T00:00:00Z' }],
@@ -61,15 +64,15 @@ describe('sitemap', () => {
     });
     const urls = (await sitemap()).map((entry) => entry.url);
     expect(urls).toEqual([
-      'http://localhost:3000/',
+      'http://localhost:3000/?city=singapore',
+      'http://localhost:3000/cafes?city=singapore',
+      'http://localhost:3000/?city=johor-bahru',
+      'http://localhost:3000/cafes?city=johor-bahru',
       'http://localhost:3000/explore',
-      'http://localhost:3000/top',
       'http://localhost:3000/top/teas',
       'http://localhost:3000/regions',
       'http://localhost:3000/regions/supply',
       'http://localhost:3000/shops',
-      'http://localhost:3000/cafes',
-      'http://localhost:3000/tasters',
       'http://localhost:3000/about/how-we-rate',
       'http://localhost:3000/learn',
       ...RECIPES.map((r) => `http://localhost:3000/learn/recipes/${r.slug}`),
@@ -82,6 +85,15 @@ describe('sitemap', () => {
       'http://localhost:3000/cafes/kurasu-bugis',
       'http://localhost:3000/cafes/kurasu-bugis/hojicha-latte',
     ]);
+  });
+
+  it('leaves the empty café, taster and top indexes out, matching their noindex', async () => {
+    useServer({ catalogue_teas: NO_ROWS });
+    const urls = (await sitemap()).map((entry) => entry.url);
+    expect(urls).toContain('http://localhost:3000/?city=singapore');
+    expect(urls).not.toContain('http://localhost:3000/cafes?city=singapore');
+    expect(urls).not.toContain('http://localhost:3000/tasters');
+    expect(urls).not.toContain('http://localhost:3000/top');
   });
 
   it('adds a top list only once enough teas are rated', async () => {

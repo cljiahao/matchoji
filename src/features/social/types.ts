@@ -25,7 +25,7 @@ export type Tasting = TeaTasting | DrinkTasting;
 
 export interface ProfileView {
   profile: PublicProfile;
-  counts: { teas: number; followers: number; following: number };
+  counts: { teas: number; drinks: number; followers: number; following: number };
   viewer: { isSelf: boolean; follows: boolean; blocked: boolean };
   // Newest first; empty for a private profile seen by someone else.
   recent: Tasting[];

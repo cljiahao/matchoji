@@ -8,10 +8,10 @@ import { captureClientError } from '@/lib/sentry/capture';
 
 export default function GlobalError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string };
-  reset: () => void;
+  retry: () => void;
 }) {
   useEffect(() => {
     logError('app.error-boundary', error);
@@ -22,7 +22,7 @@ export default function GlobalError({
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
       <h1 className="text-lg font-semibold">Something went wrong</h1>
       {error.digest && <p className="text-muted-foreground text-sm">Reference: {error.digest}</p>}
-      <Button onClick={reset}>Try again</Button>
+      <Button onClick={retry}>Try again</Button>
     </main>
   );
 }

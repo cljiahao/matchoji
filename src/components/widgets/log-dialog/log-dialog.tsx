@@ -21,7 +21,11 @@ type Kind = 'tea' | 'drink';
 interface LogDialogProps {
   trigger?: ReactNode;
   // Skips the chooser: a recipe logs a tea with its brew settings, a drink page logs that drink.
-  initial?: { kind: 'tea'; prep?: PrepPreset } | { kind: 'drink'; drink: DrinkListing };
+  // `addCafe` opens the café path on its add-café form, for pages with no café to pick yet.
+  initial?:
+    | { kind: 'tea'; prep?: PrepPreset }
+    | { kind: 'drink'; drink: DrinkListing }
+    | { kind: 'drink'; addCafe: true };
 }
 
 const CHOICES: { kind: Kind; title: string; hint: string; icon: typeof Coffee }[] = [
@@ -87,7 +91,10 @@ export function LogDialog({ trigger, initial }: LogDialogProps) {
         )}
         {kind === 'drink' && (
           <LazyDrinkLogFlow
-            initialDrink={initial?.kind === 'drink' ? initial.drink : undefined}
+            initialDrink={
+              initial?.kind === 'drink' && 'drink' in initial ? initial.drink : undefined
+            }
+            startAtAddCafe={initial?.kind === 'drink' && 'addCafe' in initial}
             onDone={close}
           />
         )}

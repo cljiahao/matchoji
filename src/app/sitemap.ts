@@ -1,7 +1,13 @@
 import type { MetadataRoute } from 'next';
 import { connection } from 'next/server';
 
-import { listCafeSitemapEntries, listTopDrinkLists, topTeasHref } from '@/features/cafes';
+import {
+  CITIES,
+  cityHref,
+  listCafeSitemapEntries,
+  listTopDrinkLists,
+  topTeasHref,
+} from '@/features/cafes';
 import { buildTopLists } from '@/features/discovery';
 import {
   COURSES,
@@ -17,26 +23,35 @@ import { createClient } from '@/integrations/supabase/server';
 import { MARKETPLACE_ENABLED, SITE_URL } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
+import { cityHasCafes, hasTrustedTasters } from './sitemap-counts';
+
 // Catalogue teas plus the public browse, top-list and Learn pages. Read per request so builds need no database.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
   const supabase = await createClient();
-  const [catalogue, cafeEntries, drinkLists] = await Promise.all([
+  const [catalogue, cafeEntries, drinkLists, cityHasList, hasTasters] = await Promise.all([
     listCatalogue(supabase),
     listCafeSitemapEntries(supabase),
     listTopDrinkLists(supabase),
+    Promise.all(CITIES.map((city) => cityHasCafes(supabase, city.slug))),
+    hasTrustedTasters(supabase),
+  ]);
+  // Each city's home and café list is its own canonical URL (see the pages' generateMetadata).
+  // A list with nothing on it is noindex, so it stays out of here too.
+  const cityPages = CITIES.flatMap((city, i) => [
+    cityHref(PAGE_ROUTES.HOME, city.slug),
+    ...(cityHasList[i] ? [cityHref(PAGE_ROUTES.CAFES, city.slug)] : []),
   ]);
 
   const pages = [
-    PAGE_ROUTES.HOME,
+    ...cityPages,
     PAGE_ROUTES.EXPLORE,
-    PAGE_ROUTES.TOP,
+    ...(drinkLists.length > 0 ? [PAGE_ROUTES.TOP] : []),
     topTeasHref(),
     PAGE_ROUTES.REGIONS,
     PAGE_ROUTES.SUPPLY,
     PAGE_ROUTES.SHOPS,
-    PAGE_ROUTES.CAFES,
-    PAGE_ROUTES.TASTERS,
+    ...(hasTasters ? [PAGE_ROUTES.TASTERS] : []),
     PAGE_ROUTES.HOW_WE_RATE,
     PAGE_ROUTES.LEARN,
     ...(MARKETPLACE_ENABLED ? [PAGE_ROUTES.SELL] : []),

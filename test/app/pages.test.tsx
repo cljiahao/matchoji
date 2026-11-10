@@ -844,7 +844,7 @@ describe('Admin page', () => {
 });
 
 describe('Public error boundary', () => {
-  it('offers a retry and a way back to Explore, with the reference', async () => {
+  it('offers a retry and a way back to cafés, with the reference', async () => {
     const retry = vi.fn();
     const error = Object.assign(new Error('boom'), { digest: 'abc123' });
 
@@ -854,7 +854,8 @@ describe('Public error boundary', () => {
       screen.getByRole('heading', { level: 1, name: 'We couldn’t load this page' })
     ).toBeInTheDocument();
     expect(screen.getByText('Reference: abc123')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Explore teas' })).toHaveAttribute('href', '/explore');
+    expect(screen.getByRole('link', { name: 'Browse cafés' })).toHaveAttribute('href', '/cafes');
+    expect(screen.queryByRole('link', { name: 'Explore teas' })).not.toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole('button', { name: 'Try again' }));
     expect(retry).toHaveBeenCalledOnce();
   });

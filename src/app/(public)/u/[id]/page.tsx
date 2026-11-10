@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
   const { id } = await params;
   const view = isProfileId(id) ? await loadProfile(id) : null;
   if (!view) return { title: 'Taster not found' };
-  return profileMetadata({ ...view.profile, teas: view.counts.teas });
+  return profileMetadata({ ...view.profile, teas: view.counts.teas, drinks: view.counts.drinks });
 }
 
 const JOINED = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' });
@@ -79,7 +79,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             {visible && (
               <>
                 {' · '}
-                {counts.teas} {counts.teas === 1 ? 'tea' : 'teas'} rated · {counts.followers}{' '}
+                {counts.drinks} {counts.drinks === 1 ? 'drink' : 'drinks'} rated · {counts.teas}{' '}
+                {counts.teas === 1 ? 'tea' : 'teas'} rated · {counts.followers}{' '}
                 {counts.followers === 1 ? 'follower' : 'followers'} · {counts.following} following
               </>
             )}

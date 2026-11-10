@@ -17,6 +17,8 @@ Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the te
 
 `sitemap.ts` also lists `/tasters` and `/about/how-we-rate`.
 
+The root layout, web manifest and share image take their description and alt text from `SITE_DESCRIPTION` / `SITE_TAGLINE` (`lib/constants/site.ts`), so they state the café-drink positioning. `sitemap.ts` lists each city's home (`/?city=`) and, only when the city has a café, its list (`/cafes?city=`), and leaves out `/top` and `/tasters` while they are empty, matching their `noindex`. The root not-found page links to cafés first.
+
 ## Contents
 
 - `(public)/`
@@ -51,6 +53,8 @@ any `@layer` so utilities can't hide it) and themed number/date inputs and summa
 `error.tsx` and `global-error.tsx` (which replaces the root layout when it fails) log the error and report it to Sentry when a DSN is set.
 `layout.tsx`, `globals.css`, and `error.tsx` form the shared root shell (fonts, theme,
 providers, global error boundary) every route renders inside.
+
+`error.tsx` and `global-error.tsx` call Next's `retry`, which re-fetches the route, rather than `reset`, which would re-render with the same failed data.
 
 ## Parent
 

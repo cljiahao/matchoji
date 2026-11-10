@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { connection } from 'next/server';
@@ -10,6 +11,7 @@ import {
   CitySwitch,
   DrinkRow,
   cityBySlug,
+  cityHref,
   drinkHref,
   listCafes,
   listLatestTasterDrinkReviews,
@@ -23,6 +25,7 @@ import { ReviewItem } from '@/features/reviews';
 import { TastingFeed, loadFeed, type Tasting } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
+import { SITE_DESCRIPTION, SITE_TAGLINE } from '@/lib/constants/site';
 
 const RAIL_SIZE = 3;
 const TOP_SIZE = 5;
@@ -33,6 +36,20 @@ interface HomeProps {
 
 const first = (value: string | string[] | undefined) =>
   typeof value === 'string' ? value : undefined;
+
+// The city reaches the page as a cookie as well as a query, so one URL serves both cities; the
+// canonical names the query form, which makes each city's home its own indexable page.
+export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
+  const query = await searchParams;
+  const jar = await cookies();
+  const city = resolveCity(first(query.city), jar.get(CITY_COOKIE)?.value);
+  return {
+    title: { absolute: `Matchoji · ${SITE_TAGLINE}` },
+    description: SITE_DESCRIPTION,
+    alternates: { canonical: cityHref(PAGE_ROUTES.HOME, city) },
+    openGraph: { title: SITE_TAGLINE, description: SITE_DESCRIPTION, url: cityHref('/', city) },
+  };
+}
 
 // Signed-in readers who follow people see their latest tastings, as on Vivino.
 async function loadFollowingFeed(): Promise<Tasting[]> {

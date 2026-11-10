@@ -32,6 +32,7 @@ describe('root not-found page', () => {
 
     const main = screen.getByRole('main');
     for (const [name, href] of [
+      ['Browse cafés', '/cafes'],
       ['Explore teas', '/explore'],
       ['Home', '/'],
     ]) {

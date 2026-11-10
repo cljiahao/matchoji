@@ -11,6 +11,8 @@ Recent tastings may include café drink reviews; the taste profile is built from
 
 A trusted taster's profile shows the "Trusted taster" badge, their bio and Instagram link, and a "Drink reviews" section above their tea tastings, with a link to how we rate. Other public profiles show a handle and bio when set. A private profile shows neither. The preview image carries the badge, bio and handle for a trusted taster.
 
+Profile counts and the link-preview description include drink reviews ("n drinks · m teas rated").
+
 ## Contents
 
 - `opengraph-image.tsx`

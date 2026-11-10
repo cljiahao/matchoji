@@ -44,6 +44,8 @@ The page, config and SEO tests cover the shop map's footprint: the footer's `/sh
 - `pages.test.tsx`
 - `seo.test.ts`
 
+`pages.test.tsx` and `seo.test.ts` also cover the public error boundary's `reset` prop and the sitemap's per-city URLs and omission of empty indexes.
+
 ## Parent
 
 [test](../README.md)

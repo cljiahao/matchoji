@@ -23,12 +23,12 @@ export default function PublicError({ error, retry }: { error: unknown; retry: (
     <div className="max-w-site mx-auto flex w-full flex-1 flex-col items-center justify-center gap-4 px-6 py-20 text-center">
       <h1 className="text-2xl font-bold tracking-tight">We couldn’t load this page</h1>
       <p className="text-muted-foreground max-w-sm">
-        Something went wrong on our side. Try again, or keep browsing teas.
+        Something went wrong on our side. Try again, or head to the cafés and drinks.
       </p>
       <div className="flex items-center gap-3">
         <Button onClick={() => retry()}>Try again</Button>
         <Button asChild variant="outline">
-          <Link href={PAGE_ROUTES.EXPLORE}>Explore teas</Link>
+          <Link href={PAGE_ROUTES.CAFES}>Browse cafés</Link>
         </Button>
       </div>
       {digest && <p className="text-muted-foreground text-xs">Reference: {digest}</p>}
