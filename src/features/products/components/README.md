@@ -25,6 +25,8 @@ On phones `ProductRow` drops the empty score dash for an unrated tea and keeps "
 
 `ValueBadge` shows "Great value" on Explore rows, top-list rows and the tea page's hero when a `ValueScore` qualifies, and renders nothing otherwise. `ExploreSort` adds "Best value".
 
+`ExploreFilters` takes the grades as groups and lists matcha grades apart from hojicha grades (sub-headings appear when both are present).
+
 ## Contents
 
 - `category-badge.tsx`

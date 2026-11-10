@@ -9,7 +9,8 @@ export function OfflineScreen() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
       <h1 className="text-3xl font-bold tracking-tight">You’re offline</h1>
       <p className="text-muted-foreground max-w-md">
-        Matchoji needs a connection to load teas and tastings. Check your signal, then try again.
+        Matchoji needs a connection to load cafés, teas and tastings. Check your signal, then try
+        again.
       </p>
       <Button className="min-h-11" onClick={() => window.location.reload()}>
         Try again

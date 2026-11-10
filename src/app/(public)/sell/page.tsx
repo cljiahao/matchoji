@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 
 import { SignInButton } from '@/features/auth';
@@ -13,6 +14,7 @@ import {
   type Vendor,
 } from '@/features/marketplace';
 import { createClient } from '@/integrations/supabase/server';
+import { MARKETPLACE_ENABLED } from '@/lib/constants/env';
 
 export const metadata: Metadata = { title: 'Sell on Matchoji' };
 
@@ -58,6 +60,7 @@ function StatusNote({ vendor }: { vendor: Vendor }) {
 }
 
 export default async function SellPage() {
+  if (!MARKETPLACE_ENABLED) notFound();
   // Per user, so rendered per request; see the journal page for why this matters to builds.
   await connection();
   const supabase = await createClient();

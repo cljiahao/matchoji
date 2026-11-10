@@ -7,6 +7,10 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- Matchoji's positioning is now "the trusted guide to hojicha and matcha drinks in Singapore and Johor Bahru, rated drink by drink", and `PRODUCT.md` is rewritten to match. The parked marketplace is hidden behind one switch, `MARKETPLACE_ENABLED` in `src/lib/constants/env.ts`: `/sell` returns not-found and drops out of the sitemap, and a tea page shows "Where to buy" only when the switch is on and the tea has an offer. The marketplace tables and code are untouched. No migration.
+- Tea pages show no empty chrome: an unrated tea gets one quiet "Not yet rated" line instead of a dash and a count, and the stock panel appears only once a report exists or the visitor is signed in.
+- Explore's grade filter lists matcha grades apart from hojicha grades, and `/offline` no longer reads as tea-only.
+
 - Claude Code harness re-synced to templateCentral 7.2.2: the SessionStart hook re-injects the CONSTITUTION instead of the head of `AGENTS.md`, the dependency-audit gate parses `package.json` for advisory suppressions, `settings.json` drops the broad `.env.*` read denies, and `AGENTS.md` documents the user-scoped `superpowers` plugin install.
 
 ### Fixed

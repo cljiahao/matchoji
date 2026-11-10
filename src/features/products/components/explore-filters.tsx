@@ -5,7 +5,13 @@ import type { ReactNode } from 'react';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 
-import { CATEGORY_STYLES, MIN_RATINGS, discoverHref, type DiscoverFilters } from '../lib';
+import {
+  CATEGORY_STYLES,
+  MIN_RATINGS,
+  discoverHref,
+  type DiscoverFilters,
+  type GradeGroup,
+} from '../lib';
 import type { ProductCategory } from '../types';
 
 const CATEGORY_OPTIONS: { label: string; value: ProductCategory | undefined }[] = [
@@ -61,17 +67,24 @@ function FilterGroup({ id, title, children }: { id: string; title: string; child
 interface ExploreFiltersProps {
   filters: DiscoverFilters;
   regions: { id: string; name: string }[];
-  grades: string[];
+  grades: GradeGroup[];
 }
+
+const GRADE_GROUP_TITLES: Record<ProductCategory, string> = {
+  matcha: 'Matcha grades',
+  hojicha: 'Hojicha grades',
+};
 
 // Vivino's filter rail. Every option is a link, so filtering works without JavaScript and
 // each state has a shareable URL.
 export function ExploreFilters({ filters, regions, grades }: ExploreFiltersProps) {
   // A grade from a shared link stays selectable even when no listed tea carries it any more.
-  const gradeList =
-    filters.grade && !grades.some((g) => g.toLowerCase() === filters.grade?.toLowerCase())
-      ? [...grades, filters.grade]
-      : grades;
+  const known = grades.some((group) =>
+    group.grades.some((g) => g.toLowerCase() === filters.grade?.toLowerCase())
+  );
+  const orphanGrade = filters.grade && !known ? filters.grade : null;
+  // One category in play needs no sub-headings: the Tea filter already says which.
+  const titled = grades.length > 1;
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -108,21 +121,45 @@ export function ExploreFilters({ filters, regions, grades }: ExploreFiltersProps
         ))}
       </FilterGroup>
 
-      {gradeList.length > 0 && (
+      {(grades.length > 0 || orphanGrade) && (
         <FilterGroup id="filter-grade" title="Grade">
           <FilterLink
             href={discoverHref(filters, { grade: undefined })}
             active={!filters.grade}
             label="All grades"
           />
-          {gradeList.map((grade) => (
-            <FilterLink
-              key={grade}
-              href={discoverHref(filters, { grade })}
-              active={grade.toLowerCase() === filters.grade?.toLowerCase()}
-              label={grade}
-            />
+          {grades.map((group) => (
+            <li key={group.category} className="w-full">
+              {titled && (
+                <p
+                  id={`filter-grade-${group.category}`}
+                  className="text-muted-foreground mt-1 text-xs font-semibold tracking-wide uppercase lg:mt-2"
+                >
+                  {GRADE_GROUP_TITLES[group.category]}
+                </p>
+              )}
+              <ul
+                aria-labelledby={titled ? `filter-grade-${group.category}` : undefined}
+                className="flex flex-wrap gap-x-5 lg:block"
+              >
+                {group.grades.map((grade) => (
+                  <FilterLink
+                    key={grade}
+                    href={discoverHref(filters, { grade })}
+                    active={grade.toLowerCase() === filters.grade?.toLowerCase()}
+                    label={grade}
+                  />
+                ))}
+              </ul>
+            </li>
           ))}
+          {orphanGrade && (
+            <FilterLink
+              href={discoverHref(filters, { grade: orphanGrade })}
+              active
+              label={orphanGrade}
+            />
+          )}
         </FilterGroup>
       )}
 

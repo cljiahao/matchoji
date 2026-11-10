@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { LinkList, type LinkItem } from '@/components/widgets';
+import { MARKETPLACE_ENABLED } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { ThemeToggle } from './theme-toggle';
 
@@ -49,11 +50,13 @@ export function SiteFooter({ links = [] }: SiteFooterProps) {
                 Where to buy in person
               </Link>
             </li>
-            <li>
-              <Link href={PAGE_ROUTES.SELL} className={LINK_CLASS}>
-                Sell on Matchoji
-              </Link>
-            </li>
+            {MARKETPLACE_ENABLED && (
+              <li>
+                <Link href={PAGE_ROUTES.SELL} className={LINK_CLASS}>
+                  Sell on Matchoji
+                </Link>
+              </li>
+            )}
             {links.length > 0 && (
               <li className="py-1.5">
                 <LinkList links={links} className="text-muted-foreground" />

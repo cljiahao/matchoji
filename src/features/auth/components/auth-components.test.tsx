@@ -14,6 +14,14 @@ vi.mock('next/navigation', () => ({ useRouter: () => router, usePathname: () => 
 const toast = vi.hoisted(() => ({ error: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
+const marketplace = vi.hoisted(() => ({ enabled: false }));
+vi.mock('@/lib/constants/env', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/constants/env')>()),
+  get MARKETPLACE_ENABLED() {
+    return marketplace.enabled;
+  },
+}));
+
 import { useSession } from '../hooks/use-session';
 import { SignInPromptProvider, useSignInPrompt } from '../hooks/use-sign-in-prompt';
 import { AuthStatus } from './auth-status';
@@ -212,7 +220,7 @@ describe('AuthStatus', () => {
     expect(await screen.findByRole('button', { name: 'Sign in' })).toBeInTheDocument();
   });
 
-  it('shows the account menu with account, sell and sign-out links for a signed-in user', async () => {
+  it('shows the account menu with account and sign-out links for a signed-in user', async () => {
     const fake = useFake({
       session: makeSession({ user_metadata: { avatar_url: 'https://cdn.test/a.png' } }),
     });
@@ -224,14 +232,26 @@ describe('AuthStatus', () => {
       'href',
       '/account'
     );
-    expect(screen.getByRole('menuitem', { name: 'Sell on Matchoji' })).toHaveAttribute(
-      'href',
-      '/sell'
-    );
+    expect(screen.queryByRole('menuitem', { name: 'Sell on Matchoji' })).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }));
 
     await waitFor(() => expect(fake.auth.signOut).toHaveBeenCalled());
     expect(router.refresh).toHaveBeenCalled();
+  });
+
+  it('offers the sell link only while the marketplace is on', async () => {
+    marketplace.enabled = true;
+    try {
+      useFake({ session: makeSession() });
+      render(<AuthStatus />);
+      await userEvent.click(await screen.findByRole('button', { name: 'Account menu' }));
+      expect(await screen.findByRole('menuitem', { name: 'Sell on Matchoji' })).toHaveAttribute(
+        'href',
+        '/sell'
+      );
+    } finally {
+      marketplace.enabled = false;
+    }
   });
 });

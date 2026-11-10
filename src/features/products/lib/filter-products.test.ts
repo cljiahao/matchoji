@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { Product } from '../types';
 
-import { gradeOptions } from './filter-products';
+import { gradeGroups, gradeOptions } from './filter-products';
 
 const product = (id: string, grade: string | null, avgStars: number | null): Product => ({
   id,
@@ -38,5 +38,25 @@ describe('gradeOptions', () => {
   it('lists each grade once, ignoring case and blanks, in name order', () => {
     expect(gradeOptions(products)).toEqual(['Ceremonial', 'Culinary']);
     expect(gradeOptions([])).toEqual([]);
+  });
+});
+
+describe('gradeGroups', () => {
+  it('groups grades by category, matcha first, skipping categories with none', () => {
+    expect(
+      gradeGroups([
+        { grade: 'Hojicha Roast', category: 'hojicha' },
+        { grade: 'Ceremonial', category: 'matcha' },
+        { grade: 'ceremonial ', category: 'matcha' },
+        { grade: null, category: 'hojicha' },
+      ])
+    ).toEqual([
+      { category: 'matcha', grades: ['Ceremonial'] },
+      { category: 'hojicha', grades: ['Hojicha Roast'] },
+    ]);
+    expect(gradeGroups([{ grade: 'Kukicha', category: 'hojicha' }])).toEqual([
+      { category: 'hojicha', grades: ['Kukicha'] },
+    ]);
+    expect(gradeGroups([])).toEqual([]);
   });
 });

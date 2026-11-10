@@ -13,7 +13,7 @@ import {
 } from '@/features/learn';
 import { listCatalogue } from '@/features/products';
 import { createClient } from '@/integrations/supabase/server';
-import { SITE_URL } from '@/lib/constants/env';
+import { MARKETPLACE_ENABLED, SITE_URL } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
 // Catalogue teas plus the public browse, top-list and Learn pages. Read per request so builds need no database.
@@ -30,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     PAGE_ROUTES.SUPPLY,
     PAGE_ROUTES.SHOPS,
     PAGE_ROUTES.LEARN,
+    ...(MARKETPLACE_ENABLED ? [PAGE_ROUTES.SELL] : []),
     // Only lists with enough rated teas exist; the rest return not-found and stay out.
     ...buildTopLists(catalogue).map((list) => `${PAGE_ROUTES.TOP}/${list.slug}`),
     ...RECIPES.map((recipe) => recipeHref(recipe.slug)),

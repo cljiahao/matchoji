@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { createClient } from '@/integrations/supabase/client';
+import { MARKETPLACE_ENABLED } from '@/lib/constants/env';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 
 import { useSession } from '../hooks/use-session';
@@ -50,12 +51,14 @@ export function UserMenu() {
             Your account
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={PAGE_ROUTES.SELL}>
-            <Store />
-            Sell on Matchoji
-          </Link>
-        </DropdownMenuItem>
+        {MARKETPLACE_ENABLED && (
+          <DropdownMenuItem asChild>
+            <Link href={PAGE_ROUTES.SELL}>
+              <Store />
+              Sell on Matchoji
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />
           Sign out

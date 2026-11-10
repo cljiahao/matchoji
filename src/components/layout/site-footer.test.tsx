@@ -1,6 +1,14 @@
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+const marketplace = vi.hoisted(() => ({ enabled: false }));
+vi.mock('@/lib/constants/env', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/constants/env')>()),
+  get MARKETPLACE_ENABLED() {
+    return marketplace.enabled;
+  },
+}));
 
 import { SiteFooter } from './site-footer';
 
@@ -20,10 +28,20 @@ describe('SiteFooter', () => {
       'href',
       '/shops'
     );
-    expect(within(nav).getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute(
-      'href',
-      '/sell'
-    );
+    expect(within(nav).queryByRole('link', { name: 'Sell on Matchoji' })).toBeNull();
+  });
+
+  it('links to the sell page only while the marketplace is on', () => {
+    marketplace.enabled = true;
+    try {
+      render(<SiteFooter />);
+      expect(screen.getByRole('link', { name: 'Sell on Matchoji' })).toHaveAttribute(
+        'href',
+        '/sell'
+      );
+    } finally {
+      marketplace.enabled = false;
+    }
   });
 
   // The phone tab bar has Home, Explore, Learn and Journal but not Regions.

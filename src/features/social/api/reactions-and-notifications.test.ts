@@ -1,4 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+const marketplace = vi.hoisted(() => ({ enabled: false }));
+vi.mock('@/lib/constants/env', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/constants/env')>()),
+  get MARKETPLACE_ENABLED() {
+    return marketplace.enabled;
+  },
+}));
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
@@ -162,7 +170,13 @@ describe('notifications', () => {
         body: 'Hoshi is now in the catalogue.',
       })
     ).toBe('Hoshi is now in the catalogue.');
-    expect(notificationHref({ ...base, kind: 'shop_reviewed', actorId: null })).toBe('/sell');
+    expect(notificationHref({ ...base, kind: 'shop_reviewed', actorId: null })).toBe('/account');
+    marketplace.enabled = true;
+    try {
+      expect(notificationHref({ ...base, kind: 'shop_reviewed', actorId: null })).toBe('/sell');
+    } finally {
+      marketplace.enabled = false;
+    }
     expect(notificationHref({ ...base, kind: 'report_resolved', actorId: null })).toBeNull();
   });
 });

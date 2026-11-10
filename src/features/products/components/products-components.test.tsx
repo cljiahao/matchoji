@@ -285,6 +285,32 @@ describe('CategoryCircles', () => {
 });
 
 describe('ExploreFilters', () => {
+  it('grade filter groups matcha and hojicha grades', () => {
+    render(
+      <ExploreFilters
+        filters={{ sort: 'top' }}
+        regions={[]}
+        grades={[
+          { category: 'matcha', grades: ['Ceremonial', 'Culinary'] },
+          { category: 'hojicha', grades: ['Kukicha'] },
+        ]}
+      />
+    );
+    const nav = screen.getByRole('navigation', { name: 'Grade' });
+    const matcha = within(nav).getByRole('list', { name: 'Matcha grades' });
+    const hojicha = within(nav).getByRole('list', { name: 'Hojicha grades' });
+    expect(
+      within(matcha)
+        .getAllByRole('link')
+        .map((l) => l.textContent)
+    ).toEqual(['Ceremonial', 'Culinary']);
+    expect(
+      within(hojicha)
+        .getAllByRole('link')
+        .map((l) => l.textContent)
+    ).toEqual(['Kukicha']);
+  });
+
   it('links each option to its filter, keeping the others, and marks the active ones', () => {
     render(
       <ExploreFilters
@@ -374,7 +400,7 @@ describe('ExploreFilters', () => {
       <ExploreFilters
         filters={{ grade: 'ceremonial', sort: 'top' }}
         regions={[]}
-        grades={['Ceremonial', 'Culinary']}
+        grades={[{ category: 'matcha', grades: ['Ceremonial', 'Culinary'] }]}
       />
     );
     const grade = screen.getByRole('navigation', { name: 'Grade' });

@@ -8,7 +8,7 @@ function, with names and teas), `setFollowing`, `setBlocked`, `listBlocked` and
 `setProfilePublic`. `reactions-service`: `loadReactions` (like counts, the viewer's like and
 named comments per review), `setLiked`, `addComment`, `deleteComment`, `reportContent`.
 `notifications-service`: `listNotifications` (the latest 20, with actor names), `markAllRead`,
-and `describeNotification` / `notificationHref` for each one's copy and link. Tested against the
+and `describeNotification` / `notificationHref` for each one's copy and link (a `shop_reviewed` notification links to `/sell` only while `MARKETPLACE_ENABLED` is on, else to `/account`). Tested against the
 recording fake client.
 
 ## Contents

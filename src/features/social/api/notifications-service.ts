@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database, NotificationKind } from '@/integrations/supabase/database.types';
 import { selectIn } from '@/integrations/supabase/select-in';
+import { MARKETPLACE_ENABLED } from '@/lib/constants/env';
 
 type Client = SupabaseClient<Database>;
 
@@ -74,6 +75,7 @@ export function describeNotification(n: Notification): string {
 export function notificationHref(n: Notification): string | null {
   if (n.kind === 'follow' && n.actorId) return `/u/${n.actorId}`;
   if (n.productId) return `/products/${n.productId}`;
-  if (n.kind === 'shop_reviewed') return '/sell';
+  // A shop's review outcome leads to /sell, which is hidden while the marketplace is parked.
+  if (n.kind === 'shop_reviewed') return MARKETPLACE_ENABLED ? '/sell' : '/account';
   return null;
 }

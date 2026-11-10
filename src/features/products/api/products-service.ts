@@ -10,7 +10,7 @@ import { selectIn } from '@/integrations/supabase/select-in';
 import type { CatalogueTea, Product, ProductSummary } from '../types';
 
 import { SHOW_MORE_STEP, type DiscoverFilters } from '../lib/discover-params';
-import { gradeOptions } from '../lib/filter-products';
+import { gradeGroups, type GradeGroup } from '../lib/filter-products';
 import { toTeaPrice } from '../lib/pricing';
 import { summarizeRegions, type RegionSummary } from '../lib/summarize-regions';
 import { applyRating, topNotesByProduct } from './product-ratings';
@@ -211,19 +211,19 @@ export async function listProducts(
 }
 
 // The grades among teas matching the search, tea and region (not the grade or rating
-// filters), so picking a grade never hides the other grades it could switch to.
+// filters), grouped by category, so picking a grade never hides the other grades it could switch to.
 export async function listGradeOptions(
   supabase: Client,
   filters: DiscoverFilters
-): Promise<string[]> {
-  let query = supabase.from('catalogue_teas').select('grade').not('grade', 'is', null);
+): Promise<GradeGroup[]> {
+  let query = supabase.from('catalogue_teas').select('grade, category').not('grade', 'is', null);
   const search = filters.q ? buildSearchFilter(filters.q) : null;
   if (search) query = query.or(search);
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.regionId) query = query.eq('region_id', filters.regionId);
   const { data, error } = await query;
   if (error) throw error;
-  return gradeOptions(data);
+  return gradeGroups(data);
 }
 
 export async function getProduct(supabase: Client, id: string): Promise<Product | null> {
