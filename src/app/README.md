@@ -42,7 +42,7 @@ Sharing and install: `opengraph-image.tsx` is the site-wide link preview (the te
 
 ## Connectivity
 
-`(public)/` is the route group for the app's pages; `api/` holds server route handlers;
+`(public)/` is the route group for the app's pages; a `loading.tsx` never sits above a page that redirects or calls `notFound()` (see `test/app/loading-boundaries.test.ts`), so `error-pages.test.tsx` imports the home skeleton from `(public)/(home)/`; `api/` holds server route handlers;
 `auth/` holds the OAuth callback and its error page (not a route group — no shared layout).
 `globals.css` holds the design tokens (white ground, warm grey tiles, matcha-green brand,
 category colours), the pill-button rule (dark-mode values keep the green actions), and the authored motion (`.bar-grow`, `.marker-slide`), plus the global `:focus-visible` outline (kept outside
