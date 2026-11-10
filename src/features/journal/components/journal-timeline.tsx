@@ -63,6 +63,7 @@ function DrinkRow({ entry }: { entry: DrinkJournalEntry }) {
         </ul>
       )}
       {entry.instagramUrl && <InstagramPostLink url={entry.instagramUrl} />}
+      <TastingActions entry={entry} />
     </li>
   );
 }

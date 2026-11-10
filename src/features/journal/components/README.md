@@ -11,7 +11,7 @@ pages, shelves and Explore rows. Timeline cards and want-to-try rows show
 
 `StashEditor` opens a small panel (how many, opened on) with Save and Cancel; Cancel drops unsaved edits.
 
-Each timeline card has `TastingActions`: Edit (the tasting form, prefilled) and Delete (after a
+Each timeline card has `TastingActions`: Edit (the tea or drink tasting form, prefilled) and Delete (after a
 confirmation; the photo goes too).
 
 Component tests build `Review` objects with every field, including `authorId`.
@@ -28,7 +28,7 @@ The compact want-to-try button extends its hit area to 44px without growing visu
 
 `StashEditor` fields and buttons are 44px tall.
 
-`JournalTimeline` renders a drink tasting as a row with the drink, its café, the stars, the disclosure badge, notes and the Instagram link; drink rows have no edit or delete actions yet.
+`JournalTimeline` renders a drink tasting as a row with the drink, its café, the stars, the disclosure badge, notes and the Instagram link; drink rows carry `TastingActions` too, whose Edit opens the café drink form (`DrinkReviewForm`, prefilled) and whose Delete removes the review and its photo after a confirmation.
 
 ## Contents
 

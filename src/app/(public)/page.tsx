@@ -1,5 +1,6 @@
 import { connection } from 'next/server';
 
+import { LogDialog } from '@/components/widgets/log-dialog';
 import { buildTopLists } from '@/features/discovery';
 import { WantToTryButton } from '@/features/journal';
 import {
@@ -11,7 +12,6 @@ import {
   type DiscoverFilters,
   type Product,
 } from '@/features/products';
-import { LogTastingDialog } from '@/features/reviews';
 import { TastingFeed, loadFeed, type Tasting } from '@/features/social';
 import { createClient } from '@/integrations/supabase/server';
 
@@ -117,7 +117,7 @@ export default async function Home() {
             <p className="text-muted-foreground max-w-sm">
               Be the first. Log a matcha or hojicha you&rsquo;ve tried and it starts the shelf.
             </p>
-            <LogTastingDialog />
+            <LogDialog />
           </div>
         ) : (
           SHELVES.map((shelf, i) => (

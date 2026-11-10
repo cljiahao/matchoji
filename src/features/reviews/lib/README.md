@@ -12,6 +12,8 @@ selection; `local-date` and `truncate-notes` format input and display.
 `tasting-vocab` also holds the flushes (`FLUSHES`, `FLUSH_LABELS`) and `editionLabel`
 ("2025 first flush").
 
+`handleRadioKeyDown` and `radioTabIndex` are exported so the café drink form's scale and star inputs share one keyboard pattern.
+
 `drinkHref(cafeSlug, drinkSlug)` builds a drink page path (`/cafes/<café>/<drink>`), shared by the journal, feed and notifications.
 
 ## Contents

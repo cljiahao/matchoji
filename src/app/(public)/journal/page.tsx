@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
+import { LogDialog } from '@/components/widgets/log-dialog';
 import { SignInButton } from '@/features/auth';
 import {
   JournalStatsStrip,
@@ -13,7 +14,6 @@ import {
   qualifyingYears,
   teaEntries,
 } from '@/features/journal';
-import { LogTastingDialog } from '@/features/reviews';
 import { YourTaste, buildTasteProfile } from '@/features/taste';
 import { createClient } from '@/integrations/supabase/server';
 
@@ -66,7 +66,7 @@ export default async function JournalPage() {
             No tastings yet. Log your first and this page grows into your stats, your taste profile
             and, once a year has three tastings, a year in tea.
           </p>
-          <LogTastingDialog />
+          <LogDialog />
         </div>
       ) : (
         <div className="mt-8">

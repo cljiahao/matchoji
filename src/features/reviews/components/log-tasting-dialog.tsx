@@ -1,31 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useState, type ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useSession, useSignInPrompt } from '@/features/auth';
 
 import type { PrepPreset } from '../types';
-
-// The navbar mounts this dialog on every page, so the form behind it stays out of each page's
-// first load and is fetched when the dialog first opens. The fallback keeps the dialog named.
-const LogTastingFlow = dynamic(() => import('./log-tasting-flow'), {
-  loading: () => (
-    <DialogHeader>
-      <DialogTitle>Log a tasting</DialogTitle>
-      <DialogDescription>Loading…</DialogDescription>
-    </DialogHeader>
-  ),
-});
+import { LogTastingFlow } from './lazy-log-tasting-flow';
 
 interface LogTastingDialogProps {
   trigger?: ReactNode;

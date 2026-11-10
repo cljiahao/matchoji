@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
+import { LogDialog } from '@/components/widgets/log-dialog';
 import { AuthStatus } from '@/features/auth';
 import { SearchPill } from '@/features/products';
-import { LogTastingDialog } from '@/features/reviews';
 import { NotificationBell } from '@/features/social';
 import { PAGE_ROUTES } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
@@ -76,7 +76,7 @@ export function Navbar() {
             <Search aria-hidden="true" className="h-5 w-5" />
           </Link>
           <div className="hidden md:block">
-            <LogTastingDialog
+            <LogDialog
               trigger={
                 <Button className="min-h-11">
                   <Plus aria-hidden="true" />

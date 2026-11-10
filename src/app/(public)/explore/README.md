@@ -8,7 +8,7 @@ phones; a search pill that keeps the other filters, a sort select, and wide resu
 options are the grades of the teas the other filters leave. A search, region, grade or rating
 that matches nothing shows a no-match message with a clear-filters link; an empty catalogue
 invites the first tasting. Products and regions come from Supabase; a failed region read only
-hides the region filter.
+hides the region filter. Its empty state's "Log a tasting" button opens `LogDialog`.
 
 Results show 12 teas at first from `catalogue_teas`, filtered and sorted in SQL, with "Showing
 X of N teas" and a "Show more" link that adds 12 (`?shown=24`, a plain server-rendered link, so
