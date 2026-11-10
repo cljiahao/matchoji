@@ -175,13 +175,18 @@ describe('suggesting cafés', () => {
     call(
       who,
       `insert into public.cafes (name, city_slug${extra ? ', ' + extra.split('=')[0] : ''})
-       values ($1, 'singapore'${extra ? ', ' + extra.split('=')[1] : ''}) returning status, added_by`,
+       values ($1, 'singapore'${extra ? ', ' + extra.split('=')[1] : ''}) returning status`,
       [name]
     );
 
   it('anyone signed in can add a pending café; anon cannot', async () => {
     const added = await insertCafe(ALICE, unique('Alice Cafe'));
-    expect(added.rows).toEqual([{ status: 'pending', added_by: ALICE }]);
+    expect(added.rows).toEqual([{ status: 'pending' }]);
+    expect(
+      await asRows(ALICE, 'select added_by from public.my_cafes where name like $1', [
+        'Alice Cafe%',
+      ])
+    ).toEqual([{ added_by: ALICE }]);
 
     await expect(insertCafe(null, unique('Anon Cafe'))).rejects.toThrow(/permission denied/);
     await expect(insertCafe(ALICE, unique('Sneaky'), `status='approved'`)).rejects.toThrow(
@@ -966,29 +971,74 @@ describe('security review fixes', () => {
     ]);
   });
 
-  it('hides added_by and the reviewer note from visitors but not from the adder', async () => {
-    const c = await cafe();
-    await expect(
-      asRows(null, 'select added_by from public.cafes where id = $1', [c])
-    ).rejects.toThrow(/permission denied/);
-    await expect(asRows(null, 'select review_note from public.drinks')).rejects.toThrow(
-      /permission denied/
-    );
-    await expect(asRows(null, 'select * from public.cafes')).rejects.toThrow(/permission denied/);
+  it('hides added_by and the reviewer note from every table read', async () => {
+    const c = await cafe({ addedBy: ALICE });
+    for (const who of [null, BOB, ALICE, ADMIN]) {
+      await expect(
+        asRows(who, 'select added_by from public.cafes where id = $1', [c])
+      ).rejects.toThrow(/permission denied/);
+      await expect(asRows(who, 'select review_note from public.drinks')).rejects.toThrow(
+        /permission denied/
+      );
+      await expect(asRows(who, 'select * from public.cafes')).rejects.toThrow(/permission denied/);
+      expect(
+        await asRows(who, 'select name, status from public.cafes where id = $1', [c])
+      ).toHaveLength(1);
+    }
+  });
+
+  it('gives adders their own rows and admins the queue, with the adder, through views', async () => {
+    const c = await cafe({ addedBy: ALICE, status: 'pending' });
+    const d = await drink(c, { addedBy: ALICE, status: 'pending' });
+    await call(ADMIN, `select public.review_cafe ($1, 'approved')`, [c]);
+    await call(ADMIN, `select public.review_drink ($1, 'rejected', 'not a hojicha')`, [d]);
+
     expect(
-      await asRows(null, 'select name, status from public.cafes where id = $1', [c])
+      await asRows(
+        ALICE,
+        'select added_by, status, review_note from public.my_drinks where id = $1',
+        [d]
+      )
+    ).toEqual([{ added_by: ALICE, status: 'rejected', review_note: 'not a hojicha' }]);
+    expect(await asRows(BOB, 'select id from public.my_cafes where id = $1', [c])).toEqual([]);
+
+    expect(
+      await asRows(ADMIN, 'select adder_name, added_by from public.admin_cafes where id = $1', [c])
+    ).toEqual([{ adder_name: expect.any(String), added_by: ALICE }]);
+    expect(
+      await asRows(ADMIN, 'select id from public.admin_drinks where id = $1', [d])
     ).toHaveLength(1);
 
-    const mine = (
-      await call(
-        ALICE,
-        `insert into public.cafes (name, city_slug) values ($1, 'singapore') returning id`,
-        [unique('Mine')]
-      )
-    ).rows[0] as { id: string };
-    expect(
-      await asRows(ALICE, 'select added_by, review_note from public.cafes where id = $1', [mine.id])
-    ).toEqual([{ added_by: ALICE, review_note: null }]);
+    expect(await asRows(BOB, 'select id from public.admin_cafes')).toEqual([]);
+    expect(await asRows(ALICE, 'select id from public.admin_drinks')).toEqual([]);
+    for (const view of ['my_cafes', 'my_drinks', 'admin_cafes', 'admin_drinks'])
+      await expect(asRows(null, `select id from public.${view}`)).rejects.toThrow(
+        /permission denied/
+      );
+  });
+
+  it('refuses a review of an approved drink at a rejected or pending café', async () => {
+    const insert = (d: string) =>
+      call(BOB, 'insert into public.reviews (user_id, drink_id, stars) values ($1, $2, 4)', [
+        BOB,
+        d,
+      ]);
+    const rejected = await cafe({ status: 'rejected' });
+    const pending = await cafe({ status: 'pending' });
+    await expect(insert(await drink(rejected))).rejects.toThrow(/row-level security/);
+    await expect(insert(await drink(pending))).rejects.toThrow(/row-level security/);
+    await insert(await drink(await cafe()));
+  });
+
+  it('still lets an adder review their own pending drink at an approved café', async () => {
+    const c = await cafe();
+    const own = await drink(c, { addedBy: ALICE, status: 'pending' });
+    const added = await call(
+      ALICE,
+      'insert into public.reviews (user_id, drink_id, stars) values ($1, $2, 5)',
+      [ALICE, own]
+    );
+    expect(added.affectedRows).toBe(1);
   });
 
   it('keeps the internal merge and the admin RPCs out of reach', async () => {

@@ -245,12 +245,18 @@ security definer set search_path = '' as $$
   )
 $$;
 
+-- An approved drink counts only at an approved café: a rejected or pending café keeps its
+-- drinks closed to new reviews. The adder's own pending drink stays open to them.
 create function public.can_engage_drink (drink uuid) returns boolean language sql stable
 security definer set search_path = '' as $$
   select exists (
-    select 1 from public.drinks
-    where id = drink
-      and (status = 'approved' or (status = 'pending' and added_by = auth.uid ()))
+    select 1 from public.drinks d
+    where d.id = drink
+      and (
+        (d.status = 'approved'
+          and exists (select 1 from public.cafes c where c.id = d.cafe_id and c.status = 'approved'))
+        or (d.status = 'pending' and d.added_by = auth.uid ())
+      )
   )
 $$;
 
@@ -288,9 +294,10 @@ alter table public.drinks enable row level security;
 
 revoke all on public.cafes from anon, authenticated;
 revoke all on public.drinks from anon, authenticated;
--- Visitors do not get who added a row, the reviewer's note or when it was reviewed; signed-in
--- users do (their own rows and the admin queue need them), so a visitor's query must name its
--- columns rather than select *.
+-- Nobody reads who added a row, the reviewer's note or when it was reviewed straight from the
+-- table: that would show which profile (private ones included) suggested what. Everyone's query
+-- must name columns rather than select *. Adders and admins get those fields from the
+-- my_cafes, my_drinks, admin_cafes and admin_drinks views below.
 grant select (
   id, slug, name, city_slug, area, address, lat, lng, instagram_handle, website_url, status,
   merged_into, created_at, updated_at
@@ -299,7 +306,14 @@ grant select (
   id, cafe_id, slug, name, base, style, serving, price, currency, photo_url, photo_credit,
   tea_product_id, status, merged_into, created_at, updated_at
 ) on public.drinks to anon;
-grant select on public.cafes, public.drinks to authenticated;
+grant select (
+  id, slug, name, city_slug, area, address, lat, lng, instagram_handle, website_url, status,
+  merged_into, created_at, updated_at
+) on public.cafes to authenticated;
+grant select (
+  id, cafe_id, slug, name, base, style, serving, price, currency, photo_url, photo_credit,
+  tea_product_id, status, merged_into, created_at, updated_at
+) on public.drinks to authenticated;
 grant insert on public.cafes, public.drinks to authenticated;
 
 create policy "approved cafés are viewable by everyone"
@@ -352,6 +366,31 @@ create policy "admins can view every drink"
   on public.drinks for select
   to authenticated
   using (public.is_admin ());
+
+-- Owner-rights views: the caller's own suggestions with their review note, and the admin
+-- queue with the adder's name. Each filters on the caller, so they show nothing to anyone else.
+create view public.my_cafes with (security_invoker = false) as
+select * from public.cafes where added_by = auth.uid ();
+
+create view public.my_drinks with (security_invoker = false) as
+select * from public.drinks where added_by = auth.uid ();
+
+create view public.admin_cafes with (security_invoker = false) as
+select c.*, p.display_name as adder_name
+from public.cafes c
+left join public.profiles p on p.id = c.added_by
+where public.is_admin ();
+
+create view public.admin_drinks with (security_invoker = false) as
+select d.*, p.display_name as adder_name
+from public.drinks d
+left join public.profiles p on p.id = d.added_by
+where public.is_admin ();
+
+revoke all on public.my_cafes, public.my_drinks, public.admin_cafes, public.admin_drinks
+from public, anon, authenticated;
+grant select on public.my_cafes, public.my_drinks, public.admin_cafes, public.admin_drinks
+to authenticated;
 
 -- A suggested drink cannot carry a photo: the page would load whatever URL it named, the
 -- tracking-pixel route the 2026-10-26 sweep closed for review photos. An admin sets it.

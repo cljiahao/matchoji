@@ -805,6 +805,18 @@ export interface Database {
         };
         Relationships: [];
       };
+      // Nobody can select added_by, review_note or reviewed_at from cafes or drinks directly:
+      // adders read them from my_*, admins from admin_* (which adds the adder's name).
+      my_cafes: { Row: Database['public']['Tables']['cafes']['Row']; Relationships: [] };
+      my_drinks: { Row: Database['public']['Tables']['drinks']['Row']; Relationships: [] };
+      admin_cafes: {
+        Row: Database['public']['Tables']['cafes']['Row'] & { adder_name: string | null };
+        Relationships: [];
+      };
+      admin_drinks: {
+        Row: Database['public']['Tables']['drinks']['Row'] & { adder_name: string | null };
+        Relationships: [];
+      };
       // Approved drinks at approved cafés. Taster and community scores are never blended.
       drink_ratings: {
         Row: {
