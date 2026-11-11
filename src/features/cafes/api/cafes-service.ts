@@ -557,6 +557,7 @@ export async function listTopDrinks(
   supabase: Client,
   { limit = 20, city, ...filter }: TopDrinksOptions
 ): Promise<DrinkListing[]> {
+  if (limit <= 0) return [];
   const read = await readRanked(supabase, {
     city,
     ...filter,

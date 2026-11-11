@@ -618,6 +618,25 @@ describe('20261112000000: drink_ranks, taster_stats and the latest-review index'
     expect(mine[0]?.drink_review_count ?? 0).toBe(Number(counted[0].n));
   });
 
+  it('leaves out a merged drink and the drinks of a merged café', async () => {
+    const keepCafe = await cafe({ city: 'johor-bahru' });
+    const dupCafe = await cafe({ city: 'johor-bahru' });
+    const keepDrink = await drink(keepCafe, { name: 'Keeper' });
+    const dupDrink = await drink(keepCafe, { name: 'Duplicate' });
+    const movedDrink = await drink(dupCafe, { name: 'Moved' });
+    await merge('drink', dupDrink, keepDrink);
+    await merge('cafe', dupCafe, keepCafe);
+
+    const ranked = await rows<{ drink_id: string; cafe_id: string }>(
+      `select drink_id, cafe_id from public.drink_ranks where city_slug = 'johor-bahru'`
+    );
+    const ids = ranked.map((r) => r.drink_id);
+    expect(ids).toContain(keepDrink);
+    expect(ids).not.toContain(dupDrink);
+    expect(ranked.filter((r) => r.cafe_id === dupCafe)).toEqual([]);
+    expect(ranked.find((r) => r.drink_id === movedDrink)?.cafe_id).toBe(keepCafe);
+  });
+
   it('creates the latest-review index, and a rerun of the migration is a no-op', async () => {
     const sql = readFileSync(
       path.join(SUPABASE_DIR, 'migrations/20261112000000_cafe_read_perf.sql'),

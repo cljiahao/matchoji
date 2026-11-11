@@ -485,6 +485,13 @@ const filtersOn = (calls: { table: string; method: string; args: unknown[] }[], 
   calls.filter((c) => c.table === table && c.method === 'eq').map((c) => c.args);
 
 describe('listTopDrinks', () => {
+  it('returns nothing, without reading, for a limit of zero or less', async () => {
+    const { client, calls } = createFakeSupabase({});
+    expect(await listTopDrinks(client, { city: 'singapore', limit: 0 })).toEqual([]);
+    expect(await listTopDrinks(client, { city: 'singapore', limit: -3 })).toEqual([]);
+    expect(calls).toEqual([]);
+  });
+
   it('reads the database ranking, qualifying drinks only, in the order it returns', async () => {
     const { client, calls } = createFakeSupabase({
       drink_ranks: ranks(['d3', 'd1']),

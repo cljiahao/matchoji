@@ -1,6 +1,5 @@
 -- Café read-path fix. Idempotent: safe to run twice. The owner applies this by hand in the
--- Supabase SQL editor; the app reads the same columns before and after, so there is no deploy
--- order to respect.
+-- Supabase SQL editor, before the app deploy, because the app reads drink_ranks and taster_stats.
 --
 -- cafe_ratings counted people (count distinct user) but averaged reviews, so "3 reviews" could sit
 -- beside an average of five. Every count is now one latest review, the unit the average is taken
