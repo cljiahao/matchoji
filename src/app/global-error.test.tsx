@@ -12,13 +12,13 @@ vi.mock('@/lib/sentry/capture', () => ({ captureClientError: vi.fn() }));
 describe('global error boundary', () => {
   it('reports the error, shows its reference and retries', () => {
     const error = Object.assign(new Error('x'), { digest: 'abc' });
-    const reset = vi.fn();
-    render(<GlobalError error={error} reset={reset} />, {
+    const retry = vi.fn();
+    render(<GlobalError error={error} retry={retry} />, {
       container: document.documentElement,
     });
     expect(captureClientError).toHaveBeenCalledWith(error);
     expect(screen.getByText('Reference: abc')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(reset).toHaveBeenCalledOnce();
+    expect(retry).toHaveBeenCalledOnce();
   });
 });

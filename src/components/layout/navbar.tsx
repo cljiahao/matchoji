@@ -103,7 +103,7 @@ export function Navbar() {
         <div className="ml-auto flex items-center gap-2 lg:gap-3">
           <Link
             href={PAGE_ROUTES.EXPLORE}
-            aria-label="Explore teas"
+            aria-label="Search teas"
             className="hover:bg-muted flex h-11 w-11 items-center justify-center rounded-full md:hidden"
           >
             <Search aria-hidden="true" className="h-5 w-5" />

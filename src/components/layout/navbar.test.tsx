@@ -76,10 +76,10 @@ describe('Navbar', () => {
     );
   });
 
-  it('labels the phone shortcut by where it goes: the teas page', () => {
+  it('labels the phone shortcut by what search covers: teas', () => {
     renderWithQuery(<Navbar />);
-    expect(screen.getByRole('link', { name: 'Explore teas' })).toHaveAttribute('href', '/explore');
-    expect(screen.queryByRole('link', { name: 'Search teas' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Search teas' })).toHaveAttribute('href', '/explore');
+    expect(screen.queryByRole('link', { name: 'Explore teas' })).not.toBeInTheDocument();
   });
 
   it('shows sign-in as a secondary button next to the primary log button', async () => {

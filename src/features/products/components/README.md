@@ -7,7 +7,7 @@ tea on a warm grey tile: its photo, or a `TeaTin` drawn in the category's colour
 `ProductCard` is the shelf card (brand, name, `RatingInline`) that `ProductShelf` lays out
 in a sideways-scrolling row; `ProductRow` is an Explore result with the big `ScoreNumeral` and an optional per-viewer
 `badge` (the match score).
-`CategoryCircles` open Explore per tea; `ExploreFilters` (links for tea, rating, grade and
+`ExploreFilters` (links for tea, rating, grade and
 region), `ExploreSort` (top rated, most rated, newest, scarcest first) and `SearchPill` drive the Explore URL, and `FilterDisclosure` folds
 the rail behind a "Filters" button below `lg`; `ProductFacts` is the product page's facts table; `ScoreNumeral` reads "out of 5" to screen readers. `CatalogueStatusNote` labels a tea
 awaiting review or no longer in the catalogue in lists that can include one. Cards
@@ -31,7 +31,6 @@ On phones `ProductRow` drops the empty score dash for an unrated tea and keeps "
 
 - `category-badge.tsx`
 - `catalogue-status-note.tsx`
-- `category-circles.tsx`
 - `explore-filters.tsx`
 - `explore-sort.tsx`
 - `filter-disclosure.tsx`
@@ -41,7 +40,6 @@ On phones `ProductRow` drops the empty score dash for an unrated tea and keeps "
 - `price-trend.tsx`
 - `product-card.tsx`
 - `product-facts.tsx`
-- `product-grid.tsx`
 - `product-image-well.tsx`
 - `product-row.tsx`
 - `product-shelf.tsx`

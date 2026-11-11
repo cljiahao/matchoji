@@ -20,6 +20,11 @@ describe('root layout', () => {
     expect(JSON.stringify(metadata.icons)).toContain('/icons/apple-icon.png');
   });
 
+  it('describes the café-drink positioning, not the old tea-rating line', () => {
+    expect(metadata.description).toContain('hojicha and matcha drinks in Singapore');
+    expect(metadata.description).not.toContain('one cup at a time');
+  });
+
   it('canonicalises each page to its own path', () => {
     expect(metadata.alternates).toEqual({ canonical: './' });
   });

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { connection } from 'next/server';
 import { cache } from 'react';
 
+import { AddCafeCta } from '@/components/widgets/log-dialog';
 import { CITIES, DrinkRow, listTopDrinkLists, topTeasHref } from '@/features/cafes';
 import { createClient } from '@/integrations/supabase/server';
 
@@ -35,10 +36,13 @@ export default async function TopIndexPage() {
       </p>
 
       {lists.length === 0 && (
-        <p className="bg-muted text-muted-foreground mt-8 rounded-3xl px-6 py-16 text-center">
-          No top drinks yet. Lists appear once a drink has a taster review or three community
-          reviews.
-        </p>
+        <div className="bg-muted mt-8 flex flex-col items-center gap-4 rounded-3xl px-6 py-16 text-center">
+          <p className="text-muted-foreground max-w-md">
+            No top drinks yet. Lists appear once a drink has a taster review or three community
+            reviews.
+          </p>
+          <AddCafeCta />
+        </div>
       )}
 
       {CITIES.map((city) => {

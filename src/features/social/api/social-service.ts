@@ -64,13 +64,18 @@ export async function getProfileView(
   const visible = profile.isPublic || isSelf;
   const count = { count: 'exact' as const, head: true };
 
-  const [teas, followers, following, follows, blocked, recent] = await Promise.all([
+  const [teas, drinks, followers, following, follows, blocked, recent] = await Promise.all([
     supabase
       .from('latest_reviews')
       .select('id', count)
       .eq('user_id', profileId)
       // The profile's "teas" count is packaged teas; drink tastings aren't teas.
       .not('product_id', 'is', null),
+    supabase
+      .from('latest_reviews')
+      .select('id', count)
+      .eq('user_id', profileId)
+      .not('drink_id', 'is', null),
     supabase.from('follows').select('follower_id', count).eq('followee_id', profileId),
     supabase.from('follows').select('followee_id', count).eq('follower_id', profileId),
     viewerId && !isSelf
@@ -98,7 +103,7 @@ export async function getProfileView(
           .limit(RECENT)
       : Promise.resolve({ data: [] as ReviewRow[], error: null }),
   ]);
-  for (const result of [teas, followers, following, follows, blocked, recent])
+  for (const result of [teas, drinks, followers, following, follows, blocked, recent])
     if (result.error) throw result.error;
 
   const tastings = await withSubjects(supabase, recent.data ?? [], () => profile.name);
@@ -106,6 +111,7 @@ export async function getProfileView(
     profile,
     counts: {
       teas: teas.count ?? 0,
+      drinks: drinks.count ?? 0,
       followers: followers.count ?? 0,
       following: following.count ?? 0,
     },

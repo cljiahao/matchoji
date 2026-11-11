@@ -13,13 +13,16 @@ vi.mock('next/headers', () => ({
 }));
 vi.mock('next/navigation', () => ({ usePathname: () => '/cafes' }));
 vi.mock('@/integrations/supabase/server', () => ({ createClient: async () => ({}) }));
+vi.mock('@/components/widgets/log-dialog', () => ({
+  AddCafeCta: () => <button>Add a café</button>,
+}));
 vi.mock('@/components/widgets/tea-map', () => ({ TeaMap: () => <div>map</div> }));
 vi.mock('@/features/cafes', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/features/cafes')>()),
   listCafes: (...args: unknown[]) => state.listCafes(...args),
 }));
 
-import CafesPage from './page';
+import CafesPage, { generateMetadata } from './page';
 
 const cafe = (id: string, area: string | null) => ({
   id,
@@ -54,11 +57,7 @@ beforeEach(() => {
 describe('cafés page', () => {
   it('lists the café cards and area options for the default city', async () => {
     render(await CafesPage(search()));
-    expect(state.listCafes).toHaveBeenLastCalledWith(expect.anything(), {
-      city: 'singapore',
-      area: undefined,
-      tasterOnly: false,
-    });
+    expect(state.listCafes).toHaveBeenLastCalledWith(expect.anything(), { city: 'singapore' });
     expect(screen.getByRole('link', { name: /Café 1/ }).getAttribute('href')).toBe('/cafes/cafe-1');
     expect(screen.getByRole('option', { name: 'Bugis' })).toBeTruthy();
   });
@@ -88,5 +87,42 @@ describe('cafés page', () => {
     state.listCafes.mockResolvedValue([]);
     render(await CafesPage(search()));
     expect(screen.getByText(/No cafés listed in Singapore yet/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Add a café' })).toBeTruthy();
+  });
+
+  it('offers no add-café call to action when filters, not an empty city, hid the cafés', async () => {
+    state.listCafes.mockResolvedValue([]);
+    render(await CafesPage(search({ area: 'Bugis' })));
+    expect(screen.getByText(/No cafés match those filters/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Add a café' })).toBeNull();
+  });
+});
+
+describe('cafés page metadata', () => {
+  it('names a self-referencing canonical per city', async () => {
+    const sg = await generateMetadata(search({ city: 'singapore' }));
+    const jb = await generateMetadata(search({ city: 'johor-bahru' }));
+    expect(sg.alternates?.canonical).toBe('/cafes?city=singapore');
+    expect(jb.alternates?.canonical).toBe('/cafes?city=johor-bahru');
+  });
+
+  it('follows the cookie, then the default, when there is no ?city=', async () => {
+    state.cookie = 'johor-bahru';
+    expect((await generateMetadata(search())).alternates?.canonical).toBe(
+      '/cafes?city=johor-bahru'
+    );
+    state.cookie = undefined;
+    expect((await generateMetadata(search({ city: 'bogus' }))).alternates?.canonical).toBe(
+      '/cafes?city=singapore'
+    );
+  });
+
+  it('is indexable when the city has cafés', async () => {
+    expect((await generateMetadata(search())).robots).toBeUndefined();
+  });
+
+  it('is noindex while the city has no cafés', async () => {
+    state.listCafes.mockResolvedValue([]);
+    expect((await generateMetadata(search())).robots).toEqual({ index: false });
   });
 });

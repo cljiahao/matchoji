@@ -18,7 +18,10 @@ export default function NotFound() {
         <p className="text-muted-foreground max-w-md">
           The page may have moved, or the link may be mistyped.
         </p>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link href={PAGE_ROUTES.CAFES} className={LINK_CLASS}>
+            Browse cafés
+          </Link>
           <Link href={PAGE_ROUTES.EXPLORE} className={LINK_CLASS}>
             Explore teas
           </Link>

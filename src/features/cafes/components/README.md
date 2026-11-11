@@ -6,12 +6,16 @@
 
 The logging UI. `DrinkLogFlow` (default export, loaded through `LazyDrinkLogFlow` so no page carries it until the log dialog opens) walks café search, add café, drink search, add drink and rating, and starts at rating when given a drink; focus moves to the new step's heading, and a failed taster lookup shows Try again rather than the wrong form. `SearchCombobox` is the accessible list autocomplete both searches use; pending items are marked "awaiting review". `AddCafeForm` and `AddDrinkForm` are the add steps. `DrinkReviewForm` rates or edits a drink: stars, notes, date, flavour notes, five optional 1-5 scales (`ScaleInput`; roast for hojicha only), a photo, and for a trusted taster the Instagram post link and `DisclosureRadios` (a fieldset whose legend is the visible question, none checked). `RateThisDrink` is the drink page's button, behind a sign-in gate. `OptionSelect` adapts the select to `CustomFormField`.
 
+`DrinkLogFlow` takes `startAtAddCafe` to open on the add-café form.
+
 ## Contents
 
 - `add-cafe-form.tsx`
 - `add-drink-form.tsx`
 - `cafe-card.tsx`
+- `cafe-filters.test.tsx`
 - `cafe-filters.tsx`
+- `city-switch.test.tsx`
 - `city-switch.tsx`
 - `disclosure-radios.tsx`
 - `drink-log-flow.test.tsx`

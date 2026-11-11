@@ -49,6 +49,7 @@ describe('profileMetadata', () => {
     name: 'Mei',
     isPublic: true,
     teas: 3,
+    drinks: 0,
   };
 
   it('shows the name and count of a public profile', () => {
@@ -57,6 +58,19 @@ describe('profileMetadata', () => {
     expect(meta.description).toBe('Mei has rated 3 teas on Matchoji.');
     expect(meta.robots).toBeUndefined();
     expect(meta.twitter).toMatchObject({ card: 'summary_large_image' });
+  });
+
+  it('counts drinks first, then teas', () => {
+    expect(profileMetadata({ ...profile, drinks: 4 }).description).toBe(
+      'Mei has rated 4 drinks and 3 teas on Matchoji.'
+    );
+    expect(profileMetadata({ ...profile, drinks: 1, teas: 0 }).description).toBe(
+      'Mei has rated 1 drink on Matchoji.'
+    );
+  });
+
+  it('says 0 teas for a profile with no ratings at all', () => {
+    expect(profileMetadata({ ...profile, teas: 0 }).description).toContain('0 teas on');
   });
 
   it('uses the singular for one tea', () => {

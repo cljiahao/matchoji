@@ -6,8 +6,12 @@
 
 It is not re-exported from the widgets `index.ts`: importing it there would pull the `cafes` and `reviews` features into every page that uses `BackLink`. Import it from `@/components/widgets/log-dialog`. `LogTastingDialog` (`reviews`) still serves the recipe button's tea-only path.
 
+`AddCafeCta` is the empty-list call to action: signed in it opens the dialog on the add-café form (`initial: { kind: 'drink', addCafe: true }`), signed out it shows "Sign in to add a café".
+
 ## Contents
 
+- `add-cafe-cta.test.tsx`
+- `add-cafe-cta.tsx`
 - `index.ts`
 - `log-dialog.test.tsx`
 - `log-dialog.tsx`

@@ -11,6 +11,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- Tests for `CitySwitch`, `CafeFilters`, `TeaSelect`, the admin moderation controls and the café and drink link-preview routes, and `test/db/cafes-edge-cases.test.ts` for the taster-public trigger, shared-reviewer drink merges, merges into an already merged café, `cities` write refusal and the pending-drink cap.
 - Database schema for café drinks (migration `20261110000000_cafes_and_drinks.sql`, slice S1 of the repositioning; the owner applies it in the Supabase SQL editor before the app slices that use it merge): cities (Singapore, Johor Bahru), cafés and drinks that anyone signed in can suggest for review, trusted tasters with Instagram-linked drink reviews kept apart from the community score, café and drink rating views, merges, admin edit functions and moderation notifications. Deleting an account also unlinks a taster's reviews, and a rejected café hides its drinks. Nothing in the app uses it yet, and teas are unchanged.
 
 - Café and drink pages, the read side of the repositioning (slice S3; needs the S1 schema applied, and shows empty lists before). `/cafes` lists a city's cafés with a map, an area filter and a taster-reviewed-only filter (`?city=`, else a remembered city cookie, else Singapore); `/cafes/<slug>` shows a café's drinks and latest trusted-taster reviews; `/cafes/<slug>/<drink>` shows the taster score and community score side by side, never blended, with the trusted-taster reviews first, "n of m taster reviews were gifted/paid" where it applies, the tea used and similar drinks. `/c/<slug>` is a 308 short link to the café. A merged café or drink forwards to its survivor and a rejected drink to its café, so links shared on Instagram never 404. Link-preview images, JSON-LD, metadata and sitemap entries cover approved cafés and drinks. A chain of merges is followed to its final survivor in one redirect, and a loop is not-found. The drink page shows its photo with the credit. The sitemap reads every café and drink past the 1000-row API cap. Rating a drink and adding a café come in later slices.
@@ -25,6 +26,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- Public metadata, navigation and empty pages now follow the café-drink positioning (sweep fixes). The home page has its own title, description and canonical, and the layout description, web manifest and share-image alt text no longer say "rate and discover hojicha and matcha, one cup at a time". `/` and `/cafes` name a self-referencing canonical per city (`?city=singapore` or `johor-bahru`; filters fold into it) and the sitemap lists those URLs instead of the bare ones. `/cafes`, `/top` and `/tasters` are `noindex` and out of the sitemap while empty. Profile counts and link previews include drink reviews. The site-wide error pages' Try again now re-fetches the page (Next's `retry`) instead of only clearing the error, and the error and not-found pages lead with cafés and top drinks. The phone tab bar is Home, Cafés, Log, Top, Tasters, since Journal is in the account menu and a phone had no way to Tasters; the header search icon is "Search teas". Empty `/cafes`, `/top` and `/tasters` offer "Add a café" when signed in and "Sign in to add a café" when not. No migration.
 - The admin reports queue handles a reported drink review: it names the café and drink instead of a tea, and no longer breaks on a review with no tea.
 - Café drink reviews no longer break the places that read reviews (slice S2; needs the S1 schema applied for drinks to appear, and shows nothing for them before). A drink review can carry a "Trusted taster" chip, a disclosure badge (Invited, Gifted, Paid partnership) and a link to the taster's Instagram post. The journal, a profile's recent tastings and the following feed list drink tastings with their café; stats, the year in tea, the taste profile, taste match, top notes and a profile's tea count still count teas only. Notifications on a drink link to the drink, and café and drink decisions to the café or drink. Your data export now includes the cafés and drinks you added.
 - Matchoji's positioning is now "the trusted guide to hojicha and matcha drinks in Singapore and Johor Bahru, rated drink by drink", and `PRODUCT.md` is rewritten to match. The parked marketplace is hidden behind one switch, `MARKETPLACE_ENABLED` in `src/lib/constants/env.ts`: `/sell` returns not-found and drops out of the sitemap, and a tea page shows "Where to buy" only when the switch is on and the tea has an offer. The marketplace tables and code are untouched. No migration.
@@ -33,6 +35,7 @@ All notable changes to this project are documented here. Format follows
 
 - Claude Code harness re-synced to templateCentral 7.2.2: the SessionStart hook re-injects the CONSTITUTION instead of the head of `AGENTS.md`, the dependency-audit gate parses `package.json` for advisory suppressions, `settings.json` drops the broad `.env.*` read denies, and `AGENTS.md` documents the user-scoped `superpowers` plugin install.
 - `AGENTS.md` and `docs/CONSTITUTION.md` no longer say "Phase 1 only". They now state the café-drinks positioning, that the marketplace and farm/vendor tools stay parked (`MARKETPLACE_ENABLED` stays `false`) and that label scanning and Sentry stay off until the owner asks, and the product-never-references-a-café rule is added (slice S9; owner-approved wording). Docs only, no migration.
+- The Playwright smoke spec no longer needs data in production: Explore, a tea page, regions, shops and the sitemap accept the empty state. New steps cover `/cafes`, an unknown `/c/<slug>` ending in a real 404, `/tasters` and `/about/how-we-rate`.
 
 ### Fixed
 
@@ -40,6 +43,11 @@ All notable changes to this project are documented here. Format follows
 - The year-in-tea page (`/journal/year/<year>`) no longer keeps its "Your year in tea" tab title when it renders not-found; `generateMetadata` gives a malformed year or a year with no recap the not-found title, sharing one read with the page.
 - `test/scripts/schema-check.test.ts` no longer times out intermittently on CI runners. `extractShape` re-parsed about 60 TypeScript lib files for every program it built; those are now parsed once per process and shared, which also speeds up `pnpm schema:check`.
 - A `.pnpm-store/` cache inside a worktree no longer fails `pnpm check` (Prettier and ESLint now skip it; it is also git-ignored).
+- The loading-boundary test now ignores status calls that only appear in comments, also scans `layout.tsx` (only a `loading.tsx` in a parent folder counts) and has unit cases; the `(public)` README contents list is back in alphabetical order. No app change.
+
+### Removed
+
+- Unused code: the `CategoryCircles`, `ProductGrid`, `StarRatingDisplay` and `TasteProfileBars` components and the `listCities` and `shortCafeHref` barrel exports.
 
 ## [0.1.0] - 2026-11-03
 
