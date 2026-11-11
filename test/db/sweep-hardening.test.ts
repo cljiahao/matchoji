@@ -649,3 +649,49 @@ describe('20261112000000: drink_ranks, taster_stats and the latest-review index'
     expect(idx).toHaveLength(1);
   });
 });
+
+describe('sweep leftovers: account deletion and rank ties', () => {
+  const STORAGE = 'https://skajpelucxgovxajlzvo.supabase.co/storage/v1/object/public/review-photos';
+
+  it('clears the photo of a drink review that outlives its deleted author', async () => {
+    const LEAVER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+    await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, '{}')`, [
+      LEAVER,
+      'leaver@example.com',
+    ]);
+    const r = await review(LEAVER, await drink(await cafe()));
+    await db.query('update public.reviews set photo_url = $2 where id = $1', [
+      r,
+      `${STORAGE}/${LEAVER}/cup.jpg`,
+    ]);
+
+    await call(LEAVER, 'select public.delete_my_account ()');
+
+    expect(await rows('select user_id, photo_url from public.reviews where id = $1', [r])).toEqual([
+      { user_id: null, photo_url: null },
+    ]);
+  });
+
+  it('breaks ties by name, then drink_id, behind the taster-reviewed drink', async () => {
+    const jb = () => cafe({ city: 'johor-bahru' });
+    const twins = [
+      await drink(await jb(), { name: 'Tie Twin' }),
+      await drink(await jb(), { name: 'Tie Twin' }),
+      await drink(await jb(), { name: 'Tie Twin' }),
+    ];
+    const earlierName = await drink(await jb(), { name: 'Tie Aardvark' });
+    const tasted = await drink(await jb(), { name: 'Tie Zed' });
+    await review(TASTER, tasted, { url: POST });
+
+    const ordered = await rows<{ drink_id: string }>(
+      `select drink_id from public.drink_ranks
+       where city_slug = 'johor-bahru' and name like 'Tie %'
+       order by has_taster desc, rank_score desc, rank_count desc, name, drink_id`
+    );
+
+    // Zed leads on has_taster despite the last name; the unreviewed rest tie on every score
+    // column, so name then drink_id (uuids sort the same as their text) decide. The expectation
+    // is built from the seeded ids, not from the query under test.
+    expect(ordered.map((r) => r.drink_id)).toEqual([tasted, earlierName, ...[...twins].sort()]);
+  });
+});

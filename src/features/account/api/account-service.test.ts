@@ -103,6 +103,17 @@ describe('exportMyData', () => {
     expect(eqOn('content_reports')).toEqual(['reporter_id', 'u1']);
   });
 
+  it('exports notifications without the actor, who is another person', async () => {
+    const { client, calls } = createFakeSupabase(exportResults());
+    await exportMyData(client, 'u1');
+    const columns = calls.find((c) => c.table === 'notifications' && c.method === 'select')
+      ?.args[0] as string;
+    expect(columns).not.toContain('actor_id');
+    expect(columns).not.toContain('*');
+    for (const kept of ['kind', 'review_id', 'product_id', 'drink_id', 'cafe_id', 'created_at'])
+      expect(columns).toContain(kept);
+  });
+
   it('includes the teas the person submitted', async () => {
     const { client, calls } = createFakeSupabase(
       exportResults({ products: { data: [{ id: 'p1', name: 'Uji Hojicha' }], error: null } })

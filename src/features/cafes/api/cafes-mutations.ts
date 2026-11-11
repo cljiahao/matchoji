@@ -19,6 +19,15 @@ export class FriendlyError extends Error {
 interface DbError {
   code?: string;
   message?: string;
+  details?: string;
+}
+
+// Postgres names the violated index in the message ('duplicate key value violates unique
+// constraint "…"'); PostgREST may also carry it in details.
+function isUniqueViolation(error: DbError, constraint: string): boolean {
+  return (
+    error.code === '23505' && `${error.message ?? ''} ${error.details ?? ''}`.includes(constraint)
+  );
 }
 
 // limit_pending_rows raises P0001 "You have too many … waiting for review."
@@ -56,8 +65,11 @@ export async function createCafe(supabase: Client, input: CafeOutput): Promise<C
   if (error) {
     if (isPendingCap(error)) throw new FriendlyError(PENDING_CAFES_MESSAGE);
     if (isDailyCap(error)) throw new FriendlyError(DAILY_LIMIT_MESSAGE);
-    // cafes_city_name_area_key: a live café already has this city, name and area.
-    if (error.code === '23505') throw new FriendlyError(CAFE_EXISTS_MESSAGE);
+    // Only the live-café name index means "already listed"; any other unique violation is a
+    // real fault and must not read as a duplicate.
+    if (isUniqueViolation(error, 'cafes_city_name_area_key')) {
+      throw new FriendlyError(CAFE_EXISTS_MESSAGE);
+    }
     throw error;
   }
   return toCafe(data);
@@ -79,8 +91,7 @@ export async function createDrink(supabase: Client, input: DrinkOutput): Promise
   if (error) {
     if (isPendingCap(error)) throw new FriendlyError(PENDING_DRINKS_MESSAGE);
     if (isDailyCap(error)) throw new FriendlyError(DAILY_LIMIT_MESSAGE);
-    // drinks_cafe_name_key: the café already lists a drink by that name.
-    if (error.code === '23505') {
+    if (isUniqueViolation(error, 'drinks_cafe_name_key')) {
       throw new FriendlyError('That drink is already listed at this café. Search for it instead.');
     }
     throw error;

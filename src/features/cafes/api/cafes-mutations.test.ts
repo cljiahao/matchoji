@@ -94,11 +94,20 @@ describe('createCafe', () => {
     await expect(dailyFailure).rejects.toThrow(DAILY_LIMIT_MESSAGE);
     await expect(dailyFailure).rejects.toBeInstanceOf(FriendlyError);
 
-    const dupe = { code: '23505', message: 'cafes_city_name_area_key' };
+    const dupe = {
+      code: '23505',
+      message: 'duplicate key value violates unique constraint "cafes_city_name_area_key"',
+    };
     const dupeFake = createFakeSupabase({ cafes: { data: null, error: dupe } });
     await expect(createCafe(dupeFake.client, { name: 'X', citySlug: 'singapore' })).rejects.toThrow(
       CAFE_EXISTS_MESSAGE
     );
+  });
+
+  it('rethrows a unique violation on any other constraint', async () => {
+    const error = { code: '23505', message: 'duplicate key value violates "cafes_slug_key"' };
+    const fake = createFakeSupabase({ cafes: { data: null, error } });
+    await expect(createCafe(fake.client, { name: 'X', citySlug: 'singapore' })).rejects.toBe(error);
   });
 
   it('rethrows any other database error untouched', async () => {
@@ -147,9 +156,24 @@ describe('createDrink', () => {
 
   it('says so when the café already lists that drink', async () => {
     const fake = createFakeSupabase({
-      drinks: { data: null, error: { code: '23505', message: 'drinks_cafe_name_key' } },
+      drinks: {
+        data: null,
+        error: {
+          code: '23505',
+          message: 'duplicate key value violates unique constraint "drinks_cafe_name_key"',
+        },
+      },
     });
     await expect(createDrink(fake.client, input)).rejects.toThrow(/already listed/);
+  });
+
+  it('rethrows a unique violation on any other constraint', async () => {
+    const error = {
+      code: '23505',
+      message: 'duplicate key value violates "drinks_cafe_id_slug_key"',
+    };
+    const fake = createFakeSupabase({ drinks: { data: null, error } });
+    await expect(createDrink(fake.client, input)).rejects.toBe(error);
   });
 });
 
