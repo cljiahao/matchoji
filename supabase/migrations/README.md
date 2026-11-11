@@ -56,6 +56,8 @@ the author; `latest_reviews` recreated to carry them), the `edition_ratings` vie
 `top_harvest` flag (best edition with 3+ ratings), and the want-to-try stash
 (`owned_quantity`, `opened_on`, owner-editable). `20261028100000_health_check.sql` adds
 `health()`, a no-op anyone may call, which `/api/health` uses to prove the database answers.
+`20261112000000_cafe_read_perf.sql` recreates `cafe_ratings` so every count is a latest review (the unit its average is over) rather than a person; same columns, applied by hand, safe to rerun.
+
 `20261029000000_security_hardening.sql` closes the 2026-10-26 security sweep: the server stamps
 `created_at` on API inserts (backdating no longer slips the daily limits), likes and follows get
 daily limits, review photos must be a file in the author's folder on this project's storage, a
@@ -114,6 +116,7 @@ the learner, audited, 200 a day at most, and gone with the account.
 - `20261104100000_tea_price_history.sql`
 - `20261110000000_cafes_and_drinks.sql`
 - `20261111000000_sweep_hardening.sql`
+- `20261112000000_cafe_read_perf.sql`
 
 ## Parent
 
