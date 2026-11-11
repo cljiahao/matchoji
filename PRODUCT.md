@@ -48,9 +48,9 @@ A reader finds a café or drink page (often through an Instagram post), checks t
 
 ## Capabilities and Constraints
 
-Built so far: Google sign-in, a tea catalogue with ratings and reviews, a journal and want-to-try list, taste profiles and match scores, Explore with filters, top lists, regions, Learn content, tea shops, and share previews.
+Built so far: Google sign-in, a tea catalogue with ratings and reviews, a journal and want-to-try list, taste profiles and match scores, Explore with filters, top lists, regions, Learn content, tea shops, and share previews. For the café-drink positioning: café and drink pages with the taster and community scores side by side, a café map and list with a city switch and area filter, trusted-taster badges and a public taster profile, the disclosure labels and count, top lists of cafés and drinks, café, drink and taster share cards, a "Log a drink" flow (find or add the café and the drink, then rate it), and admin moderation of cafés, drinks and tasters.
 
-Being built next: cafés and drinks, trusted-taster badges and disclosure, a café map and list with a city switch, top lists by drink style and city, and share cards for café, drink and taster pages.
+Next: nothing café-related is queued beyond the owner's own reviews and seed cafés. The owner decides whether to add more cities, invite more tasters or switch on a parked or inert feature.
 
 Parked, not dropped: the marketplace (vendor accounts, listings, "Where to buy", `/sell`). Its tables and code stay in place behind `MARKETPLACE_ENABLED` and its pages are hidden. Commerce stays parked until Matchoji has a business entity and a payment provider.
 
