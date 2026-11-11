@@ -4,7 +4,8 @@ import { CitySlugSchema } from '../lib/city';
 import { NAME, blankToUndefined, optionalText } from './fields';
 
 // Stored without the "@", so a pasted handle works either way.
-const HANDLE = /^[A-Za-z0-9._]{1,30}$/;
+// Not only dots: "." and ".." would turn instagram.com/<handle> into a path traversal.
+const HANDLE = /^(?!\.+$)[A-Za-z0-9._]{1,30}$/;
 
 export const cafeSchema = z.object({
   name: NAME,

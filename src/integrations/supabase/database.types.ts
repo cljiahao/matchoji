@@ -853,6 +853,7 @@ export interface Database {
           taster_avg: number | null;
           community_count: number;
           community_avg: number | null;
+          taster_disclosed_count: number;
         };
         Relationships: [];
       };
