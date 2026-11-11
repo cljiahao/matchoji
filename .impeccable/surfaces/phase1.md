@@ -2,7 +2,7 @@
 version: 1
 slug: 'phase1'
 primary_target: 'phase1'
-related_targets: ['src/app/(public)/page.tsx', 'src/app/(public)/products']
+related_targets: ['src/app/(public)/(home)/page.tsx', 'src/app/(public)/products']
 ---
 
 ## Direction contract
@@ -23,7 +23,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 - Fidelity: production-ready screens, not exploration — this is the real Phase 1 build.
 - Breadth: four screens/flows — discover feed, product detail (+ reviews + rate form), sign-in, add/rate combined flow (search-or-create inline).
-- Named targets: `src/app/(public)/page.tsx` (discover feed replaces current placeholder home), `src/app/(public)/products/[id]/page.tsx` (product detail), sign-in via Supabase Auth Google OAuth (no dedicated screen — a button that redirects), rate/add flow lives on the product detail page + a "log a new one" entry point on the feed.
+- Named targets: `src/app/(public)/(home)/page.tsx` (discover feed replaces current placeholder home), `src/app/(public)/products/[id]/page.tsx` (product detail), sign-in via Supabase Auth Google OAuth (no dedicated screen — a button that redirects), rate/add flow lives on the product detail page + a "log a new one" entry point on the feed.
 - Anti-goals: no marketplace/checkout UI, no vendor dashboard, no native app, no dark-mode-specific redesign beyond the scaffold's existing light/dark tokens.
 
 ## States and ranges

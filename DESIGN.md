@@ -246,7 +246,7 @@ A white shop with one deep green for actions, two category colours treated as da
 
 ### Primary
 
-- **Deep Matcha Green** (matcha-green): the action colour. Primary buttons ("Log a tasting"), the wordmark, "See all" and "Read more" links, the active mobile tab, the selected radio dot in the filter rail, and the Log button disc in the tab bar. Hover is the same green at 90% opacity.
+- **Deep Matcha Green** (matcha-green): the action colour. Primary buttons ("Log a drink"), the wordmark, "See all" and "Read more" links, the active mobile tab, the selected radio dot in the filter rail, and the Log button disc in the tab bar. Hover is the same green at 90% opacity.
 
 ### Secondary
 
@@ -317,7 +317,15 @@ A centred container (1184px max) with 24px side gutters on every surface. Home o
 
 The product page runs a two-column hero inside its tinted band (tile column 18rem from sm, 22rem from lg; 48px gap), then sections stacked 64px apart. Taste sliders use a three-column grid (pole word, track, pole word) beside a 16rem caption from md. Flavour cards scroll sideways on phones (224px each) and become a three-column grid from sm. Explore has a left filter rail that wraps into inline rows on smaller screens.
 
-Below 768px the header drops its nav links and Log button, and a fixed bottom tab bar (Home, Explore, Log, Journal) takes over, padded for the safe area. From 768px the header shows the links and the Log button, with the wordmark held at its full width; the search pill joins from 1024px (below that the Explore link is the way in), and the search icon shows on phones only.
+Below 768px the header drops its nav links and Log button, and a fixed bottom tab bar (Home, Cafés, Log, Top, Tasters) takes over, padded for the safe area; Journal is in the signed-in user menu ("Your journal"). From 768px the header shows the links and the "Log a drink" button, with the wordmark held at its full width; the search pill joins from 1024px. Below 1024px the way into tea search is Teas in the "At home" menu (from 768px) and, on phones only, the header search icon, which links to Explore.
+
+**Café page** (`/cafes/<slug>`): one centred column. A muted "Cafés · City" breadcrumb, the café name as a 36/48px bold h1, then area and address in muted text, then Instagram and website links as underlined 14px links. The score pair follows, then a map (224px tall, 288px from `sm`) when the café has coordinates, then a "Drinks" section (two-column grid of drink rows from `sm`, or a muted empty panel "No drinks listed here yet."), then "Latest from trusted tasters" (review cards each footed with a link to their drink). The tasters section hides when there are none.
+
+**Drink page** (`/cafes/<slug>/<drink>`): opens on a band tinted by the drink's base (matcha or hojicha) holding the café link, the name as an h1, then white pills for the base, style, serving and price, and an optional photo (rounded 24px, with a credit line). Below the band: the score pair, a "Rate this drink" control, a "Tea used here" link when the drink names a catalogue tea, "Trusted tasters" and "Community" review lists, "No reviews yet." in a muted panel when both are empty, and "Similar drinks" (rows that name their café). Empty sections hide.
+
+**Taster page** (`/u/<id>`; the `/tasters` index lists them as bordered cards with the badge, a three-line bio clamp, Instagram link and a drinks-rated line): the name as an h1 with the Trusted taster badge and Instagram link beneath, then joined date and counts, follow and block buttons for other viewers, the stats strip, "Drink reviews" (for a trusted taster only, with a note that taster reviews are shown apart from community ratings, linking to How we rate), the taste profile and "Recent tea tastings". A private profile shows only the name, the joined date and a muted note that ratings still appear on tea pages.
+
+**Score pair** (café and drink pages, and compact in lists): the taster score and the community score sit side by side as a tabular numeral with a label ("Taster score", "Community score"; "Taster", "Community" when compact) and a review count, and are never blended. A side with no reviews is left out, and when neither has any the pair reads "Not yet rated". When some taster reviews are disclosed, a muted 12px line beneath says "N of M taster reviews were invited, gifted or paid"; the disclosed reviews still count in the score.
 
 ## Elevation & Depth
 
@@ -346,10 +354,10 @@ The drawn tin is the signature silhouette: a rounded body with a darker right-si
 Pill-shaped and compact, like an app's.
 
 - **Shape:** full pill (9999px), applied to every button globally.
-- **Primary:** deep matcha green, white 14px 500-weight text, 36px tall, 16px side padding (12px with an icon). Wherever a button is a standalone tap target (navbar "Log a tasting", account and admin forms, journal empty state) it keeps a 44px minimum height through `min-h-11`; the drawn height is only for buttons inside a denser control.
+- **Primary:** deep matcha green, white 14px 500-weight text, 36px tall, 16px side padding (12px with an icon). Wherever a button is a standalone tap target (navbar "Log a drink", account and admin forms, journal empty state) it keeps a 44px minimum height through `min-h-11`; the drawn height is only for buttons inside a denser control.
 - **Hover / Focus:** 90% green on hover; a 2px focus outline in the focus-ring grey, offset 2px.
 - **Outline:** white with a hairline border and hairline shadow; hover fills neutral-100. Used for "Want to try" (white on the hero band) and "Continue with Google" (48px, full width).
-- **Scan label:** an outline button, full width and 44px tall, with a camera icon, at the top of the Log a tasting dialog's search step. It reads "Reading label…" with a spinning loader while the photo is processed and is disabled then. Colours come from tokens only, so it holds in light and dark. It does not render at all until the server has label scanning switched on.
+- **Scan label:** an outline button, full width and 44px tall, with a camera icon, at the top of the search step of the dialog the "Log a drink" button opens (titled "Log a tasting"). It reads "Reading label…" with a spinning loader while the photo is processed and is disabled then. Colours come from tokens only, so it holds in light and dark. It does not render at all until the server has label scanning switched on.
 - **Compact icon:** a 32px white circle in a card's top-right corner for save-to-try; the bookmark fills when saved.
 
 ### Chips
@@ -374,8 +382,8 @@ Pill-shaped and compact, like an app's.
 
 ### Navigation
 
-- **Header:** sticky, 64px, 95% white with blur and a hairline bottom edge. Wordmark (logo plus 20px 800 green "Matchoji"), header search (hidden on home), then Explore and Journal as 14px 600 links, muted until active; "Log a tasting" and auth at the right.
-- **Mobile tab bar:** fixed, 95% white with blur and a hairline top edge; 20px icons over 11px 600 labels, green when active; the Log tab is a 24px green disc with a white plus.
+- **Header:** sticky, 64px, 95% white with blur and a hairline bottom edge. Wordmark (logo plus 20px 800 green "Matchoji"), header search (hidden on Explore), then Cafés, Top and Tasters as 14px 600 links and an "At home" menu (Teas, Learn, Regions), muted until active; "Log a drink", the notification bell and auth at the right.
+- **Mobile tab bar:** fixed, 95% white with blur and a hairline top edge; five tabs (Home, Cafés, Log, Top, Tasters) with 20px icons over 11px 600 labels, green when active; the Log tab opens the log dialog and is a 24px green disc with a white plus. Journal is not a tab; it lives in the user menu.
 - **Filter rail:** radio-dot links (18px circle, active a 5px green ring), with 10px category swatches beside Matcha and Hojicha.
 - **Footer:** shelf-tile fill, green wordmark, 14px 600 links.
 
