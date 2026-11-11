@@ -4,6 +4,8 @@ import { RowNotChangedError } from '@/features/reviews';
 
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
+  CAFE_EXISTS_MESSAGE,
+  DAILY_LIMIT_MESSAGE,
   FriendlyError,
   PENDING_CAFES_MESSAGE,
   PENDING_DRINKS_MESSAGE,
@@ -85,6 +87,20 @@ describe('createCafe', () => {
     );
   });
 
+  it('maps the daily cap and a duplicate café to friendly messages', async () => {
+    const daily = { code: 'P0001', message: 'That is a lot for one day. Try again tomorrow.' };
+    const dailyFake = createFakeSupabase({ cafes: { data: null, error: daily } });
+    const dailyFailure = createCafe(dailyFake.client, { name: 'X', citySlug: 'singapore' });
+    await expect(dailyFailure).rejects.toThrow(DAILY_LIMIT_MESSAGE);
+    await expect(dailyFailure).rejects.toBeInstanceOf(FriendlyError);
+
+    const dupe = { code: '23505', message: 'cafes_city_name_area_key' };
+    const dupeFake = createFakeSupabase({ cafes: { data: null, error: dupe } });
+    await expect(createCafe(dupeFake.client, { name: 'X', citySlug: 'singapore' })).rejects.toThrow(
+      CAFE_EXISTS_MESSAGE
+    );
+  });
+
   it('rethrows any other database error untouched', async () => {
     const error = { code: '42501', message: 'denied' };
     const fake = createFakeSupabase({ cafes: { data: null, error } });
@@ -121,6 +137,12 @@ describe('createDrink', () => {
     const error = { code: 'P0001', message: 'You have too many drinks waiting for review.' };
     const fake = createFakeSupabase({ drinks: { data: null, error } });
     await expect(createDrink(fake.client, input)).rejects.toThrow(PENDING_DRINKS_MESSAGE);
+  });
+
+  it('maps the daily cap to a friendly message', async () => {
+    const error = { code: 'P0001', message: 'That is a lot for one day. Try again tomorrow.' };
+    const fake = createFakeSupabase({ drinks: { data: null, error } });
+    await expect(createDrink(fake.client, input)).rejects.toThrow(DAILY_LIMIT_MESSAGE);
   });
 
   it('says so when the café already lists that drink', async () => {

@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 export const MAX_BIO = 280;
 
-const HANDLE_PATTERN = /^[A-Za-z0-9._]{1,30}$/;
+// Not only dots: "." and ".." would turn instagram.com/<handle> into a path traversal.
+const HANDLE_PATTERN = /^(?!\.+$)[A-Za-z0-9._]{1,30}$/;
 
 // The same check the profile page runs before rendering a stored handle as a link.
 export const isInstagramHandle = (value: string): boolean => HANDLE_PATTERN.test(value);

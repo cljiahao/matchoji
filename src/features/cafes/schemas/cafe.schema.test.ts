@@ -58,4 +58,14 @@ describe('drinkSchema', () => {
     expect(drinkSchema.safeParse({ ...base, base: 'chai' }).success).toBe(false);
     expect(drinkSchema.safeParse({ ...base, name: ' ' }).success).toBe(false);
   });
+
+  it('rejects a handle made only of dots', () => {
+    for (const instagramHandle of ['.', '..', '@..'])
+      expect(
+        cafeSchema.safeParse({ name: 'A', citySlug: 'singapore', instagramHandle }).success
+      ).toBe(false);
+    expect(
+      cafeSchema.safeParse({ name: 'A', citySlug: 'singapore', instagramHandle: 'a.b' }).success
+    ).toBe(true);
+  });
 });
