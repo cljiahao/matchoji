@@ -672,20 +672,26 @@ describe('sweep leftovers: account deletion and rank ties', () => {
     ]);
   });
 
-  it('gives drinks that tie on every rank column one stable order, ending on drink_id', async () => {
-    const names = ['Twin', 'Twin', 'Twin'];
-    const ids: string[] = [];
-    for (const name of names) ids.push(await drink(await cafe({ city: 'johor-bahru' }), { name }));
-    const order = async () =>
-      (
-        await rows<{ drink_id: string }>(
-          `select drink_id from public.drink_ranks
-           where city_slug = 'johor-bahru' and name = 'Twin'
-           order by has_taster desc, rank_score desc, rank_count desc, name, drink_id`
-        )
-      ).map((r) => r.drink_id);
+  it('breaks ties by name, then drink_id, behind the taster-reviewed drink', async () => {
+    const jb = () => cafe({ city: 'johor-bahru' });
+    const twins = [
+      await drink(await jb(), { name: 'Tie Twin' }),
+      await drink(await jb(), { name: 'Tie Twin' }),
+      await drink(await jb(), { name: 'Tie Twin' }),
+    ];
+    const earlierName = await drink(await jb(), { name: 'Tie Aardvark' });
+    const tasted = await drink(await jb(), { name: 'Tie Zed' });
+    await review(TASTER, tasted, { url: POST });
 
-    expect(await order()).toEqual([...ids].sort());
-    expect(await order()).toEqual(await order());
+    const ordered = await rows<{ drink_id: string }>(
+      `select drink_id from public.drink_ranks
+       where city_slug = 'johor-bahru' and name like 'Tie %'
+       order by has_taster desc, rank_score desc, rank_count desc, name, drink_id`
+    );
+
+    // Zed leads on has_taster despite the last name; the unreviewed rest tie on every score
+    // column, so name then drink_id (uuids sort the same as their text) decide. The expectation
+    // is built from the seeded ids, not from the query under test.
+    expect(ordered.map((r) => r.drink_id)).toEqual([tasted, earlierName, ...[...twins].sort()]);
   });
 });
