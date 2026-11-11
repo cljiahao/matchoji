@@ -27,7 +27,7 @@ café and drink of a reported drink review.
 - `components/`
 - `index.ts`
 - `schemas.ts`
-- `types.ts`
+- `types.ts` — row shapes for the admin lists (a profile carries its Instagram handle for taster search)
 
 ## Connectivity
 
