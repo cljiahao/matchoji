@@ -6,6 +6,7 @@ import { cache } from 'react';
 import {
   BASE_LABELS,
   DrinkRow,
+  PendingNotice,
   RateThisDrink,
   SERVING_LABELS,
   STYLE_LABELS,
@@ -68,11 +69,12 @@ export default async function DrinkPage({ params }: DrinkPageProps) {
     SERVING_LABELS[drink.serving],
     drink.price === null ? null : formatPrice(drink.price, drink.currency),
   ].filter((fact): fact is string => fact !== null);
-  const noReviews = tasterReviews.length === 0 && communityReviews.length === 0;
+  const listed = drink.status === 'approved';
+  const noReviews = listed && tasterReviews.length === 0 && communityReviews.length === 0;
 
   return (
     <>
-      {drink.status === 'approved' && (
+      {listed && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -82,6 +84,9 @@ export default async function DrinkPage({ params }: DrinkPageProps) {
                 slug: drink.slug,
                 cafeName: drink.cafe.name,
                 cafeSlug: drink.cafe.slug,
+                photoUrl: drink.photoUrl,
+                price: drink.price,
+                currency: drink.currency,
               })
             ),
           }}
@@ -130,11 +135,16 @@ export default async function DrinkPage({ params }: DrinkPageProps) {
       </div>
 
       <div className="max-w-site mx-auto w-full px-6 py-10 sm:py-14">
-        <ScorePair scores={drink.scores} />
-
-        <div className="mt-6">
-          <RateThisDrink drink={drink} />
-        </div>
+        {listed ? (
+          <>
+            <ScorePair scores={drink.scores} />
+            <div className="mt-6">
+              <RateThisDrink drink={drink} />
+            </div>
+          </>
+        ) : (
+          <PendingNotice kind="drink" />
+        )}
 
         {teaProduct && (
           <p className="mt-6 text-sm">

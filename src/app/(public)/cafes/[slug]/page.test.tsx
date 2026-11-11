@@ -109,6 +109,19 @@ describe('café page', () => {
     );
   });
 
+  it('shows an Awaiting review banner and no score for a pending café', async () => {
+    state.page = { kind: 'found', cafe: { ...cafe, status: 'pending' }, scores, drinks: [] };
+    render(await CafePage(params('kurasu-bugis')));
+    expect(screen.getByRole('status').textContent).toMatch(/Awaiting review/);
+    expect(screen.queryByText(/Tasters/)).toBeNull();
+  });
+
+  it('shows no banner for a listed café', async () => {
+    state.page = { kind: 'found', cafe, scores, drinks: [] };
+    render(await CafePage(params('kurasu-bugis')));
+    expect(screen.queryByText(/Awaiting review/)).toBeNull();
+  });
+
   it('metadata gives the not-found title for a missing café', async () => {
     expect(await generateMetadata(params('nope'))).toEqual({ title: 'Café not found' });
   });

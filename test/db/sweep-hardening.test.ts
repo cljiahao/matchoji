@@ -114,7 +114,7 @@ afterAll(async () => {
 });
 
 describe('1. cafe_ratings.taster_disclosed_count', () => {
-  it('counts tasters with a disclosed review once, beside taster_count', async () => {
+  it('counts disclosed reviews beside taster_count', async () => {
     const c = await cafe();
     const d1 = await drink(c);
     const d2 = await drink(c);
@@ -132,7 +132,24 @@ describe('1. cafe_ratings.taster_disclosed_count', () => {
        from public.cafe_ratings where cafe_id = $1`,
       [c]
     );
-    expect(row).toEqual({ taster_count: 2, taster_disclosed_count: 1, community_count: 1 });
+    // Three taster reviews (TASTER on two drinks, TASTER2 on one): the unit the average uses.
+    expect(row).toEqual({ taster_count: 3, taster_disclosed_count: 2, community_count: 1 });
+  });
+
+  it('counts the reviews the average is taken over, not the people', async () => {
+    const c = await cafe();
+    const d1 = await drink(c);
+    const d2 = await drink(c);
+    await review(TASTER, d1, { url: POST });
+    await review(TASTER, d2, { url: POST });
+    const [row] = await asRows<{ taster_count: number; taster_avg: string }>(
+      null,
+      'select taster_count, taster_avg from public.cafe_ratings where cafe_id = $1',
+      [c]
+    );
+    // One person, two reviews of four stars: a count of 1 would sit beside an average of two.
+    expect(row.taster_count).toBe(2);
+    expect(Number(row.taster_avg)).toBe(4);
   });
 
   it('is zero for a café with no reviews', async () => {
@@ -514,5 +531,121 @@ describe('9. Instagram handles cannot be only dots', () => {
       `insert into public.cafes (name, city_slug, instagram_handle) values ($1, 'singapore', 'ok.cafe')`,
       [unique('Handle')]
     );
+  });
+});
+
+describe('20261112000000: drink_ranks, taster_stats and the latest-review index', () => {
+  const ranksFor = (city: string) =>
+    asRows<{ name: string; qualifies: boolean; has_taster: boolean; rank_score: string }>(
+      null,
+      `select name, qualifies, has_taster, rank_score from public.drink_ranks
+       where city_slug = $1
+       order by has_taster desc, rank_score desc, rank_count desc, name, drink_id`,
+      [city]
+    );
+
+  it('ranks taster-reviewed drinks first, flags who qualifies, and leaves out merged or pending ones', async () => {
+    const c = await cafe({ city: 'johor-bahru' });
+    const tasted = await drink(c, { name: 'Tasted' });
+    const quiet = await drink(c, { name: 'Quiet' });
+    const crowd = await drink(c, { name: 'Crowd' });
+    await drink(c, { name: 'Pending one', status: 'pending' });
+    await review(TASTER, tasted, { url: POST });
+    for (const who of [ALICE, BOB, PRIVATE]) await review(who, crowd);
+    expect(quiet).toBeTruthy();
+
+    expect(await ranksFor('johor-bahru')).toEqual([
+      { name: 'Tasted', qualifies: true, has_taster: true, rank_score: '4.00' },
+      { name: 'Crowd', qualifies: true, has_taster: false, rank_score: '4.00' },
+      { name: 'Quiet', qualifies: false, has_taster: false, rank_score: '0' },
+    ]);
+  });
+
+  it('leaves out drinks at a pending café', async () => {
+    const c = await cafe({ city: 'johor-bahru', status: 'pending' });
+    await drink(c, { name: 'Hidden by café' });
+    const names = (await ranksFor('johor-bahru')).map((r) => r.name);
+    expect(names).not.toContain('Hidden by café');
+  });
+
+  it('counts every drink a taster reviewed, however many reviews others have', async () => {
+    const OLDER = '99999999-9999-4999-8999-999999999999';
+    await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, '{}')`, [
+      OLDER,
+      'older@example.com',
+    ]);
+    await call(ADMIN, 'select public.set_trusted_taster ($1, true)', [OLDER]);
+    const c = await cafe();
+    const drinks = [await drink(c), await drink(c), await drink(c)];
+    for (const d of drinks) await review(OLDER, d, { url: OTHER_POST });
+    // Another taster reviewed far more recently; the older taster's stats are unaffected.
+    await review(TASTER, drinks[0], { url: POST });
+    const [row] = await asRows<{ drink_review_count: number; latest_review_id: string }>(
+      null,
+      'select drink_review_count, latest_review_id from public.taster_stats where user_id = $1',
+      [OLDER]
+    );
+    expect(row.drink_review_count).toBe(3);
+    const [latest] = await rows<{ id: string }>(
+      `select id from public.latest_reviews where user_id = $1 order by created_at desc, id limit 1`,
+      [OLDER]
+    );
+    expect(row.latest_review_id).toBe(latest.id);
+  });
+
+  it('leaves out private people, community reviewers and reviews of pending drinks', async () => {
+    const c = await cafe();
+    const live = await drink(c);
+    const pending = await drink(c, { status: 'pending' });
+    await review(BOB, live);
+    await review(TASTER, pending, { url: POST });
+    const stats = await asRows<{ user_id: string }>(
+      null,
+      'select user_id from public.taster_stats'
+    );
+    expect(stats.map((s) => s.user_id)).not.toContain(BOB);
+    const mine = await asRows<{ drink_review_count: number }>(
+      null,
+      'select drink_review_count from public.taster_stats where user_id = $1',
+      [TASTER]
+    );
+    const counted = await rows<{ n: string }>(
+      `select count(*) as n from internal.latest_reviews r
+       join public.drinks d on d.id = r.drink_id and d.status = 'approved'
+       where r.user_id = $1`,
+      [TASTER]
+    );
+    expect(mine[0]?.drink_review_count ?? 0).toBe(Number(counted[0].n));
+  });
+
+  it('leaves out a merged drink and the drinks of a merged café', async () => {
+    const keepCafe = await cafe({ city: 'johor-bahru' });
+    const dupCafe = await cafe({ city: 'johor-bahru' });
+    const keepDrink = await drink(keepCafe, { name: 'Keeper' });
+    const dupDrink = await drink(keepCafe, { name: 'Duplicate' });
+    const movedDrink = await drink(dupCafe, { name: 'Moved' });
+    await merge('drink', dupDrink, keepDrink);
+    await merge('cafe', dupCafe, keepCafe);
+
+    const ranked = await rows<{ drink_id: string; cafe_id: string }>(
+      `select drink_id, cafe_id from public.drink_ranks where city_slug = 'johor-bahru'`
+    );
+    const ids = ranked.map((r) => r.drink_id);
+    expect(ids).toContain(keepDrink);
+    expect(ids).not.toContain(dupDrink);
+    expect(ranked.filter((r) => r.cafe_id === dupCafe)).toEqual([]);
+    expect(ranked.find((r) => r.drink_id === movedDrink)?.cafe_id).toBe(keepCafe);
+  });
+
+  it('creates the latest-review index, and a rerun of the migration is a no-op', async () => {
+    const sql = readFileSync(
+      path.join(SUPABASE_DIR, 'migrations/20261112000000_cafe_read_perf.sql'),
+      'utf8'
+    );
+    await db.exec(sql);
+    const idx = await rows<{ indexname: string }>(
+      `select indexname from pg_indexes where indexname = 'reviews_latest_key_idx'`
+    );
+    expect(idx).toHaveLength(1);
   });
 });

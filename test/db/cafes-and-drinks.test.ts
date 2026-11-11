@@ -570,7 +570,7 @@ describe('drink_ratings', () => {
     ).toEqual([{ drink_count: 1, community_count: 1 }]);
   });
 
-  it('rolls a café up over its drinks, counting people once, taster and community apart', async () => {
+  it('rolls a café up over its drinks, counting reviews, taster and community apart', async () => {
     const c = await cafe();
     const a = await drink(c);
     const b = await drink(c);
@@ -588,7 +588,8 @@ describe('drink_ratings', () => {
         drink_count: 2,
         taster_count: 1,
         taster_avg: '5.00',
-        community_count: 1,
+        // Bob reviewed two drinks: two reviews, the unit the 3.00 average is taken over.
+        community_count: 2,
         community_avg: '3.00',
       },
     ]);

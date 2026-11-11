@@ -13,6 +13,8 @@ wiring with `@supabase/ssr` mocked.
 `select-in.ts` splits a long `.in()` id list into batches of 100 (PostgREST puts the list in
 the URL) and merges the rows; every service with an open-ended id list uses it.
 
+`database.types.ts` now includes the `drink_ranks` view (ranked, qualifying drinks per city, base and style) and the `taster_stats` view (a taster's drink-review count and latest review), both from `20261112000000_cafe_read_perf.sql`.
+
 `database.types.ts` covers the tasting-journal columns, `wishlist` and the regions'
 `matcha_supply` / `hojicha_supply` levels (`SupplyLevel`), `tea_production_stats`, `stock_reports` (`StockStatus`),
 `products.shop_url`, `products.status` (`ProductStatus`) and `added_by`, the `latest_reviews`

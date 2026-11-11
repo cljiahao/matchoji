@@ -11,6 +11,7 @@ import {
   listSimilarDrinks,
   listTopDrinkLists,
   listTopDrinks,
+  listTopDrinksPage,
 } from './cafes-service';
 
 const ok = (data: unknown) => ({ data, error: null });
@@ -67,6 +68,7 @@ const cafeRating = (cafe_id: string, over: Record<string, unknown> = {}) => ({
   cafe_id,
   drink_count: 1,
   taster_count: 0,
+  taster_disclosed_count: 0,
   taster_avg: null,
   community_count: 0,
   community_avg: null,
@@ -248,6 +250,23 @@ describe('getCafePage', () => {
     expect(page.drinks[0].cafe).toMatchObject({ slug: 'kurasu-bugis', name: 'Kurasu' });
   });
 
+  it('carries the disclosed count and counts reviews, the unit the average is over', async () => {
+    const { client } = createFakeSupabase({
+      cafes: ok(cafeRow()),
+      drinks: ok([drinkRow()]),
+      drink_ratings: ok([
+        ratingRow('d1', { taster_count: 3, taster_avg: 4, taster_disclosed_count: 2 }),
+      ]),
+      cafe_ratings: ok(
+        cafeRating('c1', { taster_count: 3, taster_avg: '4.00', taster_disclosed_count: 2 })
+      ),
+    });
+    const page = await getCafePage(client, 'kurasu-bugis');
+    if (page.kind !== 'found') throw new Error('expected found');
+    expect(page.scores).toMatchObject({ tasterCount: 3, tasterDisclosedCount: 2 });
+    expect(page.drinks[0].scores.tasterDisclosedCount).toBe(2);
+  });
+
   it('shows a café with no drinks without querying ratings', async () => {
     const { client, calls } = createFakeSupabase({
       cafes: ok(cafeRow()),
@@ -387,6 +406,17 @@ describe('getDrinkPage', () => {
     expect(named.communityReviews[0].reviewerName).toBe('Former taster');
   });
 
+  it('caps the drink_reviews read', async () => {
+    const { client, calls } = createFakeSupabase({
+      cafes: ok(cafeRow()),
+      drinks: ok(drinkRow()),
+      drink_ratings: ok(null),
+      'rpc:drink_reviews': ok([]),
+    });
+    await getDrinkPage(client, 'kurasu-bugis', 'hojicha-latte');
+    expect(calls).toContainEqual(expect.objectContaining({ method: 'limit', args: [100] }));
+  });
+
   it('is missing for an unknown café, drink or rejected café', async () => {
     const cases = [
       { cafes: ok(null), drinks: ok(null) },
@@ -438,48 +468,64 @@ describe('getDrinkPage', () => {
   });
 });
 
+// A drink_ranks read already ordered and counted by the database; the service hydrates the ids.
+const ranks = (ids: string[], count = ids.length) => ({
+  data: ids.map((drink_id) => ({ drink_id })),
+  error: null,
+  count,
+});
+
+const hydration = (ids: string[], ratings: unknown[] = []) => ({
+  drinks: ok(ids.map((id) => drinkRow({ id, name: `Drink ${id}` }))),
+  cafes: ok([cafeRow()]),
+  drink_ratings: ok(ratings),
+});
+
+const filtersOn = (calls: { table: string; method: string; args: unknown[] }[], table: string) =>
+  calls.filter((c) => c.table === table && c.method === 'eq').map((c) => c.args);
+
 describe('listTopDrinks', () => {
-  const queue = (ratings: unknown[]) => ({
-    cafes: ok([cafeRow()]),
-    drinks: ok([
-      drinkRow({ id: 'd1', name: 'A' }),
-      drinkRow({ id: 'd2', name: 'B' }),
-      drinkRow({ id: 'd3', name: 'C' }),
-      drinkRow({ id: 'd4', name: 'D' }),
-    ]),
-    drink_ratings: ok(ratings),
+  it('returns nothing, without reading, for a limit of zero or less', async () => {
+    const { client, calls } = createFakeSupabase({});
+    expect(await listTopDrinks(client, { city: 'singapore', limit: 0 })).toEqual([]);
+    expect(await listTopDrinks(client, { city: 'singapore', limit: -3 })).toEqual([]);
+    expect(calls).toEqual([]);
   });
 
-  it('applies threshold (1 taster or 3 community)', async () => {
-    const { client } = createFakeSupabase(
-      queue([
-        ratingRow('d1', { taster_count: 1, taster_avg: 3 }),
-        ratingRow('d2', { community_count: 2, community_avg: 5 }),
-        ratingRow('d3', { community_count: 3, community_avg: 4 }),
-        ratingRow('d4'),
-      ])
+  it('reads the database ranking, qualifying drinks only, in the order it returns', async () => {
+    const { client, calls } = createFakeSupabase({
+      drink_ranks: ranks(['d3', 'd1']),
+      ...hydration(['d1', 'd3'], [ratingRow('d1', { taster_count: 1, taster_avg: 3 })]),
+    });
+    const top = await listTopDrinks(client, { city: 'singapore', limit: 2 });
+    expect(top.map((d) => d.id)).toEqual(['d3', 'd1']);
+    expect(filtersOn(calls, 'drink_ranks')).toEqual([
+      ['city_slug', 'singapore'],
+      ['qualifies', true],
+    ]);
+    expect(calls).toContainEqual(
+      expect.objectContaining({ table: 'drink_ranks', method: 'range', args: [0, 1] })
     );
-    const top = await listTopDrinks(client, { city: 'singapore' });
-    expect(top.map((d) => d.id)).toEqual(['d1', 'd3']);
   });
 
-  it('ranks taster score above community', async () => {
-    const { client } = createFakeSupabase(
-      queue([
-        ratingRow('d1', { taster_count: 1, taster_avg: 3 }),
-        ratingRow('d2', { community_count: 9, community_avg: 5 }),
-        ratingRow('d3', { taster_count: 1, taster_avg: 4.5 }),
-        ratingRow('d4', { community_count: 3, community_avg: 4 }),
-      ])
-    );
-    const top = await listTopDrinks(client, { city: 'singapore', limit: 3 });
-    expect(top.map((d) => d.id)).toEqual(['d3', 'd1', 'd2']);
+  it('ranks taster-reviewed first, then score, then count, never recency', async () => {
+    const { client, calls } = createFakeSupabase({
+      drink_ranks: ranks([]),
+    });
+    await listTopDrinks(client, { city: 'singapore' });
+    const order = calls
+      .filter((c) => c.table === 'drink_ranks' && c.method === 'order')
+      .map((c) => c.args[0]);
+    expect(order).toEqual(['has_taster', 'rank_score', 'rank_count', 'name', 'drink_id']);
   });
 
-  it('filters by base and style in the query', async () => {
-    const { client, calls } = createFakeSupabase(queue([]));
+  it('keeps one list to its own base and style', async () => {
+    const { client, calls } = createFakeSupabase({
+      drink_ranks: ranks(['d2']),
+      ...hydration(['d2']),
+    });
     await listTopDrinks(client, { city: 'singapore', base: 'matcha', style: 'iced_latte' });
-    expect(eqCalls(calls, 'drinks')).toEqual(
+    expect(filtersOn(calls, 'drink_ranks')).toEqual(
       expect.arrayContaining([
         ['base', 'matcha'],
         ['style', 'iced_latte'],
@@ -487,115 +533,143 @@ describe('listTopDrinks', () => {
     );
   });
 
-  it('returns [] when the city has no cafés or tables are missing', async () => {
-    const empty = createFakeSupabase({ cafes: ok([]) });
+  it('returns [] when the city has none or the view is missing', async () => {
+    const empty = createFakeSupabase({ drink_ranks: ranks([]) });
     expect(await listTopDrinks(empty.client, { city: 'singapore' })).toEqual([]);
-    const gone = createFakeSupabase({ cafes: missing });
+    const gone = createFakeSupabase({ drink_ranks: missing });
     expect(await listTopDrinks(gone.client, { city: 'singapore' })).toEqual([]);
-    const noDrinks = createFakeSupabase({ cafes: ok([cafeRow()]), drinks: missing });
-    expect(await listTopDrinks(noDrinks.client, { city: 'singapore' })).toEqual([]);
+  });
+});
+
+describe('listTopDrinksPage', () => {
+  it('reports the exact total, not the rows read, and the page count from it', async () => {
+    const ids = Array.from({ length: 20 }, (_, i) => `d${i}`);
+    const { client, calls } = createFakeSupabase({
+      // 1200 qualify, far above any read cap; only 20 come back for the page.
+      drink_ranks: ranks(ids, 1200),
+      ...hydration(ids),
+    });
+    const page = await listTopDrinksPage(client, { city: 'singapore' }, 3, 20);
+    expect([page.total, page.pageCount, page.drinks.length]).toEqual([1200, 60, 20]);
+    expect(calls).toContainEqual(
+      expect.objectContaining({ table: 'drink_ranks', method: 'range', args: [40, 59] })
+    );
+    expect(calls).toContainEqual(
+      expect.objectContaining({
+        table: 'drink_ranks',
+        method: 'select',
+        args: ['drink_id', { count: 'exact' }],
+      })
+    );
+  });
+
+  it('returns no rows past the last page but still the total', async () => {
+    const { client } = createFakeSupabase({ drink_ranks: ranks([], 25) });
+    const page = await listTopDrinksPage(client, { city: 'singapore' }, 9, 20);
+    expect(page.drinks).toEqual([]);
+    expect(page.total).toBe(25);
   });
 });
 
 describe('listTopDrinkLists', () => {
-  it('groups qualifying drinks by city, base and style and leaves out empty lists', async () => {
+  it('counts each list exactly and leaves out empty ones', async () => {
     const { client } = createFakeSupabase({
-      // Singapore has a café; Johor Bahru has none yet.
-      cafes: [ok([cafeRow()]), ok([])],
-      drinks: ok([
-        drinkRow({ id: 'd1', name: 'A' }),
-        drinkRow({ id: 'd2', name: 'B', base: 'matcha', style: 'straight' }),
-        drinkRow({ id: 'd3', name: 'C', base: 'matcha', style: 'float' }),
-      ]),
-      drink_ratings: ok([
-        ratingRow('d1', { taster_count: 1, taster_avg: 4 }),
-        ratingRow('d2', { community_count: 3, community_avg: 4 }),
-        ratingRow('d3'),
-      ]),
+      // One read per list, in ALL_DRINK_LISTS order: the first has 40 drinks, the rest none.
+      drink_ranks: [ranks(['d1', 'd2', 'd3'], 40), ranks([])],
+      ...hydration(['d1', 'd2', 'd3']),
     });
-
     const lists = await listTopDrinkLists(client);
-
-    expect(lists.map((l) => [l.slug, l.title, l.count])).toEqual([
-      ['singapore-hojicha-latte', 'Top hojicha lattes in Singapore', 1],
-      ['singapore-matcha-straight', 'Top straight matcha in Singapore', 1],
-    ]);
-    expect(lists[0]?.drinks.map((d) => d.id)).toEqual(['d1']);
+    expect(lists).toHaveLength(1);
+    expect(lists[0]).toMatchObject({ count: 40 });
+    expect(lists[0]?.drinks.map((d) => d.id)).toEqual(['d1', 'd2', 'd3']);
   });
 
-  it('returns [] before the café tables exist', async () => {
-    const { client } = createFakeSupabase({ cafes: missing });
+  it('returns [] before the view exists', async () => {
+    const { client } = createFakeSupabase({ drink_ranks: missing });
     expect(await listTopDrinkLists(client)).toEqual([]);
   });
 });
 
 describe('listSimilarDrinks', () => {
-  it('lists other drinks of the same base and style in the city', async () => {
+  const drink = {
+    id: 'd1',
+    cafeId: 'c1',
+    slug: 'hojicha-latte',
+    name: 'Hojicha Latte',
+    base: 'hojicha' as const,
+    style: 'latte' as const,
+    serving: 'both' as const,
+    price: 7.5,
+    currency: 'SGD' as const,
+    photoUrl: null,
+    photoCredit: null,
+    teaProductId: null,
+    status: 'approved' as const,
+  };
+
+  it('takes the best-ranked matches, ranked before the limit, never the drink itself', async () => {
     const { client, calls } = createFakeSupabase({
-      cafes: ok([cafeRow()]),
-      drinks: ok([drinkRow({ id: 'd1' }), drinkRow({ id: 'd2', name: 'Other' })]),
-      drink_ratings: ok([ratingRow('d2', { community_count: 1, community_avg: 4 })]),
+      drink_ranks: ranks(['d2', 'd5']),
+      ...hydration(['d2', 'd5']),
     });
-    const similar = await listSimilarDrinks(
-      client,
-      {
-        id: 'd1',
-        cafeId: 'c1',
-        slug: 'hojicha-latte',
-        name: 'Hojicha Latte',
-        base: 'hojicha',
-        style: 'latte',
-        serving: 'both',
-        price: 7.5,
-        currency: 'SGD',
-        photoUrl: null,
-        photoCredit: null,
-        teaProductId: null,
-        status: 'approved',
-      },
-      'singapore'
-    );
-    expect(similar.map((d) => d.id)).toEqual(['d2']);
-    expect(eqCalls(calls, 'drinks')).toEqual(
+    const similar = await listSimilarDrinks(client, drink, 'singapore');
+    expect(similar.map((d) => d.id)).toEqual(['d2', 'd5']);
+    expect(filtersOn(calls, 'drink_ranks')).toEqual(
       expect.arrayContaining([
         ['base', 'hojicha'],
         ['style', 'latte'],
       ])
     );
+    expect(calls).toContainEqual(
+      expect.objectContaining({ table: 'drink_ranks', method: 'neq', args: ['drink_id', 'd1'] })
+    );
+    expect(calls).toContainEqual(
+      expect.objectContaining({ table: 'drink_ranks', method: 'range', args: [0, 3] })
+    );
+    const order = calls
+      .filter((c) => c.table === 'drink_ranks' && c.method === 'order')
+      .map((c) => c.args[0]);
+    expect(order[0]).toBe('has_taster');
   });
 });
 
 describe('listLatestTasterDrinkReviews', () => {
+  const ranked = () => ({
+    drink_ranks: ranks(['d1']),
+    ...hydration(['d1'], [ratingRow('d1', { taster_count: 1, taster_avg: 4 })]),
+  });
+
   it('pairs the newest taster reviews with their drinks, one per person and drink', async () => {
     const { client } = createFakeSupabase({
-      cafes: ok([cafeRow()]),
-      drinks: ok([drinkRow()]),
-      drink_ratings: ok([ratingRow('d1', { taster_count: 1, taster_avg: 4 })]),
-      reviews: ok([
-        reviewRow({ id: 'new', by_trusted_taster: true, created_at: '2026-11-06T00:00:00Z' }),
+      ...ranked(),
+      latest_reviews: ok([
         reviewRow({ id: 'old', by_trusted_taster: true, created_at: '2026-11-01T00:00:00Z' }),
+        reviewRow({ id: 'new', by_trusted_taster: true, created_at: '2026-11-06T00:00:00Z' }),
         reviewRow({ id: 'gone', by_trusted_taster: true, drink_id: 'unlisted' }),
       ]),
       public_profiles: ok([{ id: 'u1', display_name: 'Mei' }]),
     });
-    const latest = await listLatestTasterDrinkReviews(client, { city: 'singapore' });
+    const latest = await listLatestTasterDrinkReviews(client, { city: 'singapore', limit: 1 });
     expect(latest.map((l) => l.review.id)).toEqual(['new']);
-    expect(latest[0].drink.name).toBe('Hojicha Latte');
+    expect(latest[0].drink.name).toBe('Drink d1');
     expect(latest[0].review.reviewerName).toBe('Mei');
   });
 
+  it('reads the per-person latest view and caps the read at the rail size', async () => {
+    const { client, calls } = createFakeSupabase({ ...ranked(), latest_reviews: ok([]) });
+    await listLatestTasterDrinkReviews(client, { city: 'singapore', limit: 6 });
+    const reads = calls.filter((c) => c.table === 'latest_reviews');
+    expect(reads).toContainEqual(expect.objectContaining({ method: 'limit', args: [6] }));
+    expect(calls.some((c) => c.table === 'reviews')).toBe(false);
+  });
+
   it('returns [] when the city has no drinks', async () => {
-    const { client } = createFakeSupabase({ cafes: ok([]) });
+    const { client } = createFakeSupabase({ drink_ranks: ranks([]) });
     expect(await listLatestTasterDrinkReviews(client, { city: 'singapore' })).toEqual([]);
   });
 
   it('returns [] when reviews table is missing', async () => {
-    const { client } = createFakeSupabase({
-      cafes: ok([cafeRow()]),
-      drinks: ok([drinkRow()]),
-      drink_ratings: ok([]),
-      reviews: missing,
-    });
+    const { client } = createFakeSupabase({ ...ranked(), latest_reviews: missing });
     expect(await listLatestTasterDrinkReviews(client, { city: 'singapore' })).toEqual([]);
   });
 });

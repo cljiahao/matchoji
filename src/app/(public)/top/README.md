@@ -6,6 +6,8 @@ The drink top-lists index (`page.tsx`): per city, a preview of each list that ha
 
 The empty state offers `AddCafeCta`.
 
+`[slug]/` pages through its list, 20 drinks a page with `?page=`, so the "See all N" on the index matches the list; a page past the last is a 404. The index counts come from the `drink_ranks` view, so the migration `20261112000000_cafe_read_perf.sql` must be applied before the deploy.
+
 ## Contents
 
 - `[slug]/`

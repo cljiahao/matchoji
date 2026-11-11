@@ -14,6 +14,11 @@ const cafe = {
   websiteUrl: 'https://kurasu.test',
   tasterAvg: 4.26,
   tasterCount: 3,
+  photoUrl: 'https://example.test/c.jpg',
+  menu: [
+    { name: 'Hojicha Latte', slug: 'hojicha-latte', price: 7.5, currency: 'SGD' },
+    { name: 'Matcha Float', slug: 'matcha-float', price: null, currency: 'SGD' },
+  ],
 };
 
 describe('cafeJsonLd', () => {
@@ -37,6 +42,33 @@ describe('cafeJsonLd', () => {
     );
   });
 
+  it('adds a drink photo as the image and a priced menu from its drinks', () => {
+    const ld = cafeJsonLd(cafe);
+    expect(ld.image).toBe('https://example.test/c.jpg');
+    expect(cafeJsonLd({ ...cafe, photoUrl: null })).not.toHaveProperty('image');
+    expect(ld).toMatchObject({
+      hasMenu: {
+        '@type': 'Menu',
+        hasMenuSection: {
+          hasMenuItem: [
+            {
+              name: 'Hojicha Latte',
+              offers: { '@type': 'Offer', price: '7.50', priceCurrency: 'SGD' },
+            },
+            { name: 'Matcha Float' },
+          ],
+        },
+      },
+    });
+    const items = (ld.hasMenu as { hasMenuSection: { hasMenuItem: object[] } }).hasMenuSection
+      .hasMenuItem;
+    expect(items[1]).not.toHaveProperty('offers');
+  });
+
+  it('leaves hasMenu out for a café with no drinks', () => {
+    expect(cafeJsonLd({ ...cafe, menu: [] })).not.toHaveProperty('hasMenu');
+  });
+
   it('omits what the café does not have', () => {
     const ld = cafeJsonLd({
       ...cafe,
@@ -50,11 +82,34 @@ describe('cafeJsonLd', () => {
   });
 });
 
+const drink = {
+  name: 'Hojicha Latte',
+  cafeName: 'Kurasu',
+  cafeSlug: 'k',
+  slug: 'h',
+  photoUrl: 'https://example.test/h.jpg',
+  price: 7.5,
+  currency: 'SGD',
+};
+
 describe('drinkJsonLd', () => {
   it('is a MenuItem at the café with no rating claim', () => {
-    const ld = drinkJsonLd({ name: 'Hojicha Latte', cafeName: 'Kurasu', cafeSlug: 'k', slug: 'h' });
+    const ld = drinkJsonLd(drink);
     expect(ld).toMatchObject({ '@type': 'MenuItem', name: 'Hojicha Latte' });
     expect(ld).not.toHaveProperty('aggregateRating');
+  });
+
+  it('uses the photo and the price when it has them', () => {
+    expect(drinkJsonLd(drink)).toMatchObject({
+      image: 'https://example.test/h.jpg',
+      offers: { '@type': 'Offer', price: '7.50', priceCurrency: 'SGD' },
+    });
+  });
+
+  it('omits image and offers when the drink has no photo or price', () => {
+    const ld = drinkJsonLd({ ...drink, photoUrl: null, price: null });
+    expect(ld).not.toHaveProperty('image');
+    expect(ld).not.toHaveProperty('offers');
   });
 });
 

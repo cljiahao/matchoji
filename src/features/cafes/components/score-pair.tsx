@@ -16,11 +16,13 @@ function Block({
   label,
   avg,
   count,
+  disclosed = 0,
   compact,
 }: {
   label: string;
   avg: number;
   count: number;
+  disclosed?: number;
   compact: boolean;
 }) {
   return (
@@ -29,6 +31,7 @@ function Block({
       <div className="text-sm leading-tight">
         <p className="font-semibold">{label}</p>
         <p className="text-muted-foreground">{reviewsLabel(count)}</p>
+        {disclosed > 0 && <p className="text-muted-foreground">{disclosed} paid/gifted</p>}
       </div>
     </div>
   );
@@ -36,7 +39,7 @@ function Block({
 
 // Taster and community scores sit side by side and are never averaged together: a visitor can
 // tell whose opinion each number is. A disclosed (invited, gifted or paid) taster review still counts,
-// and the line under the score says how many were.
+// and the line under the taster count says how many were paid/gifted.
 export function ScorePair({ scores, compact = false, className }: ScorePairProps) {
   const hasTaster = scores.tasterAvg !== null && scores.tasterCount > 0;
   const hasCommunity = scores.communityAvg !== null && scores.communityCount > 0;
@@ -53,6 +56,7 @@ export function ScorePair({ scores, compact = false, className }: ScorePairProps
             label={compact ? 'Taster' : 'Taster score'}
             avg={scores.tasterAvg}
             count={scores.tasterCount}
+            disclosed={scores.tasterDisclosedCount}
             compact={compact}
           />
         )}
@@ -65,12 +69,6 @@ export function ScorePair({ scores, compact = false, className }: ScorePairProps
           />
         )}
       </div>
-      {hasTaster && scores.tasterDisclosedCount > 0 && (
-        <p className="text-muted-foreground text-xs">
-          {scores.tasterDisclosedCount} of {scores.tasterCount} taster{' '}
-          {scores.tasterCount === 1 ? 'review was' : 'reviews were'} invited, gifted or paid
-        </p>
-      )}
     </div>
   );
 }

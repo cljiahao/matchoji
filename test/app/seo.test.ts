@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { ALL_DRINK_LISTS } from '@/features/cafes/lib';
 import { COURSES, GUIDES, RECIPES } from '@/features/learn';
 
 import { createFakeSupabase, type QueryResult } from '../support/fake-supabase';
@@ -13,12 +14,13 @@ import sitemap from '@/app/sitemap';
 
 const NO_ROWS: QueryResult = { data: [], error: null };
 
-function useServer(results: Record<string, QueryResult>) {
+function useServer(results: Record<string, QueryResult | QueryResult[]>) {
   // Cafés and drinks are read for the sitemap too; most cases have none.
   const fake = createFakeSupabase({
     cafes: NO_ROWS,
     drinks: NO_ROWS,
     drink_ratings: NO_ROWS,
+    drink_ranks: NO_ROWS,
     public_profiles: NO_ROWS,
     cafe_ratings: NO_ROWS,
     ...results,
@@ -142,6 +144,11 @@ describe('sitemap', () => {
         ],
         error: null,
       },
+      drink_ranks: ALL_DRINK_LISTS.map((list): QueryResult =>
+        list.city === 'singapore' && list.base === 'hojicha' && list.style === 'latte'
+          ? { data: [{ drink_id: 'd1' }], error: null, count: 1 }
+          : NO_ROWS
+      ),
       drink_ratings: {
         data: [
           {

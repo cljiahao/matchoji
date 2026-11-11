@@ -14,6 +14,7 @@ export {
 } from './cafes-mutations';
 export { loadIsTrustedTaster, searchCafes, searchDrinks } from './cafes-search';
 export {
+  TOP_PAGE_SIZE,
   getCafePage,
   getDrinkPage,
   latestTasterReviews,
@@ -23,6 +24,8 @@ export {
   listSimilarDrinks,
   listTopDrinkLists,
   listTopDrinks,
+  listTopDrinksPage,
   type ListCafesOptions,
   type TopDrinksOptions,
+  type TopDrinksPage,
 } from './cafes-service';

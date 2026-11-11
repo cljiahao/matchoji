@@ -857,6 +857,29 @@ export interface Database {
         };
         Relationships: [];
       };
+      drink_ranks: {
+        Row: {
+          drink_id: string;
+          cafe_id: string;
+          city_slug: string;
+          base: DrinkBase;
+          style: DrinkStyle;
+          name: string;
+          qualifies: boolean;
+          has_taster: boolean;
+          rank_score: number;
+          rank_count: number;
+        };
+        Relationships: [];
+      };
+      taster_stats: {
+        Row: {
+          user_id: string;
+          drink_review_count: number;
+          latest_review_id: string;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };

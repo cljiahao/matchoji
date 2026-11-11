@@ -4,5 +4,6 @@ export { CitySwitch } from './city-switch';
 export { DrinkReviewForm } from './drink-review-form';
 export { DrinkRow } from './drink-row';
 export { LazyDrinkLogFlow } from './lazy-drink-log-flow';
+export { PendingNotice } from './pending-notice';
 export { RateThisDrink } from './rate-this-drink';
 export { ScorePair } from './score-pair';

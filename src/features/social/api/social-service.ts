@@ -10,6 +10,9 @@ type Client = SupabaseClient<Database>;
 type ReviewRow = Database['public']['Tables']['reviews']['Row'];
 
 const RECENT = 20;
+// Bound on the /tasters roster. Counts and each latest review come from the taster_stats view, so
+// they are per taster and exact however many reviews the others have.
+const TASTER_LIMIT = 100;
 
 // Pairs tastings with their tea or drink and the author's name, keeping only tastings whose
 // subject the reader can still see.
@@ -130,41 +133,46 @@ export async function listTasters(supabase: Client): Promise<TasterCard[]> {
     .select('id, display_name, instagram_handle, bio')
     .eq('is_trusted_taster', true)
     .eq('is_public', true)
-    .order('display_name');
+    .order('display_name')
+    .limit(TASTER_LIMIT);
   if (error) throw error;
   if (people.length === 0) return [];
 
-  const { data: rows, error: reviewsError } = await selectIn(
+  const { data: stats, error: statsError } = await selectIn(
     people.map((p) => p.id),
     (ids) =>
       supabase
-        .from('latest_reviews')
-        .select(REVIEW_COLUMNS)
+        .from('taster_stats')
+        .select('user_id, drink_review_count, latest_review_id')
         .in('user_id', ids)
-        .not('drink_id', 'is', null)
-        .order('created_at', { ascending: false })
+  );
+  if (statsError) throw statsError;
+  const statsById = new Map(stats.map((row) => [row.user_id, row]));
+
+  // Only each taster's newest review is read, through the caller-rights view, so a review the
+  // reader cannot see simply leaves that card without a latest drink.
+  const { data: rows, error: reviewsError } = await selectIn(
+    stats.map((row) => row.latest_review_id),
+    (ids) => supabase.from('latest_reviews').select(REVIEW_COLUMNS).in('id', ids)
   );
   if (reviewsError) throw reviewsError;
-  rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const reviewById = new Map(rows.map((r) => [r.id, r]));
   const drinks = await loadDrinkSummaries(
     supabase,
     rows.flatMap((r) => (r.drink_id ? [r.drink_id] : []))
   );
 
   return people.map((person): TasterCard => {
-    const mine = rows.flatMap((r) => {
-      const drink = r.drink_id ? drinks.get(r.drink_id) : undefined;
-      return r.user_id === person.id && drink
-        ? [{ ...mapReviewRow(r, person.display_name), drink }]
-        : [];
-    });
+    const stat = statsById.get(person.id);
+    const row = stat && reviewById.get(stat.latest_review_id);
+    const drink = row?.drink_id ? drinks.get(row.drink_id) : undefined;
     return {
       id: person.id,
       name: person.display_name,
       bio: person.bio,
       instagramHandle: person.instagram_handle,
-      drinkReviewCount: mine.length,
-      latest: mine[0] ?? null,
+      drinkReviewCount: stat?.drink_review_count ?? 0,
+      latest: row && drink ? { ...mapReviewRow(row, person.display_name), drink } : null,
     };
   });
 }
