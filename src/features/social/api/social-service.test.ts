@@ -270,26 +270,30 @@ describe('listTasters', () => {
     created_at: createdAt,
   });
 
+  const stat = (userId: string, count: number, latest: string) => ({
+    user_id: userId,
+    drink_review_count: count,
+    latest_review_id: latest,
+  });
+  const drinks = {
+    data: [
+      { id: 'd1', cafe_id: 'c1', slug: 'a', name: 'Matcha latte', base: 'matcha' },
+      { id: 'd2', cafe_id: 'c1', slug: 'b', name: 'Hojicha float', base: 'hojicha' },
+    ],
+    error: null,
+  };
+  const cafes = { data: [{ id: 'c1', slug: 'kurasu', name: 'Kurasu' }], error: null };
+
   it('reads trusted, public profiles only and returns each with a count and latest drink', async () => {
     const { client, calls } = createFakeSupabase({
       public_profiles: { data: people, error: null },
+      taster_stats: { data: [stat('u1', 2, 'r2')], error: null },
       latest_reviews: {
-        data: [
-          drinkReview('r1', 'u1', 'd1', '2026-11-01T00:00:00Z'),
-          drinkReview('r2', 'u1', 'd2', '2026-11-05T00:00:00Z'),
-          // d3 is not visible to the reader, so it is neither counted nor shown.
-          drinkReview('r3', 'u1', 'd3', '2026-11-09T00:00:00Z'),
-        ],
+        data: [drinkReview('r2', 'u1', 'd2', '2026-11-05T00:00:00Z')],
         error: null,
       },
-      drinks: {
-        data: [
-          { id: 'd1', cafe_id: 'c1', slug: 'a', name: 'Matcha latte', base: 'matcha' },
-          { id: 'd2', cafe_id: 'c1', slug: 'b', name: 'Hojicha float', base: 'hojicha' },
-        ],
-        error: null,
-      },
-      cafes: { data: [{ id: 'c1', slug: 'kurasu', name: 'Kurasu' }], error: null },
+      drinks,
+      cafes,
     });
     const tasters = await listTasters(client);
 
@@ -303,12 +307,45 @@ describe('listTasters', () => {
       ['Newbie', 0, null],
     ]);
     expect(tasters[0]).toMatchObject({ bio: 'Hojicha first.', instagramHandle: 'foodcnl' });
-    // Both reads are bounded so a growing roster cannot pull every row.
+    // The roster is bounded; counts come from the view, not from a capped read of reviews.
     const limits = calls.filter((c) => c.method === 'limit').map((c) => [c.table, c.args[0]]);
-    expect(limits).toEqual([
-      ['public_profiles', 100],
-      ['latest_reviews', 500],
+    expect(limits).toEqual([['public_profiles', 100]]);
+    expect(calls.some((c) => c.table === 'reviews')).toBe(false);
+  });
+
+  it('gives an older taster their full count and latest review beside a busier one', async () => {
+    const { client } = createFakeSupabase({
+      public_profiles: { data: people, error: null },
+      taster_stats: {
+        data: [stat('u1', 900, 'r9'), stat('u2', 3, 'r1')],
+        error: null,
+      },
+      latest_reviews: {
+        data: [
+          drinkReview('r9', 'u1', 'd2', '2026-11-09T00:00:00Z'),
+          drinkReview('r1', 'u2', 'd1', '2026-01-01T00:00:00Z'),
+        ],
+        error: null,
+      },
+      drinks,
+      cafes,
+    });
+    const tasters = await listTasters(client);
+    expect(tasters.map((t) => [t.name, t.drinkReviewCount, t.latest?.drink.name])).toEqual([
+      ['Foodcnl', 900, 'Hojicha float'],
+      ['Newbie', 3, 'Matcha latte'],
     ]);
+  });
+
+  it('keeps the count when the newest review is no longer visible', async () => {
+    const { client } = createFakeSupabase({
+      public_profiles: { data: people, error: null },
+      taster_stats: { data: [stat('u1', 2, 'r3')], error: null },
+      latest_reviews: { data: [], error: null },
+      drinks: { data: [], error: null },
+    });
+    const [first] = await listTasters(client);
+    expect(first).toMatchObject({ drinkReviewCount: 2, latest: null });
   });
 
   it('is empty, without reading reviews, when nobody is a trusted taster', async () => {

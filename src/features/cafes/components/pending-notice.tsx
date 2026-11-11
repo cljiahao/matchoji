@@ -10,8 +10,8 @@ export function PendingNotice({ kind }: PendingNoticeProps) {
     <div role="status" className="bg-muted rounded-2xl px-5 py-4 text-sm">
       <p className="font-semibold">Awaiting review</p>
       <p className="text-muted-foreground mt-1">
-        Only you can see this {kind} for now. It goes public once we have checked it, and rating
-        opens then.
+        Only you and our team can see this {kind}. It goes public once we have checked it, and
+        rating opens then.
       </p>
     </div>
   );

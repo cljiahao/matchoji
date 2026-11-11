@@ -533,3 +533,100 @@ describe('9. Instagram handles cannot be only dots', () => {
     );
   });
 });
+
+describe('20261112000000: drink_ranks, taster_stats and the latest-review index', () => {
+  const ranksFor = (city: string) =>
+    asRows<{ name: string; qualifies: boolean; has_taster: boolean; rank_score: string }>(
+      null,
+      `select name, qualifies, has_taster, rank_score from public.drink_ranks
+       where city_slug = $1
+       order by has_taster desc, rank_score desc, rank_count desc, name, drink_id`,
+      [city]
+    );
+
+  it('ranks taster-reviewed drinks first, flags who qualifies, and leaves out merged or pending ones', async () => {
+    const c = await cafe({ city: 'johor-bahru' });
+    const tasted = await drink(c, { name: 'Tasted' });
+    const quiet = await drink(c, { name: 'Quiet' });
+    const crowd = await drink(c, { name: 'Crowd' });
+    await drink(c, { name: 'Pending one', status: 'pending' });
+    await review(TASTER, tasted, { url: POST });
+    for (const who of [ALICE, BOB, PRIVATE]) await review(who, crowd);
+    expect(quiet).toBeTruthy();
+
+    expect(await ranksFor('johor-bahru')).toEqual([
+      { name: 'Tasted', qualifies: true, has_taster: true, rank_score: '4.00' },
+      { name: 'Crowd', qualifies: true, has_taster: false, rank_score: '4.00' },
+      { name: 'Quiet', qualifies: false, has_taster: false, rank_score: '0' },
+    ]);
+  });
+
+  it('leaves out drinks at a pending café', async () => {
+    const c = await cafe({ city: 'johor-bahru', status: 'pending' });
+    await drink(c, { name: 'Hidden by café' });
+    const names = (await ranksFor('johor-bahru')).map((r) => r.name);
+    expect(names).not.toContain('Hidden by café');
+  });
+
+  it('counts every drink a taster reviewed, however many reviews others have', async () => {
+    const OLDER = '99999999-9999-4999-8999-999999999999';
+    await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, '{}')`, [
+      OLDER,
+      'older@example.com',
+    ]);
+    await call(ADMIN, 'select public.set_trusted_taster ($1, true)', [OLDER]);
+    const c = await cafe();
+    const drinks = [await drink(c), await drink(c), await drink(c)];
+    for (const d of drinks) await review(OLDER, d, { url: OTHER_POST });
+    // Another taster reviewed far more recently; the older taster's stats are unaffected.
+    await review(TASTER, drinks[0], { url: POST });
+    const [row] = await asRows<{ drink_review_count: number; latest_review_id: string }>(
+      null,
+      'select drink_review_count, latest_review_id from public.taster_stats where user_id = $1',
+      [OLDER]
+    );
+    expect(row.drink_review_count).toBe(3);
+    const [latest] = await rows<{ id: string }>(
+      `select id from public.latest_reviews where user_id = $1 order by created_at desc, id limit 1`,
+      [OLDER]
+    );
+    expect(row.latest_review_id).toBe(latest.id);
+  });
+
+  it('leaves out private people, community reviewers and reviews of pending drinks', async () => {
+    const c = await cafe();
+    const live = await drink(c);
+    const pending = await drink(c, { status: 'pending' });
+    await review(BOB, live);
+    await review(TASTER, pending, { url: POST });
+    const stats = await asRows<{ user_id: string }>(
+      null,
+      'select user_id from public.taster_stats'
+    );
+    expect(stats.map((s) => s.user_id)).not.toContain(BOB);
+    const mine = await asRows<{ drink_review_count: number }>(
+      null,
+      'select drink_review_count from public.taster_stats where user_id = $1',
+      [TASTER]
+    );
+    const counted = await rows<{ n: string }>(
+      `select count(*) as n from internal.latest_reviews r
+       join public.drinks d on d.id = r.drink_id and d.status = 'approved'
+       where r.user_id = $1`,
+      [TASTER]
+    );
+    expect(mine[0]?.drink_review_count ?? 0).toBe(Number(counted[0].n));
+  });
+
+  it('creates the latest-review index, and a rerun of the migration is a no-op', async () => {
+    const sql = readFileSync(
+      path.join(SUPABASE_DIR, 'migrations/20261112000000_cafe_read_perf.sql'),
+      'utf8'
+    );
+    await db.exec(sql);
+    const idx = await rows<{ indexname: string }>(
+      `select indexname from pg_indexes where indexname = 'reviews_latest_key_idx'`
+    );
+    expect(idx).toHaveLength(1);
+  });
+});
