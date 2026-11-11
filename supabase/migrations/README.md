@@ -113,6 +113,7 @@ the learner, audited, 200 a day at most, and gone with the account.
 - `20261104000000_catalogue_expansion.sql`
 - `20261104100000_tea_price_history.sql`
 - `20261110000000_cafes_and_drinks.sql`
+- `20261111000000_sweep_hardening.sql`
 
 ## Parent
 

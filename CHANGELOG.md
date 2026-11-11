@@ -5,6 +5,10 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Security
+
+- Café schema sweep fixes (migration `20261111000000_sweep_hardening.sql`; the owner applies it in the Supabase SQL editor, and it stops with a list of duplicates if two live cafés share a city, name and area). Café ratings gain a disclosed-taster count. A drink name is unique among live drinks only, so a rejected or merged drink no longer blocks it, and merging a café copes with a rejected drink at the keeper. Likes and comments on a drink review follow the drink's visibility. A published review's disclosure can only be raised and its Instagram link is fixed once set. Café and drink submissions have a daily cap, duplicate cafés are refused, merged rows cannot be reviewed, admin edits validate coordinates, price and name, and an Instagram handle cannot be only dots.
+
 ### Added
 
 - Database schema for café drinks (migration `20261110000000_cafes_and_drinks.sql`, slice S1 of the repositioning; the owner applies it in the Supabase SQL editor before the app slices that use it merge): cities (Singapore, Johor Bahru), cafés and drinks that anyone signed in can suggest for review, trusted tasters with Instagram-linked drink reviews kept apart from the community score, café and drink rating views, merges, admin edit functions and moderation notifications. Deleting an account also unlinks a taster's reviews, and a rejected café hides its drinks. Nothing in the app uses it yet, and teas are unchanged.

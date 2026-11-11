@@ -227,7 +227,7 @@ describe('suggesting cafés', () => {
 
     const second = await call(
       BOB,
-      `insert into public.cafes (name, area, city_slug) values ($1, 'Tanjong Pagar', 'singapore')
+      `insert into public.cafes (name, area, city_slug) values ($1, 'Tanjong Pagar', 'johor-bahru')
        returning slug`,
       [name]
     );
