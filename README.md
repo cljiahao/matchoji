@@ -12,7 +12,7 @@ Café pages (`/cafes`, `/cafes/<slug>`, `/cafes/<slug>/<drink>`, and the `/c/<sl
 
 The top lists, "See all N" counts, similar drinks and the tasters page rank and count in SQL through the `drink_ranks` and `taster_stats` views (migration `20261112000000_cafe_read_perf.sql`, applied by hand before the deploy), so no total comes from a capped read.
 
-Writes that row-level security would silently refuse (editing or deleting a tasting or drink rating that is not yours, or that is already gone) are counted and reported as a failure instead of a false "saved", and a destructive confirm in the admin Tasters tab uses the shadcn alert dialog (`src/components/ui/alert-dialog.tsx`, backed by the `radix-ui` package). Account export covers every table that holds a person's own rows, including the teas they added.
+Writes that row-level security would silently refuse (editing or deleting a tasting or drink rating that is not yours, or that is already gone) are counted and reported as a failure instead of a false "saved", and a destructive confirm in the admin Tasters tab uses the shadcn alert dialog (`src/components/ui/alert-dialog.tsx`, backed by the `radix-ui` package). Account export covers every table that holds a person's own rows, including the teas they added, and leaves out the other person's id on notifications.
 
 Trusted tasters have a public profile (`/u/<id>`) with a badge, bio, Instagram link and their drink reviews, and are listed at `/tasters`; `/about/how-we-rate` explains the two scores and the disclosure labels in plain words. Anyone can add an Instagram handle and a bio on `/account`. Both pages are in the sitemap.
 
