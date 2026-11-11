@@ -100,7 +100,13 @@ export async function exportMyData(supabase: Client, userId: string) {
     supabase.from('blocks').select('*').eq('blocker_id', userId),
     supabase.from('lesson_progress').select('*').eq('user_id', userId),
     supabase.from('content_reports').select('*').eq('reporter_id', userId),
-    supabase.from('notifications').select('*').eq('user_id', userId),
+    // actor_id is left out: it is another person's id, not the exporter's data.
+    supabase
+      .from('notifications')
+      .select(
+        'id, user_id, kind, review_id, product_id, drink_id, cafe_id, body, read_at, created_at'
+      )
+      .eq('user_id', userId),
     supabase.from('label_scans').select('*').eq('user_id', userId),
     supabase.from('products').select('*').eq('added_by', userId),
     // cafes and drinks hide added_by and the review fields from direct selects; the adder's own

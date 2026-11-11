@@ -101,6 +101,12 @@ describe('createCafe', () => {
     );
   });
 
+  it('rethrows a unique violation on any other constraint', async () => {
+    const error = { code: '23505', message: 'duplicate key value violates "cafes_slug_key"' };
+    const fake = createFakeSupabase({ cafes: { data: null, error } });
+    await expect(createCafe(fake.client, { name: 'X', citySlug: 'singapore' })).rejects.toBe(error);
+  });
+
   it('rethrows any other database error untouched', async () => {
     const error = { code: '42501', message: 'denied' };
     const fake = createFakeSupabase({ cafes: { data: null, error } });
@@ -150,6 +156,15 @@ describe('createDrink', () => {
       drinks: { data: null, error: { code: '23505', message: 'drinks_cafe_name_key' } },
     });
     await expect(createDrink(fake.client, input)).rejects.toThrow(/already listed/);
+  });
+
+  it('rethrows a unique violation on any other constraint', async () => {
+    const error = {
+      code: '23505',
+      message: 'duplicate key value violates "drinks_cafe_id_slug_key"',
+    };
+    const fake = createFakeSupabase({ drinks: { data: null, error } });
+    await expect(createDrink(fake.client, input)).rejects.toBe(error);
   });
 });
 

@@ -22,3 +22,5 @@ the photos cannot be listed).
 ## Parent
 
 [account](../README.md)
+
+`exportMyData` names the notification columns instead of selecting `*`, so `actor_id` (another person's id) is not in the export.

@@ -649,3 +649,43 @@ describe('20261112000000: drink_ranks, taster_stats and the latest-review index'
     expect(idx).toHaveLength(1);
   });
 });
+
+describe('sweep leftovers: account deletion and rank ties', () => {
+  const STORAGE = 'https://skajpelucxgovxajlzvo.supabase.co/storage/v1/object/public/review-photos';
+
+  it('clears the photo of a drink review that outlives its deleted author', async () => {
+    const LEAVER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+    await db.query(`insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, '{}')`, [
+      LEAVER,
+      'leaver@example.com',
+    ]);
+    const r = await review(LEAVER, await drink(await cafe()));
+    await db.query('update public.reviews set photo_url = $2 where id = $1', [
+      r,
+      `${STORAGE}/${LEAVER}/cup.jpg`,
+    ]);
+
+    await call(LEAVER, 'select public.delete_my_account ()');
+
+    expect(await rows('select user_id, photo_url from public.reviews where id = $1', [r])).toEqual([
+      { user_id: null, photo_url: null },
+    ]);
+  });
+
+  it('gives drinks that tie on every rank column one stable order, ending on drink_id', async () => {
+    const names = ['Twin', 'Twin', 'Twin'];
+    const ids: string[] = [];
+    for (const name of names) ids.push(await drink(await cafe({ city: 'johor-bahru' }), { name }));
+    const order = async () =>
+      (
+        await rows<{ drink_id: string }>(
+          `select drink_id from public.drink_ranks
+           where city_slug = 'johor-bahru' and name = 'Twin'
+           order by has_taster desc, rank_score desc, rank_count desc, name, drink_id`
+        )
+      ).map((r) => r.drink_id);
+
+    expect(await order()).toEqual([...ids].sort());
+    expect(await order()).toEqual(await order());
+  });
+});
