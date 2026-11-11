@@ -40,7 +40,7 @@ describe('TastersForm', () => {
     await userEvent.click(screen.getByRole('button', { name: /Grant badge/ }));
     expect(calls.some((c) => c.table === 'rpc:set_trusted_taster')).toBe(false);
     await userEvent.click(
-      within(await screen.findByRole('dialog')).getByRole('button', { name: 'Grant badge' })
+      within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Grant badge' })
     );
 
     await waitFor(() => expect(router.refresh).toHaveBeenCalled());
@@ -59,7 +59,7 @@ describe('TastersForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Revoke badge/ }));
     await userEvent.click(
-      within(await screen.findByRole('dialog')).getByRole('button', { name: 'Revoke badge' })
+      within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Revoke badge' })
     );
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Admins only.'));
@@ -81,10 +81,10 @@ describe('TastersForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Revoke badge/ }));
     await userEvent.click(
-      within(await screen.findByRole('dialog')).getByRole('button', { name: 'Cancel' })
+      within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Cancel' })
     );
 
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
     expect(calls.some((c) => c.table === 'rpc:set_trusted_taster')).toBe(false);
   });
 

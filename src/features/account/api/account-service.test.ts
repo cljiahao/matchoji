@@ -50,6 +50,7 @@ function exportResults(overrides: Record<string, { data: unknown; error: unknown
     content_reports: OK,
     notifications: OK,
     label_scans: OK,
+    products: OK,
     my_cafes: OK,
     my_drinks: OK,
     ...overrides,
@@ -100,6 +101,17 @@ describe('exportMyData', () => {
     expect(eqOn('follows')).toEqual(['follower_id', 'u1']);
     expect(eqOn('blocks')).toEqual(['blocker_id', 'u1']);
     expect(eqOn('content_reports')).toEqual(['reporter_id', 'u1']);
+  });
+
+  it('includes the teas the person submitted', async () => {
+    const { client, calls } = createFakeSupabase(
+      exportResults({ products: { data: [{ id: 'p1', name: 'Uji Hojicha' }], error: null } })
+    );
+    expect(await exportMyData(client, 'u1')).toMatchObject({ teasAdded: [{ id: 'p1' }] });
+    expect(calls.find((c) => c.table === 'products' && c.method === 'eq')?.args).toEqual([
+      'added_by',
+      'u1',
+    ]);
   });
 
   it('throws when one of the new tables cannot be read', async () => {

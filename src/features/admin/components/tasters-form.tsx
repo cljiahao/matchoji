@@ -5,15 +5,17 @@ import { useRouter } from 'next/navigation';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createClient } from '@/integrations/supabase/client';
 
@@ -25,8 +27,6 @@ interface TastersFormProps {
   tasters: AdminProfile[];
 }
 
-// Search by display name or Instagram handle, then grant or revoke the badge after a confirm. The list of current tasters comes
-// from the server page; a change refreshes it.
 export function TastersForm({ tasters }: TastersFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -131,33 +131,30 @@ export function TastersForm({ tasters }: TastersFormProps) {
           <ul className="divide-y rounded-2xl border">{tasters.map(row)}</ul>
         )}
       </section>
-      <Dialog open={confirming !== null} onOpenChange={(open) => !open && setConfirming(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
+      <AlertDialog open={confirming !== null} onOpenChange={(open) => !open && setConfirming(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
               {confirming?.isTrustedTaster ? 'Revoke trusted taster?' : 'Make a trusted taster?'}
-            </DialogTitle>
-            <DialogDescription>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               {confirming?.isTrustedTaster
                 ? `${confirming.displayName} loses the badge. Their existing reviews keep their taster label.`
                 : `${confirming?.displayName ?? 'This person'} gets the badge, their profile becomes public, and their drink reviews count in the taster score.`}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setConfirming(null)}>
-              Cancel
-            </Button>
-            <Button
-              type="button"
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
               variant={confirming?.isTrustedTaster ? 'destructive' : 'default'}
               disabled={busy}
               onClick={() => confirming && toggle(confirming)}
             >
               {confirming?.isTrustedTaster ? 'Revoke badge' : 'Grant badge'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

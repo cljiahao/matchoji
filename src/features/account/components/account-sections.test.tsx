@@ -152,6 +152,7 @@ describe('ExportDataButton', () => {
         content_reports: empty,
         notifications: empty,
         label_scans: empty,
+        products: empty,
         my_cafes: empty,
         my_drinks: empty,
       },

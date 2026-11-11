@@ -63,6 +63,7 @@ export async function updateProfileDetails(
 
 // Everything Matchoji holds about the signed-in person, as plain JSON they can keep. Tea and
 // drink reviews share the reviews table; the journal is those reviews plus the want-to-try list.
+// shop_locations and tea_price_history are left out on purpose: they have no per-user column.
 export async function exportMyData(supabase: Client, userId: string) {
   const [
     profile,
@@ -78,6 +79,7 @@ export async function exportMyData(supabase: Client, userId: string) {
     reports,
     notifications,
     scans,
+    teas,
     cafes,
     drinks,
   ] = await Promise.all([
@@ -100,6 +102,7 @@ export async function exportMyData(supabase: Client, userId: string) {
     supabase.from('content_reports').select('*').eq('reporter_id', userId),
     supabase.from('notifications').select('*').eq('user_id', userId),
     supabase.from('label_scans').select('*').eq('user_id', userId),
+    supabase.from('products').select('*').eq('added_by', userId),
     // cafes and drinks hide added_by and the review fields from direct selects; the adder's own
     // rows, with those fields, come from these views.
     supabase.from('my_cafes').select('*').eq('added_by', userId),
@@ -119,6 +122,7 @@ export async function exportMyData(supabase: Client, userId: string) {
     reports,
     notifications,
     scans,
+    teas,
   ])
     if (result.error) throw result.error;
   // Until the café migration is applied there is nothing of theirs to export.
@@ -139,6 +143,7 @@ export async function exportMyData(supabase: Client, userId: string) {
     reportsFiled: reports.data,
     notifications: notifications.data,
     labelScans: scans.data,
+    teasAdded: teas.data,
     cafesAdded: cafes.data ?? [],
     drinksAdded: drinks.data ?? [],
   };

@@ -7,6 +7,7 @@ shadcn/ui primitives. CLI-managed — do not hand-edit; add more with
 
 ## Contents
 
+- `alert-dialog.tsx`
 - `avatar.tsx`
 - `button.tsx`
 - `card.tsx`
