@@ -7,6 +7,12 @@ import type { ReviewOutput } from '../schemas/review.schema';
 
 type Client = SupabaseClient<Database>;
 
+// Row-level security hides a row it refuses to change rather than raising, so an update or
+// delete that touched nothing comes back as success unless the returned rows are counted.
+export class RowNotChangedError extends Error {
+  override name = 'RowNotChangedError';
+}
+
 export interface UploadedPhoto {
   path: string;
   publicUrl: string;
@@ -37,9 +43,11 @@ export async function uploadReviewPhoto(
   return { path, publicUrl };
 }
 
-// Best effort: a photo whose review failed to save is removed so it does not linger.
+// Best effort: a photo whose review failed to save is removed so it does not linger. A failed
+// removal is logged, not thrown: the review outcome already stands and the caller cannot undo it.
 export async function removeReviewPhoto(supabase: Client, path: string): Promise<void> {
-  await supabase.storage.from('review-photos').remove([path]);
+  const { error } = await supabase.storage.from('review-photos').remove([path]);
+  if (error) console.error('Could not remove review photo', path, error.message);
 }
 
 interface CreateReviewInput extends ReviewOutput {
@@ -90,7 +98,7 @@ export async function updateReview(
   reviewId: string,
   input: ReviewFields
 ): Promise<void> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('reviews')
     .update({
       stars: input.stars,
@@ -109,16 +117,19 @@ export async function updateReview(
       flush: input.flush ?? null,
       tasted_on: input.tastedOn ?? localToday(),
     })
-    .eq('id', reviewId);
+    .eq('id', reviewId)
+    .select('id');
   if (error) throw error;
+  if (!data || data.length === 0) throw new RowNotChangedError('Review not updated.');
 }
 
 export async function deleteReview(
   supabase: Client,
   review: { id: string; photoUrl: string | null }
 ): Promise<void> {
-  const { error } = await supabase.from('reviews').delete().eq('id', review.id);
+  const { data, error } = await supabase.from('reviews').delete().eq('id', review.id).select('id');
   if (error) throw error;
+  if (!data || data.length === 0) throw new RowNotChangedError('Review not deleted.');
   const path = reviewPhotoPath(review.photoUrl);
   if (path) await removeReviewPhoto(supabase, path).catch(() => undefined);
 }

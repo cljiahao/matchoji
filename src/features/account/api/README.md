@@ -11,6 +11,8 @@ the photos cannot be listed).
 
 `updateProfileDetails` writes the Instagram handle and bio after `profileDetailsSchema` has checked them (a blank value is stored as null); `getMyProfile` also returns both.
 
+`exportMyData` now also returns `likes`, `comments`, `following`, `blocked`, `lessonProgress`, `reportsFiled`, `notifications` and `labelScans`, so the file holds every row the person owns. `deleteMyAccount` now reads the photo list, runs the delete function first, then removes the files best effort and signs out; a failed delete leaves the photos alone, and it returns `photosRemoved` (false when the cleanup failed after the account was gone).
+
 ## Contents
 
 - `account-service.test.ts`

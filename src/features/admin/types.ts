@@ -75,6 +75,7 @@ export interface AdminDrink {
 export interface AdminProfile {
   id: string;
   displayName: string;
+  instagramHandle: string | null;
   isPublic: boolean;
   isTrustedTaster: boolean;
 }

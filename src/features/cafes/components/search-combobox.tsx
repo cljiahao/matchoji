@@ -122,9 +122,17 @@ export function SearchCombobox({
         ))}
       </ul>
 
-      {!isSearching && searchable && options.length === 0 && (
+      {!isSearching && searchable && isError && (
+        <p role="alert" className="text-destructive text-sm">
+          {emptyMessage}
+        </p>
+      )}
+
+      {!isSearching && searchable && !isError && (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-dashed p-3">
-          <span className="text-muted-foreground text-sm">{emptyMessage}</span>
+          <span className="text-muted-foreground text-sm">
+            {options.length === 0 ? emptyMessage : "Can't find it?"}
+          </span>
           <Button type="button" variant="outline" size="sm" onClick={onAddNew}>
             {addLabel}
           </Button>

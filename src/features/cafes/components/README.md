@@ -8,6 +8,8 @@ The logging UI. `DrinkLogFlow` (default export, loaded through `LazyDrinkLogFlow
 
 `DrinkLogFlow` takes `startAtAddCafe` to open on the add-café form.
 
+`SearchCombobox` offers its add-new button below the results whenever the query is searchable and the request succeeded, not only on zero results; on a query error it shows the error and no button. `DrinkReviewForm` shows `drinkReviewErrorMessage` when a save fails.
+
 ## Contents
 
 - `add-cafe-form.tsx`
@@ -32,6 +34,7 @@ The logging UI. `DrinkLogFlow` (default export, loaded through `LazyDrinkLogFlow
 - `score-pair.test.tsx`
 - `score-pair.tsx`
 - `search-combobox.tsx`
+- `search-combobox.test.tsx`
 
 ## Parent
 

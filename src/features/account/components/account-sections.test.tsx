@@ -10,7 +10,7 @@ const supabase = vi.hoisted(() => ({ current: null as unknown }));
 vi.mock('@/integrations/supabase/client', () => ({ createClient: () => supabase.current }));
 const router = vi.hoisted(() => ({ refresh: vi.fn(), replace: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => router }));
-const toast = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
+const toast = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn(), message: vi.fn() }));
 vi.mock('sonner', () => ({ toast }));
 
 import {
@@ -75,6 +75,26 @@ describe('DeleteAccountSection', () => {
     expect(fake.calls).toContainEqual({ table: 'rpc:delete_my_account', method: 'rpc', args: [] });
   });
 
+  it('mentions drink reviews and cafés in the warning', () => {
+    renderWithQuery(<DeleteAccountSection userId="u1" />);
+    expect(screen.getByText(/teas and drinks stay/)).toBeInTheDocument();
+    expect(screen.getByText(/cafés and drinks you added/)).toBeInTheDocument();
+  });
+
+  it('only claims success after the delete went through', async () => {
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:delete_my_account': { data: null, error: new Error('down') } },
+    });
+    supabase.current = fake.client;
+    renderWithQuery(<DeleteAccountSection userId="u1" />);
+
+    await userEvent.type(screen.getByLabelText('Type “delete” to confirm'), 'delete');
+    await userEvent.click(screen.getByRole('button', { name: 'Delete my account' }));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
+    expect(toast.success).not.toHaveBeenCalled();
+  });
+
   it('says nothing was removed when it fails', async () => {
     const fake = createFakeBrowserClient({
       results: { 'rpc:delete_my_account': { data: null, error: new Error('down') } },
@@ -91,6 +111,65 @@ describe('DeleteAccountSection', () => {
       )
     );
     expect(router.replace).not.toHaveBeenCalled();
+  });
+});
+
+describe('delete account photo cleanup', () => {
+  it('still reports success but flags photos that could not be removed', async () => {
+    const fake = createFakeBrowserClient({
+      results: { 'rpc:delete_my_account': { data: null, error: null } },
+    });
+    fake.list.mockResolvedValueOnce({ data: [{ name: 'a.jpg' }], error: null });
+    fake.remove.mockResolvedValueOnce({ data: [], error: new Error('storage down') } as never);
+    supabase.current = fake.client;
+    renderWithQuery(<DeleteAccountSection userId="u1" />);
+
+    await userEvent.type(screen.getByLabelText('Type “delete” to confirm'), 'delete');
+    await userEvent.click(screen.getByRole('button', { name: 'Delete my account' }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Your account is deleted.'));
+    expect(toast.message).toHaveBeenCalledWith(
+      expect.stringMatching(/photos could not be removed/)
+    );
+  });
+});
+
+describe('ExportDataButton', () => {
+  it('revokes the download URL after the click, not before', async () => {
+    const empty = { data: [], error: null };
+    const fake = createFakeBrowserClient({
+      results: {
+        profiles: { data: null, error: null },
+        vendors: { data: null, error: null },
+        reviews: empty,
+        wishlist: empty,
+        stock_reports: empty,
+        review_likes: empty,
+        review_comments: empty,
+        follows: empty,
+        blocks: empty,
+        lesson_progress: empty,
+        content_reports: empty,
+        notifications: empty,
+        label_scans: empty,
+        my_cafes: empty,
+        my_drinks: empty,
+      },
+    });
+    supabase.current = fake.client;
+    const events: string[] = [];
+    URL.createObjectURL = vi.fn(() => 'blob:export');
+    URL.revokeObjectURL = vi.fn(() => events.push('revoke'));
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => void events.push('click'));
+    renderWithQuery(<ExportDataButton userId="u1" />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Download my data' }));
+
+    await waitFor(() => expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:export'));
+    expect(events).toEqual(['click', 'revoke']);
+    click.mockRestore();
   });
 });
 

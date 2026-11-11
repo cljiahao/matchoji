@@ -71,7 +71,7 @@ describe('TastingActions', () => {
   it('edits a tasting in a prefilled form', async () => {
     const fake = createFakeBrowserClient({
       session: makeSession(),
-      results: { reviews: { data: null, error: null } },
+      results: { reviews: { data: [{ id: 'r1' }], error: null } },
     });
     supabase.current = fake.client;
     renderWithQuery(<TastingActions entry={entry} />);
@@ -93,7 +93,9 @@ describe('TastingActions', () => {
   });
 
   it('deletes a tasting only after confirming', async () => {
-    const fake = createFakeBrowserClient({ results: { reviews: { data: null, error: null } } });
+    const fake = createFakeBrowserClient({
+      results: { reviews: { data: [{ id: 'r1' }], error: null } },
+    });
     supabase.current = fake.client;
     renderWithQuery(<TastingActions entry={entry} />);
 
@@ -110,7 +112,7 @@ describe('TastingActions', () => {
   it('edits a café drink rating in the drink form, prefilled', async () => {
     const fake = createFakeBrowserClient({
       session: makeSession(),
-      results: { reviews: { data: null, error: null } },
+      results: { reviews: { data: [{ id: 'r1' }], error: null } },
     });
     supabase.current = fake.client;
     renderWithQuery(<TastingActions entry={drinkOnly} />);
@@ -134,7 +136,9 @@ describe('TastingActions', () => {
   });
 
   it('deletes a café drink rating only after confirming', async () => {
-    const fake = createFakeBrowserClient({ results: { reviews: { data: null, error: null } } });
+    const fake = createFakeBrowserClient({
+      results: { reviews: { data: [{ id: 'r1' }], error: null } },
+    });
     supabase.current = fake.client;
     renderWithQuery(<TastingActions entry={drinkOnly} />);
 

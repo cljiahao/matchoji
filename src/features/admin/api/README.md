@@ -19,6 +19,8 @@ Tested against the recording fake client, whose `rpc` calls are queued as `rpc:<
 
 `listApprovedTeas` also returns each tea's `imageUrl`, `imageCredit` and `shopUrl`; the links form prefills the last two and shows the photo. `setTeaLinks` takes `image` (null keeps the current photo, `''` removes it and its credit), `shop` and `credit`.
 
+The café and drink lists take `{ search, limit }` (name search; default limit 200) so the pickers are not unbounded, and a failing café lookup for a drink list is thrown instead of returning an empty list; only a genuinely missing table or view is treated as empty. `searchProfiles` matches display name or Instagram handle (a leading @ is ignored).
+
 ## Contents
 
 - `admin-service.test.ts`

@@ -22,6 +22,8 @@ Every admin control (tabs, selects, inputs, buttons, and the whole "Remove photo
 
 `shops-form.tsx` is the Shops tab: add, edit and remove `shop_locations` rows, validated with the shops feature's `shopSchema` (latitude ±90, longitude ±180, https source). The table's admin-only RLS is the real gate.
 
+`TastersForm` searches by display name or Instagram handle and asks for confirmation before granting or revoking the trusted-taster badge.
+
 ## Contents
 
 - `admin-tabs.test.tsx`

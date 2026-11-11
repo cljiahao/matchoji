@@ -1,13 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
+import { RowNotChangedError } from '@/features/reviews';
+
 import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import {
   FriendlyError,
   PENDING_CAFES_MESSAGE,
   PENDING_DRINKS_MESSAGE,
+  REVIEW_DENIED_MESSAGE,
+  REVIEW_GONE_MESSAGE,
+  REVIEW_INVALID_MESSAGE,
   createCafe,
   createDrink,
   createDrinkReview,
+  drinkReviewErrorMessage,
   updateDrinkReview,
 } from './cafes-mutations';
 
@@ -127,7 +133,7 @@ describe('createDrink', () => {
 
 describe('createDrinkReview', () => {
   it('inserts drink_id not product_id', async () => {
-    const fake = createFakeSupabase({ reviews: { data: null, error: null } });
+    const fake = createFakeSupabase({ reviews: { data: [{ id: 'r1' }], error: null } });
     await createDrinkReview(fake.client, 'd1', {
       userId: 'u1',
       stars: 5,
@@ -154,7 +160,7 @@ describe('createDrinkReview', () => {
   });
 
   it("defaults a community review's disclosure to none with no link", async () => {
-    const fake = createFakeSupabase({ reviews: { data: null, error: null } });
+    const fake = createFakeSupabase({ reviews: { data: [{ id: 'r1' }], error: null } });
     await createDrinkReview(fake.client, 'd1', { userId: 'u1', stars: 3 });
     expect(fake.calls.find((c) => c.method === 'insert')?.args[0]).toMatchObject({
       instagram_url: null,
@@ -177,7 +183,7 @@ describe('createDrinkReview', () => {
 
 describe('updateDrinkReview', () => {
   it('updates the review by id and never touches drink or author', async () => {
-    const fake = createFakeSupabase({ reviews: { data: null, error: null } });
+    const fake = createFakeSupabase({ reviews: { data: [{ id: 'r1' }], error: null } });
     await updateDrinkReview(fake.client, 'r1', { stars: 2, tastedOn: '2026-11-02' });
 
     const patch = fake.calls.find((c) => c.method === 'update')?.args[0];
@@ -191,5 +197,32 @@ describe('updateDrinkReview', () => {
     const error = { code: '42501' };
     const fake = createFakeSupabase({ reviews: { data: null, error } });
     await expect(updateDrinkReview(fake.client, 'r1', { stars: 2 })).rejects.toBe(error);
+  });
+
+  it('throws a typed error when no row was changed', async () => {
+    const fake = createFakeSupabase({ reviews: { data: [], error: null } });
+    await expect(updateDrinkReview(fake.client, 'r1', { stars: 2 })).rejects.toBeInstanceOf(
+      RowNotChangedError
+    );
+  });
+});
+
+describe('drinkReviewErrorMessage', () => {
+  it('maps RLS denial, check violations and a vanished row to friendly lines', () => {
+    expect(drinkReviewErrorMessage({ code: '42501', message: 'new row violates' })).toBe(
+      REVIEW_DENIED_MESSAGE
+    );
+    expect(drinkReviewErrorMessage({ code: '23514', message: 'check' })).toBe(
+      REVIEW_INVALID_MESSAGE
+    );
+    expect(drinkReviewErrorMessage(new RowNotChangedError('x'))).toBe(REVIEW_GONE_MESSAGE);
+  });
+
+  it('passes a FriendlyError through and hides anything else', () => {
+    expect(drinkReviewErrorMessage(new FriendlyError('Too many.'))).toBe('Too many.');
+    const message = drinkReviewErrorMessage(new Error('boom: secret detail'));
+    expect(message).toMatch(/Could not save that rating/);
+    expect(message).not.toMatch(/secret/);
+    expect(drinkReviewErrorMessage(null)).toMatch(/Could not save that rating/);
   });
 });

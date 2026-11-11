@@ -47,6 +47,8 @@ The default `LogTastingDialog` trigger button keeps a 44px minimum height.
 
 `lazy-log-tasting-flow.tsx` holds the `next/dynamic` wrapper for `LogTastingFlow` (exported through `index.ts` with `FlavorNotePicker`), so the app-wide `LogDialog` widget can load the tea flow without importing the form eagerly; `LogTastingDialog` imports it from there.
 
+`RateProductForm` tells the person when an edit changed no row (the tasting may have been removed).
+
 ## Contents
 
 - `community-reviews.tsx`

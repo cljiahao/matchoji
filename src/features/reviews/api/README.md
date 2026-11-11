@@ -22,6 +22,8 @@ tea's ratings per harvest from `edition_ratings`.
 
 `REVIEW_COLUMNS` and `mapReviewRow` also read the drink-review columns; `mapReviewRow` accepts rows from `product_reviews()`, which omits them, and defaults them to a plain tea review. `loadDrinkSummaries` (`drink-summaries.ts`) turns drink ids into `DrinkSummary`s (name, slug, base, and the café's name and slug) for the journal, feed and notifications. It names its columns because `cafes` and `drinks` grant columns individually, omits drinks row-level security hides, and returns an empty map before the café migration is applied.
 
+`updateReview` and `deleteReview` ask for the affected rows back and throw `RowNotChangedError` when there are none, so an RLS-blocked or missing row is not reported as success. `removeReviewPhoto` logs a failed storage removal rather than ignoring it.
+
 ## Contents
 
 - `drink-summaries.test.ts`

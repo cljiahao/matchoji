@@ -61,24 +61,65 @@ export async function updateProfileDetails(
   if (error) throw error;
 }
 
-// Everything Matchoji holds about the signed-in person, as plain JSON they can keep.
+// Everything Matchoji holds about the signed-in person, as plain JSON they can keep. Tea and
+// drink reviews share the reviews table; the journal is those reviews plus the want-to-try list.
 export async function exportMyData(supabase: Client, userId: string) {
-  const [profile, tastings, wishlist, stock, shop, cafes, drinks] = await Promise.all([
+  const [
+    profile,
+    tastings,
+    wishlist,
+    stock,
+    shop,
+    likes,
+    comments,
+    following,
+    blocked,
+    lessons,
+    reports,
+    notifications,
+    scans,
+    cafes,
+    drinks,
+  ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('email, display_name, created_at')
+      .select(
+        'email, display_name, is_public, instagram_handle, bio, is_trusted_taster, created_at'
+      )
       .eq('id', userId)
       .maybeSingle(),
     supabase.from('reviews').select('*').eq('user_id', userId).order('tasted_on'),
-    supabase.from('wishlist').select('product_id, created_at').eq('user_id', userId),
+    supabase.from('wishlist').select('*').eq('user_id', userId),
     supabase.from('stock_reports').select('product_id, status, created_at').eq('user_id', userId),
     supabase.from('vendors').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('review_likes').select('*').eq('user_id', userId),
+    supabase.from('review_comments').select('*').eq('user_id', userId),
+    supabase.from('follows').select('*').eq('follower_id', userId),
+    supabase.from('blocks').select('*').eq('blocker_id', userId),
+    supabase.from('lesson_progress').select('*').eq('user_id', userId),
+    supabase.from('content_reports').select('*').eq('reporter_id', userId),
+    supabase.from('notifications').select('*').eq('user_id', userId),
+    supabase.from('label_scans').select('*').eq('user_id', userId),
     // cafes and drinks hide added_by and the review fields from direct selects; the adder's own
     // rows, with those fields, come from these views.
     supabase.from('my_cafes').select('*').eq('added_by', userId),
     supabase.from('my_drinks').select('*').eq('added_by', userId),
   ]);
-  for (const result of [profile, tastings, wishlist, stock, shop])
+  for (const result of [
+    profile,
+    tastings,
+    wishlist,
+    stock,
+    shop,
+    likes,
+    comments,
+    following,
+    blocked,
+    lessons,
+    reports,
+    notifications,
+    scans,
+  ])
     if (result.error) throw result.error;
   // Until the café migration is applied there is nothing of theirs to export.
   for (const result of [cafes, drinks])
@@ -90,22 +131,44 @@ export async function exportMyData(supabase: Client, userId: string) {
     wantToTry: wishlist.data,
     stockReports: stock.data,
     shop: shop.data,
+    likes: likes.data,
+    comments: comments.data,
+    following: following.data,
+    blocked: blocked.data,
+    lessonProgress: lessons.data,
+    reportsFiled: reports.data,
+    notifications: notifications.data,
+    labelScans: scans.data,
     cafesAdded: cafes.data ?? [],
     drinksAdded: drinks.data ?? [],
   };
 }
 
-// Removes the person's photos through the Storage API (deleting storage rows in SQL would
-// leave the files behind), then the account itself, then signs them out.
-export async function deleteMyAccount(supabase: Client, userId: string): Promise<void> {
+export interface DeleteAccountResult {
+  // False when some photo files could not be removed after the account was already gone.
+  photosRemoved: boolean;
+}
+
+// The account goes first: removing photos beforehand would strip a person who then fails to
+// delete. The file list is read before the delete (read-only), the files are removed after,
+// through the Storage API (deleting storage rows in SQL would leave the files behind). Cleanup
+// is best effort once the account is gone, and the person is signed out either way.
+export async function deleteMyAccount(
+  supabase: Client,
+  userId: string
+): Promise<DeleteAccountResult> {
   const photos = supabase.storage.from('review-photos');
-  const { data: files, error: listError } = await photos.list(userId, { limit: 1000 });
-  if (listError) throw listError;
-  if (files.length > 0) {
-    const { error } = await photos.remove(files.map((f) => `${userId}/${f.name}`));
-    if (error) throw error;
-  }
+  const listed = await photos.list(userId, { limit: 1000 });
   const { error } = await supabase.rpc('delete_my_account');
   if (error) throw error;
-  await supabase.auth.signOut();
+
+  let photosRemoved = !listed.error;
+  if (!listed.error && listed.data.length > 0) {
+    const removed = await photos
+      .remove(listed.data.map((f) => `${userId}/${f.name}`))
+      .catch((e: unknown) => ({ error: e }));
+    photosRemoved = !removed.error;
+  }
+  await supabase.auth.signOut().catch(() => undefined);
+  return { photosRemoved };
 }
