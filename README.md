@@ -1,6 +1,8 @@
 # Matchoji
 
-Interactive controls keep a 44px minimum touch target on phones (padding or an invisible hit area, not a bigger glyph). The header nav links and "Log a tasting" button show from 768px up, with the bottom tab bar below that, and standalone buttons and form fields on the account, admin and journal pages (including the profile privacy and unblock buttons) are at least 44px tall.
+The trusted guide to hojicha and matcha drinks in Singapore and Johor Bahru, rated drink by drink by tasters you can follow. (The site's one-line tagline and description live in `src/lib/constants/site.ts`.)
+
+Interactive controls keep a 44px minimum touch target on phones (padding or an invisible hit area, not a bigger glyph). The header nav links and "Log a drink" button show from 768px up, with the bottom tab bar below that, and standalone buttons and form fields on the account, admin and journal pages (including the profile privacy and unblock buttons) are at least 44px tall.
 
 Theme colours are held to WCAG AA by `src/app/globals.test.ts`: field edges 3:1, muted and brand text 4.5:1, in light and dark, and the matcha and hojicha category colours as text on white and on grey tiles (and, lifted, on black, tile and muted fills in dark). The footer's Light / Dark / System control makes dark reachable; Light stays the default.
 

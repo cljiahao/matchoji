@@ -1,12 +1,12 @@
 ---
 version: 1
 slug: 'src-app-public-page-tsx'
-primary_target: 'src/app/(public)/page.tsx'
+primary_target: 'src/app/(public)/(home)/page.tsx'
 related_targets:
   [
     'src/app/(public)/explore/page.tsx',
     'src/app/(public)/products/[id]/page.tsx',
-    'src/app/(public)/journal/page.tsx',
+    'src/app/(public)/journal/(list)/page.tsx',
   ]
 ---
 
