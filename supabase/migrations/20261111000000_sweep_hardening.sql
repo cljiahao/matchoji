@@ -48,7 +48,7 @@ begin
     select
       city_slug,
       lower(btrim(name)) as name_key,
-      coalesce(area, '') as area_key,
+      lower(btrim(coalesce(area, ''))) as area_key,
       count(*) as n
     from public.cafes
     where status <> 'rejected' and merged_into is null
@@ -63,19 +63,48 @@ begin
 end;
 $$;
 
-create unique index if not exists cafes_city_name_area_key
-  on public.cafes (city_slug, lower(btrim(name)), coalesce(area, ''))
+drop index if exists public.cafes_city_name_area_key;
+create unique index cafes_city_name_area_key
+  on public.cafes (city_slug, lower(btrim(name)), lower(btrim(coalesce(area, ''))))
   where status <> 'rejected' and merged_into is null;
 
 -- === 6b. daily cap on submissions of any status ===
 -- The pending cap alone lets someone submit, get rejected and submit again without limit.
+-- Admins are exempt: they seed and import cafés in bulk. Same message as limit_daily_inserts.
+create or replace function public.limit_daily_submissions () returns trigger language plpgsql
+security definer set search_path = '' as $$
+declare
+  cap integer := tg_argv[0]::integer;
+  author uuid := new.added_by;
+  recent integer;
+begin
+  if author is null
+    or coalesce((select is_admin from public.profiles where id = author), false) then
+    return new;
+  end if;
+  if tg_table_name = 'cafes' then
+    select count(*) into recent from public.cafes
+    where added_by = author and created_at > now() - interval '1 day';
+  else
+    select count(*) into recent from public.drinks
+    where added_by = author and created_at > now() - interval '1 day';
+  end if;
+  if recent >= cap then
+    raise exception 'That is a lot for one day. Try again tomorrow.' using errcode = 'P0001';
+  end if;
+  return new;
+end;
+$$;
+
+revoke execute on function public.limit_daily_submissions () from public, anon, authenticated;
+
 drop trigger if exists cafes_daily_limit on public.cafes;
 create trigger cafes_daily_limit before insert on public.cafes
-for each row execute function public.limit_daily_inserts ('15', 'added_by');
+for each row execute function public.limit_daily_submissions ('15');
 
 drop trigger if exists drinks_daily_limit on public.drinks;
 create trigger drinks_daily_limit before insert on public.drinks
-for each row execute function public.limit_daily_inserts ('30', 'added_by');
+for each row execute function public.limit_daily_submissions ('30');
 
 -- === 9. an Instagram handle is not just dots ===
 -- "." and ".." would turn instagram.com/<handle> into a path traversal.
@@ -228,7 +257,9 @@ $$;
 -- === 3. merge_cafe copes with rejected and merged drinks on the keeper ===
 -- Only a live (neither rejected nor merged) drink holds a name, so a rejected one on either side
 -- is no clash. A moved drink whose slug is already taken at the keeper gets the next free
--- numbered slug (the one slug change a drink ever has), since (cafe_id, slug) is unique.
+-- numbered slug (the one slug change a drink ever has), since (cafe_id, slug) is unique. The
+-- renamed drink's old URL under the merged café does not forward to it: drinks have no slug
+-- redirect, only merged_into between drinks, and building one is out of scope here.
 create or replace function public.merge_cafe (duplicate uuid, keep uuid)
 returns void language plpgsql security definer set search_path = '' as $$
 declare

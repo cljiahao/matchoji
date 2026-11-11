@@ -340,6 +340,23 @@ describe('6. duplicate cafés and daily caps', () => {
     await cafe({ name: 'Dup Cafe', area: 'Orchard', city: 'johor-bahru' });
   });
 
+  it('ignores case and surrounding spaces in the area', async () => {
+    await cafe({ name: 'Area Case Cafe', area: 'Orchard' });
+    await expect(
+      cafe({ name: 'Area Case Cafe', area: ' orchard ', status: 'pending' })
+    ).rejects.toThrow(/cafes_city_name_area_key/);
+    await expect(
+      cafe({ name: 'Area Case Cafe', area: '  ', status: 'pending' })
+    ).resolves.toBeTruthy();
+  });
+
+  it('exempts admins from the daily caps', async () => {
+    for (let i = 0; i < 16; i++) await cafe({ addedBy: ADMIN });
+    const c = await cafe({ addedBy: ADMIN });
+    for (let i = 0; i < 31; i++) await drink(c, { addedBy: ADMIN });
+    expect(await drink(c, { addedBy: ADMIN })).toBeTruthy();
+  });
+
   it('treats a missing area as one area', async () => {
     await cafe({ name: 'No Area Cafe' });
     await expect(cafe({ name: 'No Area Cafe', status: 'pending' })).rejects.toThrow(

@@ -26,6 +26,13 @@ function isPendingCap(error: DbError): boolean {
   return error.code === 'P0001' && /waiting for review/.test(error.message ?? '');
 }
 
+// limit_daily_submissions raises P0001 "That is a lot for one day…".
+function isDailyCap(error: DbError): boolean {
+  return error.code === 'P0001' && /lot for one day/.test(error.message ?? '');
+}
+
+export const DAILY_LIMIT_MESSAGE = "You've hit today's limit for adding. Try again tomorrow.";
+export const CAFE_EXISTS_MESSAGE = 'This café is already listed. Search for it instead.';
 export const PENDING_CAFES_MESSAGE =
   "You have too many cafés waiting for review. Try again once they're approved.";
 export const PENDING_DRINKS_MESSAGE =
@@ -48,6 +55,9 @@ export async function createCafe(supabase: Client, input: CafeOutput): Promise<C
     .single();
   if (error) {
     if (isPendingCap(error)) throw new FriendlyError(PENDING_CAFES_MESSAGE);
+    if (isDailyCap(error)) throw new FriendlyError(DAILY_LIMIT_MESSAGE);
+    // cafes_city_name_area_key: a live café already has this city, name and area.
+    if (error.code === '23505') throw new FriendlyError(CAFE_EXISTS_MESSAGE);
     throw error;
   }
   return toCafe(data);
@@ -68,6 +78,7 @@ export async function createDrink(supabase: Client, input: DrinkOutput): Promise
     .single();
   if (error) {
     if (isPendingCap(error)) throw new FriendlyError(PENDING_DRINKS_MESSAGE);
+    if (isDailyCap(error)) throw new FriendlyError(DAILY_LIMIT_MESSAGE);
     // drinks_cafe_name_key: the café already lists a drink by that name.
     if (error.code === '23505') {
       throw new FriendlyError('That drink is already listed at this café. Search for it instead.');

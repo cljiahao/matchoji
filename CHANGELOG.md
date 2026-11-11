@@ -7,7 +7,7 @@ All notable changes to this project are documented here. Format follows
 
 ### Security
 
-- Café schema sweep fixes (migration `20261111000000_sweep_hardening.sql`; the owner applies it in the Supabase SQL editor, and it stops with a list of duplicates if two live cafés share a city, name and area). Café ratings gain a disclosed-taster count. A drink name is unique among live drinks only, so a rejected or merged drink no longer blocks it, and merging a café copes with a rejected drink at the keeper. Likes and comments on a drink review follow the drink's visibility. A published review's disclosure can only be raised and its Instagram link is fixed once set. Café and drink submissions have a daily cap, duplicate cafés are refused, merged rows cannot be reviewed, admin edits validate coordinates, price and name, and an Instagram handle cannot be only dots.
+- Café schema sweep fixes (migration `20261111000000_sweep_hardening.sql`; the owner applies it in the Supabase SQL editor, and it stops with a list of duplicates if two live cafés share a city, name and area). Café ratings gain a disclosed-taster count. A drink name is unique among live drinks only, so a rejected or merged drink no longer blocks it, and merging a café copes with a rejected drink at the keeper. Likes and comments on a drink review follow the drink's visibility. A published review's disclosure can only be raised and its Instagram link is fixed once set. Café and drink submissions have a daily cap (admins exempt), duplicate cafés are refused whatever the case or spacing of the area, adding a duplicate café or hitting the cap shows a plain message, merged rows cannot be reviewed, admin edits validate coordinates, price and name, and an Instagram handle cannot be only dots.
 
 ### Added
 
