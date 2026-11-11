@@ -5,6 +5,10 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Vercel functions now run in Singapore (`sin1`, set in the new `vercel.json`) instead of the default US East, so server renders sit next to Supabase and close to readers in Singapore and Johor Bahru. No code or migration change.
+
 ### Security
 
 - Sweep leftovers. The data export no longer includes `actor_id` on notifications (another person's id), keeping the type, target ids, body and timestamps. Adding a café or drink only says "already listed" when the violated index is the duplicate-name one (`cafes_city_name_area_key`, `drinks_cafe_name_key`); any other unique violation surfaces as the error it is. New database tests pin that a deleted author's drink-review photo is cleared and that `drink_ranks` ties end on `drink_id`. No migration: `delete_my_account` already clears review photos and the app orders ranks by `drink_id`.
