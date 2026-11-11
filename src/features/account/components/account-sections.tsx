@@ -179,7 +179,8 @@ export function ExportDataButton({ userId }: { userId: string }) {
       link.href = url;
       link.download = 'matchoji-data.json';
       link.click();
-      URL.revokeObjectURL(url);
+      // Revoked on a later tick: some browsers start the download after click() returns.
+      setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch {
       toast.error('Could not prepare your data. Try again.');
     } finally {
@@ -213,8 +214,11 @@ export function DeleteAccountSection({ userId }: { userId: string }) {
   async function remove() {
     setBusy(true);
     try {
-      await deleteMyAccount(createClient(), userId);
+      const { photosRemoved } = await deleteMyAccount(createClient(), userId);
       toast.success('Your account is deleted.');
+      if (!photosRemoved) {
+        toast.message('Some of your photos could not be removed. Contact us to have them deleted.');
+      }
       router.replace('/');
       router.refresh();
     } catch {
@@ -228,8 +232,9 @@ export function DeleteAccountSection({ userId }: { userId: string }) {
   return (
     <div className="border-destructive/30 bg-destructive/5 max-w-md space-y-3 rounded-2xl border p-5">
       <p className="text-sm">
-        Your want-to-try list, stock reports, shop and photos are removed. Your ratings stay on the
-        teas they rated, with no name attached. This cannot be undone.
+        Your want-to-try list, stock reports, shop and photos are removed. Your ratings of teas and
+        drinks stay, with no name attached, and the cafés and drinks you added stay listed. This
+        cannot be undone.
       </p>
       <div className="space-y-2">
         <Label htmlFor="confirm-delete">Type “{CONFIRM_WORD}” to confirm</Label>

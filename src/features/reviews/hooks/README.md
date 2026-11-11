@@ -10,7 +10,7 @@ keys results by the signed-in user, since `search_teas` also returns their own t
 awaiting review.
 
 `useUpdateReview` saves an edited tasting: a new photo replaces the old one (whose file is then
-removed), and a failed save removes the new upload instead.
+removed), and a failed save removes the new upload instead. An update that changes no row (the tasting was removed, or is not the person's) rejects with `RowNotChangedError`, and the replaced photo is left alone.
 
 ## Contents
 

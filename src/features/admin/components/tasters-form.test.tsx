@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -34,10 +34,14 @@ describe('TastersForm', () => {
       'rpc:set_trusted_taster': { data: null, error: null },
     });
 
-    await userEvent.type(screen.getByLabelText('Search people by display name'), 'aik');
+    await userEvent.type(screen.getByLabelText('Search people by display name or handle'), 'aik');
     await userEvent.click(screen.getByRole('button', { name: 'Search' }));
     expect(await screen.findByText(/private profile/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Grant badge/ }));
+    expect(calls.some((c) => c.table === 'rpc:set_trusted_taster')).toBe(false);
+    await userEvent.click(
+      within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Grant badge' })
+    );
 
     await waitFor(() => expect(router.refresh).toHaveBeenCalled());
     expect(calls.find((c) => c.table === 'rpc:set_trusted_taster')?.args).toEqual([
@@ -54,6 +58,9 @@ describe('TastersForm', () => {
     );
 
     await userEvent.click(screen.getByRole('button', { name: /Revoke badge/ }));
+    await userEvent.click(
+      within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Revoke badge' })
+    );
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Admins only.'));
     expect(calls[0].args).toEqual([{ person: ID, value: false }]);
@@ -63,8 +70,30 @@ describe('TastersForm', () => {
     setup({ public_profiles: { data: [], error: null } });
     expect(screen.getByText('No one has the badge yet.')).toBeInTheDocument();
 
-    await userEvent.type(screen.getByLabelText('Search people by display name'), 'zzz');
+    await userEvent.type(screen.getByLabelText('Search people by display name or handle'), 'zzz');
     await userEvent.click(screen.getByRole('button', { name: 'Search' }));
-    expect(await screen.findByText('No one by that name.')).toBeInTheDocument();
+    expect(await screen.findByText('No one by that name or handle.')).toBeInTheDocument();
+  });
+
+  it('cancelling the confirm changes nothing', async () => {
+    const taster = { id: ID, displayName: 'Aiko', isPublic: true, isTrustedTaster: true };
+    const { calls } = setup({}, [taster] as never[]);
+
+    await userEvent.click(screen.getByRole('button', { name: /Revoke badge/ }));
+    await userEvent.click(
+      within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Cancel' })
+    );
+
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
+    expect(calls.some((c) => c.table === 'rpc:set_trusted_taster')).toBe(false);
+  });
+
+  it('shows the handle of a found person', async () => {
+    setup({
+      public_profiles: { data: [{ ...found, instagram_handle: 'aiko.sips' }], error: null },
+    });
+    await userEvent.type(screen.getByLabelText('Search people by display name or handle'), '@aiko');
+    await userEvent.click(screen.getByRole('button', { name: 'Search' }));
+    expect(await screen.findByText(/@aiko\.sips/)).toBeInTheDocument();
   });
 });

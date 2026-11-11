@@ -16,6 +16,7 @@ import { CustomFormField } from '@/components/widgets';
 import { useSession, useSignInPrompt } from '@/features/auth';
 import type { ProductSummary } from '@/features/products';
 
+import { RowNotChangedError } from '../api/reviews-mutations';
 import { useLogReview } from '../hooks/use-log-review.mutation';
 import { useUpdateReview } from '../hooks/use-update-review.mutation';
 import { localToday } from '../lib';
@@ -119,8 +120,12 @@ export function RateProductForm({
         toast.success('Tasting updated.');
         onLogged?.();
         router.refresh();
-      } catch {
-        toast.error('Could not save your changes. Try again.');
+      } catch (error) {
+        toast.error(
+          error instanceof RowNotChangedError
+            ? 'That tasting could not be changed. It may have been removed; refresh and try again.'
+            : 'Could not save your changes. Try again.'
+        );
       }
       return;
     }

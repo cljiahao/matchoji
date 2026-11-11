@@ -26,7 +26,9 @@ const input = (photo: File | null) => ({
 
 describe('useUpdateReview', () => {
   it('keeps the current photo when no new one is chosen', async () => {
-    const fake = createFakeBrowserClient({ results: { reviews: { data: null, error: null } } });
+    const fake = createFakeBrowserClient({
+      results: { reviews: { data: [{ id: 'r1' }], error: null } },
+    });
     supabase.current = fake.client;
     const { result } = renderHook(() => useUpdateReview(), { wrapper });
 
@@ -40,7 +42,9 @@ describe('useUpdateReview', () => {
   });
 
   it('replaces the photo and removes the old file', async () => {
-    const fake = createFakeBrowserClient({ results: { reviews: { data: null, error: null } } });
+    const fake = createFakeBrowserClient({
+      results: { reviews: { data: [{ id: 'r1' }], error: null } },
+    });
     supabase.current = fake.client;
     const { result } = renderHook(() => useUpdateReview(), { wrapper });
 

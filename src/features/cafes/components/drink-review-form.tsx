@@ -18,7 +18,7 @@ import { useSession, useSignInPrompt } from '@/features/auth';
 import { FlavorNotePicker, StarRatingInput, localToday, type Review } from '@/features/reviews';
 import type { DrinkBase } from '@/integrations/supabase/database.types';
 
-import { FriendlyError } from '../api/cafes-mutations';
+import { drinkReviewErrorMessage } from '../api/cafes-mutations';
 import { useLogDrinkReview } from '../hooks/use-log-drink-review.mutation';
 import { useUpdateDrinkReview } from '../hooks/use-update-drink-review.mutation';
 import {
@@ -115,11 +115,7 @@ export function DrinkReviewForm({ drink, isTaster, review, onLogged }: DrinkRevi
       onLogged?.();
       router.refresh();
     } catch (error) {
-      toast.error(
-        error instanceof FriendlyError
-          ? error.message
-          : 'Could not save that rating. Your answers are still here — try again.'
-      );
+      toast.error(drinkReviewErrorMessage(error));
     }
   }
 

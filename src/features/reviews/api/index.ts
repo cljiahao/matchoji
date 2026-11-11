@@ -1,5 +1,6 @@
 export { loadDrinkSummaries } from './drink-summaries';
 export {
+  RowNotChangedError,
   createReview,
   deleteReview,
   removeReviewPhoto,

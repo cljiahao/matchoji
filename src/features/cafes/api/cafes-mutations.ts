@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { localToday } from '@/features/reviews';
+import { RowNotChangedError, localToday } from '@/features/reviews';
 import type { Database } from '@/integrations/supabase/database.types';
 
 import type { CafeOutput } from '../schemas/cafe.schema';
@@ -129,7 +129,7 @@ export async function updateDrinkReview(
   reviewId: string,
   input: DrinkReviewWrite
 ): Promise<void> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('reviews')
     .update({
       stars: input.stars,
@@ -145,6 +145,28 @@ export async function updateDrinkReview(
       disclosure: input.disclosure ?? 'none',
       tasted_on: input.tastedOn ?? localToday(),
     })
-    .eq('id', reviewId);
+    .eq('id', reviewId)
+    .select('id');
   if (error) throw error;
+  if (!data || data.length === 0) throw new RowNotChangedError('Drink review not updated.');
+}
+
+export const REVIEW_DENIED_MESSAGE =
+  "You can't rate this drink right now. It may not be open for ratings yet, or your session has lapsed.";
+export const REVIEW_INVALID_MESSAGE =
+  'Some of those answers are not allowed. Check the fields and try again.';
+export const REVIEW_GONE_MESSAGE =
+  'That rating could not be changed. It may have been removed; refresh and try again.';
+
+// The words shown when saving a drink rating fails. Anything unrecognised gets the generic
+// line, so a raw database message never reaches the page.
+export function drinkReviewErrorMessage(error: unknown): string {
+  if (error instanceof FriendlyError) return error.message;
+  if (error instanceof RowNotChangedError) return REVIEW_GONE_MESSAGE;
+  const code = (error as DbError | null)?.code;
+  // 42501: row-level security refused the write.
+  if (code === '42501') return REVIEW_DENIED_MESSAGE;
+  // 23514: a check constraint refused a value.
+  if (code === '23514') return REVIEW_INVALID_MESSAGE;
+  return 'Could not save that rating. Your answers are still here — try again.';
 }

@@ -5,6 +5,16 @@ import { useRouter } from 'next/navigation';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { toast } from 'sonner';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createClient } from '@/integrations/supabase/client';
@@ -17,14 +27,13 @@ interface TastersFormProps {
   tasters: AdminProfile[];
 }
 
-// Search by display name, then grant or revoke the badge. The list of current tasters comes
-// from the server page; a change refreshes it.
 export function TastersForm({ tasters }: TastersFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [q, setQ] = useState('');
   const [term, setTerm] = useState('');
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState<AdminProfile | null>(null);
   const results = useQuery({
     queryKey: ['admin-profile-search', term],
     queryFn: () => searchProfiles(createClient(), term),
@@ -46,6 +55,7 @@ export function TastersForm({ tasters }: TastersFormProps) {
       toast.error(errorMessage(error));
     } finally {
       setBusy(false);
+      setConfirming(null);
     }
   }
 
@@ -58,6 +68,9 @@ export function TastersForm({ tasters }: TastersFormProps) {
     <li key={person.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
       <p className="min-w-0 break-words">
         <span className="font-semibold">{person.displayName}</span>
+        {person.instagramHandle && (
+          <span className="text-muted-foreground"> · @{person.instagramHandle}</span>
+        )}
         {!person.isPublic && <span className="text-muted-foreground"> · private profile</span>}
         {person.isTrustedTaster && <span className="text-muted-foreground"> · trusted taster</span>}
       </p>
@@ -67,7 +80,7 @@ export function TastersForm({ tasters }: TastersFormProps) {
         className="min-h-11"
         variant={person.isTrustedTaster ? 'outline' : 'default'}
         disabled={busy}
-        onClick={() => toggle(person)}
+        onClick={() => setConfirming(person)}
       >
         {person.isTrustedTaster ? 'Revoke' : 'Grant'} badge
         <span className="sr-only"> for {person.displayName}</span>
@@ -83,7 +96,7 @@ export function TastersForm({ tasters }: TastersFormProps) {
       </p>
     );
   } else if (results.data?.length === 0) {
-    searchResults = <p className="text-muted-foreground text-sm">No one by that name.</p>;
+    searchResults = <p className="text-muted-foreground text-sm">No one by that name or handle.</p>;
   } else {
     searchResults = <ul className="divide-y rounded-2xl border">{results.data?.map(row)}</ul>;
   }
@@ -92,9 +105,9 @@ export function TastersForm({ tasters }: TastersFormProps) {
     <div className="space-y-8">
       <form onSubmit={search} className="flex flex-wrap items-center gap-2">
         <Input
-          aria-label="Search people by display name"
+          aria-label="Search people by display name or handle"
           className="h-11 min-w-0 flex-1"
-          placeholder="Display name"
+          placeholder="Display name or @handle"
           value={q}
           maxLength={80}
           onChange={(e) => setQ(e.target.value)}
@@ -118,6 +131,30 @@ export function TastersForm({ tasters }: TastersFormProps) {
           <ul className="divide-y rounded-2xl border">{tasters.map(row)}</ul>
         )}
       </section>
+      <AlertDialog open={confirming !== null} onOpenChange={(open) => !open && setConfirming(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirming?.isTrustedTaster ? 'Revoke trusted taster?' : 'Make a trusted taster?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirming?.isTrustedTaster
+                ? `${confirming.displayName} loses the badge. Their existing reviews keep their taster label.`
+                : `${confirming?.displayName ?? 'This person'} gets the badge, their profile becomes public, and their drink reviews count in the taster score.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant={confirming?.isTrustedTaster ? 'destructive' : 'default'}
+              disabled={busy}
+              onClick={() => confirming && toggle(confirming)}
+            >
+              {confirming?.isTrustedTaster ? 'Revoke badge' : 'Grant badge'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

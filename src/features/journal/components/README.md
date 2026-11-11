@@ -30,6 +30,8 @@ The compact want-to-try button extends its hit area to 44px without growing visu
 
 `JournalTimeline` renders a drink tasting as a row with the drink, its café, the stars, the disclosure badge, notes and the Instagram link; drink rows carry `TastingActions` too, whose Edit opens the café drink form (`DrinkReviewForm`, prefilled) and whose Delete removes the review and its photo after a confirmation.
 
+`TastingActions` reports a failed delete (including a tasting that was already gone, which now throws instead of passing silently) with its "Could not delete that tasting" toast.
+
 ## Contents
 
 - `freshness-hint.test.tsx`

@@ -327,12 +327,31 @@ const toCafe = (r: CafeRow): AdminCafe => ({
   addedByName: r.adder_name,
 });
 
-async function listCafes(supabase: Client, status: 'pending' | 'approved'): Promise<AdminCafe[]> {
-  const { data, error } = await supabase
-    .from('admin_cafes')
-    .select(CAFE_COLUMNS)
-    .eq('status', status)
-    .order(status === 'pending' ? 'created_at' : 'name');
+// Pickers and queues load a page, not the whole table; a search narrows by name.
+export const LIST_LIMIT = 200;
+
+export interface ListOptions {
+  search?: string;
+  limit?: number;
+}
+
+// The term as a LIKE pattern: wildcards typed by the admin match themselves.
+function likePattern(search: string | undefined): string | null {
+  const term = searchTermSchema.parse(search ?? '').replace(/[\\%_]/g, (c) => `\\${c}`);
+  return term ? `%${term}%` : null;
+}
+
+async function listCafes(
+  supabase: Client,
+  status: 'pending' | 'approved',
+  { search, limit = LIST_LIMIT }: ListOptions = {}
+): Promise<AdminCafe[]> {
+  let query = supabase.from('admin_cafes').select(CAFE_COLUMNS).eq('status', status);
+  const pattern = likePattern(search);
+  if (pattern) query = query.ilike('name', pattern);
+  const { data, error } = await query
+    .order(status === 'pending' ? 'created_at' : 'name')
+    .limit(limit);
   if (error) {
     if (isMissing(error)) return [];
     throw error;
@@ -340,12 +359,17 @@ async function listCafes(supabase: Client, status: 'pending' | 'approved'): Prom
   return data.map(toCafe);
 }
 
-async function listDrinks(supabase: Client, status: 'pending' | 'approved'): Promise<AdminDrink[]> {
-  const { data, error } = await supabase
-    .from('admin_drinks')
-    .select(DRINK_COLUMNS)
-    .eq('status', status)
-    .order(status === 'pending' ? 'created_at' : 'name');
+async function listDrinks(
+  supabase: Client,
+  status: 'pending' | 'approved',
+  { search, limit = LIST_LIMIT }: ListOptions = {}
+): Promise<AdminDrink[]> {
+  let query = supabase.from('admin_drinks').select(DRINK_COLUMNS).eq('status', status);
+  const pattern = likePattern(search);
+  if (pattern) query = query.ilike('name', pattern);
+  const { data, error } = await query
+    .order(status === 'pending' ? 'created_at' : 'name')
+    .limit(limit);
   if (error) {
     if (isMissing(error)) return [];
     throw error;
@@ -354,10 +378,8 @@ async function listDrinks(supabase: Client, status: 'pending' | 'approved'): Pro
   const cafes = await selectIn([...new Set(data.map((d) => d.cafe_id))], (ids) =>
     supabase.from('admin_cafes').select('id, name').in('id', ids)
   );
-  if (cafes.error) {
-    if (isMissing(cafes.error)) return [];
-    throw cafes.error;
-  }
+  // The drinks were found, so a failing café lookup is a real fault, not an empty list.
+  if (cafes.error) throw cafes.error;
   const cafeName = new Map(cafes.data.map((c) => [c.id, c.name]));
   return data.map((r) => ({
     id: r.id,
@@ -377,11 +399,15 @@ async function listDrinks(supabase: Client, status: 'pending' | 'approved'): Pro
   }));
 }
 
-export const listCafeQueue = (supabase: Client) => listCafes(supabase, 'pending');
-export const listDrinkQueue = (supabase: Client) => listDrinks(supabase, 'pending');
+export const listCafeQueue = (supabase: Client, options?: ListOptions) =>
+  listCafes(supabase, 'pending', options);
+export const listDrinkQueue = (supabase: Client, options?: ListOptions) =>
+  listDrinks(supabase, 'pending', options);
 // Approved rows: the merge targets and the edit pickers.
-export const listApprovedCafes = (supabase: Client) => listCafes(supabase, 'approved');
-export const listApprovedDrinks = (supabase: Client) => listDrinks(supabase, 'approved');
+export const listApprovedCafes = (supabase: Client, options?: ListOptions) =>
+  listCafes(supabase, 'approved', options);
+export const listApprovedDrinks = (supabase: Client, options?: ListOptions) =>
+  listDrinks(supabase, 'approved', options);
 
 // review_drink('approved') raises for a drink at a café that is not approved; the message goes
 // to the admin as it is.
@@ -451,14 +477,16 @@ export async function updateDrink(
   if (error) throw error;
 }
 
-const PROFILE_COLUMNS = 'id, display_name, is_public, is_trusted_taster';
+const PROFILE_COLUMNS = 'id, display_name, is_public, is_trusted_taster, instagram_handle';
 type ProfileRow = Database['public']['Views']['public_profiles']['Row'];
 const toProfile = (
-  r: Pick<ProfileRow, 'id' | 'display_name' | 'is_public' | 'is_trusted_taster'>
+  r: Pick<ProfileRow, 'id' | 'display_name' | 'is_public' | 'is_trusted_taster'> &
+    Partial<Pick<ProfileRow, 'instagram_handle'>>
 ) =>
   ({
     id: r.id,
     displayName: r.display_name,
+    instagramHandle: r.instagram_handle ?? null,
     isPublic: r.is_public,
     isTrustedTaster: r.is_trusted_taster,
   }) satisfies AdminProfile;
@@ -466,15 +494,23 @@ const toProfile = (
 const SEARCH_LIMIT = 10;
 
 // public_profiles is the one profile list admins can read (profiles itself is owner-only, it
-// holds email), and it includes private profiles. Names only; no email search.
+// holds email), and it includes private profiles. Display name or Instagram handle; no email
+// search.
 export async function searchProfiles(supabase: Client, q: string): Promise<AdminProfile[]> {
-  // Escape LIKE wildcards so a typed % or _ matches itself.
-  const term = searchTermSchema.parse(q).replace(/[\\%_]/g, (c) => `\\${c}`);
+  // Escape LIKE wildcards so a typed % or _ matches itself; a leading @ is how handles are written.
+  const term = searchTermSchema
+    .parse(q)
+    .replace(/^@/, '')
+    .replace(/[\\%_]/g, (c) => `\\${c}`);
   if (!term) return [];
+  // The pattern goes into the or() filter in double quotes so commas and dots in it are data;
+  // inside quotes a backslash and a quote need their own escape.
+  const escaped = term.replace(/[\\"]/g, (c) => `\\${c}`);
+  const quoted = `"%${escaped}%"`;
   const { data, error } = await supabase
     .from('public_profiles')
     .select(PROFILE_COLUMNS)
-    .ilike('display_name', `%${term}%`)
+    .or(`display_name.ilike.${quoted},instagram_handle.ilike.${quoted}`)
     .order('display_name')
     .limit(SEARCH_LIMIT);
   if (error) {

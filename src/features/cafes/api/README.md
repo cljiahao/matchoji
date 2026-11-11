@@ -8,6 +8,8 @@ Supabase reads and writes, server-safe, tested against the recording fake client
 
 `cafes-search.ts` backs the logging flow: `searchCafes` lists approved cafés plus the searcher's own pending ones (merged duplicates skipped), `searchDrinks` a café's drinks, and `loadIsTrustedTaster` reads the badge from `public_profiles` (false on error). `cafes-mutations.ts` holds the writes, which go through RLS and the database checks: `createCafe`, `createDrink`, `createDrinkReview` and `updateDrinkReview`. Slugs and currency are set by database triggers, and the taster fields are sent as typed because the database stamps and enforces who is a trusted taster. A pending-cap or daily-cap error (`P0001`), a duplicate café (`23505` on `createCafe`) and a duplicate drink (`23505` on `createDrink`) become a `FriendlyError` whose message is meant for the person.
 
+`updateDrinkReview` throws `RowNotChangedError` (from the reviews feature) when no row changed, since row-level security hides a row it refuses rather than raising. `drinkReviewErrorMessage` turns a failed rating save into words for the person: Postgres 42501 (denied) and 23514 (a check refused a value) and a vanished row each get a friendly line, a `FriendlyError` passes through, and anything else is generic.
+
 ## Contents
 
 - `cafes-mutations.test.ts`

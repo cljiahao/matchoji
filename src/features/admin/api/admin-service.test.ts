@@ -4,6 +4,8 @@ import { createFakeSupabase } from '../../../../test/support/fake-supabase';
 import { cafeFieldsSchema } from '../schemas';
 import {
   isAdmin,
+  listApprovedCafes,
+  listApprovedDrinks,
   listApprovedTeas,
   listCafeQueue,
   listDrinkQueue,
@@ -422,6 +424,39 @@ describe('listCafeQueue and listDrinkQueue', () => {
     ]);
   });
 
+  it('limits the list and narrows it by name when searching', async () => {
+    const { client, calls } = createFakeSupabase({ admin_cafes: { data: [], error: null } });
+    await listApprovedCafes(client, { search: '50%', limit: 25 });
+    expect(calls).toContainEqual(
+      expect.objectContaining({ method: 'ilike', args: ['name', '%50\\%%'] })
+    );
+    expect(calls).toContainEqual(expect.objectContaining({ method: 'limit', args: [25] }));
+  });
+
+  it('applies a default limit to the unsearched list', async () => {
+    const { client, calls } = createFakeSupabase({ admin_drinks: { data: [], error: null } });
+    await listApprovedDrinks(client);
+    expect(calls).toContainEqual(expect.objectContaining({ method: 'limit', args: [200] }));
+  });
+
+  it('rethrows a failing café lookup for the drinks instead of returning []', async () => {
+    const error = { code: '42501', message: 'denied' };
+    const { client } = createFakeSupabase({
+      admin_drinks: {
+        data: [{ id: 'd1', cafe_id: 'c1', name: 'Latte' }],
+        error: null,
+      },
+      admin_cafes: { data: null, error },
+    });
+    await expect(listApprovedDrinks(client)).rejects.toBe(error);
+  });
+
+  it('rethrows a drinks error that is not a missing table', async () => {
+    const error = { code: '42501', message: 'denied' };
+    const { client } = createFakeSupabase({ admin_drinks: { data: null, error } });
+    await expect(listDrinkQueue(client)).rejects.toBe(error);
+  });
+
   it('listDrinkQueue returns [] on missing table', async () => {
     const { client } = createFakeSupabase({
       admin_drinks: { data: null, error: { code: '42P01', message: 'x' } },
@@ -489,11 +524,52 @@ describe('searchProfiles and listTrustedTasters', () => {
       },
     });
     expect(await searchProfiles(client, ' 50%_ ')).toEqual([
-      { id: 'u1', displayName: 'Aiko', isPublic: false, isTrustedTaster: false },
+      {
+        id: 'u1',
+        displayName: 'Aiko',
+        instagramHandle: null,
+        isPublic: false,
+        isTrustedTaster: false,
+      },
     ]);
+    // Wildcards are escaped for LIKE, then the backslash for the quoted or() value.
     expect(calls).toContainEqual(
-      expect.objectContaining({ method: 'ilike', args: ['display_name', '%50\\%\\_%'] })
+      expect.objectContaining({
+        method: 'or',
+        args: ['display_name.ilike."%50\\\\%\\\\_%",instagram_handle.ilike."%50\\\\%\\\\_%"'],
+      })
     );
+  });
+
+  it('searches by Instagram handle too, ignoring a leading @', async () => {
+    const { client, calls } = createFakeSupabase({
+      public_profiles: {
+        data: [
+          {
+            id: 'u1',
+            display_name: 'Aiko',
+            instagram_handle: 'aiko.sips',
+            is_public: true,
+            is_trusted_taster: false,
+          },
+        ],
+        error: null,
+      },
+    });
+    const [person] = await searchProfiles(client, '@aiko.sips');
+    expect(person.instagramHandle).toBe('aiko.sips');
+    expect(calls).toContainEqual(
+      expect.objectContaining({
+        method: 'or',
+        args: ['display_name.ilike."%aiko.sips%",instagram_handle.ilike."%aiko.sips%"'],
+      })
+    );
+  });
+
+  it('throws a search error that is not a missing table', async () => {
+    const error = { code: '42501', message: 'denied' };
+    const { client } = createFakeSupabase({ public_profiles: { data: null, error } });
+    await expect(searchProfiles(client, 'aiko')).rejects.toBe(error);
   });
 
   it('refuses an over-long search term without querying', async () => {
