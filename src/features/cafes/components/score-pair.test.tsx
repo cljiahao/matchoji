@@ -26,11 +26,11 @@ describe('ScorePair', () => {
 
   it('shows disclosed line only when > 0', () => {
     const { rerender } = render(<ScorePair scores={scores()} />);
-    expect(screen.queryByText(/gifted\/paid/)).toBeNull();
+    expect(screen.queryByText(/paid\/gifted/)).toBeNull();
     rerender(<ScorePair scores={scores({ tasterDisclosedCount: 1 })} />);
-    expect(screen.getByText('1 of 2 taster reviews were invited, gifted or paid')).toBeTruthy();
-    rerender(<ScorePair scores={scores({ tasterCount: 1, tasterDisclosedCount: 1 })} />);
-    expect(screen.getByText('1 of 1 taster review was invited, gifted or paid')).toBeTruthy();
+    expect(screen.getByText('1 paid/gifted')).toBeTruthy();
+    rerender(<ScorePair scores={scores({ tasterDisclosedCount: 2 })} />);
+    expect(screen.getByText('2 paid/gifted')).toBeTruthy();
   });
 
   it('hides an empty side', () => {
@@ -54,6 +54,12 @@ describe('ScorePair', () => {
   it('has a compact form for lists', () => {
     render(<ScorePair scores={scores({ tasterDisclosedCount: 1 })} compact />);
     expect(screen.getByText(/Taster/)).toBeTruthy();
-    expect(screen.getByText('1 of 2 taster reviews were invited, gifted or paid')).toBeTruthy();
+    expect(screen.getByText('1 paid/gifted')).toBeTruthy();
+  });
+
+  it('counts reviews, never people, under both scores', () => {
+    render(<ScorePair scores={scores({ tasterCount: 1, communityCount: 3 })} />);
+    expect(screen.getByText('1 review')).toBeTruthy();
+    expect(screen.getByText('3 reviews')).toBeTruthy();
   });
 });

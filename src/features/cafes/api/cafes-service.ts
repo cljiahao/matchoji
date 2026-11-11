@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { cache } from 'react';
 
 import { REVIEW_COLUMNS, mapReviewRow, type Review } from '@/features/reviews';
 import type { Database, DrinkBase, DrinkStyle } from '@/integrations/supabase/database.types';
@@ -42,6 +43,15 @@ export const DRINK_COLUMNS =
   'id, cafe_id, slug, name, base, style, serving, price, currency, photo_url, photo_credit, tea_product_id, status, merged_into, updated_at';
 const RATING_COLUMNS =
   'drink_id, taster_count, taster_avg, taster_disclosed_count, community_count, community_avg';
+const CAFE_RATING_COLUMNS =
+  'cafe_id, drink_count, taster_count, taster_avg, taster_disclosed_count, community_count, community_avg';
+
+// Reads are bounded so one big city or one popular drink cannot make a page pull the whole table.
+// The caps sit well above today's catalogue; a page that reaches one shows the first rows, not none.
+const CITY_CAFE_LIMIT = 500;
+const CITY_DRINK_LIMIT = 1000;
+const SIMILAR_READ_LIMIT = 100;
+const DRINK_REVIEW_LIMIT = 100;
 
 export type CafeRow = Pick<
   Tables['cafes']['Row'],
@@ -252,7 +262,7 @@ async function cafeDrinks(supabase: Client, cafe: Cafe): Promise<DrinkListing[]>
 async function cafeScores(supabase: Client, cafeId: string): Promise<ScorePair> {
   const { data, error } = await supabase
     .from('cafe_ratings')
-    .select('cafe_id, drink_count, taster_count, taster_avg, community_count, community_avg')
+    .select(CAFE_RATING_COLUMNS)
     .eq('cafe_id', cafeId)
     .maybeSingle();
   if (error) return emptyOrThrow(error, NO_SCORES);
@@ -282,11 +292,7 @@ export async function listCafes(
 
   const { data: ratings, error: ratingsError } = await selectIn(
     data.map((c) => c.id),
-    (batch) =>
-      supabase
-        .from('cafe_ratings')
-        .select('cafe_id, drink_count, taster_count, taster_avg, community_count, community_avg')
-        .in('cafe_id', batch)
+    (batch) => supabase.from('cafe_ratings').select(CAFE_RATING_COLUMNS).in('cafe_id', batch)
   );
   // Without the cafe_ratings view the cafés still list, just unscored.
   const ratingRows = ratingsError ? emptyOrThrow(ratingsError, []) : ratings;
@@ -342,7 +348,10 @@ async function reviewerNames(
 }
 
 async function loadDrinkReviews(supabase: Client, drinkId: string): Promise<Review[]> {
-  const { data, error } = await supabase.rpc('drink_reviews', { drink: drinkId });
+  // The function returns newest first, so the cap keeps the latest reviews.
+  const { data, error } = await supabase
+    .rpc('drink_reviews', { drink: drinkId })
+    .limit(DRINK_REVIEW_LIMIT);
   if (error) return emptyOrThrow(error, []);
   const names = await reviewerNames(
     supabase,
@@ -451,20 +460,31 @@ interface CityDrinkQuery {
   style?: DrinkStyle;
 }
 
-// Every approved drink at an approved café in a city, with its scores.
-async function cityDrinks(
+interface DrinkReadOptions {
+  base?: DrinkBase;
+  style?: DrinkStyle;
+  excludeId?: string;
+  limit: number;
+}
+
+// Approved drinks at approved cafés in a city, with their scores. Filters and the cap are applied
+// in the query, so a narrow read (similar drinks) never loads the rest of the city.
+async function readCityDrinks(
   supabase: Client,
-  { city, base, style }: CityDrinkQuery
+  city: string,
+  { base, style, excludeId, limit }: DrinkReadOptions
 ): Promise<DrinkListing[]> {
   const { data: cafes, error } = await supabase
     .from('cafes')
     .select('id, slug, name, area, city_slug')
     .eq('city_slug', city)
     .eq('status', 'approved')
-    .is('merged_into', null);
+    .is('merged_into', null)
+    .order('id')
+    .limit(CITY_CAFE_LIMIT);
   if (error) return emptyOrThrow(error, []);
 
-  const { data: drinks, error: drinksError } = await selectIn(
+  const { data: found, error: drinksError } = await selectIn(
     cafes.map((c) => c.id),
     (batch) => {
       let query = supabase
@@ -475,10 +495,12 @@ async function cityDrinks(
         .is('merged_into', null);
       if (base) query = query.eq('base', base);
       if (style) query = query.eq('style', style);
-      return query;
+      if (excludeId) query = query.neq('id', excludeId);
+      return query.order('id').limit(limit);
     }
   );
   if (drinksError) return emptyOrThrow(drinksError, []);
+  const drinks = found.slice(0, limit);
 
   const scores = await ratingsByDrink(
     supabase,
@@ -499,23 +521,60 @@ async function cityDrinks(
   });
 }
 
+// One unfiltered read per city per request, shared by every list on a page (the home page ranks
+// lattes and builds the taster rail from it). Arguments are primitives and the client is the
+// request's own, so React's cache can key on them.
+const cityDrinks = cache((supabase: Client, city: string) =>
+  readCityDrinks(supabase, city, { limit: CITY_DRINK_LIMIT })
+);
+
+const inList = (d: DrinkListing, { base, style }: Pick<CityDrinkQuery, 'base' | 'style'>) =>
+  (!base || d.base === base) && (!style || d.style === style);
+
+const rankedTop = (drinks: DrinkListing[], filter: Pick<CityDrinkQuery, 'base' | 'style'>) =>
+  drinks.filter((d) => inList(d, filter) && qualifiesForTop(d)).sort(compareDrinks);
+
 export interface TopDrinksOptions extends CityDrinkQuery {
   limit?: number;
 }
 
 export async function listTopDrinks(
   supabase: Client,
-  { limit = 20, ...query }: TopDrinksOptions
+  { limit = 20, city, ...filter }: TopDrinksOptions
 ): Promise<DrinkListing[]> {
-  const drinks = await cityDrinks(supabase, query);
-  return drinks.filter(qualifiesForTop).sort(compareDrinks).slice(0, limit);
+  return rankedTop(await cityDrinks(supabase, city), filter).slice(0, limit);
+}
+
+export const TOP_PAGE_SIZE = 20;
+
+export interface TopDrinksPage {
+  drinks: DrinkListing[];
+  // Every qualifying drink in the list, not just this page: the number "See all N" promises.
+  total: number;
+  pageCount: number;
+}
+
+export async function listTopDrinksPage(
+  supabase: Client,
+  { city, ...filter }: CityDrinkQuery,
+  page: number,
+  pageSize = TOP_PAGE_SIZE
+): Promise<TopDrinksPage> {
+  const ranked = rankedTop(await cityDrinks(supabase, city), filter);
+  const start = (page - 1) * pageSize;
+  return {
+    drinks: ranked.slice(start, start + pageSize),
+    total: ranked.length,
+    pageCount: Math.max(1, Math.ceil(ranked.length / pageSize)),
+  };
 }
 
 // Every drink list that has at least one qualifying drink, for the /top index and the sitemap. One
 // read per city, split by base and style here, so an empty list costs nothing and is left out.
+// `count` is the same total /top/[slug] pages through.
 export async function listTopDrinkLists(supabase: Client): Promise<TopDrinkList[]> {
   const perCity = await Promise.all(
-    CITIES.map((city) => listTopDrinks(supabase, { city: city.slug, limit: TOP_LIST_READ_LIMIT }))
+    CITIES.map(async (city) => rankedTop(await cityDrinks(supabase, city.slug), {}))
   );
   const drinks = perCity.flat();
   const lists: TopDrinkList[] = [];
@@ -533,24 +592,26 @@ export async function listTopDrinkLists(supabase: Client): Promise<TopDrinkList[
   return lists;
 }
 
-const TOP_LIST_READ_LIMIT = 500;
 const TOP_LIST_PREVIEW = 3;
 
 const sameList = (d: DrinkListing, key: DrinkListKey) =>
   d.cafe.citySlug === key.city && d.base === key.base && d.style === key.style;
 
-// Same base and style in the same city; prices are never compared across cities.
+// Same base and style in the same city; prices are never compared across cities. Reads at most
+// SIMILAR_READ_LIMIT candidates of that base and style, never the whole city.
 export async function listSimilarDrinks(
   supabase: Client,
   drink: Drink,
   city: string,
   limit = 4
 ): Promise<DrinkListing[]> {
-  const drinks = await cityDrinks(supabase, { city, base: drink.base, style: drink.style });
-  return drinks
-    .filter((d) => d.id !== drink.id)
-    .sort(compareDrinks)
-    .slice(0, limit);
+  const candidates = await readCityDrinks(supabase, city, {
+    base: drink.base,
+    style: drink.style,
+    excludeId: drink.id,
+    limit: SIMILAR_READ_LIMIT,
+  });
+  return candidates.sort(compareDrinks).slice(0, limit);
 }
 
 // Newest trusted-taster review per person and drink, so a re-log cannot pad the rail.
@@ -560,25 +621,22 @@ export async function latestTasterReviews(
   limit = 6
 ): Promise<TasterDrinkReview[]> {
   const drinkById = new Map(drinks.map((d) => [d.id, d]));
+  // latest_reviews is already one row per person and drink, so a re-log cannot pad the rail. Each
+  // batch needs only its own newest `limit` rows to make the overall newest `limit`.
   const { data, error } = await selectIn([...drinkById.keys()], (batch) =>
     supabase
-      .from('reviews')
+      .from('latest_reviews')
       .select(REVIEW_COLUMNS)
       .in('drink_id', batch)
       .eq('by_trusted_taster', true)
       .order('created_at', { ascending: false })
+      .limit(limit)
   );
   if (error) return emptyOrThrow(error, []);
 
-  const seen = new Set<string>();
   const newest = data
+    .filter((r) => r.drink_id !== null && drinkById.has(r.drink_id))
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
-    .filter((r) => {
-      const key = `${r.user_id ?? r.id}:${r.drink_id}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return r.drink_id !== null && drinkById.has(r.drink_id);
-    })
     .slice(0, limit);
 
   const names = await reviewerNames(
@@ -603,7 +661,7 @@ export async function listLatestTasterDrinkReviews(
   supabase: Client,
   { city, limit }: { city: string; limit?: number }
 ): Promise<TasterDrinkReview[]> {
-  return latestTasterReviews(supabase, await cityDrinks(supabase, { city }), limit);
+  return latestTasterReviews(supabase, await cityDrinks(supabase, city), limit);
 }
 
 // PostgREST caps a response at 1000 rows by default, so a larger table is read page by page.

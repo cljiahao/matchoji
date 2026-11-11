@@ -140,6 +140,21 @@ describe('drink page', () => {
     expect(screen.getByText(/No reviews yet/)).toBeTruthy();
   });
 
+  it('shows an Awaiting review banner and hides rating for a pending drink', async () => {
+    state.page = {
+      kind: 'found',
+      drink: { ...drink, status: 'pending' },
+      tasterReviews: [],
+      communityReviews: [],
+      teaProduct: null,
+    };
+    render(await DrinkPage(params('kurasu-bugis', 'hojicha-latte')));
+    expect(screen.getByRole('status').textContent).toMatch(/Awaiting review/);
+    expect(screen.queryByText(/No reviews yet/)).toBeNull();
+    expect(screen.queryByRole('button', { name: /rate/i })).toBeNull();
+    expect(screen.queryByRole('link', { name: /rate/i })).toBeNull();
+  });
+
   it('metadata', async () => {
     expect(await generateMetadata(params('a', 'b'))).toEqual({ title: 'Drink not found' });
     state.page = {

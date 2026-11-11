@@ -303,6 +303,12 @@ describe('listTasters', () => {
       ['Newbie', 0, null],
     ]);
     expect(tasters[0]).toMatchObject({ bio: 'Hojicha first.', instagramHandle: 'foodcnl' });
+    // Both reads are bounded so a growing roster cannot pull every row.
+    const limits = calls.filter((c) => c.method === 'limit').map((c) => [c.table, c.args[0]]);
+    expect(limits).toEqual([
+      ['public_profiles', 100],
+      ['latest_reviews', 500],
+    ]);
   });
 
   it('is empty, without reading reviews, when nobody is a trusted taster', async () => {

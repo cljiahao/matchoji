@@ -6,6 +6,7 @@ import { cache } from 'react';
 import { TeaMap } from '@/components/widgets/tea-map';
 import {
   DrinkRow,
+  PendingNotice,
   ScorePair,
   SlugSchema,
   cityBySlug,
@@ -63,6 +64,7 @@ export default async function CafePage({ params }: CafePageProps) {
           dangerouslySetInnerHTML={{
             __html: serializeJsonLd(
               cafeJsonLd({
+                slug: cafe.slug,
                 name: cafe.name,
                 address: cafe.address,
                 lat: cafe.lat,
@@ -71,6 +73,13 @@ export default async function CafePage({ params }: CafePageProps) {
                 websiteUrl: cafe.websiteUrl,
                 tasterAvg: scores.tasterAvg,
                 tasterCount: scores.tasterCount,
+                photoUrl: drinks.find((d) => d.photoUrl)?.photoUrl ?? null,
+                menu: drinks.map((d) => ({
+                  name: d.name,
+                  slug: d.slug,
+                  price: d.price,
+                  currency: d.currency,
+                })),
               })
             ),
           }}
@@ -114,7 +123,13 @@ export default async function CafePage({ params }: CafePageProps) {
             </a>
           )}
         </p>
-        <ScorePair scores={scores} className="mt-6" />
+        {listed ? (
+          <ScorePair scores={scores} className="mt-6" />
+        ) : (
+          <div className="mt-6">
+            <PendingNotice kind="café" />
+          </div>
+        )}
 
         {cafe.lat !== null && cafe.lng !== null && (
           <TeaMap

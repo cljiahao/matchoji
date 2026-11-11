@@ -32,7 +32,7 @@ vi.mock('@/features/discovery', () => ({
 vi.mock('@/features/cafes', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/features/cafes')>()),
   listTopDrinkLists: (...args: unknown[]) => state.lists(...args),
-  listTopDrinks: (...args: unknown[]) => state.top(...args),
+  listTopDrinksPage: (...args: unknown[]) => state.top(...args),
 }));
 
 import TopDrinksPage, { generateMetadata } from './[slug]/page';
@@ -74,11 +74,21 @@ const list = (city: string, cityName: string, count = 1) => ({
   drinks: [drink('d1', 'Hojicha Latte')],
 });
 
-const params = (slug: string) => ({ params: Promise.resolve({ slug }) });
+const params = (slug: string, page?: string) => ({
+  params: Promise.resolve({ slug }),
+  searchParams: Promise.resolve(page === undefined ? {} : { page }),
+});
+
+const emptyPage = { drinks: [], total: 0, pageCount: 1 };
+const pageOf = (drinks: ReturnType<typeof drink>[], total = drinks.length, pageCount = 1) => ({
+  drinks,
+  total,
+  pageCount,
+});
 
 beforeEach(() => {
   state.lists.mockReset().mockResolvedValue([]);
-  state.top.mockReset().mockResolvedValue([]);
+  state.top.mockReset().mockResolvedValue(emptyPage);
 });
 
 describe('/top index', () => {
@@ -110,14 +120,15 @@ describe('/top index', () => {
 
 describe('/top/[slug]', () => {
   it('shows a drink list, numbered, from listTopDrinks for that city, base and style', async () => {
-    state.top.mockResolvedValue([drink('d1', 'Hojicha Latte'), drink('d2', 'Roasted Latte')]);
+    state.top.mockResolvedValue(
+      pageOf([drink('d1', 'Hojicha Latte'), drink('d2', 'Roasted Latte')])
+    );
     render(await TopDrinksPage(params('johor-bahru-hojicha-latte')));
 
-    expect(state.top.mock.calls[0][1]).toEqual({
-      city: 'johor-bahru',
-      base: 'hojicha',
-      style: 'latte',
-    });
+    expect(state.top.mock.calls[0].slice(1)).toEqual([
+      { city: 'johor-bahru', base: 'hojicha', style: 'latte' },
+      1,
+    ]);
     expect(
       screen.getByRole('heading', { level: 1, name: 'Top hojicha lattes in Johor Bahru' })
     ).toBeInTheDocument();
@@ -157,8 +168,47 @@ describe('/top/[slug]', () => {
     });
   });
 
+  it('pages through every drink the index promised, numbering rows across pages', async () => {
+    const rows = Array.from({ length: 5 }, (_, i) => drink(`d${i}`, `Latte ${i}`));
+    state.top.mockResolvedValue(pageOf(rows, 25, 2));
+    render(await TopDrinksPage(params('singapore-hojicha-latte', '2')));
+
+    expect(state.top.mock.calls[0][2]).toBe(2);
+    expect(screen.getByText(/Showing 21–25 of 25/)).toBeInTheDocument();
+    expect(screen.getByText('21')).toBeInTheDocument();
+    const nav = screen.getByRole('navigation', { name: 'Pages' });
+    expect(within(nav).getByRole('link', { name: 'Previous' })).toHaveAttribute(
+      'href',
+      '/top/singapore-hojicha-latte'
+    );
+    expect(within(nav).queryByRole('link', { name: 'Next' })).not.toBeInTheDocument();
+  });
+
+  it('links to the next page from the first and treats a bad page number as page 1', async () => {
+    state.top.mockResolvedValue(pageOf([drink('d1', 'Latte')], 25, 2));
+    render(await TopDrinksPage(params('singapore-hojicha-latte', 'abc')));
+    expect(state.top.mock.calls[0][2]).toBe(1);
+    expect(screen.getByRole('link', { name: 'Next' })).toHaveAttribute(
+      'href',
+      '/top/singapore-hojicha-latte?page=2'
+    );
+  });
+
+  it('is not found past the last page', async () => {
+    state.top.mockResolvedValue({ drinks: [], total: 25, pageCount: 2 });
+    await expect(TopDrinksPage(params('singapore-hojicha-latte', '9'))).rejects.toThrow(
+      'NEXT_NOT_FOUND'
+    );
+  });
+
+  it('shows no pager for a single page', async () => {
+    state.top.mockResolvedValue(pageOf([drink('d1', 'Latte')]));
+    render(await TopDrinksPage(params('singapore-hojicha-latte')));
+    expect(screen.queryByRole('navigation', { name: 'Pages' })).not.toBeInTheDocument();
+  });
+
   it('titles the page', async () => {
-    state.top.mockResolvedValue([drink('d1', 'Hojicha Latte')]);
+    state.top.mockResolvedValue(pageOf([drink('d1', 'Hojicha Latte')]));
     expect(await generateMetadata(params('singapore-hojicha-latte'))).toMatchObject({
       title: 'Top hojicha lattes in Singapore',
     });

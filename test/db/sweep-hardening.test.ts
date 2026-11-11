@@ -114,7 +114,7 @@ afterAll(async () => {
 });
 
 describe('1. cafe_ratings.taster_disclosed_count', () => {
-  it('counts tasters with a disclosed review once, beside taster_count', async () => {
+  it('counts disclosed reviews beside taster_count', async () => {
     const c = await cafe();
     const d1 = await drink(c);
     const d2 = await drink(c);
@@ -132,7 +132,24 @@ describe('1. cafe_ratings.taster_disclosed_count', () => {
        from public.cafe_ratings where cafe_id = $1`,
       [c]
     );
-    expect(row).toEqual({ taster_count: 2, taster_disclosed_count: 1, community_count: 1 });
+    // Three taster reviews (TASTER on two drinks, TASTER2 on one): the unit the average uses.
+    expect(row).toEqual({ taster_count: 3, taster_disclosed_count: 2, community_count: 1 });
+  });
+
+  it('counts the reviews the average is taken over, not the people', async () => {
+    const c = await cafe();
+    const d1 = await drink(c);
+    const d2 = await drink(c);
+    await review(TASTER, d1, { url: POST });
+    await review(TASTER, d2, { url: POST });
+    const [row] = await asRows<{ taster_count: number; taster_avg: string }>(
+      null,
+      'select taster_count, taster_avg from public.cafe_ratings where cafe_id = $1',
+      [c]
+    );
+    // One person, two reviews of four stars: a count of 1 would sit beside an average of two.
+    expect(row.taster_count).toBe(2);
+    expect(Number(row.taster_avg)).toBe(4);
   });
 
   it('is zero for a café with no reviews', async () => {

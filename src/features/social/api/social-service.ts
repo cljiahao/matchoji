@@ -10,6 +10,10 @@ type Client = SupabaseClient<Database>;
 type ReviewRow = Database['public']['Tables']['reviews']['Row'];
 
 const RECENT = 20;
+// Bounds on the /tasters read: the newest drink reviews are all a card needs for its latest drink,
+// and a count above the cap reads as the cap.
+const TASTER_LIMIT = 100;
+const TASTER_REVIEW_LIMIT = 500;
 
 // Pairs tastings with their tea or drink and the author's name, keeping only tastings whose
 // subject the reader can still see.
@@ -130,7 +134,8 @@ export async function listTasters(supabase: Client): Promise<TasterCard[]> {
     .select('id, display_name, instagram_handle, bio')
     .eq('is_trusted_taster', true)
     .eq('is_public', true)
-    .order('display_name');
+    .order('display_name')
+    .limit(TASTER_LIMIT);
   if (error) throw error;
   if (people.length === 0) return [];
 
@@ -143,6 +148,7 @@ export async function listTasters(supabase: Client): Promise<TasterCard[]> {
         .in('user_id', ids)
         .not('drink_id', 'is', null)
         .order('created_at', { ascending: false })
+        .limit(TASTER_REVIEW_LIMIT)
   );
   if (reviewsError) throw reviewsError;
   rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
